@@ -1,0 +1,29 @@
+{
+	"quick-link": [
+		{
+			"label": "百度",
+			"url": "http://www.baidu.com",
+			"access": "admin,operator"
+		},
+		{
+			"label": "Google",
+			"url": "https://www.google.com",
+			"access": "admin"
+		},
+		{
+			"label": "IBM",
+			"url": "https://www.ibm.com",
+			"access": "user"
+		},
+		{
+			"label": "Lenovo",
+			"children": [
+				{
+					"label": "联想",
+					"url": "http://www.lenovo.com",
+					"access": "user"
+				}
+			]
+		}
+	]
+}

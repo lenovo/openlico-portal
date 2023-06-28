@@ -1,0 +1,46 @@
+/*
+ * Copyright 2015-2023 Lenovo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.elfinder-button-icon-custom {
+    width: 100px;
+    font-family: Arial, Microsoft YaHei, 微软雅黑, sans-serif;
+    font-size: 16px;
+    display: block;
+    background: none;
+    line-height: 16px;
+    text-align: center;
+}
+.elfinder-cwd.elfinder-table-header-sticky table {
+    border-top: none;
+}
+.elfinder .elfinder-dialog-confirm .elfinder-confirm-reject,
+.elfinder .elfinder-dialog-confirm [class*=extbtn] {
+    display: none;
+}
+.elfinder-dialog-upload .elfinder-upload-dirselect {
+    display: none;
+}
+.elfinder-dialog-upload .ui-button+.ui-button {
+    display: none;
+}
+/* .elfinder-dialog-edit .ui-dialog-buttonpane>:first-child button{
+    display: none;
+} */
+
+.elfinder-manager-bottomtray {
+	display: none;
+}
+

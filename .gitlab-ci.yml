@@ -1,0 +1,21 @@
+include:
+  - project: 'lico/gitlab-runner-configure'
+    file:
+      - 'default.yml'
+      - 'nodejs/default.yml'
+      - 'nodejs/fossa.yml'
+      - 'nodejs/ssrb.yml'
+      - 'obs.yml'
+
+obs.trigger:
+  variables:
+    OBS_PACKAGE: openlico-portal
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_TAG =~ /^\d+(\.\d+)+(\..+)?$/
+    - if: $CI_PIPELINE_SOURCE == "web" && $LICO_RUN_OBS
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - package.json
+      variables:
+        OBS_PACKAGE: openlico-portal-node-modules openlico-portal
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

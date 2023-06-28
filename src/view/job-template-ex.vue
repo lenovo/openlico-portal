@@ -1,0 +1,592 @@
+<template>
+  <div class="height--100 p-10">
+    <a-row v-if="jobTemplate != null" class="job-template-title">
+      <!-- <a-col :xs="24" :sm="9" :md="7" :lg="5"
+                    class="job-template-logo">
+                    <img :src="getImage()" />
+                </a-col> -->
+      <a-col :span="24" class="job-template-info">
+        <div class="job-template-title-bg">
+          <!-- <div :style="getImage()"></div> -->
+        </div>
+        <div class="job-template-title-content">
+          <div class="job-template-title-logo" :style="getImage()" />
+          <div class="job-template-title-context">
+            <div class="logo-title">
+              {{ jobTemplate.name }}
+            </div>
+            <div class="logo-description">
+              {{ jobTemplate.description }}
+            </div>
+          </div>
+        </div>
+      </a-col>
+    </a-row>
+    <div class="job-template-container">
+      <a-row v-if="jobTemplate != null" style="display: flex">
+        <a-col style="width: 100%">
+          <a-collapse id="Job_Template_Collapse" v-model="activeNames" :bordered="false" expand-icon-position="right">
+            <template #expandIcon="props">
+              <a-icon type="template_test" :custom="props" />
+            </template>
+            <a-collapse-panel
+              v-for="paramGroup in paramGroups"
+              :id="paramGroup.name"
+              :key="paramGroup.name"
+              force-render>
+              <span slot="header" class="template-collapse-panel-header">
+                {{ paramGroup.title }}
+                <a-icon
+                  class="template-collapse-icon"
+                  type="right"
+                  :class="[activeNames.includes(paramGroup.name) ? 'turn90' : 'turn-0']" />
+              </span>
+              <job-parameters-editor
+                ref="paramsEditor"
+                :params="paramGroup.params"
+                :context="paramValues"
+                :form-id="'Job_Parameters_Form_' + paramGroup.name" />
+            </a-collapse-panel>
+          </a-collapse>
+        </a-col>
+        <a-col :style="`min-width: ${jobTemplate.helpUrl ? 420 : 220}px;margin-top: 12px;`" class="p-l-20">
+          <iframe
+            v-if="jobTemplate.helpUrl"
+            :src="jobTemplate.helpUrl"
+            frameborder="0"
+            style="width: 100%; height: 100%" />
+          <a-anchor v-else :get-container="getAnchorScrollContainer">
+            <a-anchor-link
+              v-for="paramGroup in paramGroups"
+              :key="paramGroup.name"
+              :href="`#${paramGroup.name}`"
+              :title="paramGroup.title" />
+          </a-anchor>
+        </a-col>
+      </a-row>
+      <a-row v-if="jobTemplate != null" class="submit-job-bottom-button m-t-20">
+        <a-button id="Job_Submit" type="primary" :loading="submitting" @click="onSubmitClick">
+          {{ buttonText }}
+        </a-button>
+        <a-button
+          id="Job_Preview"
+          style="margin-left: 4px"
+          :disabled="submitting"
+          :loading="preview.loading"
+          @click="onPreviewClick">
+          {{ $t('Action.Preview') }}
+        </a-button>
+      </a-row>
+      <job-action-dialog id="tid_job-manange-action-dialog" ref="jobActionDialog" />
+
+      <!-- preview job modal -->
+      <a-modal v-model="preview.modal" title="Preview Job">
+        <a-textarea
+          v-model="preview.content"
+          :rows="20"
+          read-only
+          style="overflow-x: scroll; resize: none; white-space: pre" />
+
+        <template #footer>
+          <a-button @click="preview.modal = false">
+            {{ $t('Action.Cancel') }}
+          </a-button>
+          <a-button type="primary" @click="onSubmitClick">
+            {{ $t('Action.Submit') }}
+          </a-button>
+        </template>
+      </a-modal>
+    </div>
+  </div>
+</template>
+<script>
+import JobTemplateService from '../service/job-template'
+import JobService from '../service/job'
+import JobActionDialog from '../widget/job-action-dialog'
+import AccessService from '../service/access'
+import JobParametersEditor from '../widget/job-parameters-editor'
+import WorkflowService from '../service/workflow'
+import Request from '../request/https'
+
+export default {
+  components: {
+    'job-action-dialog': JobActionDialog,
+    'job-parameters-editor': JobParametersEditor,
+  },
+  data() {
+    return {
+      activeNames: ['base', 'param', 'resource'],
+      code: '',
+      job: null,
+      jobTemplate: null,
+      submitting: false,
+      paramGroups: [
+        {
+          name: 'base',
+          title: this.$t('JobTemplate.BaseInformation'),
+          params: [],
+        },
+        {
+          name: 'param',
+          title: this.$t('JobTemplate.Parameters'),
+          params: [],
+        },
+        {
+          name: 'resource',
+          title: this.$t('JobTemplate.ResourceOptions'),
+          params: [],
+        },
+        {
+          name: 'adv_param',
+          title: this.$t('JobTemplate.AdvancedParameters'),
+          params: [],
+        },
+        {
+          name: 'notify',
+          title: this.$t('JobTemplate.NotifyOptions'),
+          params: [],
+        },
+      ],
+      paramValues: {},
+      paramValueTypes: {},
+      resources: null,
+      scheduler: AccessService.getScheduler(),
+      workflowMode: '',
+      preview: {
+        loading: false,
+        modal: false,
+        content: null,
+      },
+    }
+  },
+  computed: {
+    buttonText() {
+      if (this.$route.name === 'workflow-job-edit') {
+        return this.$t('Workflow.SaveToWorkflow')
+      } else if (this.$route.path.includes('workflow-job-template')) {
+        return this.$t('Workflow.AddToWorkflow')
+      } else {
+        return this.$t('JobTemplate.Submit')
+      }
+    },
+  },
+  mounted() {
+    if (this.$route.params.code) {
+      this.code = this.$route.params.code
+      this.job = null
+      const query = this.$route.query
+      if (query.params_string) {
+        this.job = {
+          req: {
+            params: {
+              parameters: JSON.parse(query.params_string),
+            },
+          },
+        }
+      }
+      this.code = this.$route.params.code
+      this.init()
+    }
+    // workflow ----------
+    if (this.$route.name === 'workflow-job-edit') {
+      this.job = {
+        req: {
+          params: {
+            parameters: this.$route.params.job.jsonBody,
+          },
+        },
+      }
+      this.code = this.$route.params.template
+      this.init()
+      // ---------------
+    } else if (this.$route.params.jobId) {
+      JobService.getJobById(this.$route.params.jobId).then(
+        res => {
+          this.job = res
+          this.code = this.job.realType
+          this.init()
+        },
+        res => {
+          this.$message.error(res)
+        },
+      )
+    }
+  },
+  methods: {
+    getAnchorScrollContainer() {
+      const element = document.getElementById('Workflow-Scroll-Modal-Container')
+      return element || window
+    },
+    init() {
+      const paramValues = {}
+      const paramValueTypes = {}
+      JobTemplateService.getJobTemplate(this.code).then(
+        res => {
+          res.params.forEach(param => {
+            paramValues[param.id] = this.getInitParamValue(param.id)
+            paramValueTypes[param.id] = param.dataType
+            this.paramGroups.forEach(group => {
+              if (param.class === group.name) {
+                group.params.push(param)
+              }
+            })
+          })
+          // Remove the group that not contains param.
+          const paramGroups = []
+          this.paramGroups.forEach(group => {
+            if (group.params.length > 0) {
+              paramGroups.push(group)
+            }
+          })
+          this.paramGroups = paramGroups
+          if (Object.prototype.hasOwnProperty.call(paramValues, 'job_name')) {
+            const prefillName = `${res.name.replace(/\s|-/g, '_')}_`.replace(/_+/g, '_')
+            paramValues.prefix_job_name = prefillName
+          }
+          this.paramValues = paramValues
+          this.paramValueTypes = paramValueTypes
+          this.jobTemplate = res
+        },
+        res => {
+          this.$message.error(res)
+        },
+      )
+    },
+    getInitParamValue(paramId) {
+      if (this.job && this.job.req && this.job.req.params && this.job.req.params.parameters) {
+        return this.job.req.params.parameters[paramId]
+      }
+      return null
+    },
+    getImage() {
+      const type = this.jobTemplate.type === 'system' ? 'job' : 'user'
+      const img = `/api/template/${type}templates/${this.code}/logo/`
+      return {
+        'background-image': `url(${img})`,
+      }
+    },
+    getIconRotate(name) {
+      return this.activeNames.includes(name) ? 90 : 0
+    },
+    doCreateJob(nextUrl) {
+      const params = this.paramValues
+      const paramTypes = this.paramValueTypes
+      this.submitting = true
+      // Workflow -------------
+      if (this.$route.params.workflowId || this.$route.params.workflowId === 0) {
+        const req = {}
+        const webhook = []
+        JobService.buildJobReq(this.jobTemplate.code, params, req, webhook)
+        const stepId = this.$route.params.stepId
+        let data = {}
+        if (this.$route.name === 'workflow-job-edit' && !this.$route.params.copy) {
+          // update workflow job
+          data = {
+            id: this.$route.params.job.id,
+            jsonBody: req,
+          }
+          WorkflowService.updateWorkflowStepJob(stepId, data).then(
+            res => {
+              this.$message.success(
+                this.$t('Workflow.Step.Job.Update.Success', {
+                  name: req.job_name,
+                }),
+              )
+              this.$router.replace(`/main/workflow-editor/${this.$route.params.workflowId}`)
+            },
+            err => {
+              this.$message.error(err)
+            },
+          )
+        } else {
+          // create or copy workflow job
+          data = {
+            template: this.jobTemplate.code,
+            jsonBody: req,
+          }
+          WorkflowService.createWorkflowStepJob(stepId, data).then(
+            res => {
+              const message = this.$route.params.copy
+                ? this.$t('Workflow.Step.Job.Copy.Success', {
+                    name: req.job_name,
+                  })
+                : this.$t('Workflow.Step.Job.Create.Success', {
+                    name: req.job_name,
+                  })
+              this.$message.success(message)
+              this.$router.replace(`/main/workflow-editor/${this.$route.params.workflowId}`)
+            },
+            err => {
+              this.$message.error(err)
+            },
+          )
+        }
+        // ----------------------
+      } else {
+        JobService.createJobEx(this.jobTemplate, params, paramTypes).then(
+          res => {
+            this.submitting = false
+            const job = res
+            let message
+            if (job.schedulerId && job.schedulerId.length > 0) {
+              message = this.$t('Job.Submit.Success', {
+                id: job.id,
+                name: job.name,
+                schedulerId: job.schedulerId,
+              })
+              this.$message.success(message)
+              if (nextUrl) {
+                this.$router.push({ path: nextUrl })
+              } else {
+                this.$router.push({
+                  path: '/main/job/' + job.id,
+                })
+              }
+            } else {
+              const title = this.$t('Job.Submit.Error')
+              message = job.errmsg
+              this.$message.error(message || title)
+            }
+          },
+          res => {
+            this.submitting = false
+            this.$message.error(res)
+          },
+        )
+      }
+    },
+    getMinIntValue(m, n) {
+      if (m || n) {
+        if (Number(m) && Number(n)) {
+          return Math.min(Number(m), Number(n))
+        } else if (Number(m) || Number(n)) {
+          return Number(m) ? Number(m) : Number(n)
+        } else {
+          return Infinity
+        }
+      }
+      return Infinity
+    },
+    onSubmitClick() {
+      this.preview.modal = false
+
+      const validates = []
+      this.$refs.paramsEditor.forEach(editor => {
+        validates.push(editor.validate())
+      })
+      Promise.all(validates).then(
+        () => {
+          // Using underline character in job name maybe cause the job fail to run
+          const nameWarningMsg = ''
+
+          /// / if the number of cores or nodes exceeds the maximum resource limit
+          let submitTitle = this.$t('JobTemplate.Submit.Tip')
+          let emptyQueue = false
+          if (AccessService.getScheduler() === 'slurm' && this.$refs.paramsEditor[2]) {
+            const queueValue = this.$refs.paramsEditor[2].formModel
+            const overflowItem = []
+            if (Object.prototype.hasOwnProperty.call(queueValue, 'job_queue') || this.resources) {
+              let resources = {}
+              if (this.resources) {
+                // container
+                resources = this.resources
+              } else {
+                // host
+                const queueOptions = this.$refs.paramsEditor[2].getQueueOptions()
+                queueOptions.forEach(val => {
+                  if (val.value === queueValue.job_queue) {
+                    resources = val
+                  }
+                })
+              }
+              if (
+                Object.prototype.hasOwnProperty.call(queueValue, 'job_queue') &&
+                !Object.prototype.hasOwnProperty.call(resources, 'totalNodes')
+              ) {
+                emptyQueue = true
+              } else {
+                if (Object.prototype.hasOwnProperty.call(queueValue, 'nodes')) {
+                  if (Number(queueValue.nodes) > this.getMinIntValue(resources.maxNodes, resources.totalNodes)) {
+                    overflowItem.push(this.$t('JobTemplate.Nodes'))
+                  }
+                }
+                if (Object.prototype.hasOwnProperty.call(queueValue, 'cores_per_node')) {
+                  if (
+                    (Number(resources.maxCoresPerNode) > 0 &&
+                      Number(queueValue.cores_per_node) > Number(resources.maxCoresPerNode)) ||
+                    (Object.prototype.hasOwnProperty.call(queueValue, 'nodes') &&
+                      Number(queueValue.nodes * queueValue.cores_per_node) > Number(resources.totalCores) &&
+                      resources.totalCores) ||
+                    (Number(queueValue.cores_per_node) > Number(resources.totalCores) && resources.totalCores)
+                  ) {
+                    overflowItem.push(this.$t('JobTemplate.MaxCoresPerNode'))
+                  }
+                }
+                if (Object.prototype.hasOwnProperty.call(queueValue, 'gpuPerNode')) {
+                  const gpuPerNode = Number(queueValue.gpuPerNode) || 0
+                  const nodes = Number(queueValue.nodes) || 0
+                  const gpuType = queueValue.gpu_resource_name || ''
+                  const resourceMig = resources.gpuOptions.filter(mig => mig.type.split('G/')[1] === gpuType)[0]
+
+                  let maxGpusPerNode = Number(resources.maxGpusPerNode) || 0
+                  let gpuTotal = Number(resources.gpuNum) || 0
+
+                  if (resourceMig) {
+                    maxGpusPerNode = resourceMig.maxPerNode
+                    gpuTotal = resourceMig.free
+                  }
+                  if (gpuPerNode) {
+                    if (!gpuTotal || nodes * gpuPerNode > gpuTotal || (gpuType && gpuPerNode > maxGpusPerNode)) {
+                      overflowItem.push(this.$t('JobTemplate.GpusPerNode'))
+                    }
+                  }
+                }
+              }
+            }
+            submitTitle =
+              overflowItem.length > 0
+                ? this.$t('JobTemplate.Submit.Tip.Overflow', {
+                    name: overflowItem.join(','),
+                  })
+                : emptyQueue
+                ? this.$t('JobTemplate.Submit.Tip.Queue.Null')
+                : this.$t('JobTemplate.Submit.Tip')
+          }
+          if (this.$route.path.includes('workflow-job-template')) {
+            // The workflow does not need to pop up a confirmation prompt
+            this.doCreateJob()
+          } else {
+            this.$confirm({
+              title: this.$t('JobTemplate.Submit.Tip.Title'),
+              content: nameWarningMsg + submitTitle,
+              centered: true,
+              okText: this.$t('Action.Submit'),
+              cancelText: this.$t('Action.Cancel'),
+              onOk: () => {
+                this.doCreateJob()
+              },
+            })
+          }
+        },
+        () => {
+          // Do nothing
+        },
+      )
+    },
+    onPreviewClick() {
+      this.preview.content = null
+      this.preview.loading = true
+      const validates = []
+      this.$refs.paramsEditor.forEach(editor => {
+        validates.push(editor.validate())
+      })
+      Promise.all(validates).then(
+        () => {
+          const parameters = this.paramValues
+          Request.post('/api/template/previewjob/', {
+            parameters,
+            template_id: this.jobTemplate.code,
+          }).then(
+            response => {
+              this.preview.loading = false
+              this.preview.modal = true
+              this.preview.content = response.data
+            },
+            err => {
+              this.$message.error(this.$t(`Error.${err.body.errid}`))
+              this.preview.loading = false
+            },
+          )
+        },
+        () => {
+          this.preview.loading = false
+        },
+      )
+    },
+  },
+}
+</script>
+<style scoped>
+/*.el-checkbox-group {
+  width: 100%;
+  display: inline-block;
+}*/
+.job-template-title {
+  /* margin-bottom: 20px; */
+}
+.logo-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.logo-description {
+  font-size: 14px;
+}
+.job-template-container {
+  /* background: #fff; */
+  box-sizing: border-box;
+  height: 100%;
+  padding: 20px;
+}
+.job-template-info {
+  position: relative;
+  border-bottom: 1px solid #d9d9d9;
+}
+.job-template-title-bg {
+  height: 140px;
+  padding: 10px;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  background-position-y: center;
+}
+.job-template-title-bg div {
+  background-repeat: no-repeat;
+  background-size: 100%;
+  background-position-y: center;
+  height: 100%;
+  filter: blur(10px);
+}
+.job-template-title-content {
+  position: absolute;
+  top: 0;
+  height: 140px;
+  width: 100%;
+  padding: 20px;
+  background: #fff;
+  /* background: #0015294d; */
+  display: flex;
+}
+.job-template-title-logo {
+  width: 100px;
+  height: 100px;
+  margin-right: 20px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  /* border: 1px solid #eee; */
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.job-template-title-context {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.logo-description {
+  /* color: #ffffffa8; */
+}
+
+.job-template-id {
+  width: 80px;
+}
+.job-template-container >>> .ant-tag {
+  padding: 4px 10px;
+}
+.template-collapse-panel-header {
+  font-weight: bold;
+  margin-left: 4px;
+}
+.template-collapse-icon {
+  margin-left: 10px;
+  font-size: 12px;
+}
+</style>

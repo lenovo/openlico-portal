@@ -1,0 +1,6 @@
+{
+    "name": "Default Theme",
+    "cssurls": "./../../../elfinder/css/elfinder.min.css",
+    "license": "3-clauses BSD",
+    "image": "/static/js-extern/elfinder-custom/themes/default/default.png"
+}

@@ -1,0 +1,708 @@
+[
+    {
+        "code": "rack",
+        "aliasCodes": [],
+        "type": "rack",
+        "frontimage": "RACK.png",
+        "padding": [18, 28, 15, 28],
+        "width_height": [310, 998],
+        "uheight": [21],
+        "gap": [2, 2],
+        "capacity": {
+            "height": 42,
+            "width": 1
+        }
+    },
+    {
+        "code": "flex",
+        "aliasCodes": ["7385", "7893", "8721", "8724"],
+        "type": "chassis",
+        "frontimage": "14slot.png",
+        "padding": [17, 10, 16, 10],
+        "width_height": [254, 228],
+        "uheight": [21],
+        "gap": [8, 2],
+        "location": {
+            "height": 10,
+            "width": 1
+        },
+        "capacity": {
+            "height": 7,
+            "width": 1
+        }
+    },
+    {
+        "code": "d2",
+        "aliasCodes": ["7X20", "7X22"],
+        "type": "chassis",
+        "frontimage": "4slot.png",
+        "padding": [3, 2, 3, 2],
+        "width_height": [254, 44],
+        "uheight": [18],
+        "gap": [2, 2],
+        "location": {
+            "height": 2,
+            "width": 1
+        },
+        "capacity": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "n1200",
+        "aliasCodes": ["5456", "5468", "5469"],
+        "type": "chassis",
+        "frontimage": "N1200.png",
+        "padding": [2, 12, 3, 12],
+        "width_height": [254, 136],
+        "uheight": [21],
+        "gap": [1, 1],
+        "location": {
+            "height": 6,
+            "width": 1
+        },
+        "capacity": {
+            "height": 6,
+            "width": 1
+        }
+    },
+    {
+        "code": "DW612S",
+        "aliasCodes": ["7D1L"],
+        "type": "chassis",
+        "frontimage": "DW612S.png",
+        "padding": [2, 12, 3, 12],
+        "width_height": [254, 136],
+        "uheight": [21],
+        "gap": [1, 1],
+        "location": {
+            "height": 6,
+            "width": 1
+        },
+        "capacity": {
+            "height": 6,
+            "width": 1
+        }
+    },
+    {
+        "code": "G8052",
+        "aliasCodes": ["7159"],
+        "type": "switch",
+        "frontimage": "1U_Lenovo_RackSwitch_G8052.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "G8296",
+        "aliasCodes": ["7159"],
+        "type": "switch",
+        "frontimage": "2U_Lenovo_RackSwitch_G8296.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "hg680x",
+        "aliasCodes": ["7D30"],
+        "type": "node",
+        "frontimage": "HG680X.png",
+        "location": {
+            "height": 4,
+            "width": 1
+        }
+    },
+    {
+        "code": "3550M4",
+        "aliasCodes": ["5459", "7914", "8062"],
+        "type": "node",
+        "frontimage": "1U_3550M4.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "3250M4",
+        "aliasCodes": ["2583"],
+        "type": "node",
+        "frontimage": "1U_3250M4.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "3250M5",
+        "aliasCodes": ["5458"],
+        "type": "node",
+        "frontimage": "1U_3250M5.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "3300M4",
+        "aliasCodes": ["7382"],
+        "type": "node",
+        "frontimage": "5U_3300M4.png",
+        "location": {
+            "height": 5,
+            "width": 1
+        }
+    },
+    {
+        "code": "3500M4",
+        "aliasCodes": ["7383"],
+        "type": "node",
+        "frontimage": "5U_3500M4.png",
+        "location": {
+            "height": 5,
+            "width": 1
+        }
+    },
+    {
+        "code": "3530M4",
+        "aliasCodes": ["7160"],
+        "type": "node",
+        "frontimage": "1U_3530M4.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "3550",
+        "aliasCodes": ["7978"],
+        "type": "node",
+        "frontimage": "1U_3550.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "3630M4",
+        "aliasCodes": ["7158"],
+        "type": "node",
+        "frontimage": "2U_3630M4.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "3650",
+        "aliasCodes": ["7979"],
+        "type": "node",
+        "frontimage": "2U_3650.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "3650M4",
+        "aliasCodes": ["7915", "8061"],
+        "type": "node",
+        "frontimage": "2U_3650M4.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "3650M5",
+        "aliasCodes": ["5462", "8871"],
+        "type": "node",
+        "frontimage": "2U_3650M5.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "3750",
+        "aliasCodes": [],
+        "type": "node",
+        "frontimage": "3750.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "3750M4",
+        "aliasCodes": ["8718", "8722", "8733", "8752", "8753"],
+        "type": "node",
+        "frontimage": "2U_3750M4.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "3850",
+        "aliasCodes": ["8864"],
+        "type": "node",
+        "frontimage": "3850.png",
+        "location": {
+            "height": 4,
+            "width": 1
+        }
+    },
+    {
+        "code": "3950",
+        "aliasCodes": [],
+        "type": "node",
+        "frontimage": "3950.png",
+        "location": {
+            "height": 8,
+            "width": 1
+        }
+    },
+    {
+        "code": "3950X5",
+        "aliasCodes": ["8872"],
+        "type": "node",
+        "frontimage": "4U_3950X5.png",
+        "location": {
+            "height": 4,
+            "width": 1
+        }
+    },
+    {
+        "code": "v7000",
+        "aliasCodes": ["4939", "6195"],
+        "type": "node",
+        "frontimage": "v7000.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "nx360",
+        "aliasCodes": [],
+        "type": "node",
+        "frontimage": "feihu_1.png",
+        "location": {
+            "height": 1,
+            "width": 0.5
+        }
+    },
+    {
+        "code": "nx360_2u",
+        "aliasCodes": [],
+        "type": "node",
+        "frontimage": "feihu_2.png",
+        "location": {
+            "height": 2,
+            "width": 0.5
+        }
+    },
+    {
+        "code": "dx360M4",
+        "aliasCodes": ["7913"],
+        "type": "node",
+        "frontimage": "2U_iDataPlex_dx360M4.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "x220",
+        "aliasCodes": ["2585", "7906"],
+        "type": "node",
+        "frontimage": "ITE_x220.png",
+        "location": {
+            "height": 1,
+            "width": 0.5
+        }
+    },
+    {
+        "code": "x440",
+        "aliasCodes": ["2590", "7167", "7917"],
+        "type": "node",
+        "frontimage": "ITE_x440.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "sd530",
+        "aliasCodes": ["7X21"],
+        "type": "node",
+        "frontimage": "Stark.png",
+        "location": {
+            "height": 1,
+            "width": 0.5
+        }
+    },
+    {
+        "code": "sd530-gpu",
+        "aliasCodes": ["7X21-gpu"],
+        "type": "node",
+        "frontimage": "SD530_GPU.png",
+        "location": {
+            "height": 2,
+            "width": 0.5
+        }
+    },
+    {
+        "code": "sr950",
+        "aliasCodes": ["7X11", "7X12", "7X13"],
+        "type": "node",
+        "frontimage": "SR950.png",
+        "location": {
+            "height": 4,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr860",
+        "aliasCodes": ["7X69", "7X70"],
+        "type": "node",
+        "frontimage": "SR860.png",
+        "location": {
+            "height": 4,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr850p",
+        "aliasCodes": ["7D2F", "7D2G", "7D2H"],
+        "type": "node",
+        "frontimage": "SR850P.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr850",
+        "aliasCodes": ["7X18", "7x19"],
+        "type": "node",
+        "frontimage": "SR850.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr675v3",
+        "aliasCodes": ["7D9Q", "7D9R"],
+        "type": "node",
+        "frontimage": "SR675_V3.png",
+        "location": {
+            "height": 3,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr670",
+        "aliasCodes": ["7Y36", "7Y37", "7Y38"],
+        "type": "node",
+        "frontimage": "SR670.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr670v2",
+        "aliasCodes": ["7Z23", "7Z22", "7D47"],
+        "type": "node",
+        "frontimage": "SR670_V2.png",
+        "location": {
+            "height": 3,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr665",
+        "aliasCodes": ["7D2V", "7D2W"],
+        "type": "node",
+        "frontimage": "SR665.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr665v3",
+        "aliasCodes": ["7D9B", "7D9A"],
+        "type": "node",
+        "frontimage": "SR665_V3.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr660v2",
+        "aliasCodes": ["7D6L"],
+        "type": "node",
+        "frontimage": "SR660_V2.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr655",
+        "aliasCodes": ["7Y00", "7Z01"],
+        "type": "node",
+        "frontimage": "SR655.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr655v3",
+        "aliasCodes": ["7D9F", "7D9E"],
+        "type": "node",
+        "frontimage": "SR655_V3.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr650",
+        "aliasCodes": ["7X05", "7X06"],
+        "type": "node",
+        "frontimage": "SR650.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr650v2",
+        "aliasCodes": ["7Z72", "7Z73"],
+        "type": "node",
+        "frontimage": "SR650_V2.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr650v3",
+        "aliasCodes": ["7D75", "7D76", "7D77"],
+        "type": "node",
+        "frontimage": "SR650_V3.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr645",
+        "aliasCodes": ["7D2X", "7D2Y"],
+        "type": "node",
+        "frontimage": "SR645.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr645v3",
+        "aliasCodes": ["7D9D", "7D9C"],
+        "type": "node",
+        "frontimage": "SR645_V3.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr635",
+        "aliasCodes": ["7Y98", "7Y99"],
+        "type": "node",
+        "frontimage": "SR635.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr635v3",
+        "aliasCodes": ["7D9H", "7D9G"],
+        "type": "node",
+        "frontimage": "SR635_V3.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr630",
+        "aliasCodes": ["7X01", "7X02"],
+        "type": "node",
+        "frontimage": "SR630.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr630v2",
+        "aliasCodes": ["7Z70", "7Z71"],
+        "type": "node",
+        "frontimage": "SR630_V2.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "sr630v3",
+        "aliasCodes": ["7D72", "7D73", "7D74"],
+        "type": "node",
+        "frontimage": "SR630_V3.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "sd650",
+        "aliasCodes": ["7X58"],
+        "type": "node",
+        "frontimage": "SD650.png",
+        "location": {
+            "height": 1,
+            "width": 0.5
+        }
+    },
+    {
+        "code": "sd650v2",
+        "aliasCodes": ["7D1M"],
+        "type": "node",
+        "frontimage": "SD650_V2.png",
+        "location": {
+            "height": 1,
+            "width": 0.5
+        }
+    },
+    {
+        "code": "sd650-nv2",
+        "aliasCodes": ["7D1N"],
+        "type": "node",
+        "frontimage": "SD650-N_V2.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "sd650v3",
+        "aliasCodes": ["7D7M"],
+        "type": "node",
+        "frontimage": "SD650_V3.png",
+        "location": {
+            "height": 1,
+            "width": 0.5
+        }
+    },
+    {
+        "code": "sd650-iv3",
+        "aliasCodes": ["7D7L"],
+        "type": "node",
+        "frontimage": "SD650-I_V3.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "sd665v3",
+        "aliasCodes": ["7D9P"],
+        "type": "node",
+        "frontimage": "SD665_V3.png",
+        "location": {
+            "height": 1,
+            "width": 0.5
+        }
+    },
+    {
+        "code": "caracara",
+        "aliasCodes": [],
+        "type": "node",
+        "frontimage": "ITE_Caracara.png",
+        "location": {
+            "height": 1,
+            "width": 0.5
+        }
+    },
+    {
+        "code": "natahala",
+        "aliasCodes": [],
+        "type": "node",
+        "frontimage": "ITE_new_natahala.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "natahala1",
+        "aliasCodes": [],
+        "type": "node",
+        "frontimage": "ITE_new_natahala1.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "natahala_2u",
+        "aliasCodes": [],
+        "type": "node",
+        "frontimage": "ITE_new_natahala2.png",
+        "location": {
+            "height": 2,
+            "width": 1
+        }
+    },
+    {
+        "code": "natahala_4u",
+        "aliasCodes": [],
+        "type": "node",
+        "frontimage": "ITE_new_natahala4.png",
+        "location": {
+            "height": 4,
+            "width": 1
+        }
+    },
+    {
+        "code": "ne1032",
+        "aliasCodes": ["7159"],
+        "type": "node",
+        "frontimage": "NE1032.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    },
+    {
+        "code": "ne1072t",
+        "aliasCodes": ["7159"],
+        "type": "node",
+        "frontimage": "NE1072T.png",
+        "location": {
+            "height": 1,
+            "width": 1
+        }
+    }
+]

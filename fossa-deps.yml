@@ -1,0 +1,24 @@
+referenced-dependencies:
+  - type: npm
+    name: ace
+  - type: npm
+    name: jquery
+  - type: npm
+    name: jquery-animateNumber
+  - type: npm
+    name: jquery-ui
+  - type: npm
+    name: less
+  - type: npm
+    name: termwindow
+  - type: npm
+    name: google-code-prettify
+
+remote-dependencies:
+  - name: elfinder
+    version: 2.1.60
+    url: https://github.com/Studio-42/elFinder/archive/2.1.60.zip
+
+vendored-dependencies:
+  - name: openlico-portal
+    path: src

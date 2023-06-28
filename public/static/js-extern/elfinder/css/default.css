@@ -1,0 +1,11 @@
+.ui-widget-header {
+    background-color: #e9eef2
+}
+.ui-widget.ui-widget-content{
+
+    border: 1px solid #dddddd;
+}
+.elfinder-ltr .elfinder-navbar {
+    border-right: 1px solid #dddddd;
+    background-color: #fff;
+}

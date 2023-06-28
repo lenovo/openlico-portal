@@ -1,0 +1,270 @@
+/*
+ * Copyright 2015-2023 Lenovo
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+html,
+body {
+    margin: 0 auto;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 100%;
+    height: 100%;
+    background: #f0f0f0 !important;
+    color: #333;
+    font-size: 14px;
+}
+ul,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    padding: 0;
+}
+a {
+    text-decoration: none;
+}
+ul {
+    list-style: none;
+}
+.box {
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/*--------- background color #fff ---------*/
+.b-w {
+    background-color: #fff;
+}
+/*--------- height 100% ---------*/
+.height--100 {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/*---------padding 20---------*/
+.p-20 {
+    padding: 20px;
+}
+.p-t-20 {
+    padding-top: 20px;
+}
+.p-r-20 {
+    padding-right: 20px;
+}
+.p-b-20 {
+    padding-bottom: 20px;
+}
+.p-l-20 {
+    padding-left: 20px;
+}
+/*---------padding 10---------*/
+.p-10 {
+    padding: 10px;
+}
+.p-t-10 {
+    padding-top: 10px;
+}
+.p-r-10 {
+    padding-right: 10px;
+}
+.p-b-10 {
+    padding-bottom: 10px;
+}
+.p-l-10 {
+    padding-left: 10px;
+}
+/*---------margin 10---------*/
+.m-10 {
+    margin: 10px;
+}
+.m-t-10 {
+    margin-top: 10px;
+}
+.m-r-10 {
+    margin-right: 10px;
+}
+.m-b-10 {
+    margin-bottom: 10px;
+}
+.m-l-10 {
+    margin-left: 10px;
+}
+/*---------margin 20---------*/
+.m-20 {
+    margin: 20px;
+}
+.m-t-20 {
+    margin-top: 20px;
+}
+.m-r-20 {
+    margin-right: 20px;
+}
+.m-b-20 {
+    margin-bottom: 20px;
+}
+.m-l-20 {
+    margin-left: 20px;
+}
+
+.el-button--wrap {
+    white-space: inherit;
+}
+
+.lico-auto-loading {
+    animation: loading 2s infinite linear;
+}
+ @keyframes loading {
+    100% {
+        transform: rotate(360deg);
+    }
+ }
+/*--------- component table ----------*/
+.reportFilter {
+    padding: 20px;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+.report-alert-bottom {
+    margin-top: 20px;
+    box-sizing: border-box;
+}
+
+.nodata {
+    height: 500px;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-top: 20px;
+}
+
+/* scroll bar */
+*::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+*::-webkit-scrollbar-track {
+    background: #efefef;
+    border-radius: 2px;
+}
+*::-webkit-scrollbar-thumb {
+    background: #bfbfbf;
+    border-radius: 10px;
+}
+*::-webkit-scrollbar-thumb:hover {
+    background: #333;
+}
+
+.alert-table-note {
+    min-height: 24px;
+    cursor: pointer;
+}
+/* node gpu */
+.node-gpu-tooltip-chart {
+    width: 100%;
+    height: 100%;
+}
+.node-gpu-tooltip-current-value {
+    font-size: 12px;
+    position: absolute;
+    right: 0;
+}
+.default-select {
+    min-width: 220px;
+}
+
+.turn90 {
+    transform: rotateZ(90deg);
+    transition: 0.5s;
+}
+.turn-0 {
+    transform: rotateZ(0deg);
+    transition: 0.5s;
+}
+
+/* Ant Design */
+/* antd-table */
+.ant-table-thead > tr > th {
+    padding: 10px 6px !important;
+}
+.ant-table-tbody > tr > td {
+    padding: 8px !important;
+}
+/* .ant-breadcrumb */
+.ant-breadcrumb a {
+    font-weight: bold;
+}
+.ant-breadcrumb > span:last-child a {
+    font-weight: 100;
+    cursor: inherit;
+}
+
+/* antd-dropdown */
+.ant-select-selection-selected-value {
+    margin-right: 10px;
+}
+
+/* ant-button */
+.ant-btn:not(.ant-btn-link) {
+    font-size: 12px;
+    padding: 0 10px;
+}
+
+.placeholder-img {
+    width: 240px;
+}
+/* Use this css style to fix bug 209870 */
+.ant-collapse-content{
+    overflow: initial;
+}
+
+.ant-message-notice {
+    word-break: break-all;
+}
+.ant-message-notice .ant-message-notice-content{
+    text-align: left;
+    max-width: 80%;
+}
+
+/* elFinder file editor */
+i.ui-dialog-max-size {
+    color: #333;
+    position: absolute;
+    right: 1.5em;
+    top: 50%;
+    width: 20px;
+    margin: -11px 0 0 0;
+    padding: 2px 3px 0;
+    height: 20px;
+    font-size: 13px;
+    cursor: pointer;
+}
+span.ace-file-manage-title-name {
+    display: inline-block;
+    max-width: 76%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+div.ace-editor-titie-bar{
+    display: flex;
+    justify-content: flex-start;
+}

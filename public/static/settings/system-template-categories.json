@@ -1,0 +1,37 @@
+[
+    {
+        "category": "All",
+        "label": {
+            "en": "All",
+            "zh": "全部"
+        }
+    },
+    {
+        "category": "HPC",
+        "label": {
+            "en": "HPC",
+            "zh": "HPC"
+        }
+    },
+    {
+        "category": "AI",
+        "label": {
+            "en": "AI",
+            "zh": "AI"
+        }
+    },
+    {
+        "category": "General",
+        "label": {
+            "en": "General",
+            "zh": "通用"
+        }
+    },
+    {
+        "category": "Intel_oneAPI",
+        "label": {
+            "en": "Intel oneAPI",
+            "zh": "Intel oneAPI"
+        }
+    }
+]

@@ -1,0 +1,119 @@
+<template>
+  <div ref="container" style="width: 100%; height: 100%; min-height: 400px" />
+</template>
+
+<script>
+import Format from './../../common/format'
+import * as EChart from 'echarts'
+
+export default {
+  props: ['data'],
+  data() {
+    return {
+      innerChart: null,
+    }
+  },
+  watch: {
+    data(val, oldVal) {
+      if (val) {
+        this.$nextTick(function () {
+          this.initChart()
+        })
+      }
+    },
+  },
+  mounted() {
+    this.$nextTick(function () {
+      this.innerChart = EChart.init(this.$refs.container, window.gApp.echartsTheme.common)
+      window.removeEventListener('resize', this.onResize)
+      window.addEventListener('resize', this.onResize)
+      this.initChart()
+      window.gApp.$watch('isCollapse', (newValue, oldValue) => {
+        setTimeout(() => {
+          this.onResize()
+        }, 300)
+      })
+    })
+  },
+  methods: {
+    initChart() {
+      const data = this.initData()
+      const unit = this.$store.getters['settings/getCurrency']
+
+      const option = {
+        title: {
+          text: this.$t('Consume.Ranking.Chart.Title'),
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow',
+          },
+          // formatter: `{b}: ${unit}{c}`
+          formatter: function (p) {
+            const val = Format.formatMoney(p[0].data)
+            return `${p[0].axisValue}: ${val}`
+          },
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true,
+        },
+        xAxis: [
+          {
+            show: true,
+            name: `(${unit})`,
+            nameGap: 5,
+            position: 'top',
+            axisLine: {
+              show: false,
+            },
+            // onZeroAxisIndex: 1,
+            type: 'value',
+          },
+        ],
+        yAxis: [
+          {
+            // inverse: true,
+            // name: 'Users',
+            // position: 'buttom',
+            type: 'category',
+            data: data.legendData.reverse(),
+            axisTick: {
+              alignWithLabel: true,
+            },
+          },
+        ],
+        series: [
+          {
+            type: 'bar',
+            // barWidth: "60%",
+            data: data.seriesData.reverse(),
+          },
+        ],
+      }
+      this.innerChart.setOption(option)
+    },
+    initData() {
+      const data = this.data
+      const legendData = []
+      const seriesData = []
+      for (let i = 0; i < data.length; i++) {
+        legendData.push(data[i][0])
+        seriesData.push(data[i][1])
+      }
+      return {
+        legendData,
+        seriesData,
+      }
+    },
+    onResize() {
+      this.innerChart.resize()
+    },
+  },
+}
+</script>
+
+<style></style>

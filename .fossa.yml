@@ -1,0 +1,12 @@
+version: 3
+
+paths:
+  exclude:
+    - .git
+    - .jpeg
+    - .png
+    - venv
+
+targets:
+  only:
+    - type: npm
