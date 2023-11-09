@@ -1,12 +1,11 @@
 <template>
   <div>
-    <div ref="innerChart" class="report-bar" />
+    <div ref="innerChart" class="report-bar"></div>
   </div>
 </template>
 <script>
-import * as EChart from 'echarts'
 export default {
-  components: {},
+  inject: ['resize'],
   props: ['bar'],
   data() {
     return {
@@ -14,24 +13,21 @@ export default {
     }
   },
   watch: {
-    bar: {
-      handler: function () {
-        this.$nextTick(() => {
-          this.barObject.resize()
-          this.draw(this.bar)
-        })
-      },
-      deep: true,
+    bar(val) {
+      this.draw()
+    },
+    resize(val) {
+      this.onResize()
     },
   },
   mounted() {
-    this.barObject = EChart.init(this.$refs.innerChart, window.gApp.echartsTheme.common)
-    window.removeEventListener('resize', this.barObject.resize)
-    window.addEventListener('resize', this.barObject.resize)
+    this.$chart.init(this.$refs.innerChart, window.gApp.echartsTheme.common)
+    this.draw()
   },
   methods: {
     draw: function (data) {
-      this.barObject.resize()
+      const chart = this.$chart.getInstanceByDom(this.$refs.innerChart)
+      chart.resize()
       const $this = this
       const option = {
         animation: false,
@@ -93,10 +89,10 @@ export default {
           },
         ],
       }
-      this.barObject.setOption(option)
+      chart.setOption(option)
     },
     onResize() {
-      this.barObject.resize()
+      this.$chart.getInstanceByDom(this.$refs.innerChart).resize()
     },
   },
 }

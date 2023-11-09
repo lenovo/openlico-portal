@@ -8,8 +8,8 @@
   </div>
 </template>
 <script>
-import MailSetting from './notify-adapter-manage/notify-adapter-email'
-import AccessService from '../service/access'
+import AccessService from '@/service/access'
+import MailSetting from './notify-adapter-manage/notify-adapter-email.vue'
 
 export default {
   components: {

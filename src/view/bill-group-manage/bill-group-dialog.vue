@@ -7,76 +7,71 @@
     :form-rules="billGroupRules"
     :form-label-col="8"
     :success-message-formatter="successMessageFormatter"
-    :error-message-formatter="errorMessageFormatter"
     :external-validate="externalValidate"
     class="billing-group-create-dialog">
-    <a-form-model-item :label="$t('BillGroup.Name')" prop="name">
-      <a-input id="tid_billgroup-name" v-model="billGroupForm.name" :disabled="mode == 'delete'" />
-    </a-form-model-item>
-    <a-form-model-item
+    <a-form-item :label="$t('BillGroup.Name')" name="name">
+      <a-input id="tid_billgroup-name" v-model:value="billGroupForm.name" :disabled="mode == 'delete'" />
+    </a-form-item>
+    <a-form-item
       v-if="mode != 'copy'"
-      ref="chargeRateFormItem"
       class="bill-rate-input-item"
       :label="$t('BillGroup.CpuChargeRate')"
-      prop="chargeRate">
+      name="chargeRate">
       <bill-rate-minute-hour-input
-        v-model="innerCpuChargeRate"
+        v-model:value="billGroupForm.chargeRate"
+        v-model:timeType="billGroupForm.cpuChargeRateTimeType"
         :currency="currency"
         :unit="$t('BillGroup.CpuChargeRate.Unit')"
         :disabled="mode == 'delete'" />
-    </a-form-model-item>
-    <a-form-model-item
+    </a-form-item>
+    <a-form-item
       v-if="mode != 'copy'"
-      ref="memoryChargeRateFormItem"
       class="bill-rate-input-item"
       :label="$t('BillGroup.MemoryChargeRate')"
-      prop="memoryChargeRate">
+      name="memoryChargeRate">
       <bill-rate-minute-hour-input
-        v-model="innerMemoryChargeRate"
+        v-model:value="billGroupForm.memoryChargeRate"
+        v-model:timeType="billGroupForm.memoryChargeRateTimeType"
         :currency="currency"
         :unit="$t('BillGroup.MemoryChargeRate.Unit')"
         :disabled="mode == 'delete'" />
-    </a-form-model-item>
-    <template>
-      <div v-for="(item, index) in billGroupForm.gResourceChargeRate" :key="item.id">
-        <a-form-model-item
-          v-if="mode != 'copy'"
-          :ref="'gResourceChargeRate' + index"
-          class="bill-rate-input-item"
-          :label="$t('BillGroup.GresChargeRate', { value: item.label })"
-          :prop="'gResourceChargeRate.' + index + '.value'"
-          :rules="item.rules">
-          <bill-rate-minute-hour-input
-            v-model="innerGresRate[index]"
-            :currency="currency"
-            :unit="item.unit"
-            :disabled="mode == 'delete'" />
-        </a-form-model-item>
-      </div>
-    </template>
-    <a-form-model-item
+    </a-form-item>
+    <div v-for="(item, index) in billGroupForm.gResourceChargeRate" :key="item.id">
+      <a-form-item
+        v-if="mode != 'copy'"
+        class="bill-rate-input-item"
+        :label="$T('BillGroup.GresChargeRate', { value: item.label })"
+        :name="['gResourceChargeRate', index, 'value']"
+        :rules="item.rules">
+        <bill-rate-minute-hour-input
+          v-model:value="item.value"
+          v-model:timeType="billGroupForm.gResourceChargeRateTimeType[index]"
+          :currency="currency"
+          :unit="item.unit"
+          :disabled="mode == 'delete'" />
+      </a-form-item>
+    </div>
+    <a-form-item
       v-if="mode == 'create' || mode == 'copy'"
       :label="$t('BillGroup.AccountInitAmount')"
-      prop="accountInitAmount">
-      <a-input id="tid_billgroup-init-amount" v-model="billGroupForm.accountInitAmount" :addon-before="currency">
+      name="accountInitAmount">
+      <a-input id="tid_billgroup-init-amount" v-model:value="billGroupForm.accountInitAmount" :addon-before="currency">
       </a-input>
-    </a-form-model-item>
-    <a-form-model-item v-if="mode != 'copy'" :label="$t('BillGroup.Description')" prop="description">
-      <a-input
+    </a-form-item>
+    <a-form-item v-if="mode != 'copy'" :label="$t('BillGroup.Description')" name="description">
+      <a-textarea
         id="tid_billgroup-description"
-        v-model="billGroupForm.description"
-        type="textarea"
+        v-model:value="billGroupForm.description"
         :disabled="mode == 'delete'" />
-    </a-form-model-item>
+    </a-form-item>
   </composite-form-dialog>
 </template>
 <script>
-import BillGroupService from '../../service/bill-group'
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
-import Format from '../../common/format'
-import BillingRateInput from './billing-rate-input'
-
+import BillGroupService from '@/service/bill-group'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import Format from '@/common/format'
+import BillingRateInput from './billing-rate-input.vue'
 export default {
   components: {
     'composite-form-dialog': CompositeFormDialog,
@@ -84,15 +79,6 @@ export default {
   },
   data() {
     return {
-      innerCpuChargeRate: {
-        value: '1.00',
-        timeUnit: 'hour',
-      },
-      innerMemoryChargeRate: {
-        value: '1.00',
-        timeUnit: 'hour',
-      },
-      innerGresRate: [],
       currency: this.$store.getters['settings/getCurrency'],
       title: '',
       mode: '',
@@ -145,75 +131,38 @@ export default {
       },
     }
   },
-  watch: {
-    innerCpuChargeRate: {
-      handler: function (val, oldVal) {
-        this.billGroupForm.chargeRate = val.value
-        this.billGroupForm.cpuChargeRateTimeType = val.timeUnit
-        this.$nextTick(() => {
-          this.$refs.chargeRateFormItem.validate()
-        })
-      },
-      deep: true,
-    },
-    innerMemoryChargeRate: {
-      handler: function (val, oldVal) {
-        this.billGroupForm.memoryChargeRate = val.value
-        this.billGroupForm.memoryChargeRateTimeType = val.timeUnit
-        this.$nextTick(() => {
-          this.$refs.memoryChargeRateFormItem.validate()
-        })
-      },
-      deep: true,
-    },
-    innerGresRate: {
-      handler: function (val, oldVal) {
-        val.forEach((el, index) => {
-          this.billGroupForm.gResourceChargeRate[index].value = el.value
-          this.billGroupForm.gResourceChargeRateTimeType[index] = el.timeUnit
-          this.$nextTick(() => {
-            if (this.$refs['gResourceChargeRate' + index] && this.$refs['gResourceChargeRate' + index][0]) {
-              this.$refs['gResourceChargeRate' + index][0].validate()
-            }
-          })
-        })
-      },
-      deep: true,
-    },
-  },
   mounted() {
     this.initGResource()
   },
   methods: {
-    initGResource() {
-      this.innerGresRate = []
+    initGResource(rate) {
       this.gresource.forEach(el => {
         this.billGroupForm.gResourceChargeRate.push({
-          value: '1.0000',
+          value: rate ? String(rate[el.code]) : '1.0000',
           code: el.code,
           label: el.display_name,
           unit: el.unit,
           id: el.id,
           rules: [
             ValidRoleFactory.getRequireRoleForText(
-              this.$t('BillGroup.GresChargeRate', {
+              this.$T('BillGroup.GresChargeRate', {
                 value: el.code.toUpperCase(),
               }),
             ),
             ValidRoleFactory.getValidNumberRoleForText(
-              this.$t('BillGroup.GresChargeRate', {
+              this.$T('BillGroup.GresChargeRate', {
                 value: el.code.toUpperCase(),
               }),
             ),
             ValidRoleFactory.getNumberRangeRoleForText(
-              this.$t('BillGroup.GresChargeRate', {
+              this.$T('BillGroup.GresChargeRate', {
                 value: el.code.toUpperCase(),
               }),
               0,
               999999.9999,
             ),
             ValidRoleFactory.getNumberDecimalRoleForText(
-              this.$t('BillGroup.GresChargeRate', {
+              this.$T('BillGroup.GresChargeRate', {
                 value: el.code.toUpperCase(),
               }),
               4,
@@ -221,10 +170,6 @@ export default {
           ],
         })
         this.billGroupForm.gResourceChargeRateTimeType.push('hour')
-        this.innerGresRate.push({
-          value: '0.0000',
-          timeUnit: 'hour',
-        })
       })
     },
     submitForm() {
@@ -279,7 +224,7 @@ export default {
             if (res[this.billGroupId] && res[this.billGroupId].length) {
               this.$confirm({
                 title: this.title,
-                content: this.$t('User.Delete.Confirm', { name: res[this.billGroupId].join(',') }),
+                content: this.$T('User.Delete.Confirm', { name: res[this.billGroupId].join(',') }),
                 centered: true,
                 okText: this.$t('Action.Confirm'),
                 cancelText: this.$t('Action.Cancel'),
@@ -307,41 +252,29 @@ export default {
     successMessageFormatter(res) {
       const billGroup = res
       if (this.mode === 'create') {
-        return this.$t('BillGroup.Create.Success', {
+        return this.$T('BillGroup.Create.Success', {
           name: billGroup.name,
         })
       }
       if (this.mode === 'edit') {
-        return this.$t('BillGroup.Edit.Success', {
+        return this.$T('BillGroup.Edit.Success', {
           name: billGroup.name,
         })
       }
       if (this.mode === 'copy') {
-        return this.$t('BillGroup.Create.Success', {
+        return this.$T('BillGroup.Create.Success', {
           name: this.billGroupForm.name,
         })
       }
       if (this.mode === 'delete') {
-        return this.$t('BillGroup.Delete.Success', {
+        return this.$T('BillGroup.Delete.Success', {
           name: this.billGroupForm.name,
         })
       }
     },
-    errorMessageFormatter(res) {
-      const errMsg = res
-      return this.$t(errMsg)
-    },
     doCreate() {
       this.mode = 'create'
       this.billGroupId = 0
-      this.innerCpuChargeRate = {
-        value: '1.0000',
-        timeUnit: 'hour',
-      }
-      this.innerMemoryChargeRate = {
-        value: '1.0000',
-        timeUnit: 'hour',
-      }
       this.billGroupForm = {
         name: '',
         chargeRate: '1.0000',
@@ -364,47 +297,27 @@ export default {
       this.billGroupForm = {
         id: billGroup.id,
         name: billGroup.name,
-        chargeRate: '',
-        cpuChargeRateTimeType: '',
-        memoryChargeRate: '',
-        memoryChargeRateTimeType: '',
+        chargeRate: billGroup.chargeRate,
+        cpuChargeRateTimeType: billGroup.cpuChargeRateTimeType,
+        memoryChargeRate: billGroup.memoryChargeRate,
+        memoryChargeRateTimeType: billGroup.memoryChargeRateDisplayType,
         storageChargeRate: Format.formatBillingRate(billGroup.storageChargeRate, false),
         description: billGroup.description,
         gResourceChargeRate: [],
         gResourceChargeRateTimeType: [],
       }
-      this.initGResource()
-      this.innerCpuChargeRate = {
-        value:
-          billGroup.chargeRateDisplayType === 'minute'
-            ? Format.formatBillingRate(billGroup.chargeRateMinute, false)
-            : Format.formatBillingRate(billGroup.chargeRate, false),
-        timeUnit: billGroup.chargeRateDisplayType,
-      }
-      this.innerMemoryChargeRate = {
-        value:
+      this.initGResource(billGroup.gresChargeRate)
+      ;(this.billGroupForm.chargeRate =
+        billGroup.chargeRateDisplayType === 'minute'
+          ? Format.formatBillingRate(billGroup.chargeRateMinute, false)
+          : Format.formatBillingRate(billGroup.chargeRate, false)),
+        (this.billGroupForm.cpuChargeRateTimeType = billGroup.chargeRateDisplayType),
+        (this.billGroupForm.memoryChargeRate =
           billGroup.memoryChargeRateDisplayType === 'minute'
             ? Format.formatBillingRate(billGroup.memoryChargeRateMinute, false)
-            : Format.formatBillingRate(billGroup.memoryChargeRate, false),
-        timeUnit: billGroup.memoryChargeRateDisplayType,
-      }
-      this.innerGresRate = this.innerGresRate.map((el, index) => {
-        const element = this.billGroupForm.gResourceChargeRate[index].code
-        if (billGroup.gresChargeRateDisplayType[element] === 'minute') {
-          el.value = billGroup.gresChargeRateMinute[element]
-            ? Format.formatBillingRate(billGroup.gresChargeRateMinute[element])
-            : '0'
-        } else {
-          el.value = billGroup.gresChargeRate[element]
-            ? Format.formatBillingRate(billGroup.gresChargeRate[element])
-            : '0'
-        }
-        el.timeUnit = billGroup.gresChargeRateDisplayType[element]
-          ? billGroup.gresChargeRateDisplayType[element]
-          : 'hour'
-        return el
-      })
-      this.title = this.$t('BillGroup.Edit.Title', { id: billGroup.id })
+            : Format.formatBillingRate(billGroup.memoryChargeRate, false)),
+        (this.billGroupForm.memoryChargeRateTimeType = billGroup.memoryChargeRateDisplayType),
+        (this.title = this.$T('BillGroup.Edit.Title', { id: billGroup.id }))
       return this.$refs.innerDialog.popup(this.submitForm)
     },
     doCopy(billGroup) {
@@ -414,7 +327,7 @@ export default {
         name: '',
         accountInitAmount: '',
       }
-      this.title = this.$t('BillGroup.Copy.Title', { id: billGroup.id })
+      this.title = this.$T('BillGroup.Copy.Title', { id: billGroup.id })
       return this.$refs.innerDialog.popup(this.submitForm)
     },
     doDelete(billGroup) {
@@ -433,40 +346,20 @@ export default {
         gResourceChargeRate: [],
         gResourceChargeRateTimeType: [],
       }
-      this.initGResource()
-      this.innerCpuChargeRate = {
-        value:
-          billGroup.chargeRateDisplayType === 'minute'
-            ? Format.formatBillingRate(billGroup.chargeRateMinute, false)
-            : Format.formatBillingRate(billGroup.chargeRate, false),
-        timeUnit: billGroup.chargeRateDisplayType,
-      }
-      this.innerMemoryChargeRate = {
-        value:
+      this.initGResource(billGroup.gresChargeRate)
+      ;(this.billGroupForm.chargeRate =
+        billGroup.chargeRateDisplayType === 'minute'
+          ? Format.formatBillingRate(billGroup.chargeRateMinute, false)
+          : Format.formatBillingRate(billGroup.chargeRate, false)),
+        (this.billGroupForm.cpuChargeRateTimeType = billGroup.chargeRateDisplayType),
+        (this.billGroupForm.memoryChargeRate =
           billGroup.memoryChargeRateDisplayType === 'minute'
             ? Format.formatBillingRate(billGroup.memoryChargeRateMinute, false)
-            : Format.formatBillingRate(billGroup.memoryChargeRate, false),
-        timeUnit: billGroup.memoryChargeRateDisplayType,
-      }
-      this.innerGresRate = this.innerGresRate.map((el, index) => {
-        const element = this.billGroupForm.gResourceChargeRate[index].code
-        if (billGroup.gresChargeRateDisplayType[element] === 'minute') {
-          el.value = billGroup.gresChargeRateMinute[element]
-            ? Format.formatBillingRate(billGroup.gresChargeRateMinute[element])
-            : '0.0000'
-        } else {
-          el.value = billGroup.gresChargeRate[element]
-            ? Format.formatBillingRate(billGroup.gresChargeRate[element])
-            : '0.0000'
-        }
-        el.timeUnit = billGroup.gresChargeRateDisplayType[element]
-          ? billGroup.gresChargeRateDisplayType[element]
-          : 'hour'
-        return el
-      })
-      this.title = this.$t('BillGroup.Delete.Title', {
-        id: billGroup.id,
-      })
+            : Format.formatBillingRate(billGroup.memoryChargeRate, false)),
+        (this.billGroupForm.memoryChargeRateTimeType = billGroup.memoryChargeRateDisplayType),
+        (this.title = this.$T('BillGroup.Delete.Title', {
+          id: billGroup.id,
+        }))
       return this.$refs.innerDialog.popup(this.submitForm)
     },
   },

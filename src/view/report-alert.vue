@@ -6,14 +6,14 @@
         <date-region-picker
           id="tid_report-time-picker"
           ref="dateSelect"
-          v-model="daterange"
+          v-model:value="daterange"
           quick-pick="default"
           @date-change="onDateChange" />
       </a-col>
       <hr class="halving-line" style="width: 100%; margin: 20px 0" />
       <a-col :span="24" style="display: flex" class="report-alert-col">
         <span class="report-alert-filter-label" />
-        <a-button type="primary" class="m-r-20" :disabled="isOK()" @click="alertReport()">
+        <a-button type="primary" class="m-r-20" :disabled="isOK() || loading" @click="alertReport()">
           {{ $t('Report.Button.Preview') }}
         </a-button>
         <a-button id="tid_report-submit" :disabled="isOK()" @click="download()">
@@ -21,50 +21,52 @@
         </a-button>
       </a-col>
     </div>
-    <div v-if="show" class="nodata">
-      <div style="margin-top: 160px">
-        <img src="/static/img/system/main/nodata.png" style="height: 60px; width: 80px" />
+    <div v-if="!loading">
+      <div v-if="preview === 'nodata'" class="nodata">
+        <div style="margin-top: 160px">
+          <img src="/static/img/system/main/nodata.png" style="height: 60px; width: 80px" />
+        </div>
+        <div style="margin-top: 20px; color: #ccc; font-size: 16px">
+          {{ $t('No.Data') }}
+        </div>
       </div>
-      <div style="margin-top: 20px; color: #ccc; font-size: 16px">
-        {{ $t('No.Data') }}
-      </div>
+
+      <a-row v-if="preview === 'preview'" class="report-alert-bottom" type="flex" justify="center">
+        <a-col :span="8">
+          <div style="padding: 20px">
+            <report-alert-pie ref="reportAlertPie" :data-report-alert-pie="dataReportAlertPie" @click-pie="filter" />
+          </div>
+        </a-col>
+        <a-col :span="16">
+          <div ref="reportRight" style="padding: 20px">
+            <a-tabs v-model:active="activeName" :animated="false" @change="changeDisplay">
+              <a-tab-pane key="axis" :tab="$t('Report.Tab.Chart')">
+                <report-alert-axis
+                  v-if="dataReportAlertAxis"
+                  ref="reportAlertAxis"
+                  :data-report-alert-axis="dataReportAlertAxis" />
+              </a-tab-pane>
+              <a-tab-pane key="table" :tab="$t('Report.Tab.Table')">
+                <report-alert-table
+                  v-if="dataReportAlertTable"
+                  ref="reportAlertTable"
+                  :data-report-alert-table="dataReportAlertTable" />
+              </a-tab-pane>
+            </a-tabs>
+          </div>
+        </a-col>
+      </a-row>
     </div>
     <report-alert-dialog ref="reportAlertDialog" />
-
-    <a-row v-if="okShow" class="report-alert-bottom" type="flex" justify="center">
-      <a-col :span="8">
-        <div style="padding: 20px">
-          <report-alert-pie ref="reportAlertPie" :data-report-alert-pie="dataReportAlertPie" @clickPie="filter" />
-        </div>
-      </a-col>
-      <a-col :span="16">
-        <div ref="reportRight" style="padding: 20px">
-          <a-tabs v-model="activeName" :animated="false" @change="changeDisplay">
-            <a-tab-pane key="axis" :tab="$t('Report.Tab.Chart')">
-              <report-alert-axis
-                v-if="dataReportAlertAxis"
-                ref="reportAlertAxis"
-                :data-report-alert-axis="dataReportAlertAxis" />
-            </a-tab-pane>
-            <a-tab-pane key="table" :tab="$t('Report.Tab.Table')">
-              <report-alert-table
-                v-if="dataReportAlertTable"
-                ref="reportAlertTable"
-                :data-report-alert-table="dataReportAlertTable" />
-            </a-tab-pane>
-          </a-tabs>
-        </div>
-      </a-col>
-    </a-row>
   </div>
 </template>
 <script>
-import ReportService from '../service/report'
-import DateRegionPicker from '../component/date-region-picker'
-import ReportAlertDialog from './report/report-alert-dialog'
-import ReportAlertPie from './report/report-alert-pie'
-import ReportAlertAxis from './report/report-alert-axis'
-import ReportAlertTable from './report/report-alert-table'
+import ReportService from '@/service/report'
+import DateRegionPicker from '@/component/date-region-picker.vue'
+import ReportAlertDialog from './report/report-alert-dialog.vue'
+import ReportAlertPie from './report/report-alert-pie.vue'
+import ReportAlertAxis from './report/report-alert-axis.vue'
+import ReportAlertTable from './report/report-alert-table.vue'
 
 export default {
   components: {
@@ -78,8 +80,8 @@ export default {
     return {
       daterange: ['', ''],
       types: ['critical', 'error', 'warning', 'info'],
-      show: false,
-      okShow: false,
+      preview: '',
+      loading: false,
       activeName: 'axis',
       rawData: [],
       dataReportAlertPie: null,
@@ -165,8 +167,8 @@ export default {
     },
     filter(data) {
       const self = this
-      if (data.data.selected) {
-        const filtered = []
+      let filtered = []
+      if (data.event.target.selected) {
         self.rawData.forEach(function (item) {
           if (item[data.data.name] > 0) {
             const temp = {}
@@ -175,7 +177,11 @@ export default {
             filtered.push(temp)
           }
         })
+      } else {
+        filtered = self.rawData
       }
+      self.dataReportAlertAxis = self.getAxisData(filtered)
+      self.dataReportAlertTable = self.getTableData(filtered)
     },
     clearData() {
       this.rawData = []
@@ -185,8 +191,7 @@ export default {
     },
     onDateChange(val) {
       this.daterange = val
-      this.show = false
-      this.okShow = false
+      this.preview = ''
       this.clearData()
     },
     isOK: function () {
@@ -207,26 +212,28 @@ export default {
       this.$refs.reportAlertDialog.download(data).then(res => {})
     },
     alertReport() {
+      this.loading = true
       const form = {
         start_time: new Date(this.daterange[0]).valueOf() / 1000,
         end_time: new Date(this.daterange[1]).valueOf() / 1000,
         timezone_offset: new Date().getTimezoneOffset(),
       }
       const self = this
-      this.isShow = false
-      ReportService.alertReport(form).then(res => {
-        if (res.length < 1) {
-          this.show = true
-          this.okShow = false
-        } else {
-          this.show = false
-          this.okShow = true
-        }
-        self.rawData = res
-        self.dataReportAlertPie = self.getPieData(res)
-        self.dataReportAlertAxis = self.getAxisData(res)
-        self.dataReportAlertTable = self.getTableData(res)
-      })
+      ReportService.alertReport(form)
+        .then(res => {
+          if (res.length < 1) {
+            this.preview = 'nodata'
+          } else {
+            self.rawData = res
+            self.dataReportAlertPie = self.getPieData(res)
+            self.dataReportAlertAxis = self.getAxisData(res)
+            self.dataReportAlertTable = self.getTableData(res)
+            this.preview = 'preview'
+          }
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
   },
 }

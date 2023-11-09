@@ -5,105 +5,123 @@
     size="540px"
     :form-model="userForm"
     :form-rules="userRules"
-    :composite-height="compositeHeight"
     :success-message-formatter="successMessageFormatter"
-    :error-message-formatter="errorMessageFormatter"
     :external-validate="externalValidate">
-    <a-form-model-item
-      v-if="mode != 'unfreezed'"
-      :label="$t('User.Username')"
-      :prop="mode == 'delete' ? '' : 'username'">
+    <a-form-item v-if="mode != 'Unfreezed'" :label="$t('User.Username')" :name="mode == 'Delete' ? '' : 'username'">
       <a-input
         id="tid_user-username"
-        v-model="userForm.username"
-        :disabled="mode == 'edit' || mode == 'delete' || mode == 'freezed'" />
-    </a-form-model-item>
-    <a-form-model-item v-if="freezed() && mode != 'delete'" :label="$t('User.Role')" prop="role">
+        v-model:value="userForm.username"
+        :disabled="mode == 'Edit' || mode == 'Delete' || mode == 'Freezed'" />
+    </a-form-item>
+    <a-form-item v-if="freezed() && mode != 'Delete'" :label="$t('User.Role')" name="role">
       <a-select
         id="tid_user-role"
-        v-model="userForm.role"
-        :disabled="mode == 'delete' || (userForm.username == $store.state.auth.username && mode == 'edit')">
+        v-model:value="userForm.role"
+        :disabled="mode == 'Delete' || (userForm.username == $store.state.auth.username && mode == 'Edit')">
         <a-select-option v-for="item in roleOptions" :key="item.value" :value="item.value">
           {{ item.label }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item v-if="freezed() && mode != 'delete'" :label="$t('User.FirstName')" prop="firstName">
-      <a-input id="tid_user-firstname" v-model="userForm.firstName" :disabled="mode == 'delete'" />
-    </a-form-model-item>
-    <a-form-model-item v-if="freezed() && mode != 'delete'" :label="$t('User.LastName')" prop="lastName">
-      <a-input id="tid_user-lastname" v-model="userForm.lastName" :disabled="mode == 'delete'" />
-    </a-form-model-item>
-    <a-form-model-item
-      v-if="freezed() && arch == 'host' && mode != 'delete' && isScheduler"
+    </a-form-item>
+    <a-form-item v-if="freezed() && mode != 'Delete'" :label="$t('User.FirstName')" name="firstName">
+      <a-input id="tid_user-firstname" v-model:value="userForm.firstName" :disabled="mode == 'Delete'" />
+    </a-form-item>
+    <a-form-item v-if="freezed() && mode != 'Delete'" :label="$t('User.LastName')" name="lastName">
+      <a-input id="tid_user-lastname" v-model:value="userForm.lastName" :disabled="mode == 'Delete'" />
+    </a-form-item>
+    <a-form-item
+      v-if="freezed() && arch == 'host' && mode != 'Delete' && isScheduler"
       :label="$t('BillGroup')"
-      prop="billGroupId">
+      name="billGroupId">
       <a-select
         id="tid_user-billgroup"
-        v-model.number="userForm.billGroupId"
+        v-model:value.number="userForm.billGroupId"
         show-search
-        option-filter-prop="children"
-        :disabled="mode == 'delete'">
-        <a-select-option v-for="item in billGroupOptions" :key="item.value" :value="item.value">
+        :filter-option="filterOption"
+        :disabled="mode == 'Delete'">
+        <a-select-option v-for="item in billGroupOptions" :key="item.value" :label="item.label" :value="item.value">
           {{ item.label }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item v-if="freezed() && mode != 'delete'" :label="$t('User.Email')" prop="email">
-      <a-input id="tid_user-email" v-model="userForm.email" :disabled="mode == 'delete'" />
-    </a-form-model-item>
-    <!-- <a-form-model-item :label="$t('User.HomeDirectory')" prop="homeDirectory" v-if="mode == 'import'">
-    <a-input id="tid_user-home-directory" v-model="userForm.homeDirectory" :disabled="mode == 'delete'"></a-input>
-  </a-form-model-item> -->
-    <a-form-model-item
-      v-if="ldapManaged && freezed() && arch == 'host' && mode != 'delete'"
+    </a-form-item>
+    <a-form-item v-if="freezed() && mode != 'Delete'" :label="$t('User.Email')" name="email">
+      <a-input
+        id="tid_user-email"
+        v-model:value="userForm.email"
+        :disabled="mode == 'Delete'"
+        autocomplete="new-email" />
+    </a-form-item>
+    <!-- <a-form-item :label="$t('User.HomeDirectory')" name="homeDirectory" v-if="mode == 'Import'">
+    <a-input id="tid_user-home-directory" v-model:value="userForm.homeDirectory" :disabled="mode == 'Delete'"></a-input>
+  </a-form-item> -->
+    <a-form-item
+      v-if="ldapManaged && freezed() && arch == 'host' && mode != 'Delete'"
       :label="$t('UserGroup')"
-      prop="userGroupName">
+      name="userGroupName"
+      :rules="userGroupNameRules">
+      <a-checkbox v-if="mode === 'Create'" :checked="autoUserGroup" @change="autoUserGroup = !autoUserGroup">
+        {{ $t('User.AutoUserGroup') }}
+      </a-checkbox>
       <a-select
+        v-if="!autoUserGroup"
         id="tid_user-usergroup"
-        v-model="userForm.userGroupName"
+        v-model:value="userForm.userGroupName"
         show-search
         option-filter-prop="children"
-        :disabled="mode == 'delete'">
+        :disabled="mode == 'Delete'">
         <a-select-option v-for="item in userGroupOptions" :key="item.value" :value="item.value">
           {{ item.label }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item v-if="mode == 'create'" :label="$t('User.Password')" prop="password">
-      <a-input id="tid_user-password" v-model="userForm.password" type="password" />
-    </a-form-model-item>
-    <a-form-model-item v-if="mode == 'create'" :label="$t('User.Password.Check')" prop="passwordCheck">
-      <a-input id="tid_user-password-check" v-model="userForm.passwordCheck" type="password" />
-    </a-form-model-item>
+    </a-form-item>
+    <a-form-item v-if="mode == 'Create'" :label="$t('User.Password')" name="password">
+      <a-input id="tid_user-password" v-model:value="userForm.password" type="password" autocomplete="new-password" />
+    </a-form-item>
+    <a-form-item v-if="mode == 'Create'" :label="$t('User.Password.Check')" name="passwordCheck">
+      <a-input
+        id="tid_user-password-check"
+        v-model:value="userForm.passwordCheck"
+        type="password"
+        autocomplete="new-password" />
+    </a-form-item>
 
-    <a-form-model-item v-if="mode == 'freezed'" :label="$t('User.Freezed.Time')" prop="freezedTimeDay">
+    <a-form-item v-if="mode === 'Freezed' && ldapManaged" :label="$t('User.Freezed.Mode')" name="suspensionType">
+      <a-select v-model:value="userForm.suspensionType" default-value="portal">
+        <a-select-option value="portal">{{ $t('User.Freezed.Mode.Portal') }}</a-select-option>
+        <a-select-option value="all">{{ $t('User.Freezed.Mode.All') }}</a-select-option>
+      </a-select>
+    </a-form-item>
+
+    <a-form-item
+      v-if="mode === 'Freezed' && userForm.suspensionType !== 'all'"
+      :label="$t('User.Freezed.Time')"
+      name="freezedTimeDay">
       <a-input-group compact>
         <a-input
           id="tid_user-freezed-day"
-          v-model="userForm.freezedTimeDay"
+          v-model:value="userForm.freezedTimeDay"
           style="width: 25%"
           :addon-after="$t('User.Freezed.Time.Days')" />
         <a-input
           id="tid_user-freezed-hour"
-          v-model="userForm.freezedTimeHour"
+          v-model:value="userForm.freezedTimeHour"
           style="width: 25%; margin-left: 10px"
           :addon-after="$t('User.Freezed.Time.Hours')" />
       </a-input-group>
-    </a-form-model-item>
-    <p v-if="mode == 'unfreezed'">
-      {{ $t('User.Unfreezed.Text', { name: userForm.username }) }}
+    </a-form-item>
+    <p v-if="mode == 'Unfreezed'">
+      {{ $T('User.Unfreezed.Text', { name: userForm.username }) }}
     </p>
   </composite-form-dialog>
 </template>
 <script>
-import UserService from '../../service/user'
-import UserGroupService from '../../service/user-group'
-import BillGroupService from '../../service/bill-group'
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
-import AuthService from '../../service/auth'
-import AccessService from '../../service/access'
+import UserService from '@/service/user'
+import UserGroupService from '@/service/user-group'
+import BillGroupService from '@/service/bill-group'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import AuthService from '@/service/auth'
+import AccessService from '@/service/access'
 
 export default {
   components: {
@@ -111,41 +129,54 @@ export default {
   },
   props: ['isScheduler'],
   data() {
-    const validatePasswordCheck = (rule, value, callback) => {
-      if (this.userForm.password !== this.userForm.passwordCheck) {
-        return callback(new Error(this.$t('User.Password.Check.Valid')))
-      } else {
-        callback()
-      }
-    }
-    const validateFreezedTime = (rule, value, callback) => {
-      const label = this.$t('User.Freezed.Time')
-      const decimal = 0
-      const max = 999
-      const min = 0
-      const freezedD = String(this.userForm.freezedTimeDay).split('.')
-      const freezedH = String(this.userForm.freezedTimeHour).split('.')
-      const errors = []
-      if (isNaN(this.userForm.freezedTimeHour)) {
-        errors.push(new Error(this.$t('Valid.Number', { name: label })))
-      }
-      if (
-        (freezedD.length > 1 && freezedD[1].length > decimal) ||
-        (freezedH.length > 1 && freezedH[1].length > decimal)
-      ) {
-        errors.push(new Error(this.$t('Valid.Number.Decimal', { name: label, decimal })))
-      }
-      const num = Number(this.userForm.freezedTimeHour)
-      if (num < min || num > max) {
-        if (!max && max !== 0) {
-          errors.push(new Error(this.$t('Valid.Number.Range.Min', { name: label, min })))
-        } else if (!min && min !== 0) {
-          errors.push(new Error(this.$t('Valid.Number.Range.Max', { name: label, max })))
+    const validatePasswordCheck = (rule, value) => {
+      return new Promise((resolve, reject) => {
+        if (this.userForm.password !== this.userForm.passwordCheck) {
+          reject(new Error(this.$t('User.Password.Check.Valid')))
         } else {
-          errors.push(new Error(this.$t('Valid.Number.Range', { name: label, min, max })))
+          resolve()
         }
-      }
-      callback(errors)
+      })
+    }
+    const validateFreezedTime = (rule, value) => {
+      return new Promise((resolve, reject) => {
+        const label = this.$t('User.Freezed.Time')
+        const decimal = 0
+        const max = 999
+        const min = 0
+        const freezedD = String(this.userForm.freezedTimeDay).split('.')
+        const freezedH = String(this.userForm.freezedTimeHour).split('.')
+        const errors = []
+
+        if (isNaN(this.userForm.freezedTimeHour)) {
+          errors.push(new Error(this.$T('Valid.Number', { name: label })))
+        }
+
+        if (
+          (freezedD.length > 1 && freezedD[1].length > decimal) ||
+          (freezedH.length > 1 && freezedH[1].length > decimal)
+        ) {
+          errors.push(new Error(this.$T('Valid.Number.Decimal', { name: label, decimal })))
+        }
+
+        const num = Number(this.userForm.freezedTimeHour)
+
+        if (num < min || num > max) {
+          if (!max && max !== 0) {
+            errors.push(new Error(this.$T('Valid.Number.Range.Min', { name: label, min })))
+          } else if (!min && min !== 0) {
+            errors.push(new Error(this.$T('Valid.Number.Range.Max', { name: label, max })))
+          } else {
+            errors.push(new Error(this.$T('Valid.Number.Range', { name: label, min, max })))
+          }
+        }
+
+        if (errors.length > 0) {
+          reject(errors)
+        } else {
+          resolve()
+        }
+      })
     }
     return {
       arch: AccessService.getSchedulerArch(),
@@ -166,6 +197,7 @@ export default {
         passwordCheck: '',
         freezedTimeDay: 0,
         freezedTimeHour: 0,
+        suspensionType: null,
       },
       usernameOptions: [],
       userGroupOptions: [],
@@ -179,7 +211,6 @@ export default {
         role: [ValidRoleFactory.getRequireRoleForText(this.$t('User.Role'))],
         firstName: [ValidRoleFactory.getLengthRoleForText(this.$t('User.FirstName'), 1, 20)],
         lastName: [ValidRoleFactory.getLengthRoleForText(this.$t('User.LastName'), 1, 20)],
-        userGroupName: [ValidRoleFactory.getRequireRoleForText(this.$t('UserGroup'))],
         email: [ValidRoleFactory.getEmailRole(this.$t('User.Email'))],
         homeDirectory: [ValidRoleFactory.getLengthRoleForText(this.$t('User.HomeDirectory'), 0, 255)],
         password: [
@@ -199,6 +230,8 @@ export default {
           { validator: validateFreezedTime },
         ],
       },
+      autoUserGroup: true,
+      modeActions: ['Create', 'Edit', 'Delete', 'Import', 'Freezed', 'Unfreezed'],
     }
   },
   computed: {
@@ -214,22 +247,19 @@ export default {
       })
       return arr
     },
-    compositeHeight() {
-      if (this.mode === 'freezed') {
-        return 415
-      }
-      if (this.mode === 'unfreezed') {
-        return 210
-      }
-      if (this.mode === 'delete') {
-        return 280
-      }
-      return 0
+    userGroupNameRules() {
+      return !this.autoUserGroup
+        ? [{ required: true, message: this.$T('Valid.Require', { name: 'User Group' }), trigger: 'change' }]
+        : []
     },
   },
   methods: {
-    submitForm() {
-      if (this.mode === 'create') {
+    filterOption(input, option) {
+      return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+    },
+    async submitForm() {
+      if (this.mode === 'Create') {
+        await this.assignOrCreateUserGroup()
         return UserService.createUser(
           this.userForm.username,
           this.userForm.role,
@@ -241,7 +271,8 @@ export default {
           this.userForm.password,
         )
       }
-      if (this.mode === 'edit') {
+      if (this.mode === 'Edit') {
+        this.assignOrCreateUserGroup()
         return UserService.updateUser(
           this.userId,
           this.userForm.username,
@@ -253,10 +284,10 @@ export default {
           this.userForm.userGroupName,
         )
       }
-      if (this.mode === 'delete') {
+      if (this.mode === 'Delete') {
         return UserService.deleteUser(this.userId, this.userForm.username)
       }
-      if (this.mode === 'import') {
+      if (this.mode === 'Import') {
         return UserService.importUser(
           this.userForm.username,
           this.userForm.role,
@@ -267,47 +298,23 @@ export default {
           this.userForm.homeDirectory,
         )
       }
-      if (this.mode === 'freezed') {
-        return UserService.freezedUserByName(this.userId, this.userForm.freezedTimeDay, this.userForm.freezedTimeHour)
+      if (this.mode === 'Freezed') {
+        if (this.userForm.suspensionType === 'portal') {
+          return UserService.freezedUserByName(this.userId, this.userForm.freezedTimeDay, this.userForm.freezedTimeHour)
+        } else if (this.userForm.suspensionType === 'all') {
+          return UserService.fullLockUser(this.userId)
+        }
       }
-      if (this.mode === 'unfreezed') {
+      if (this.mode === 'Unfreezed') {
         return UserService.unfreezedUserByName(this.userId)
       }
     },
     successMessageFormatter(res) {
-      if (this.mode === 'create') {
-        return this.$t('User.Create.Success', {
+      if (this.modeActions.includes(this.mode)) {
+        return this.$T(`User.${this.mode}.Success`, {
           name: this.userForm.username,
         })
       }
-      if (this.mode === 'edit') {
-        return this.$t('User.Edit.Success', {
-          name: this.userForm.username,
-        })
-      }
-      if (this.mode === 'delete') {
-        return this.$t('User.Delete.Success', {
-          name: this.userForm.username,
-        })
-      }
-      if (this.mode === 'import') {
-        return this.$t('User.Import.Success', {
-          name: this.userForm.username,
-        })
-      }
-      if (this.mode === 'freezed') {
-        return this.$t('User.Freezed.Success', {
-          name: this.userForm.username,
-        })
-      }
-      if (this.mode === 'unfreezed') {
-        return this.$t('User.Unfreezed.Success', {
-          name: this.userForm.username,
-        })
-      }
-    },
-    errorMessageFormatter(res) {
-      return res
     },
     getUserInfo(id) {
       UserService.getUserById(id).then(res => {
@@ -376,14 +383,19 @@ export default {
       )
     },
     freezed() {
-      if (this.mode !== 'freezed' && this.mode !== 'unfreezed') {
+      if (this.mode !== 'Freezed' && this.mode !== 'Unfreezed') {
         return true
       } else {
         return false
       }
     },
     externalValidate(callbackFunc) {
-      if (this.mode === 'freezed' && this.userForm.freezedTimeDay === 0 && this.userForm.freezedTimeHour === 0) {
+      if (
+        this.mode === 'Freezed' &&
+        this.userForm.freezedTimeDay === 0 &&
+        this.userForm.freezedTimeHour === 0 &&
+        this.userForm.suspensionType !== 'all'
+      ) {
         this.$message.error(this.$t('User.Freezed.Time.Error'))
         callbackFunc(false)
       } else {
@@ -391,7 +403,16 @@ export default {
       }
     },
     doCreate() {
-      this.mode = 'create'
+      this.mode = 'Create'
+      this.autoUserGroup = true
+      return this.doInitInfo()
+    },
+    doImport() {
+      this.mode = 'Import'
+      this.usernameOptions = []
+      return this.doInitInfo()
+    },
+    doInitInfo() {
       this.userId = 0
       this.userForm = {
         username: '',
@@ -407,31 +428,27 @@ export default {
       }
       this.initUserGroupOptions()
       this.initBillGroupOptions()
-      this.title = this.$t('User.Create.Title')
+      this.title = this.$t(`User.${this.mode}.Title`)
       return this.$refs.innerDialog.popup(this.submitForm)
     },
     doEdit(user) {
-      this.mode = 'edit'
-      this.userId = user.id
-      this.userForm = {
-        username: user.username,
-        role: user.role,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        billGroupId: null,
-        userGroupName: '',
-        email: user.email,
-        homeDirectory: '',
-        password: '',
-        passwordCheck: '',
-      }
-      this.getUserInfo(user.id)
-      this.initBillGroupOptions(user.billGroupId)
-      this.title = this.$t('User.Edit.Title', { id: user.id })
-      return this.$refs.innerDialog.popup(this.submitForm)
+      this.mode = 'Edit'
+      this.autoUserGroup = false
+      return this.doFoundInfo(user)
     },
     doDelete(user) {
-      this.mode = 'delete'
+      this.mode = 'Delete'
+      return this.doFoundInfo(user)
+    },
+    doFreezed(user) {
+      this.mode = 'Freezed'
+      return this.doFoundInfo(user, this.mode)
+    },
+    doUnfreezed(user) {
+      this.mode = 'Unfreezed'
+      return this.doFoundInfo(user, this.mode)
+    },
+    doFoundInfo(user, model = 'null') {
       this.userId = user.id
       this.userForm = {
         username: user.username,
@@ -445,70 +462,29 @@ export default {
         password: '',
         passwordCheck: '',
       }
+      if (model === 'Freezed' || model === 'Unfreezed') {
+        this.userForm.role = ''
+        this.userForm.firstName = ''
+        this.userForm.lastName = ''
+        this.userForm.email = ''
+      }
+      if (model === 'Freezed') {
+        this.userForm.freezedTimeDay = 0
+        this.userForm.freezedTimeHour = 0
+        this.userForm.suspensionType = 'portal'
+      }
       this.getUserInfo(user.id)
       this.initBillGroupOptions(user.billGroupId)
-      this.title = this.$t('User.Delete.Title', { id: user.id })
+      this.title = this.$T(`User.${this.mode}.Title`, { id: user.id })
       return this.$refs.innerDialog.popup(this.submitForm)
     },
-    doImport() {
-      this.mode = 'import'
-      this.userId = 0
-      this.userForm = {
-        username: '',
-        role: 100,
-        firstName: '',
-        lastName: '',
-        billGroupId: null,
-        userGroupName: '',
-        email: '',
-        homeDirectory: '',
-        password: '',
-        passwordCheck: '',
+    async assignOrCreateUserGroup() {
+      if (this.autoUserGroup) {
+        this.userForm.userGroupName = this.userForm.username
+        if (!this.userGroupOptions.some(x => x.label === this.userForm.userGroupName)) {
+          await UserGroupService.createUserGroup(this.userForm.userGroupName)
+        }
       }
-      this.usernameOptions = []
-      //   this.initUserListOption();
-      this.initUserGroupOptions()
-      this.initBillGroupOptions()
-      this.title = this.$t('User.Import.Title')
-      return this.$refs.innerDialog.popup(this.submitForm)
-    },
-    doFreezed(user) {
-      this.mode = 'freezed'
-      this.userId = user.id
-      this.userForm = {
-        username: user.username,
-        role: '',
-        firstName: '',
-        lastName: '',
-        billGroupId: null,
-        userGroupName: '',
-        email: '',
-        homeDirectory: '',
-        password: '',
-        passwordCheck: '',
-        freezedTimeDay: 0,
-        freezedTimeHour: 0,
-      }
-      this.title = this.$t('User.Freezed.Title', { id: user.id })
-      return this.$refs.innerDialog.popup(this.submitForm)
-    },
-    doUnfreezed(user) {
-      this.mode = 'unfreezed'
-      this.userId = user.id
-      this.userForm = {
-        username: user.username,
-        role: '',
-        firstName: '',
-        lastName: '',
-        billGroupId: null,
-        userGroupName: '',
-        email: '',
-        homeDirectory: '',
-        password: '',
-        passwordCheck: '',
-      }
-      this.title = this.$t('User.Unfreezed.Title', { id: user.id })
-      return this.$refs.innerDialog.popup(this.submitForm)
     },
   },
 }

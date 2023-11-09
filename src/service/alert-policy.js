@@ -114,7 +114,7 @@ class AlertTrigger {
       duration: parseFloat(alertTrigger.duration),
       level: String(findKey(AlertLevelToParse, alertTrigger.level)),
       nodes: node,
-      comments: [],
+      comments: alertTrigger.wechat ? ['wechat'] : [],
       status: alertTrigger.status ? 'ON' : 'OFF',
       operation,
       script: alertTrigger.script,
@@ -145,6 +145,9 @@ class AlertPolicy {
     this.level = ''
     this.status = 'OFF'
     this.node = []
+    this.email = ''
+    this.sms = ''
+    this.wechat = false
     this.targets = []
     this.trigger = new AlertTrigger()
   }
@@ -157,73 +160,12 @@ class AlertPolicy {
     alertPolicy.status = jsonObj.status === 'ON'
     alertPolicy.node = jsonObj.nodes === 'all' ? [] : jsonObj.nodes
     alertPolicy.targets = jsonObj.targets
+    if (jsonObj.comments) {
+      alertPolicy.wechat = jsonObj.comments.includes('wechat')
+    }
     alertPolicy.script = jsonObj.script
     alertPolicy.trigger = AlertTrigger.parseFromRestApi(jsonObj)
     return alertPolicy
-  }
-
-  get id() {
-    return this._id
-  }
-
-  set id(id) {
-    this._id = id
-  }
-
-  get name() {
-    return this._name
-  }
-
-  set name(name) {
-    this._name = name
-  }
-
-  get type() {
-    return this._type
-  }
-
-  set type(type) {
-    this._type = type
-  }
-
-  get level() {
-    return this._level
-  }
-
-  set level(level) {
-    this._level = level
-  }
-
-  get status() {
-    return this._status
-  }
-
-  set status(status) {
-    this._status = status
-  }
-
-  get node() {
-    return this._node
-  }
-
-  set node(node) {
-    this._node = node
-  }
-
-  get targets() {
-    return this._targets
-  }
-
-  set targets(targets) {
-    this._targets = targets
-  }
-
-  get trigger() {
-    return this._trigger
-  }
-
-  set trigger(trigger) {
-    this._trigger = trigger
   }
 }
 
@@ -239,19 +181,19 @@ function alertPolicyTableDataParser(res) {
 
 function alertPolicyTableDataSorter(dataItems, prop, order) {
   if (prop === 'level') {
-    function compareLevel(objA, objB) {
-      const indexA = AlertPolicyLevelEnums.indexOf(objA.level)
-      const indexB = AlertPolicyLevelEnums.indexOf(objB.level)
-      if (indexA > indexB) {
-        return -1
-      } else if (indexA < indexB) {
-        return 1
-      } else {
-        return 0
-      }
-    }
     Collection.sortObjectsByProp(dataItems, prop, order, compareLevel)
     return true
+  }
+  function compareLevel(objA, objB) {
+    const indexA = AlertPolicyLevelEnums.indexOf(objA.level)
+    const indexB = AlertPolicyLevelEnums.indexOf(objB.level)
+    if (indexA > indexB) {
+      return -1
+    } else if (indexA < indexB) {
+      return 1
+    } else {
+      return 0
+    }
   }
   return false
 }

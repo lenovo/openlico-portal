@@ -1,20 +1,21 @@
 <template>
-  <div class="m-10 p-20 b-w" style="min-height: 324px">
+  <div class="m-10 p-20 b-w" style="min-height: 284px">
     <h3 class="m-b-20" style="font-size: 18px">
       {{ $t('Report.Cluster.Resource') }}
     </h3>
     <a-row class="cluster-resource">
       <a-table
+        style="width: 100%"
         row-key="type"
         :columns="columns"
         :data-source="tableData"
         :row-class-name="() => 'cluster-resource-table-row'"
-        :pagination="false" />
+        :pagination="false"></a-table>
     </a-row>
   </div>
 </template>
 <script>
-import Collection from './../../common/collection'
+import Collection from '@/common/collection'
 export default {
   props: ['data'],
   data() {

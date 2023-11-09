@@ -5,124 +5,131 @@
     :form-model="workflowForm"
     :form-rules="workflowRules"
     form-label-width="160px"
-    :composite-height="400"
     :success-message-formatter="successMessageFormatter"
     :error-message-formatter="errorMessageFormatter">
-    <a-form-model-item :label="$t('Workflow.Name')" prop="name">
-      <a-input v-model="workflowForm.name" />
-    </a-form-model-item>
-    <a-form-model-item prop="maxSubmitJobs">
-      <span slot="label">
-        {{ $t('Workflow.MaxSubmitJobs') }}
-        <a-tooltip
-          :title="$t('Workflow.MaxSubmitJobs.Help')"
-          placement="topLeft"
-          :get-popup-container="n => n.ownerDocument.body">
-          <a-icon type="question-circle-o" />
-        </a-tooltip>
-      </span>
-      <a-input v-model.number="workflowForm.maxSubmitJobs" />
-    </a-form-model-item>
-    <a-form-model-item :label="$t('Workflow.Description')" prop="description">
-      <a-textarea v-model="workflowForm.description" :auto-size="{ minRows: 2 }" />
-    </a-form-model-item>
+    <a-form-item :label="$t('Workflow.Name')" name="name">
+      <a-input v-model:value="workflowForm.name" />
+    </a-form-item>
+    <a-form-item name="maxSubmitJobs">
+      <template #label>
+        <span>
+          {{ $t('Workflow.MaxSubmitJobs') }}
+          <a-tooltip
+            :title="$t('Workflow.MaxSubmitJobs.Help')"
+            placement="topLeft"
+            :get-popup-container="n => n.ownerDocument.body">
+            <question-circle-outlined />
+          </a-tooltip>
+        </span>
+      </template>
+      <a-input v-model:value="workflowForm.maxSubmitJobs" />
+    </a-form-item>
+    <a-form-item :label="$t('Workflow.Description')" name="description">
+      <a-textarea v-model:value="workflowForm.description" :auto-size="{ minRows: 2 }" />
+    </a-form-item>
 
-    <a-checkbox v-model="recurrence.isOn">
+    <a-checkbox v-model:checked="recurrence.isOn">
       <a @click.prevent="recurrence.isOn = !recurrence.isOn">
-        <!-- <a-icon :type="recurrence.isOn ? 'up-circle' : 'down-circle'" /> -->
+        <UpCircleOutlined v-if="recurrence.isOn" />
+        <DownCircleOutlined v-else />
         <span style="margin-left: 4px">{{ $t('Workflow.Recurrence.Appointment') }}</span>
       </a>
     </a-checkbox>
 
-    <div v-show="recurrence.isOn" style="margin-top: 20px">
-      <a-form-model-item v-show="recurrence.isOn" :label="$t('Workflow.Recurrence.Frequency')">
-        <a-select v-model="recurrence.mode" default-value="Once">
+    <div v-if="recurrence.isOn" style="margin-top: 20px">
+      <a-form-item v-show="recurrence.isOn" :label="$t('Workflow.Recurrence.Frequency')">
+        <a-select v-model:value="recurrence.mode" default-value="Once">
           <a-select-option v-for="m in recurrence.modes" :key="m" :value="m">
             {{ $t(`Workflow.Recurrence.${m}`) }}
           </a-select-option>
         </a-select>
-      </a-form-model-item>
+      </a-form-item>
 
-      <a-form-model-item
+      <a-form-item
         :label="$t('Workflow.Recurrence.TriggerTime')"
-        prop="recurrence"
-        style="margin-top: 16px; margin-bottom: 0">
+        name="recurrence"
+        class="workflow-create-recurrence"
+        style="">
         <template v-if="recurrence.mode === 'Once'">
-          <datetime-selector v-model="recurrence.timestamp" />
+          <datetime-selector v-model:value="recurrence.timestamp" />
           <template v-if="recurrence.timestamp && expirationOnce">
             {{
-              $t('Workflow.Recurrence.Once.Msg', {
-                time: moment
-                  .tz(recurrence.timestamp, Intl.DateTimeFormat().resolvedOptions().timeZone)
-                  .format('YYYY-MM-DD HH:mm z'),
+              $T('Workflow.Recurrence.Once.Msg', {
+                time:
+                  dayjs(recurrence.timestamp).tz(localTimezone).format('YYYY-MM-DD HH:mm') +
+                  ' ' +
+                  getTimezoneShortByLang(localTimezone),
               })
             }}
           </template>
         </template>
 
         <template v-if="['Daily', 'Weekly', 'Monthly'].includes(recurrence.mode)">
-          <a-time-picker v-model="recurrence.timestamp" format="HH:mm" style="width: 100%; margin-bottom: 8px" />
+          <a-time-picker v-model:value="recurrence.timestamp" format="HH:mm" style="width: 100%; margin-bottom: 8px" />
         </template>
 
         <template v-if="recurrence.mode == 'Daily' && recurrence.timestamp">
           {{
-            $t('Workflow.Recurrence.Daily.Msg', { time: recurrence.timestamp.format('HH:mm'), tz: recurrence.timezone })
+            $T('Workflow.Recurrence.Daily.Msg', { time: recurrence.timestamp.format('HH:mm'), tz: recurrence.timezone })
           }}
         </template>
 
-        <template v-if="recurrence.mode === 'Weekly'">
-          <a-select
-            v-model="recurrence.dow"
-            mode="multiple"
-            :placeholder="$t('Workflow.Recurrence.Weekly.Placeholder')">
-            <a-select-option v-for="(day, i) in daysOfWeekMondayFirst" :key="i">
-              {{ day }}
-            </a-select-option>
-          </a-select>
-          <template v-if="recurrence.dow.length != 0 && recurrence.timestamp">
-            {{
-              $t('Workflow.Recurrence.Weekly.Msg', {
-                week: recurrence.dow.map(d => daysOfWeekMondayFirst[d]).join(', '),
-                time: recurrence.timestamp.format('HH:mm'),
-                tz: recurrence.timezone,
-              })
-            }}
+        <a-form-item
+          v-if="recurrence.mode === 'Weekly' || recurrence.mode === 'Monthly'"
+          class="workflow-create-recurrence-item">
+          <template v-if="recurrence.mode === 'Weekly'">
+            <a-select
+              v-model:value="recurrence.dow"
+              mode="multiple"
+              :placeholder="$t('Workflow.Recurrence.Weekly.Placeholder')">
+              <a-select-option v-for="(day, i) in daysOfWeekMondayFirst" :key="i">
+                {{ day }}
+              </a-select-option>
+            </a-select>
+            <template v-if="recurrence.dow.length != 0 && recurrence.timestamp">
+              {{
+                $T('Workflow.Recurrence.Weekly.Msg', {
+                  week: recurrence.dow.map(d => daysOfWeekMondayFirst[d]).join(', '),
+                  time: recurrence.timestamp.format('HH:mm'),
+                  tz: recurrence.timezone,
+                })
+              }}
+            </template>
           </template>
-        </template>
 
-        <template v-if="recurrence.mode === 'Monthly'">
-          <a-select
-            v-model="recurrence.dom"
-            mode="multiple"
-            :placeholder="$t('Workflow.Recurrence.Monthly.Placeholder')">
-            <a-select-option v-for="(day, i) in daysOfMonth" :key="i">
-              {{ day.format('D') }}
-            </a-select-option>
-          </a-select>
-          <template v-if="recurrence.dom.length != 0 && recurrence.timestamp">
-            {{
-              $t('Workflow.Recurrence.Monthly.Msg', {
-                month: recurrence.dom.map(d => daysOfMonth[d].format('Do')).join(', '),
-                time: recurrence.timestamp.format('HH:mm'),
-                tz: recurrence.timezone,
-              })
-            }}
+          <template v-if="recurrence.mode === 'Monthly'">
+            <a-select
+              v-model:value="recurrence.dom"
+              mode="multiple"
+              :placeholder="$t('Workflow.Recurrence.Monthly.Placeholder')">
+              <a-select-option v-for="(day, i) in daysOfMonth" :key="i">
+                {{ day.format('D') }}
+              </a-select-option>
+            </a-select>
+            <template v-if="recurrence.dom.length != 0 && recurrence.timestamp">
+              {{
+                $T('Workflow.Recurrence.Monthly.Msg', {
+                  month: recurrence.dom.map(d => daysOfMonth[d].format('Do')).join(', '),
+                  time: recurrence.timestamp.format('HH:mm'),
+                  tz: recurrence.timezone,
+                })
+              }}
+            </template>
           </template>
-        </template>
-      </a-form-model-item>
+        </a-form-item>
+      </a-form-item>
       <span v-show="recurrence.errorMessage !== ''" style="color: red" v-text="recurrence.errorMessage" />
     </div>
   </composite-form-dialog>
 </template>
 
 <script>
-import moment from 'moment'
-
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import DatetimeSelector from '../../component/datetime-selector'
-import ValidRoleFactory from '../../common/valid-role-factory'
-import WrokflowService from '../../service/workflow'
-import Utils from '../../common/utils'
+import dayjs from '@/dayjs/'
+import Utils from '@/common/utils'
+import WrokflowService from '@/service/workflow'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import DatetimeSelector from '@/component/datetime-selector.vue'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
@@ -131,7 +138,7 @@ export default {
   },
   data() {
     return {
-      moment,
+      dayjs,
       mode: '',
       title: '',
       workflowForm: {
@@ -167,21 +174,20 @@ export default {
         ],
       },
       copyData: {},
+      getTimezoneShortByLang: Utils.getTimezoneShortByLang,
+      localTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     }
   },
   computed: {
     daysOfWeekMondayFirst() {
       return Utils.getDaysOfWeekMondayFirst().map(i => this.$t(i))
     },
-    daysOfWeek() {
-      return Utils.getDaysOfWeek()
-    },
     daysOfMonth() {
       return Utils.getDaysOfMonth()
     },
     expirationOnce() {
       if (this.recurrence.timestamp) {
-        return moment(this.recurrence.timestamp) > moment()
+        return dayjs(this.recurrence.timestamp) > dayjs()
       }
       return true
     },
@@ -191,14 +197,15 @@ export default {
       this.validateRecurrenceFields()
     },
     'recurrence.timestamp'(value) {
-      // datetime-selector sends bare date instances - convert to moment instance
+      // datetime-selector sends bare date instances - convert to dayjs instance
       if (value && value.getDay) {
-        this.recurrence.timestamp = moment(value)
+        this.recurrence.timestamp = dayjs(value)
       }
       this.validateRecurrenceFields()
     },
     'recurrence.mode'() {
       this.validateRecurrenceFields()
+      this.recurrence.timezone = this.recurrence.timezone || this.getTimezoneShortByLang(this.localTimezone)
     },
     'recurrence.dow'() {
       this.validateRecurrenceFields()
@@ -252,7 +259,6 @@ export default {
 
       const mode = this.recurrence.mode
       const ts = this.recurrence.timestamp
-      this.recurrence.timezone = moment.tz(Intl.DateTimeFormat().resolvedOptions().timeZone).format('z')
       this.recurrence.errorMessage = ''
       this.$refs.innerDialog.enableSubmit()
       const valid = true
@@ -324,12 +330,12 @@ export default {
     successMessageFormatter(res) {
       const workflow = res
       if (this.mode === 'create' || this.mode === 'copy') {
-        return this.$t('Workflow.Create.Success', {
+        return this.$T('Workflow.Create.Success', {
           name: workflow.name,
         })
       }
       if (this.mode === 'edit') {
-        return this.$t('Workflow.Update.Success', {
+        return this.$T('Workflow.Update.Success', {
           name: workflow.name,
         })
       }
@@ -351,7 +357,7 @@ export default {
         modes: ['Once', 'Daily', 'Weekly', 'Monthly'],
         mode: 'Once',
         timestamp: null,
-        timezone: moment.tz(Intl.DateTimeFormat().resolvedOptions().timeZone).format('z'),
+        timezone: this.getTimezoneShortByLang(this.localTimezone),
         dow: [], // chosen day(s) of week  - 0 index based
         dom: [], // chosen day(s) of month - 0 index based
         errorMessage: '',
@@ -391,14 +397,14 @@ export default {
 
         if (workflow.periodic_task.clocked) {
           this.recurrence.mode = 'Once'
-          this.recurrence.timestamp = moment(workflow.periodic_task.clocked)
+          this.recurrence.timestamp = dayjs(workflow.periodic_task.clocked)
         } else {
           const crontab = workflow.periodic_task.crontab
 
           const time = crontab.hour + ':' + crontab.minute
-          this.recurrence.timestamp = moment.tz(time, 'HH:mm', crontab.timezone).toDate()
-          this.recurrence.timezone = moment.tz(time, 'HH:mm', crontab.timezone).format('z')
-
+          this.recurrence.timestamp = dayjs(time, 'HH:mm').tz(crontab.timezone).toDate()
+          this.recurrence.timezone = this.getTimezoneShortByLang(crontab.timezone)
+          console.log(this.recurrence)
           if (crontab.day_of_month !== '*') {
             this.recurrence.mode = 'Monthly'
             this.recurrence.dom = crontab.day_of_month.split(',').map(i => Number(i - 1))
@@ -420,4 +426,12 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+.workflow-create-recurrence {
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+.workflow-create-recurrence-item {
+  margin: 0;
+}
+</style>

@@ -43,7 +43,7 @@
   </div>
 </template>
 <script>
-import Format from '../../common/format'
+import Format from '@/common/format'
 export default {
   props: ['node'],
   data() {

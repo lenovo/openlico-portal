@@ -29,6 +29,7 @@ class User {
     this.role = ''
     this.firstName = ''
     this.lastName = ''
+    this.fullName = ''
     this.email = ''
     this.billGroup = {}
     this.userGroup = false
@@ -45,175 +46,29 @@ class User {
 
   static parseFromRestApi(jsonObj) {
     const user = new User()
-    user._id = jsonObj.id
-    user._uid = jsonObj.uid
-    user._username = jsonObj.username
-    user._role = jsonObj.role
-    user._firstName = jsonObj.first_name || ''
-    user._lastName = jsonObj.last_name || ''
-    user._email = jsonObj.email || ''
+    user.id = jsonObj.id
+    user.uid = jsonObj.uid
+    user.username = jsonObj.username
+    user.role = jsonObj.role
+    user.firstName = jsonObj.first_name || ''
+    user.lastName = jsonObj.last_name || ''
+    user.fullName = jsonObj.full_name || ''
+    user.email = jsonObj.email || ''
     // user.billGroup = jsonObj.bill_group?BillGroupService.BillGroup.parseFromRestApi(jsonObj.bill_group):false;
-    user._userGroup = jsonObj.group ? jsonObj.group : false
-    user._billGroupId = jsonObj.bill_group ? jsonObj.bill_group.id : ''
-    user._billGroupName = jsonObj.bill_group ? jsonObj.bill_group.name : ''
-    user._userGroupName = jsonObj.group ? jsonObj.group.name : ''
-    user._loginTime = jsonObj.last_login ? Parser.parseTimeFromRestApi(jsonObj.last_login) : null
-    user._createTime = Parser.parseTimeFromRestApi(jsonObj.date_joined)
-    user._updateTime = Parser.parseTimeFromRestApi(jsonObj.last_operation_time)
-    user._freezed = jsonObj.is_locked
-    user._thawTime = Parser.parseTimeFromRestApi(jsonObj.effective_time)
+    user.userGroup = jsonObj.group ? jsonObj.group : false
+    user.billGroupId = jsonObj.bill_group ? jsonObj.bill_group.id : ''
+    user.billGroupName = jsonObj.bill_group ? jsonObj.bill_group.name : ''
+    user.userGroupName = jsonObj.group ? jsonObj.group.name : ''
+    user.loginTime = jsonObj.last_login ? Parser.parseTimeFromRestApi(jsonObj.last_login) : null
+    user.createTime = Parser.parseTimeFromRestApi(jsonObj.date_joined)
+    user.updateTime = Parser.parseTimeFromRestApi(jsonObj.last_operation_time)
+    user.freezed = jsonObj.is_locked
+    user.thawTime = Parser.parseTimeFromRestApi(jsonObj.effective_time)
     return user
   }
 
   get realName() {
-    if (this._firstName && this._lastName) {
-      return this._firstName + ' ' + this._lastName
-    }
-    return ''
-  }
-
-  get _id() {
-    return this.id
-  }
-
-  set _id(id) {
-    return (this.id = id)
-  }
-
-  get _uid() {
-    return this.uid
-  }
-
-  set _uid(uid) {
-    return (this.uid = uid)
-  }
-
-  get _username() {
-    return this.username
-  }
-
-  set _username(username) {
-    return (this.username = username)
-  }
-
-  get _role() {
-    return this.role
-  }
-
-  set _role(role) {
-    return (this.role = role)
-  }
-
-  get _firstName() {
-    return this.firstName
-  }
-
-  set _firstName(firstName) {
-    return (this.firstName = firstName)
-  }
-
-  get _lastName() {
-    return this.lastName
-  }
-
-  set _lastName(lastName) {
-    return (this.lastName = lastName)
-  }
-
-  get _email() {
-    return this.email
-  }
-
-  set _email(email) {
-    return (this.email = email)
-  }
-
-  get _billGroup() {
-    return this.billGroup
-  }
-
-  set _billGroup(billGroup) {
-    return (this.billGroup = billGroup)
-  }
-
-  get _userGroup() {
-    return this.userGroup
-  }
-
-  set _userGroup(userGroup) {
-    return (this.userGroup = userGroup)
-  }
-
-  get _billGroupId() {
-    return this.billGroupId
-  }
-
-  set _billGroupId(billGroupId) {
-    return (this.billGroupId = billGroupId)
-  }
-
-  get _billGroupName() {
-    return this.billGroupName
-  }
-
-  set _billGroupName(billGroupName) {
-    return (this.billGroupName = billGroupName)
-  }
-
-  get _userGroupName() {
-    return this.userGroupName
-  }
-
-  set _userGroupName(userGroupName) {
-    return (this.userGroupName = userGroupName)
-  }
-
-  get _status() {
-    return this.status
-  }
-
-  set _status(status) {
-    return (this.status = status)
-  }
-
-  get _loginTime() {
-    return this.loginTime
-  }
-
-  set _loginTime(loginTime) {
-    return (this.loginTime = loginTime)
-  }
-
-  get _createTime() {
-    return this.createTime
-  }
-
-  set _createTime(createTime) {
-    return (this.createTime = createTime)
-  }
-
-  get _updateTime() {
-    return this.updateTime
-  }
-
-  set _updateTime(updateTime) {
-    return (this.updateTime = updateTime)
-  }
-
-  get _freezed() {
-    return this.freezed
-  }
-
-  set _freezed(freezed) {
-    return (this.freezed = freezed)
-  }
-
-  get _thawTime() {
-    return this.thawTime
-  }
-
-  set _thawTime(thawTime) {
-    return (this.thawTime = thawTime)
+    return [this.firstName, this.lastName].join(' ').trim()
   }
 }
 
@@ -247,6 +102,7 @@ function usersTableDataParser(res) {
 function usersRestApiPropMap(prop) {
   if (prop === 'id') return 'id'
   else if (prop === 'username') return 'username'
+  else if (prop === 'fullName') return 'full_name'
   else if (prop === 'role') return 'role'
   else if (prop === 'loginTime') return 'last_login'
   else if (prop === 'thawTime') return 'effective_time'
@@ -299,28 +155,26 @@ function getAllUsers() {
 }
 
 function getUserById(id) {
-  return new Promise((resolve, reject) => {
-    Request.get(`/api/user/${id}/`).then(
-      res => {
-        BillGroupService.getRelationshipByUsers([res.body.username]).then(
-          relationship => {
-            const user = User.parseFromRestApi(res.body)
-            user.billGroup = relationship[user.username]
-              ? BillGroupService.BillGroup.parseFromRestApi(relationship[user.username])
-              : {}
-            user.billGroupId = relationship[user.username] ? relationship[user.username].id : ''
-            resolve(user)
-          },
-          er => {
-            ErrorHandler.restApiErrorHandler(er, reject)
-          },
-        )
-      },
-      err => {
-        ErrorHandler.restApiErrorHandler(err, reject)
-      },
-    )
-  })
+  return fetchUser(`/api/user/${id}/`)
+}
+
+function getUserByUsername(username) {
+  return fetchUser(`/api/user/${username}/by_username`)
+}
+
+async function fetchUser(apiEndpoint) {
+  try {
+    const res = await Request.get(apiEndpoint)
+    const relationship = await BillGroupService.getRelationshipByUsers([res.body.username])
+    const user = User.parseFromRestApi(res.body)
+    user.billGroup = relationship[user.username]
+      ? BillGroupService.BillGroup.parseFromRestApi(relationship[user.username])
+      : {}
+    user.billGroupId = relationship[user.username] ? relationship[user.username].id : ''
+    return user
+  } catch (err) {
+    await ErrorHandler.awaitableErrorHandler(err)
+  }
 }
 
 function getUserRoleDisplayName(role) {
@@ -498,6 +352,19 @@ function freezedUserByName(id, days, hours) {
   })
 }
 
+function fullLockUser(id) {
+  return new Promise((resolve, reject) => {
+    Request.post(`/api/user/${id}/full-lock/`).then(
+      res => {
+        resolve()
+      },
+      err => {
+        ErrorHandler.restApiErrorHandler(err, reject)
+      },
+    )
+  })
+}
+
 function unfreezedUserByName(id) {
   return new Promise((resolve, reject) => {
     Request.delete(`/api/user/${id}/lock/`).then(
@@ -554,7 +421,9 @@ export default {
   importUser,
   changeUserPassword,
   getUserById,
+  getUserByUsername,
   freezedUserByName,
+  fullLockUser,
   unfreezedUserByName,
   getUserImportList,
   getUserTableData,

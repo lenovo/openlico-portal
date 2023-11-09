@@ -8,33 +8,30 @@
     form-label-width="160px"
     :success-message-formatter="successMessageFormatter"
     :error-message-formatter="errorMessageFormatter">
-    <a-form-model-item ref="storageFormItem" :label="$t('BillGroup.StoragePath')" prop="pathList">
+    <a-form-item ref="storageFormItem" :label="$t('BillGroup.StoragePath')" name="pathList">
       <multi-tags-input
-        id=""
         ref="storageInput"
-        v-model="billGroupForm.pathList"
+        v-model:value="billGroupForm.pathList"
         :new-tag-button-text="$t('BillGroup.Policy.FormItemTags.Add')"
         :valid-roles="pathRules"
-        :disabled="mode == 'delete'"
-        @tag-change="tagChange" />
-    </a-form-model-item>
-    <a-form-model-item :label="$t('BillGroup.StorageChargeRate')" prop="storageChargeRate">
+        :disabled="mode == 'delete'" />
+    </a-form-item>
+    <a-form-item :label="$t('BillGroup.StorageChargeRate')" name="storageChargeRate">
       <a-input
         id="tid_billgroup-memory-charge-rate"
-        v-model="billGroupForm.storageChargeRate"
+        v-model:value="billGroupForm.storageChargeRate"
         :disabled="mode == 'delete'"
         :addon-before="currency"
         :addon-after="$t('BillGroup.StorageChargeRate.Unit')" />
-    </a-form-model-item>
+    </a-form-item>
   </composite-form-dialog>
 </template>
 <script>
-import BillGroupService from '../../service/bill-group'
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import MultiTagsInput from '../../component/multi-tags-input'
-import ValidRoleFactory from '../../common/valid-role-factory'
-import Format from '../../common/format'
-
+import BillGroupService from '@/service/bill-group'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import MultiTagsInput from '@/component/multi-tags-input.vue'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import Format from '@/common/format'
 export default {
   components: {
     'composite-form-dialog': CompositeFormDialog,
@@ -59,23 +56,13 @@ export default {
           ValidRoleFactory.getNumberDecimalRoleForText(this.$t('BillGroup.StorageChargeRate'), 4),
         ],
         pathList: [
-          ValidRoleFactory.getRequireRoleForText(this.$t('BillGroup.StoragePath')),
+          ValidRoleFactory.getRequireRoleForArray(this.$t('BillGroup.StoragePath')),
           ValidRoleFactory.getUniqueRoleForArray(this.$t('BillGroup.StoragePath')),
-          ValidRoleFactory.getLengthRoleForArray(this.$t('BillGroup.StoragePath'), 1, 200),
+          ValidRoleFactory.getLengthRoleForArray(this.$t('BillGroup.StoragePath'), 0, 200),
         ],
       },
     }
   },
-  // watch: {
-  //   'billGroupForm.pathList'(val, oldVal) {
-  //     if(val.length == 0 && oldVal.length == 0) {
-  //       return;
-  //     }
-  //     this.$nextTick(() => {
-  //       this.$refs.storageFormItem.validate();
-  //     });
-  //   },
-  // },
   methods: {
     submitForm() {
       if (this.$refs.storageInput.errorMessage.length > 0) {
@@ -109,7 +96,7 @@ export default {
       if (this.mode === 'create') {
         return this.billGroupForm.pathList + this.$t(errMsg)
       }
-      return this.$t(errMsg)
+      return res
     },
     doCreate(billGroup) {
       this.mode = 'create'
@@ -136,7 +123,7 @@ export default {
       this.$nextTick(() => {
         this.$refs.storageInput.cleanInput()
       })
-      this.title = this.$t('BillGroup.Storage.Edit.Title', {
+      this.title = this.$T('BillGroup.Storage.Edit.Title', {
         id: billGroup.id,
       })
       return this.$refs.innerDialog.popup(this.submitForm)
@@ -152,13 +139,10 @@ export default {
       this.$nextTick(() => {
         this.$refs.storageInput.cleanInput()
       })
-      this.title = this.$t('BillGroup.Storage.Delete.Title', {
+      this.title = this.$T('BillGroup.Storage.Delete.Title', {
         id: policy.id,
       })
       return this.$refs.innerDialog.popup(this.submitForm)
-    },
-    tagChange() {
-      this.$refs.storageFormItem.validate()
     },
   },
 }

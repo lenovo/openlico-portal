@@ -2,62 +2,65 @@
   <div class="runtime-management">
     <a-modal
       ref="innerDialog"
-      :title="title"
       width="580px"
-      :visible="isRender"
+      :destroy-on-close="true"
+      :title="title"
+      :open="isRender"
       :footer="false"
       @cancel="isRender = false">
-      <a-form-model :model="runtimeForm" label-width="120px" :colon="false">
-        <a-form-model-item :label="$t('Admin.Runtime.Name')" prop="name">
-          <a-row class="list-item">
-            <span>{{ runtimeForm.name }}</span>
-          </a-row>
-        </a-form-model-item>
-        <a-form-model-item v-if="showModules()" :label="$t('Admin.Runtime.Items')" :label-positon="labelPosition">
-          <a-row class="list-item">
-            <span>{{ $t('Admin.Runtime.Items.ModuleNameTitle') }}</span>
-            <span>{{ $t('Admin.Runtime.Items.ModuleParentTitle') }}</span>
-          </a-row>
-        </a-form-model-item>
-        <a-form-model-item v-if="showModules()" prop="selectedModules">
-          <a-row v-for="module in runtimeForm.selectedModules" :key="module.displayName" class="list-item">
-            <span>
-              <img :src="getSrc(module.moduleTag)" class="rcicon" style="width: 15px; height: 15px" />
-              {{ module.name }}</span
-            >
-            <span>{{ module.parents ? module.parents.join(',') : '' }}</span>
-          </a-row>
-        </a-form-model-item>
-        <a-form-model-item v-if="showEnvs()" :label="$t('Admin.Runtime.Env')" :label-positon="labelPosition">
-          <a-row class="list-item">
-            <span>{{ $t('Admin.Runtime.Env.Name') }}</span>
-            <span>{{ $t('Admin.Runtime.Env.Value') }}</span>
-          </a-row>
-        </a-form-model-item>
-        <a-form-model-item v-if="showEnvs()" prop="envs">
-          <a-row v-for="env in runtimeForm.envs" :key="env.name" class="list-item">
-            <span>{{ env.name }}</span>
-            <span>{{ env.value }}</span>
-          </a-row>
-        </a-form-model-item>
-        <a-form-model-item v-if="showScripts()" :label="$t('Admin.Runtime.Scripts')" :label-positon="labelPosition">
-          <a-row class="list-item">
-            <span>{{ $t('Admin.Runtime.Scripts.File') }}</span>
-            <span />
-          </a-row>
-        </a-form-model-item>
-        <a-form-model-item v-if="showScripts()" prop="scripts">
-          <a-row v-for="(file, index) in runtimeForm.scripts" :key="index" class="list-item">
-            <span :title="path" class="runtime-file-path">{{ file.path }}</span>
-          </a-row>
-        </a-form-model-item>
-      </a-form-model>
+      <a-spin :spinning="loading">
+        <a-form :model="runtimeForm" label-width="120px" :colon="false" layout="vertical" class="runtime-view-model">
+          <a-form-item :label="$t('Admin.Runtime.Name')">
+            <a-row class="list-item">
+              <span>{{ runtimeForm.name }}</span>
+            </a-row>
+          </a-form-item>
+          <a-form-item v-if="showModules()" :label="$t('Admin.Runtime.Items')" :label-positon="labelPosition">
+            <a-row class="list-item">
+              <span>{{ $t('Admin.Runtime.Items.ModuleNameTitle') }}</span>
+              <span>{{ $t('Admin.Runtime.Items.ModuleParentTitle') }}</span>
+            </a-row>
+          </a-form-item>
+          <a-form-item v-if="showModules()">
+            <a-row v-for="item in runtimeForm.selectedModules" :key="item.displayName" class="list-item">
+              <span>
+                <img :src="getSrc(item.moduleTag)" class="rcicon" style="width: 15px; height: 15px" />
+                {{ item.name }}</span
+              >
+              <span>{{ item.parents ? item.parents.join(',') : '' }}</span>
+            </a-row>
+          </a-form-item>
+          <a-form-item v-if="showEnvs()" :label="$t('Admin.Runtime.Env')" :label-positon="labelPosition">
+            <a-row class="list-item">
+              <span>{{ $t('Admin.Runtime.Env.Name') }}</span>
+              <span>{{ $t('Admin.Runtime.Env.Value') }}</span>
+            </a-row>
+          </a-form-item>
+          <a-form-item v-if="showEnvs()" name="envs">
+            <a-row v-for="env in runtimeForm.envs" :key="env.name" class="list-item">
+              <span>{{ env.name }}</span>
+              <span>{{ env.value }}</span>
+            </a-row>
+          </a-form-item>
+          <a-form-item v-if="showScripts()" :label="$t('Admin.Runtime.Scripts')" :label-positon="labelPosition">
+            <a-row class="list-item">
+              <span>{{ $t('Admin.Runtime.Scripts.File') }}</span>
+              <span />
+            </a-row>
+          </a-form-item>
+          <a-form-item v-if="showScripts()" name="scripts">
+            <a-row v-for="(file, index) in runtimeForm.scripts" :key="index" class="list-item">
+              <span :title="file.path" class="runtime-file-path">{{ file.path }}</span>
+            </a-row>
+          </a-form-item>
+        </a-form>
+      </a-spin>
     </a-modal>
   </div>
 </template>
 
 <script>
-import RuntimeService from '../../service/runtime-manage'
+import RuntimeService from '@/service/runtime-manage'
 
 export default {
   data() {
@@ -66,6 +69,7 @@ export default {
       labelPosition: 'top',
       isRender: false,
       runtimeForm: {},
+      loading: false,
     }
   },
   methods: {
@@ -106,6 +110,7 @@ export default {
       this.mode = 'view'
       this.title = this.$t('Admin.Runtime.View.Title')
       this.isRender = true
+      this.loading = true
       RuntimeService.getRuntime(id)
         .then(res => {
           this.runtimeForm = {
@@ -118,6 +123,9 @@ export default {
         })
         .catch(err => {
           this.$message.error(err)
+        })
+        .finally(_ => {
+          this.loading = false
         })
     },
     getSrc(showCondition) {
@@ -144,7 +152,7 @@ export default {
   text-align: left;
 }
 
-.list-item + div.a-form-model-item__error {
+.list-item + div.a-form-item__error {
   margin: auto 10px;
 }
 

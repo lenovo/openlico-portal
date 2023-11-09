@@ -4,7 +4,8 @@
   </state-label>
 </template>
 <script>
-import StateLabel from '../../component/state-label'
+import StateLabel from '@/component/state-label.vue'
+
 export default {
   components: {
     'state-label': StateLabel,
@@ -48,10 +49,10 @@ export default {
           loading: true,
           display: this.$t('Job.Status.Waiting'),
         },
-        holding: {
+        held: {
           state: 'normal',
           loading: true,
-          display: this.$t('Job.Status.Holding'),
+          display: this.$t('Job.Status.Held'),
         },
         error: {
           state: 'fatal',
@@ -116,18 +117,18 @@ export default {
           display: this.$t('Job.Status.Cancelling'),
         }
       } else {
-        if (this.aiOperateStatus === 'holding') {
+        if (this.aiOperateStatus === 'hold') {
           return {
             state: 'warning',
             loading: true,
-            display: this.$t('Job.Status.Holding'),
+            display: this.$t('Job.Status.Held'),
           }
         }
         if (this.aiOperateStatus === 'hold') {
           return {
             state: 'warning',
             loading: false,
-            display: this.$t('Job.Status.Hold'),
+            display: this.$t('Job.Status.Held'),
           }
         }
         if (this.aiOperateStatus === 'paused') {
@@ -145,7 +146,7 @@ export default {
 </script>
 
 <style scoped>
-.stateLabel >>> .state-label {
+.stateLabel :deep(.state-label) {
   margin-right: 5px;
 }
 </style>

@@ -1,40 +1,43 @@
 <template>
-  <a-modal :title="title" :visible.sync="dialogVisible" :destroy-on-close="true" width="500px" @cancel="onCancelClick">
+  <a-modal v-model:open="dialogVisible" :title="title" :destroy-on-close="true" width="500px" @cancel="onCancelClick">
     <a-spin :spinning="loading">
-      <a-form-model
+      <a-form
         v-show="!loading"
         ref="templateImportForm"
         :model="templateForm"
+        :layout="'vertical'"
         :rules="templateRules"
         class="template-import-form">
-        <a-form-model-item :label="$t('JobTemplate.Name')" prop="name">
-          <a-input v-model="templateForm.name" />
-        </a-form-model-item>
-        <a-form-model-item :label="$t('JobTemplate.Import.TemplateFile')" prop="fileName">
+        <a-form-item :label="$t('JobTemplate.Name')" name="name">
+          <a-input v-model:value="templateForm.name" />
+        </a-form-item>
+        <a-form-item :label="$t('JobTemplate.Import.TemplateFile')" name="fileName">
           <a-input-group compact>
-            <a-input v-model="templateForm.fileName" style="width: 80%" read-only />
+            <a-input v-model:value="templateForm.fileName" style="width: 80%" read-only />
             <a-button style="width: 20%" type="primary" @click="chooseFile">
               {{ $t('Action.Browse') }}
             </a-button>
           </a-input-group>
           <input ref="fileInput" type="file" accept=".ljt" style="display: none" @change="setFile($event)" />
-        </a-form-model-item>
-      </a-form-model>
+        </a-form-item>
+      </a-form>
     </a-spin>
-    <div slot="footer" class="dialog-footer">
-      <a-button v-show="!loading" @click="onCancelClick">
-        {{ $t('Dialog.Cancel') }}
-      </a-button>
-      <a-button :loading="loading" type="primary" @click="onImportClick">
-        {{ $t('Dialog.Submit') }}
-      </a-button>
-    </div>
+    <template #footer>
+      <div class="dialog-footer">
+        <a-button v-show="!loading" @click="onCancelClick">
+          {{ $t('Dialog.Cancel') }}
+        </a-button>
+        <a-button :loading="loading" type="primary" @click="onImportClick">
+          {{ $t('Dialog.Submit') }}
+        </a-button>
+      </div>
+    </template>
   </a-modal>
 </template>
 
 <script>
-import ValidRoleFactory from '../../common/valid-role-factory'
-import TemplateService from '../../service/job-template'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import TemplateService from '@/service/job-template'
 
 export default {
   data() {
@@ -45,7 +48,6 @@ export default {
       loading: false,
       file: {},
       templateForm: {},
-      submitUrl: '/api/jobtemplates/import/',
       innerResolve: null,
       innerReject: null,
       templateRules: {
@@ -70,13 +72,13 @@ export default {
       })
     },
     onImportClick() {
-      this.$refs.templateImportForm.validate(valid => {
-        if (valid) {
+      this.$refs.templateImportForm.validate().then(
+        _ => {
           this.loading = true
           TemplateService.importTemplate(this.templateForm).then(
-            res => {
+            __ => {
               this.$message.success(
-                this.$t('JobTemplate.Import.Success', {
+                this.$T('JobTemplate.Import.Success', {
                   name: this.templateForm.name,
                 }),
               )
@@ -90,8 +92,9 @@ export default {
               this.innerReject()
             },
           )
-        }
-      })
+        },
+        _ => {},
+      )
     },
     chooseFile() {
       this.$refs.fileInput.click()

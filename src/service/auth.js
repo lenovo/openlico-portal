@@ -19,7 +19,7 @@ import JWTDecode from 'jwt-decode'
 import { Base64 } from 'js-base64'
 import AccessService from './access'
 import ErrorHandler from '../common/error-handler'
-import store from '../storage/store'
+import store from '../store'
 import PreferenceService from './preference'
 
 function login(username, password) {
@@ -152,11 +152,19 @@ function checkConfig() {
           ldapDefaultUsername: res[1].body.name,
         })
 
-        // get oneapi modules
-        Promise.all([getOneApiConfig()]).then(
+        // get ear, oneapi modules
+        Promise.all([getEarConfig(), getOneApiConfig(), getEasyBuildConfig()]).then(
           resp => {
-            if (resp[0].status === 200 && resp[0].body.enable) {
+            if (resp[0].status === 200) {
+              featureCodes.push('ear')
+              window.gApp.$store.dispatch('settings/setEarMinPState', resp[0].body.ear_min_p_state)
+              window.gApp.$store.dispatch('settings/setEarMaxPState', resp[0].body.ear_max_p_state)
+            }
+            if (resp[1].status === 200 && resp[1].body.enable) {
               featureCodes.push('oneapi')
+            }
+            if (resp[2].status === 200) {
+              featureCodes.push('easybuild')
             }
             // setup featureCodes
             window.gApp.$store.dispatch('auth/setFeatureCodes', {
@@ -199,9 +207,37 @@ function checkConfig() {
   })
 }
 
+function getEarConfig() {
+  return new Promise((resolve, reject) => {
+    Request.get('/api/ear/config/').then(
+      res => {
+        resolve(res)
+      },
+      err => {
+        resolve(err)
+        // ErrorHandler.restApiErrorHandler(err, reject);
+      },
+    )
+  })
+}
+
 function getOneApiConfig() {
   return new Promise((resolve, reject) => {
     Request.get('/api/oneapi/config/').then(
+      res => {
+        resolve(res)
+      },
+      err => {
+        resolve(err)
+        // ErrorHandler.restApiErrorHandler(err, reject);
+      },
+    )
+  })
+}
+
+function getEasyBuildConfig() {
+  return new Promise((resolve, reject) => {
+    Request.get('/api/usermodule/config/').then(
       res => {
         resolve(res)
       },
@@ -217,32 +253,6 @@ function isLDAPManaged() {
   return store.state.auth.ldapManaged
 }
 
-function checkRegisterType() {
-  return new Promise((resolve, reject) => {
-    Request.get('/api/config/user/').then(
-      res => {
-        resolve(res.body)
-      },
-      err => {
-        ErrorHandler.restApiErrorHandler(err, reject)
-      },
-    )
-  })
-}
-
-function register(req) {
-  return new Promise((resolve, reject) => {
-    Request.post('/api/register/', req).then(
-      res => {
-        resolve(res.body)
-      },
-      err => {
-        ErrorHandler.restApiErrorHandler(err, reject)
-      },
-    )
-  })
-}
-
 export default {
   login,
   logout,
@@ -251,6 +261,4 @@ export default {
   checkConfig,
   isLDAPManaged,
   refreshToken,
-  checkRegisterType,
-  register,
 }

@@ -10,33 +10,33 @@
       :search-props="['pid', 'runProgram']"
       :page-sizes="['10', '20', '40', '50']"
       :page-size="20">
-      <div slot="controller" class="process-controller">
-        <a-select v-model="node" class="job-nodes-select" :show-arrow="true" show-search>
-          <a-select-option v-for="item in nodesOptions" :key="item.value">
-            {{ item.label }}
-          </a-select-option>
-        </a-select>
-        <a-switch v-model="autoReFresh" size="small" class="switch-refresh" :loading="loading" />
-        <span v-if="autoReFresh" class="refresh-text">{{
-          loading
-            ? $t('Monitor.Cluster.Refreshing')
-            : $t('Monitor.Cluster.Refresh.Seconds.Tips', { number: reFreshSeconds })
-        }}</span>
-        <span v-else class="refresh-text">{{
-          loading ? $t('Monitor.Cluster.Refreshing') : $t('Monitor.Cluster.AutoRefresh')
-        }}</span>
-        <a-button
-          :disabled="loading"
-          class="fresh-button"
-          style="margin-left: 10px"
-          @click="switchAutoReFresh('manual')">
-          {{ $t('Monitor.Cluster.Refresh') }}
-        </a-button>
-      </div>
-      <template slot="gpus" slot-scope="{ gpus }">
+      <template #controller>
+        <div class="process-controller">
+          <a-select v-model:value="node" class="job-nodes-select" :show-arrow="true" show-search>
+            <a-select-option v-for="item in nodesOptions" :key="item.value">
+              {{ item.label }}
+            </a-select-option>
+          </a-select>
+          <a-switch v-model:checked="autoReFresh" size="small" class="switch-refresh" :loading="loading" />
+          <span v-if="autoReFresh" class="refresh-text">{{
+            loading
+              ? $t('Monitor.Cluster.Refreshing')
+              : $T('Monitor.Cluster.Refresh.Seconds.Tips', { number: reFreshSeconds })
+          }}</span>
+          <span v-else class="refresh-text">{{ $t(`Monitor.Cluster.${loading ? 'Refreshing' : 'AutoRefresh'}`) }}</span>
+          <a-button
+            :disabled="loading"
+            class="fresh-button"
+            style="margin-left: 10px"
+            @click="switchAutoReFresh('manual')">
+            {{ $t('Monitor.Cluster.Refresh') }}
+          </a-button>
+        </div>
+      </template>
+      <template #gpus="{ gpus }">
         <span v-if="!gpus.length">-</span>
-        <a-popover v-else placement="right" overlay-class-name="gpu-detail">
-          <template slot="content">
+        <a-popover v-else placement="right">
+          <template #content>
             <p class="gpu-detail-title">GPU</p>
             <div v-for="gpu in gpus" :key="gpu.index" class="gpu-detail-item">
               <p class="gpu-detail-item-self">
@@ -48,11 +48,6 @@
                 <span>{{ `${mig.util}%` }}</span>
               </p>
             </div>
-            <!-- <p v-for="(value,name) in gpu" :key="name"
-                            class="gpu-detail-item">
-                            <span>{{`#${name} ${gpu[name].type}`}}</span>
-                            <span>{{`${gpu[name].util}%`}}</span>
-                        </p> -->
           </template>
           <a href="javascript:;">{{ getMultiGPUValue(gpus) }}</a>
         </a-popover>
@@ -62,8 +57,8 @@
 </template>
 
 <script>
-import CompositeTable from '../../component/composite-table'
-import ProcessService from '../../service/process'
+import ProcessService from '@/service/process'
+import CompositeTable from '@/component/composite-table.vue'
 export default {
   components: {
     CompositeTable,
@@ -85,14 +80,14 @@ export default {
         sorter: true,
         defaultSortOrder: 'descend',
         show: true,
-        customRender: val => val + '%',
+        customRender: ({ text }) => text + '%',
       },
       {
         title: this.$t('Monitor.Process.Memory'),
         dataIndex: 'memory',
         sorter: true,
         show: true,
-        customRender: val => val + '%',
+        customRender: ({ text }) => text + '%',
       },
       {
         title: this.$t('Monitor.Process.GPU'),
@@ -109,7 +104,7 @@ export default {
           return preVal - nextVal
         },
         show: this.isGpus,
-        scopedSlots: { customRender: 'gpus' },
+        customSlot: true,
       },
       {
         title: this.$t('Monitor.Process.Runtime'),
@@ -173,7 +168,7 @@ export default {
       this.node = this.nodesOptions[0].value
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.reFreshTimer)
   },
   methods: {
@@ -234,25 +229,25 @@ export default {
 .switch-refresh {
   margin: 0 10px;
 }
-.gpu-detail .gpu-detail-title {
+.gpu-detail-title {
   margin-bottom: 10px;
 }
-.gpu-detail .gpu-detail-item {
+.gpu-detail-item {
   /* display: flex; */
   /* justify-content: space-between; */
   width: 250px;
   /* margin-bottom: 6px; */
 }
-.gpu-detail .gpu-detail-item p {
+.gpu-detail-item p {
   display: flex;
   justify-content: space-between;
   /* width: 250px; */
   margin-bottom: 6px;
 }
-.gpu-detail .gpu-detail-mig-item {
+.gpu-detail-mig-item {
   text-indent: 1.5em;
 }
-.gpu-detail .gpu-detail-item:last-child {
+.gpu-detail-item:last-child {
   margin-bottom: 0;
 }
 </style>

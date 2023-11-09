@@ -1,20 +1,20 @@
 <template>
-  <div class="height--100 p-10">
+  <div class="height--100 p-10 job-manage-wrapper">
     <div class="job-tab b-w p-20">
       <a-row type="flex" justify="start" align="middle">
         <a-col :span="10">
           <span class="job-tab-span">{{ $t('JobManager.Filter.StatusType') }}</span>
           <a-radio-group
             id="tid_job-manage-filter-status"
-            v-model="statusType"
+            v-model:value="statusType"
             button-style="solid"
             @change="statusChange">
             <a-radio-button
-              v-for="type in statusTypes"
-              :id="'JobManager_Filter_' + type.label"
-              :key="type.type"
-              :value="type.type">
-              {{ type.label }}
+              v-for="item in statusTypes"
+              :id="'JobManager_Filter_' + item.label"
+              :key="item.type"
+              :value="item.type">
+              {{ item.label }}
             </a-radio-button>
           </a-radio-group>
         </a-col>
@@ -22,17 +22,17 @@
           <span class="job-tab-span">{{ $t('JobManager.Filter.Submission') }}</span>
           <a-radio-group
             id="tid_job-manage-filter-submission"
-            v-model="defaultSubmitTime"
+            v-model:value="defaultSubmitTime"
             button-style="solid"
             @change="submitTimeChangeAction">
             <a-radio-button :value="1">
               {{ $t('JobManager.SubmitTime.Month') }}
             </a-radio-button>
             <a-radio-button :value="3">
-              {{ $t('JobManager.SubmitTime.Months', { value: 3 }) }}
+              {{ $T('JobManager.SubmitTime.Months', { value: 3 }) }}
             </a-radio-button>
             <a-radio-button :value="6">
-              {{ $t('JobManager.SubmitTime.Months', { value: 6 }) }}
+              {{ $T('JobManager.SubmitTime.Months', { value: 6 }) }}
             </a-radio-button>
             <a-radio-button :value="0">
               {{ $t('JobManager.SubmitTime.All') }}
@@ -41,11 +41,11 @@
         </a-col>
       </a-row>
       <a-row class="job-tab-div" type="flex" justify="start" align="middle">
-        <a-col v-if="arch == 'host'" :span="10" class="m-t-20">
+        <a-col :span="10" class="m-t-20">
           <span class="job-tab-span">{{ $t('JobManager.Filter.Queue') }}</span>
           <multi-queue-selector
             id="tid_job-manage-filter-queue"
-            v-model="dataFilter.queue.values"
+            v-model:value="dataFilter.queue.values"
             class="default-select"
             :placeholder="$t('Select.All')"
             :clearable="true">
@@ -53,7 +53,7 @@
         </a-col>
         <a-col v-if="false" :span="14" class="m-t-20">
           <span class="job-tab-span">{{ $t('JobManager.Filter') }}</span>
-          <a-select v-model="jobType" :placeholder="$t('Select.All')" class="default-select" allow-clear>
+          <a-select v-model:value="jobType" :placeholder="$t('Select.All')" class="default-select" allow-clear>
             <a-select-option value="hide-system">
               {{ $t('JobManager.Filter.HideSystemJob') }}
             </a-select-option>
@@ -78,7 +78,7 @@
         </a-col>
         <a-col v-if="access == 'staff'" :span="14" class="m-t-20">
           <span class="job-tab-span">{{ $t('JobManager.Filter.Tags') }}</span>
-          <a-select v-model="dataFilter.tag.values" mode="tags" style="width: 300px">
+          <a-select v-model:value="dataFilter.tag.values" mode="tags" style="width: 300px">
             <a-select-option v-for="tag in tagsOption" :key="tag" :value="tag">{{ tag }} </a-select-option>
           </a-select>
         </a-col>
@@ -98,36 +98,113 @@
             :search-enable="true"
             :external-filter="dataFilter"
             :search-props="searchProps"
-            :selection-enable="access == 'staff'"
+            :selection-enable="access == 'staff' || statusType !== 'finished'"
             :table-loading="loading"
             :auto-refresh="freshInterval"
             @loading-change="loadingChange"
             @selection-change="onTableSelectionChange">
-            <ul slot="controller" class="composite-table-controller">
-              <a-dropdown-button
-                v-if="access == 'staff'"
-                :disabled="!selectedJob.length"
-                class="job-tag-action"
-                type="primary"
-                @click="onAddTagsClick">
-                {{ $t('JobManager.Add.Tags') }}
-                <a-menu
-                  slot="overlay"
-                  @click="
-                    ({ key }) => {
-                      onTagsAction(key)
-                    }
-                  ">
-                  <a-menu-item key="clear">{{ $t('JobManager.Clear.Tags') }}</a-menu-item>
-                </a-menu>
-                <a-icon slot="icon" type="down" />
-              </a-dropdown-button>
-              <span v-else>&nbsp;</span>
-            </ul>
-            <template slot="name" slot-scope="{ row, name }">
+            <template #controller>
+              <ul class="composite-table-controller">
+                <li>
+                  <a-dropdown-button
+                    v-if="access == 'staff'"
+                    :disabled="!selectedJob.length"
+                    class="job-tag-action"
+                    @click="onAddTagsClick">
+                    {{ $t('JobManager.Add.Tags') }}
+                    <template #overlay>
+                      <a-menu
+                        @click="
+                          ({ key }) => {
+                            onTagsAction(key)
+                          }
+                        ">
+                        <a-menu-item key="clear">{{ $t('JobManager.Clear.Tags') }}</a-menu-item>
+                      </a-menu>
+                    </template>
+                    <template #icon>
+                      <down-outlined />
+                    </template>
+                  </a-dropdown-button>
+                </li>
+                <li>
+                  <a-button
+                    v-if="(access === 'admin' || access === 'operator') && statusType === 'waiting'"
+                    id="batch_priority_btn"
+                    :disabled="!selectedJob.length"
+                    @click="onPriorityClick()">
+                    {{ $t('Action.Priority') }}
+                  </a-button>
+                </li>
+                <li>
+                  <a-button
+                    v-if="statusType === 'running'"
+                    id="batch_requeue_btn"
+                    :disabled="!selectedJob.length"
+                    @click="onRequeueClick()">
+                    {{ $t('Action.Requeue') }}
+                  </a-button>
+                </li>
+                <li>
+                  <a-button
+                    v-if="statusType === 'running' && access !== 'staff'"
+                    id="batch_suspend_btn"
+                    :disabled="!selectedJob.length"
+                    @click="onSuspendClick()">
+                    {{ $t('Action.Suspend') }}
+                  </a-button>
+                </li>
+                <li>
+                  <a-button
+                    v-if="statusType === 'running' && access !== 'staff'"
+                    id="batch_resume_btn"
+                    :disabled="!selectedJob.length"
+                    @click="onResumeClick()">
+                    {{ $t('Action.Resume') }}
+                  </a-button>
+                </li>
+                <li>
+                  <a-button
+                    v-if="statusType === 'waiting'"
+                    id="batch_hold_btn"
+                    :disabled="!selectedJob.length"
+                    @click="onHoldClick()">
+                    {{ $t('Action.Hold') }}
+                  </a-button>
+                </li>
+                <li>
+                  <a-button
+                    v-if="statusType === 'waiting'"
+                    id="batch_release_btn"
+                    :disabled="!selectedJob.length"
+                    @click="onReleaseClick()">
+                    {{ $t('Action.Release') }}
+                  </a-button>
+                </li>
+                <li>
+                  <a-button
+                    v-if="statusType !== 'finished'"
+                    id="batch_cancel_btn"
+                    :disabled="!selectedJob.length"
+                    @click="onCancelClick()">
+                    {{ $t('Action.Cancel') }}
+                  </a-button>
+                </li>
+                <li>
+                  <a-button
+                    v-if="access === 'staff' && statusType === 'finished'"
+                    id="batch_delete_btn"
+                    :disabled="!selectedJob.length"
+                    @click="onDeleteClick()">
+                    {{ $t('Action.Delete') }}
+                  </a-button>
+                </li>
+              </ul>
+            </template>
+            <template #name="{ row, name }">
               <span v-if="access == 'staff'" class="job-name-container">
                 <a-popover placement="right">
-                  <template slot="content">
+                  <template #content>
                     <p class="job-name" :class="row.comment.length ? 'm-b-8' : ''">{{ row.name }}</p>
                     <p v-if="row.comment.length" class="job-comment">
                       {{ row.comment }}
@@ -139,13 +216,13 @@
                 </a-popover>
               </span>
               <a-popover v-else placement="right">
-                <template slot="content">
+                <template #content>
                   <p class="job-name">{{ row.name }}</p>
                 </template>
                 <span class="ellipsis-container">{{ jobNameFormat(name) }}</span>
               </a-popover>
             </template>
-            <template slot="schedulerId" slot-scope="{ row, schedulerId }">
+            <template #schedulerId="{ row, schedulerId }">
               <a
                 v-if="statusType != 'finished'"
                 href="javascript:;"
@@ -155,7 +232,7 @@
               >
               <span v-else>{{ schedulerId }}</span>
             </template>
-            <template slot="status" slot-scope="{ row, status }">
+            <template #status="{ row, status }">
               <job-status-label
                 :arch="arch"
                 :status="status"
@@ -163,80 +240,85 @@
                 :ai-operate-status="row.aiOperateStatus">
               </job-status-label>
             </template>
-            <template slot="tags" slot-scope="{ tags }">
+            <template #tags="{ tags }">
               <job-tag-display :tags="tags" :display-count="1" :display-tag-length="10" />
             </template>
-            <template slot="submitUser" slot-scope="{ row, submitUser }">
-              <a href="javascript:;" class="el-button--wrap" @click="onSubmitUserClick(row)">
-                {{ submitUser }}
-              </a>
+            <template #submitUser="{ row, submitUser }">
+              <user-data-tooltip :username="submitUser">
+                <a class="el-button--wrap" @click.prevent="onSubmitUserClick(row)">
+                  {{ submitUser }}
+                </a>
+              </user-data-tooltip>
             </template>
-            <a-dropdown
-              slot="action"
-              slot-scope="{ row }"
-              :trigger="['click']"
-              placement="bottomLeft"
-              @visibleChange="onMenuVisible(row, $event)">
-              <a-menu slot="overlay" @click="({ key }) => onActionCommand(key, row)">
-                <template v-for="i in actionOptions">
-                  <a-menu-item v-if="i.value != 'Browse'" :key="i.value" :disabled="i.value == 'NoAction'">
-                    {{ i.label }}</a-menu-item
-                  >
+            <template #action="{ row }">
+              <a-dropdown :trigger="['click']" placement="bottomLeft" @open-change="onMenuVisible(row, $event)">
+                <template #overlay>
+                  <a-menu @click="({ key }) => onActionCommand(key, row)">
+                    <template v-for="i in actionOptions">
+                      <a-menu-item v-if="i.value != 'Browse'" :key="i.value" :disabled="i.value == 'NoAction'">
+                        {{ i.label }}</a-menu-item
+                      >
+                    </template>
+                  </a-menu>
                 </template>
-              </a-menu>
-              <a-button style="margin-left: 8px">
-                {{ $t('Action') }}
-                <a-icon type="down" />
-              </a-button>
-            </a-dropdown>
+                <a-button style="margin-left: 8px">
+                  {{ $t('Action') }}
+                  <down-outlined />
+                </a-button>
+              </a-dropdown>
+            </template>
           </composite-table>
           <job-action-dialog id="tid_job-manange-action-dialog" ref="jobActionDialog" />
           <job-error-message-dialog id="tid_job-manange-error-message-dialog" ref="jobErrorMessageDialog" />
           <file-manager-dialog id="tid_job-manange-file-dialog" ref="fileManager" />
           <job-tag-action-dialog id="tid_job-tag-action-dialog" ref="jobTagActionDialog" />
           <job-comment-dialog id="tid_job-comment-dialog" ref="jobCommentDialog" />
+          <job-priority-dialog v-if="access !== 'staff'" id="tid_job-priority-all-dialog" ref="jobPriorityDialog" />
         </a-col>
       </a-row>
     </div>
     <a-modal
-      :visible="showJobSchedulerInfo"
+      :open="showJobSchedulerInfo"
       :footer="null"
       :title="$t('JobManage.JobSchedulerInfo.Title')"
       @cancel="showJobSchedulerInfo = false">
-      <a-input type="textarea" :auto-size="{ maxRows: 10 }" read-only :value="jobSchedulerInfo" style="resize: none">
-      </a-input>
+      <a-textarea :auto-size="{ maxRows: 10 }" read-only :value="jobSchedulerInfo" style="resize: none"> </a-textarea>
     </a-modal>
   </div>
 </template>
 <script>
-import Format from '../common/format'
-import JobService from '../service/job'
-import AccessService from '../service/access'
-import MultiUserSelector from '../widget/multi-user-selector'
-import MultiQueueSelector from '../widget/multi-queue-selector'
-import CompositeTable from '../component/composite-table'
-import JobStatusLabel from '../widget/job-status-label'
-import JobActionDialog from '../widget/job-action-dialog'
-import FileManagerDialog from '../component/file-manager-dialog'
-import ErrorMessageDialog from './job-manage/job-error-message-dialog'
-import JobTagSActionDialog from './../widget/job-tag-action-dialog'
-import JobCommentDialog from './job/job-comment-dialog'
-import JobTagDisplay from './../widget/job-tag-display'
-import Mixins from '../mixins/set-keep-alive-pages'
+import Format from '@/common/format'
+import JobService from '@/service/job'
+import AccessService from '@/service/access'
+import Mixins from '@/mixins/set-keep-alive-pages'
+import CompositeTable from '@/component/composite-table.vue'
+import UserDataTooltip from '@/component/user-data-tooltip.vue'
+import FileManagerDialog from '@/component/file-manager-dialog.vue'
+import JobTagDisplay from '@/widget/job-tag-display.vue'
+import JobStatusLabel from '@/widget/job-status-label.vue'
+import JobActionDialog from '@/widget/job-action-dialog.vue'
+import MultiUserSelector from '@/widget/multi-user-selector.vue'
+import MultiQueueSelector from '@/widget/multi-queue-selector.vue'
+import JobTagActionDialog from '@/widget/job-tag-action-dialog.vue'
+import JobErrorMessageDialog from './job-manage/job-error-message-dialog.vue'
+import JobPriorityDialog from './job-manage/job-priority-dialog.vue'
+import JobCommentDialog from './job/job-comment-dialog.vue'
 const name = 'job-manage'
 export default {
   name,
   components: {
-    'composite-table': CompositeTable,
-    'job-action-dialog': JobActionDialog,
-    'multi-user-selector': MultiUserSelector,
-    'multi-queue-selector': MultiQueueSelector,
-    'job-status-label': JobStatusLabel,
-    'file-manager-dialog': FileManagerDialog,
-    'job-error-message-dialog': ErrorMessageDialog,
-    'job-tag-action-dialog': JobTagSActionDialog,
-    'job-comment-dialog': JobCommentDialog,
-    'job-tag-display': JobTagDisplay,
+    CompositeTable,
+    FileManagerDialog,
+    MultiUserSelector,
+    MultiQueueSelector,
+    UserDataTooltip,
+    JobActionDialog,
+    JobStatusLabel,
+    JobErrorMessageDialog,
+    JobTagActionDialog,
+    JobCommentDialog,
+    JobTagDisplay,
+    JobPriorityDialog,
   },
   mixins: [Mixins(name, 'jobTable')],
   data() {
@@ -271,7 +353,6 @@ export default {
       access,
       filterType: '',
       tableDataFetcher: JobService.getJobTableDataFetcher(access),
-      currentUserRole: '',
       jobType: 'hide-system',
       statusType: statusTypes[defaultStatusIndex].type,
       defaultSubmitTime: 1,
@@ -363,9 +444,7 @@ export default {
         {
           dataIndex: 'name',
           title: this.$t('Job.Name'),
-          scopedSlots: {
-            customRender: 'name',
-          },
+          customSlot: true,
           sorter: true,
           ellipsis: true,
           show: true,
@@ -373,18 +452,14 @@ export default {
         {
           dataIndex: 'schedulerId',
           title: this.$t('Job.SchedulerId'),
-          scopedSlots: {
-            customRender: 'schedulerId',
-          },
+          customSlot: true,
           sorter: true,
           show: arch === 'host',
         },
         {
           dataIndex: 'status',
           title: this.$t('Job.Status'),
-          scopedSlots: {
-            customRender: 'status',
-          },
+          customSlot: true,
           align: 'left',
           show: true,
         },
@@ -398,16 +473,14 @@ export default {
           dataIndex: 'tags',
           title: this.$t('Job.Tags'),
           align: 'left',
-          scopedSlots: {
-            customRender: 'tags',
-          },
+          customSlot: true,
           width: 130,
           show: this.access === 'staff',
         },
         {
           dataIndex: 'submitTime',
           title: this.$t('Job.SubmitTime'),
-          customRender: (text, record) => {
+          customRender: ({ text }) => {
             return Format.formatDateTime(text)
           },
           sorter: true,
@@ -416,7 +489,7 @@ export default {
         {
           dataIndex: 'waitDuration',
           title: this.$t('Job.WaitDuration'),
-          customRender: (text, record) => {
+          customRender: ({ text }) => {
             return Format.formatDuration(text)
           },
           show: statusType === 'waiting',
@@ -424,7 +497,7 @@ export default {
         {
           dataIndex: 'beginTime',
           title: this.$t(`Job.BeginTime.${statusType}`),
-          customRender: (text, record) => {
+          customRender: ({ text }) => {
             return Format.formatDateTime(text)
           },
           sorter: true,
@@ -433,7 +506,7 @@ export default {
         {
           dataIndex: 'runDuration',
           title: this.$t('Job.RunDuration'),
-          customRender: (text, record) => {
+          customRender: ({ text }) => {
             return Format.formatDuration(text)
           },
           show: statusType === 'running',
@@ -441,7 +514,7 @@ export default {
         {
           dataIndex: 'finishTime',
           title: this.$t('Job.FinishTime'),
-          customRender: (text, record) => {
+          customRender: ({ text }) => {
             return Format.formatDateTime(text)
           },
           sorter: true,
@@ -450,17 +523,21 @@ export default {
         {
           dataIndex: 'submitUser',
           title: this.$t('Job.SubmitUser'),
-          scopedSlots: {
-            customRender: 'submitUser',
-          },
+          customSlot: true,
           sorter: true,
           show: access !== 'staff',
         },
         {
+          dataIndex: 'priority',
+          title: this.$t('Job.Priority'),
+          align: 'right',
+          sorter: true,
+          show: statusType === 'waiting',
+        },
+        {
           title: this.$t('Action'),
-          scopedSlots: {
-            customRender: 'action',
-          },
+          key: 'action',
+          customSlot: true,
           show: access === 'staff' || statusType !== 'finished',
         },
       ]
@@ -483,9 +560,7 @@ export default {
       })
     },
     onDetailClick(job) {
-      JobService.initTemplateJobFields(job).finally(() => {
-        this.$router.push({ path: '/main/job/' + job.id })
-      })
+      this.$router.push({ path: '/main/job/' + job.id })
     },
     onTableSelectionChange(val) {
       this.selectedJob = val
@@ -494,13 +569,13 @@ export default {
       this.loading = val
     },
     onMenuVisible(row, e) {
-      const job = row
+      this.actionOptions = []
       if (!e) {
-        this.actionOptions = []
         return
       }
+      const job = row
       JobService.initTemplateJobFields(job).finally(async () => {
-        const actions = await JobService.getJobActions(this.access, job.operateStatus, job.status, job.type, job.errmsg)
+        const actions = await JobService.getJobActions(this.access, job)
         this.initActionOptions(actions)
       })
     },
@@ -513,8 +588,20 @@ export default {
         }
       })
     },
+    onRequeueClick(job) {
+      const batch = !job
+      const jobs = job || this.getJobsId()
+      this.$refs.jobActionDialog
+        .doRequeue(jobs, batch)
+        .catch(_ => {})
+        .finally(() => {
+          this.$refs.jobTable.fetchTableData(true)
+        })
+    },
     onCancelClick(job) {
-      this.$refs.jobActionDialog.doCancel(job).then(
+      const batch = !job
+      const jobs = job || this.getJobsId()
+      this.$refs.jobActionDialog.doCancel(jobs, batch).then(
         res => {
           // Reload table data
           this.$refs.jobTable.fetchTableData(true)
@@ -524,8 +611,50 @@ export default {
         },
       )
     },
+    onHoldClick(job) {
+      const batch = !job
+      const jobs = job || this.getJobsId()
+      this.$refs.jobActionDialog
+        .doHold(jobs, batch)
+        .catch(_ => {})
+        .finally(() => {
+          this.$refs.jobTable.fetchTableData(true)
+        })
+    },
+    onReleaseClick(job) {
+      const batch = !job
+      const jobs = job || this.getJobsId()
+      this.$refs.jobActionDialog
+        .doRelease(jobs, batch)
+        .catch(_ => {})
+        .finally(() => {
+          this.$refs.jobTable.fetchTableData(true)
+        })
+    },
+    onSuspendClick(job) {
+      const batch = !job
+      const jobs = job || this.getJobsId()
+      this.$refs.jobActionDialog
+        .doSuspend(jobs, batch)
+        .catch(_ => {})
+        .finally(() => {
+          this.$refs.jobTable.fetchTableData(true)
+        })
+    },
+    onResumeClick(job) {
+      const batch = !job
+      const jobs = job || this.getJobsId()
+      this.$refs.jobActionDialog
+        .doResume(jobs, batch)
+        .catch(_ => {})
+        .finally(() => {
+          this.$refs.jobTable.fetchTableData(true)
+        })
+    },
     onDeleteClick(job) {
-      this.$refs.jobActionDialog.doDelete(job).then(
+      const batch = !job
+      const jobs = job || this.getJobsId()
+      this.$refs.jobActionDialog.doDelete(jobs, batch).then(
         res => {
           this.$refs.jobTable.fetchTableData(true)
         },
@@ -570,8 +699,23 @@ export default {
       return name
     },
     onActionCommand(action, job) {
+      if (action === 'Requeue') {
+        this.onRequeueClick(job)
+      }
       if (action === 'Cancel') {
         this.onCancelClick(job)
+      }
+      if (action === 'Hold') {
+        this.onHoldClick(job)
+      }
+      if (action === 'Release') {
+        this.onReleaseClick(job)
+      }
+      if (action === 'Suspend') {
+        this.onSuspendClick(job)
+      }
+      if (action === 'Resume') {
+        this.onResumeClick(job)
       }
       if (action === 'Rerun') {
         this.onRerunClick(job)
@@ -588,10 +732,22 @@ export default {
       if (action === 'Errmsg') {
         this.onErrMessageClick(job)
       }
+      if (action === 'Priority') {
+        this.onPriorityClick(job)
+      }
     },
     changeValue(data) {
       this.dataFilter.submitUser.value_type = data.value_type
       this.dataFilter.submitUser.values = data.values
+    },
+    onPriorityClick(job) {
+      const idList = job ? [job.id] : this.getJobsId()
+      this.$refs.jobPriorityDialog
+        .doOpen(idList)
+        .catch(_ => {})
+        .finally(() => {
+          this.$refs.jobTable.fetchTableData(true)
+        })
     },
     submitTimeChange(val) {
       let submissionRange = [new Date(0), new Date('2100/1/1')]
@@ -641,10 +797,17 @@ export default {
         },
       )
     },
+    getJobsId() {
+      return this.selectedJob.map(item => item.id)
+    },
   },
 }
 </script>
 <style scoped>
+.job-manage-wrapper :deep(.ant-table-cell) {
+  overflow: unset;
+  overflow-wrap: unset;
+}
 .job-tab {
   margin-bottom: 20px;
 }
@@ -660,15 +823,10 @@ export default {
   width: 100%;
   margin-bottom: 20px;
 }
-.job-tag-action >>> .ant-dropdown-trigger {
+.job-tag-action :deep(.ant-dropdown-trigger) {
   width: 34px;
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
-}
-.job-name,
-.job-comment {
-  max-width: 260px;
-  word-break: break-all;
 }
 .job-name {
   font-size: 14px;
@@ -692,5 +850,9 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
   vertical-align: bottom;
+}
+.composite-table-controller > li {
+  float: left;
+  margin-right: 20px;
 }
 </style>

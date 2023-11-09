@@ -1,73 +1,74 @@
 <template>
   <a-modal
     ref="popupDialog"
+    v-model:open="isRender"
     class="moduleSelect"
-    :title="dialogTitle"
-    :destroy-on-close="true"
     style="height: 85%"
-    :visible="isRender"
+    destroy-on-close
+    :title="dialogTitle"
     :append-to-body="true"
     @cancel="isRender = false">
-    <a-tabs v-model="displayTab" :animated="false" @change="switchModuleItem">
-      <a-tab-pane key="all" :tab="$t('Admin.Runtime.Module.Select.AllTab')" />
-      <a-tab-pane v-if="isShowIntel" key="intel" :tab="$t('Admin.Runtime.Module.Select.IntelTab')" />
-    </a-tabs>
-    <a-input v-model="filterText" :placeholder="$t('Admin.Runtime.Module.Select.Placeholder')" allow-clear />
-    <a-tree
-      v-model="checkedModuleKeys"
-      :default-expand-all="expandAll"
-      multiple
-      checkable
-      :selected-keys.sync="checkedModuleKeys"
-      :show-icon="true"
-      @select="selectModules"
-      @check="selectModules">
-      <a-tree-node
-        v-for="m in showModules"
-        v-show="m.show"
-        :key="m.code"
-        :selectable="false"
-        :checkable="false"
-        :title="m.displayName">
-        <img slot="icon" :src="m.iconPath" class="rcicon-smile" style="width: 15px; height: 15px" />
-        <a-tree-node v-for="i in m.items" :key="i.code" :title="i.displayName" />
-      </a-tree-node>
-    </a-tree>
-
-    <span slot="footer" class="dialog-footer">
-      <a-button style="float: left" @click="resetSelected">
-        {{ $t('Action.Reset') }}
-      </a-button>
-      <a-button @click="isRender = false"> {{ $t('Action.Cancel') }}</a-button>
-      <a-button type="primary" @click="onSubmit"> {{ $t('Action.Confirm') }}</a-button>
-    </span>
+    <a-spin :spinning="loading">
+      <a-tabs v-model:activeKey="displayTab" :animated="false" @change="switchModuleItem">
+        <a-tab-pane key="all" :tab="$t('Admin.Runtime.Module.Select.AllTab')" />
+        <a-tab-pane v-if="isShowIntel" key="intel" :tab="$t('Admin.Runtime.Module.Select.IntelTab')" />
+      </a-tabs>
+      <a-input v-model:value="filterText" :placeholder="$t('Admin.Runtime.Module.Select.Placeholder')" allow-clear />
+      <template v-for="item in showModules" :key="item.code">
+        <a-collapse v-show="item.show" v-model:activeKey="expandModules" :bordered="false">
+          <template #expandIcon="{ isActive }">
+            <caret-right-outlined :rotate="isActive ? 90 : 0" />
+            <img :src="item.iconPath" class="rcicon-smile" />
+          </template>
+          <a-collapse-panel :key="item.code" :header="item.displayName">
+            <p v-for="i in item.items" :key="i.code" class="runtime-item-module">
+              <a-checkbox v-model:checked="i.checked" @change="onModuleCheck(i, item)">{{ i.displayName }}</a-checkbox>
+            </p>
+          </a-collapse-panel>
+        </a-collapse>
+      </template>
+    </a-spin>
+    <template #footer>
+      <span class="dialog-footer">
+        <a-button style="float: left" :disabled="loading" @click="resetSelected">
+          {{ $t('Action.Reset') }}
+        </a-button>
+        <a-button @click="isRender = false"> {{ $t('Action.Cancel') }}</a-button>
+        <a-button type="primary" :disabled="loading" @click="onSubmit"> {{ $t('Action.Confirm') }}</a-button>
+      </span>
+    </template>
   </a-modal>
 </template>
 
 <script>
-import RuntimeService from '../../service/runtime-manage'
+import RuntimeService from '@/service/runtime-manage'
 
 export default {
+  emits: ['get-checked-modules'],
   data() {
     return {
       isRender: false,
       dialogTitle: this.$t('Admin.Runtime.Module.Select.Title'),
       filterText: '',
       displayTab: 'all',
-      expandAll: true,
       innerData: [],
-      checkedModuleKeys: [],
       oldSelected: [],
       showModules: [],
+      expandModules: [],
+      loading: false,
     }
   },
   computed: {
     isShowIntel() {
       return this.$store.state.auth.featureCodes.includes('oneapi')
     },
+    moduleOptions() {
+      return this.showModules.filter(i => i.show)
+    },
   },
   watch: {
     filterText(val) {
+      if (!this.isRender) return
       this.showModules = this.innerData.map(item => {
         const result = item.items.filter(i => i.displayName.toLowerCase().indexOf(val.toLowerCase()) >= 0)
         if (this.displayTab === 'intel' && item.items[0].moduleTag !== this.displayTab) {
@@ -78,76 +79,60 @@ export default {
         return item
       })
     },
-    checkedModuleKeys(val, old) {
-      this.oldSelected = val
-    },
   },
   mounted() {
-    this.$watch('isRender', (newVal, oldVal) => {
-      if (!newVal) {
-        this.filterText = ''
-      }
-    })
+    // this.$watch('isRender', (newVal, oldVal) => {
+    //   if (!newVal) {
+    //     this.filterText = ''
+    //   }
+    // })
   },
   methods: {
     init() {
-      this.isRender = false
+      this.isRender = true
       this.filterText = ''
-      this.checkedModuleKeys = []
       this.showModules = []
     },
     resetSelected() {
-      this.checkedModuleKeys = []
+      this.showModules = this.innerData.map(item => {
+        item.items = item.items.map(i => {
+          i.checked = false
+          return i
+        })
+        return item
+      })
     },
-    selectModules(data, node) {
-      if (!data.length) return
-      let addCodes = data.filter(i => !this.oldSelected.includes(i))
-      let removeCodes = this.oldSelected.filter(i => !data.includes(i))
-      let addModeles = this.getCheckedModules(addCodes)
-      addModeles = addModeles.concat(this.getModulesParents(addModeles))
-      addCodes = addModeles.map(i => i.code).filter(i => !this.oldSelected.includes(i))
-      const oldSelected = this.getCheckedModules(this.oldSelected)
-      // const removeSelected = oldSelected.filter(m => {
-      //   for (let i = 0; i < addModeles.length; i++) {
-      //     if (
-      //       addModeles[i].name !== m.name && m.parentName === addModeles[i].parentName
-      //     ) {
-      //       return m
-      //     }
-      //   }
-      // })
-      const removeSelected = oldSelected.filter(m =>
-        addModeles.some(am => am.name !== m.name && am.parentName === m.parentName),
-      )
-      removeCodes = removeSelected.map(i => i.code).concat(removeCodes)
-      this.checkedModuleKeys = this.oldSelected.concat(addCodes).filter(i => !removeCodes.includes(i))
+    onModuleCheck(self, item) {
+      item.items = item.items.map(i => {
+        if (self.name !== i.name) {
+          i.checked = false
+        }
+        return i
+      })
+      const parent = self.parents[0]
+      if (parent) {
+        this.innerData.forEach(el => {
+          el.items.forEach(i => {
+            if (i.name === parent) {
+              i.checked = true
+            }
+          })
+        })
+      }
     },
-    getCheckedModules(checkArr) {
+    getCheckedModules() {
       let result = []
-      this.innerData.forEach(item => {
+      this.showModules.forEach(item => {
         const selected = item.items.filter(i => {
-          return checkArr.includes(i.code)
+          return i.checked
         })
         result = [...result, ...selected]
       })
       return result
     },
-    getModulesParents(checkModules) {
-      const arr = []
-      const modules = this.innerData.map(i => i.items).reduce((a, b) => a.concat(b))
-
-      const parents = checkModules.map(i => i.parents)
-      const parentsNames = parents.length ? parents.reduce((a, b) => a.concat(b)) : []
-      modules.forEach(i => {
-        if (parentsNames.includes(i.name) && !arr.includes(i)) {
-          arr.push(i)
-        }
-      })
-      return arr
-    },
     onSubmit() {
+      this.$emit('get-checked-modules', this.getCheckedModules())
       this.isRender = false
-      this.$emit('get-checked-modules', this.getCheckedModules(this.checkedModuleKeys))
     },
     switchModuleItem(key) {
       this.filterText = ''
@@ -167,27 +152,25 @@ export default {
     },
     doOpen(selectedModules) {
       this.init()
+      this.loading = true
       RuntimeService.listModules().then(
         res => {
           this.$nextTick(() => {
+            // this.isRender = true
             this.displayTab = 'all'
-            this.innerData = res
-            this.expandAll = true
-            this.showModules = res
-            if (res.length) {
-              const modules = res
-                .map(i => i.items)
-
-                .reduce((a, b) => a.concat(b))
-              selectedModules.forEach(item => {
-                modules.forEach(m => {
-                  if (item.name === m.name) {
-                    this.checkedModuleKeys.push(m.code)
-                  }
-                })
+            this.expandModules = res.map(i => i.code)
+            const checkedKeys = selectedModules.map(i => i.name)
+            this.innerData = res.map(item => {
+              item.items = item.items.map(i => {
+                if (checkedKeys.includes(i.name)) {
+                  i.checked = true
+                }
+                return i
               })
-            }
-            this.isRender = true
+              return item
+            })
+            this.showModules = this.innerData
+            this.loading = false
           })
         },
         _ => {
@@ -199,4 +182,20 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.ant-collapse-header,
+.ant-collapse-content-box {
+  padding: 4px 10px !important;
+}
+.ant-collapse-expand-icon {
+  padding-inline-end: 3px !important;
+}
+.rcicon-smile {
+  margin-left: 10px;
+  width: 15px;
+  height: 15px;
+}
+.runtime-item-module {
+  padding-left: 40px;
+}
+</style>

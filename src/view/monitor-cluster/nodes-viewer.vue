@@ -1,12 +1,7 @@
 <template>
   <div class="nodes-viewer">
     <div ref="nodesContainer" class="nodes-container" @scroll="loadMoreData">
-      <div
-        v-for="item in innerData"
-        :key="item.hostname"
-        class="nodes-item"
-        @mouseenter="showMoreIcon(item)"
-        @mouseleave="hideMoreIcon(item)">
+      <div v-for="item in innerData" :key="item.hostname" class="nodes-item">
         <p class="node-name">
           {{ item.hostname }}
         </p>
@@ -14,8 +9,7 @@
           <a-tooltip :title="$t('Action.Info')" placement="left">
             <i
               :ref="item.hostname + 'more'"
-              class="el-more-icon el-erp-more2"
-              style="display: none"
+              class="el-more-icon el-erp-more2 nodes-item-icon"
               @click="onDetailClick(item)" />
           </a-tooltip>
         </div>
@@ -43,8 +37,8 @@
 </template>
 
 <script>
-import ResourceUtilization from '../../widget/resource-utilization'
-import NodeDetailDialog from '../../widget/nodes-table/node-detail-dialog'
+import ResourceUtilization from '@/widget/resource-utilization.vue'
+import NodeDetailDialog from '@/widget/nodes-table/node-detail-dialog.vue'
 export default {
   components: {
     ResourceUtilization,
@@ -65,7 +59,7 @@ export default {
   },
   computed: {
     gResource() {
-      return window.gApp.$store.getters['settings/getGResource']
+      return this.$store.getters['settings/getGResource']
     },
   },
   watch: {
@@ -195,6 +189,12 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+}
+.nodes-item-icon {
+  display: none;
+}
+.nodes-item:hover .nodes-item-icon {
+  display: block;
 }
 .el-more-icon {
   position: absolute;

@@ -1,9 +1,9 @@
 <template>
-  <div ref="reportAlertAxis" style="width: 100%; height: 500px" />
+  <div ref="innerChart" style="width: 100%; height: 500px"></div>
 </template>
 <script>
-import * as EChart from 'echarts'
 export default {
+  inject: ['resize'],
   props: ['dataReportAlertAxis'],
   data() {
     return {
@@ -15,24 +15,22 @@ export default {
     dataReportAlertAxis: {
       handler(val, oldVal) {
         this.p = val
-        this.barObject.resize()
+        this.onResize()
         this.draw()
       },
       deep: true,
     },
+    resize(val) {
+      this.onResize()
+    },
   },
   mounted() {
-    const self = this
-    self.barObject = EChart.init(self.$refs.reportAlertAxis, window.gApp.echartsTheme.alert)
+    this.$chart.init(this.$refs.innerChart, window.gApp.echartsTheme.alert)
     this.draw()
-    window.addEventListener('resize', this.onResize)
-  },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.onResize)
   },
   methods: {
     onResize() {
-      this.barObject.resize()
+      this.$chart.getInstanceByDom(this.$refs.innerChart).resize()
     },
     draw: function () {
       const self = this
@@ -91,7 +89,7 @@ export default {
           return serise
         })(),
       }
-      this.barObject.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.innerChart).setOption(option)
     },
   },
 }

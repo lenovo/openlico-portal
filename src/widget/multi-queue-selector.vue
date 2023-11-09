@@ -1,15 +1,16 @@
 <template>
-  <a-select v-model="innerValue" :allow-clear="true" class="default-select" :placeholder="innerPlaceholder">
+  <a-select v-model:value="innerValue" :allow-clear="true" class="default-select" :placeholder="innerPlaceholder">
     <a-select-option v-for="item in options" :key="item.value" :value="item.value">
       {{ item.label }}
     </a-select-option>
   </a-select>
 </template>
 <script>
-import QueueService from '../service/queue'
+import QueueService from '@/service/queue'
 
 export default {
   props: ['value', 'gpu', 'placeholder'],
+  emits: ['input', 'update:value'],
   data() {
     return {
       options: [],
@@ -20,19 +21,12 @@ export default {
   watch: {
     innerValue: {
       handler: function (val, oldVal) {
-        // if(this.compareValues(this.value, val)) {
-        //   return;
-        // }
-        // this.value.splice(0, this.value.length);
-        // this.innerValue.forEach((one) => {
-        //   this.value.push(one);
-        // });
-        // [Bug 182485] wengmh1 2019/09/17
-        // Fix job queuing can't recovery from clear queue selection.
         if (!this.innerValue) {
           this.$emit('input', [])
+          this.$emit('update:value', [])
         } else {
           this.$emit('input', [this.innerValue])
+          this.$emit('update:value', [this.innerValue])
         }
       },
       deep: false,
@@ -43,6 +37,7 @@ export default {
       } else if (!Array.isArray(val) && this.options.length) {
         this.innerValue = this.options[0].value
         this.$emit('input', [this.innerValue])
+        this.$emit('update:value', [this.innerValue])
       } else {
         this.innerValue = undefined
       }

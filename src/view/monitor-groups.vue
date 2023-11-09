@@ -1,7 +1,11 @@
 <template>
   <div class="height--100 group-view p-10">
     <div class="MonitorGroupAction p-20" style="display: flex">
-      <a-select id="tid_monitor-groups-group" v-model="groupName" style="min-width: 100px" @change="onNodeGroupChange">
+      <a-select
+        id="tid_monitor-groups-group"
+        v-model:value="groupName"
+        style="min-width: 100px"
+        @change="onNodeGroupChange">
         <a-select-option v-for="group in nodeGroups" :key="group.id" :value="group.name">
           {{ group.name }}
         </a-select-option>
@@ -9,19 +13,19 @@
       <a-button-group v-if="nodeGroups.length > 0" style="margin-left: 35px">
         <a-button
           id="tid_monitor-groups-list"
-          :type="displayedContentType == 'list' ? 'primary' : 'normal'"
+          :type="displayedContentType == 'list' ? 'primary' : 'default'"
           @click="onActionButtonClick('list')">
           {{ $t('NodeGroup.Tab.Title.List') }}
         </a-button>
         <a-button
           id="tid_monitor-groups-trend"
-          :type="displayedContentType == 'trend' ? 'primary' : 'normal'"
+          :type="displayedContentType == 'trend' ? 'primary' : 'default'"
           @click="onActionButtonClick('trend')">
           {{ $t('NodeGroup.Tab.Title.Trend') }}
         </a-button>
         <a-button
           id="tid_monitor-groups-healthy"
-          :type="displayedContentType == 'healthy' ? 'primary' : 'normal'"
+          :type="displayedContentType == 'healthy' ? 'primary' : 'default'"
           @click="onActionButtonClick('healthy')">
           {{ $t('NodeGroup.Tab.Title.Health') }}
         </a-button>
@@ -39,8 +43,7 @@
 import GroupList from './monitor-groups/group-list.vue'
 import GroupTrend from './monitor-groups/group-trend.vue'
 import GroupHealth from './monitor-groups/group-health.vue'
-
-import NodeGroupService from '../service/node-group'
+import NodeGroupService from '@/service/node-group'
 
 export default {
   components: {

@@ -112,7 +112,6 @@ function alertsRestApiPropMap(prop) {
   else if (prop === 'nodeName') return 'node'
   else if (prop === 'gpuId') return 'gpu_index'
   else if (prop === 'comment') return 'comment'
-  else if (prop === 'nodeName') return 'node'
   else return ''
 }
 

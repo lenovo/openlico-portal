@@ -14,146 +14,129 @@
  * limitations under the License.
  */
 
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import VueI18n from 'vue-i18n'
-import Antd from 'ant-design-vue'
-
-import 'ant-design-vue/dist/antd.css'
+// import 'ant-design-vue/dist/reset.css'
+// import 'ant-design-vue/es/message/style/css'
 import './assets/fonts/iconfont.css'
 import './assets/theme/main.css'
-import './/assets/theme/index.less'
-
-import store from './storage/store'
-import routes from './router/route'
-import messages from './locale/message'
+import './assets/theme/index.css'
 
 import { Base64 } from 'js-base64'
-import ECharts from './assets/theme/echarts'
+import { createApp, h, computed } from 'vue'
+import { message, Modal } from 'ant-design-vue'
 
-import AuthService from './service/auth'
-import AccessService from './service/access'
-import FileManageService from './service/file-manager'
-// import ECharts theme
+import i18n, { T } from './i18n'
+import store from './store'
+import router from './router'
+import Echarts from './assets/theme/echarts'
+import Axios from './request/https'
+
 import App from './App.vue'
-import axios from './request/https'
 
-Vue.config.productionTip = false
+import AuthService from '@/service/auth'
+import AccessService from '@/service/access'
 
-Vue.use(VueRouter)
-Vue.use(VueI18n)
-Vue.use(Antd)
-// Vue.use()
-
-Vue.$echarts = ECharts
-
-// Init locale
-const browserLang = (navigator.language || navigator.browserLanguage).toLowerCase()
-let langCode = 'en'
-if (browserLang.indexOf('zh') >= 0) {
-  langCode = 'zh'
-}
-
-const i18n = new VueI18n({
-  locale: langCode,
-  messages,
-})
-
-// Init router
-const router = new VueRouter({
-  mode: 'hash',
-  routes,
-})
-
-// Handle before route, need check auth information.
-router.beforeEach((to, from, next) => {
-  if (to.meta.auth && !AuthService.isLogin()) {
-    next({
-      path: '/login',
-      query: { redirect: to.fullPath },
-    })
-    return
-  }
-
-  AccessService.checkUrlByAccess(to).then(
-    res => {
-      next()
-    },
-    err => {
-      next({ path: '/main' })
-      window.gApp.$message.warning(err)
-    },
-  )
-})
-
-// Handle after route
-router.afterEach((to, from) => {
-  FileManageService.clearRecentSelectedPath()
-  // Nothing to do
-})
-
-// Init storage
-store.dispatch('auth/init')
-
-window.Base64 = Base64
-// window.Echart = EChart;
-window.gApp = new Vue({
-  el: '#app',
-  i18n,
-  store,
-  router,
-  data: {
-    // The change flag of the detail page of the keepAlive page
-    updateImmediate: false,
-    isCollapse: false,
-    mainToolsVisible: false,
-    echartsTheme: {
-      common: 'default',
-      nodeStatus: 'nodeStatus',
-      nodegroupStatus: 'nodeGroupStatus',
-      jobStatus: 'jobStatus',
-      jobQueueStatus: 'jobQueueStatus',
-      alert: 'alert',
+const app = createApp({
+  provide() {
+    return {
+      resize: computed(() => this.windowResize),
+    }
+  },
+  data() {
+    return {
+      updateImmediate: false,
+      isCollapse: false,
+      mainToolsVisible: false,
+      windowResize: 0,
+      echartsTheme: {
+        common: 'default',
+        nodeStatus: 'nodeStatus',
+        nodegroupStatus: 'nodeGroupStatus',
+        jobStatus: 'jobStatus',
+        jobQueueStatus: 'jobQueueStatus',
+        alert: 'alert',
+      },
+    }
+  },
+  watch: {
+    isCollapse(val) {
+      let num = 20
+      const windowOnResize = this.windowOnResize
+      function resize() {
+        if (num === 0) return
+        setTimeout(_ => {
+          num--
+          windowOnResize()
+          resize()
+        }, 20)
+      }
+      resize()
     },
   },
-  beforeDestroy() {
+  mounted() {
+    this.refreshToken()
+    window.removeEventListener('resize', this.windowOnResize)
+    window.addEventListener('resize', this.windowOnResize)
+  },
+  beforeUnmount() {
     if (window.refreshTokenId > 0) {
       clearTimeout(window.refreshTokenId)
     }
+    window.removeEventListener('resize', this.windowOnResize)
   },
-  render: h => h(App),
+  methods: {
+    refreshToken() {
+      if (window.refreshTokenId > 0) {
+        clearTimeout(window.refreshTokenId)
+      }
+      const token = this.$store.state.auth.token
+      if (token && token.length > 0) {
+        AuthService.refreshToken().then(
+          res => {
+            window.refreshTokenId = setTimeout(this.refreshToken, 1000 * 60 * 10)
+          },
+          res => {
+            console.log('Refresh token failed.', res)
+            AuthService.logout()
+            window.refreshTokenId = setTimeout(this.refreshToken, 1000 * 60 * 10)
+          },
+        )
+      } else {
+        window.refreshTokenId = setTimeout(this.refreshToken, 1000 * 60 * 10)
+      }
+    },
+    windowOnResize() {
+      this.windowResize++
+    },
+  },
+  render: _ => h(App),
 })
+  .use(store)
+  .use(i18n)
+  .use(router)
 
-Vue.prototype.$axios = axios
-window.gApp.$axios = Vue.prototype.$axios
+app.config.globalProperties.$chart = Echarts
+app.config.globalProperties.$message = message
+app.config.globalProperties.$confirm = Modal.confirm
+app.config.globalProperties.$success = Modal.success
+app.config.globalProperties.$error = Modal.error
+app.config.globalProperties.$axios = Axios
+app.config.globalProperties.$T = T
 
-// Start async service for Confluent termwindow
+app.config.devtools = import.meta.env.DEV
+
+app.config.errorHandler = (err, vm, info) => {
+  console.log('[ERROR Msg]', err)
+  console.log('[ERROR Node]', vm)
+  console.log('[ERROR Info]', info)
+}
+
+window.Base64 = Base64
+window.gApp = app.mount('#app')
+
 window.asyncCallback = function () {
   window.async_flag = true
 }
+
 if (AuthService.isLogin() && AccessService.getSchedulerArch() === 'host') {
   window.startAsync(window.asyncCallback.bind({ username: 'demouser' }))
 }
-
-// Refresh Token Daemon
-function refreshToken() {
-  if (window.refreshTokenId > 0) {
-    clearTimeout(window.refreshTokenId)
-  }
-  const token = window.gApp.$store.state.auth.token
-  if (token && token.length > 0) {
-    AuthService.refreshToken().then(
-      res => {
-        window.refreshTokenId = setTimeout(refreshToken, 1000 * 60 * 10)
-      },
-      res => {
-        console.log('Refresh token failed.', res)
-        AuthService.logout()
-        window.refreshTokenId = setTimeout(refreshToken, 1000 * 60 * 10)
-      },
-    )
-  } else {
-    window.refreshTokenId = setTimeout(refreshToken, 1000 * 60 * 10)
-  }
-}
-refreshToken()

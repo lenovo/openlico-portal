@@ -4,16 +4,14 @@
     :title="title"
     size="500px"
     :form-model="actionForm"
-    composite-height="230"
-    :success-message-formatter="successMessageFormatter"
-    :error-message-formatter="errorMessageFormatter">
+    :success-message-formatter="successMessageFormatter">
     <div>{{ getConfirmMessage() }}</div>
   </composite-form-dialog>
 </template>
 
 <script>
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import NodeService from '../../service/node'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import NodeService from '@/service/node'
 
 export default {
   components: {
@@ -59,42 +57,39 @@ export default {
     getConfirmMessage() {
       if (this.mode === 'on') {
         if (this.nextDevice === 'setup') {
-          return this.$t('Node.Action.PowerOn.Setup.Confirm', {
+          return this.$T('Node.Action.PowerOn.Setup.Confirm', {
             name: this.actionForm.hostname,
           })
         } else if (this.nextDevice === 'network') {
-          return this.$t('Node.Action.PowerOn.Network.Confirm', {
+          return this.$T('Node.Action.PowerOn.Network.Confirm', {
             name: this.actionForm.hostname,
           })
         } else if (this.nextDevice === 'cd') {
-          return this.$t('Node.Action.PowerOn.CD.Confirm', {
+          return this.$T('Node.Action.PowerOn.CD.Confirm', {
             name: this.actionForm.hostname,
           })
         } else {
-          return this.$t('Node.Action.PowerOn.Confirm', {
+          return this.$T('Node.Action.PowerOn.Confirm', {
             name: this.actionForm.hostname,
           })
         }
       } else {
-        return this.$t('Node.Action.PowerOff.Confirm', {
+        return this.$T('Node.Action.PowerOff.Confirm', {
           name: this.actionForm.hostname,
         })
       }
     },
     successMessageFormatter(res) {
       if (this.mode === 'on') {
-        return this.$t('Node.Action.PowerOn.Success', {
+        return this.$T('Node.Action.PowerOn.Success', {
           name: this.actionForm.hostname,
         })
       }
       if (this.mode === 'off') {
-        return this.$t('Node.Action.PowerOff.Success', {
+        return this.$T('Node.Action.PowerOff.Success', {
           name: this.actionForm.hostname,
         })
       }
-    },
-    errorMessageFormatter(res) {
-      return res
     },
     doPowerOn(node, nextDevice) {
       this.mode = 'on'
@@ -103,7 +98,7 @@ export default {
       this.actionForm = {
         hostname: node.hostname,
       }
-      this.title = this.$t('Node.Action.PowerOn.Title')
+      this.title = this.$T('Node.Action.PowerOn.Title')
       return this.$refs.innerDialog.popup(this.submitForm)
     },
     doMultiPowerOn(nodes, nodeList, nextDevice) {
@@ -117,7 +112,7 @@ export default {
       this.actionForm = {
         hostname: nodeName.toString(),
       }
-      this.title = this.$t('Node.Action.PowerOn.Title')
+      this.title = this.$T('Node.Action.PowerOn.Title')
       return this.$refs.innerDialog.popup(this.submitForm)
     },
     doPowerOff(node) {
@@ -126,7 +121,7 @@ export default {
       this.actionForm = {
         hostname: node.hostname,
       }
-      this.title = this.$t('Node.Action.PowerOff.Title')
+      this.title = this.$T('Node.Action.PowerOff.Title')
       return this.$refs.innerDialog.popup(this.submitForm)
     },
     doMultiPowerOff(nodes, nodeList) {
@@ -139,7 +134,7 @@ export default {
       this.actionForm = {
         hostname: nodeName.toString(),
       }
-      this.title = this.$t('Node.Action.PowerOff.Title')
+      this.title = this.$T('Node.Action.PowerOff.Title')
       return this.$refs.innerDialog.popup(this.submitForm)
     },
   },

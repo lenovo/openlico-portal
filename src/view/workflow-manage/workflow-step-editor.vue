@@ -4,20 +4,19 @@
     :title="title"
     :form-model="workflowForm"
     :form-rules="workflowRules"
-    form-label-width="160px"
-    :composite-height="400">
-    <a-form-model-item :label="$t('Workflow.Name')" prop="name">
-      <a-input v-model="workflowForm.name" />
-    </a-form-model-item>
-    <a-form-model-item :label="$t('Workflow.Description')" prop="description">
-      <a-textarea v-model="workflowForm.description" :auto-size="{ minRows: 2 }" />
-    </a-form-model-item>
+    form-label-width="160px">
+    <a-form-item :label="$t('Workflow.Name')" name="name">
+      <a-input v-model:value="workflowForm.name" />
+    </a-form-item>
+    <a-form-item :label="$t('Workflow.Description')" name="description">
+      <a-textarea v-model:value="workflowForm.description" :auto-size="{ minRows: 2 }" />
+    </a-form-item>
   </composite-form-dialog>
 </template>
 
 <script>
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 export default {
   components: {
     'composite-form-dialog': CompositeFormDialog,

@@ -1,44 +1,41 @@
 <template>
   <div>
-    <div ref="innerChart" class="report-pie" />
+    <div ref="innerChart" class="report-pie"></div>
   </div>
 </template>
 <script>
-import Format from './../../common/format'
-import * as EChart from 'echarts'
+import Format from '@/common/format'
 export default {
-  components: {},
+  inject: ['resize'],
   props: ['pie'],
+  emits: ['clickPie'],
   data() {
     return {
       pieObject: {},
     }
   },
   watch: {
-    pie: {
-      handler: function () {
-        this.$nextTick(() => {
-          this.draw(this.pie)
-        })
-      },
-      deep: true,
+    resize(val) {
+      this.onResize()
     },
   },
   mounted() {
     const $this = this
+    const chart = this.$chart.init(this.$refs.innerChart, window.gApp.echartsTheme.common)
     this.$nextTick(function () {
-      if (this.pieObject && this.pieObject.on) {
-        this.pieObject.on('click', function (para) {
+      if (chart && chart.on) {
+        chart.on('click', function (para) {
           $this.$emit('clickPie', para)
         })
       }
+      this.draw()
     })
+  },
+  beforeUnmount() {
+    this.$chart.getInstanceByDom(this.$refs.innerChart).clear()
   },
   methods: {
     draw: function (data) {
-      if (Object.keys(this.pieObject).length === 0) {
-        this.pieObject = EChart.init(this.$refs.innerChart, window.gApp.echartsTheme.common)
-      }
       const option = {
         tooltip: {
           trigger: 'item',
@@ -77,13 +74,16 @@ export default {
           },
         ],
       }
-      this.pieObject.setOption(option)
-      window.removeEventListener('resize', () => {
-        this.pieObject.resize()
-      })
-      window.addEventListener('resize', () => {
-        this.pieObject.resize()
-      })
+      this.$chart.getInstanceByDom(this.$refs.innerChart).setOption(option)
+      // window.removeEventListener('resize', () => {
+      //   this.pieObject.resize()
+      // })
+      // window.addEventListener('resize', () => {
+      //   this.pieObject.resize()
+      // })
+    },
+    onResize() {
+      this.$chart.getInstanceByDom(this.$refs.innerChart).resize()
     },
   },
 }

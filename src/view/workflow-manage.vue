@@ -14,62 +14,70 @@
         :page-size="20"
         :total="0"
         :auto-refresh="15 * 1000">
-        <div slot="controller">
+        <template #controller>
           <a-button type="primary" @click="onCreateClick">
             {{ $t('Action.Create') }}
           </a-button>
-        </div>
-        <a-button slot="name" slot-scope="{ row }" :title="row.name" type="link" @click="onDetailClick(row.id)">
-          {{ row.name }}
-        </a-button>
-        <workflow-status-label slot="status" slot-scope="{ row }" :status="row.status" />
-        <template slot="recurrence" slot-scope="{ row }">
+        </template>
+        <template #name="{ row }">
+          <a-button :title="row.name" type="link" @click="onDetailClick(row.id)">
+            {{ row.name }}
+          </a-button>
+        </template>
+        <template #status="{ row }">
+          <workflow-status-label :status="row.status" />
+        </template>
+        <template #periodic_task="{ row }">
           <a-tooltip>
-            <template v-if="row.periodic_task" slot="title">
+            <template v-if="row.periodic_task" #title>
               {{ row.getRecurrencePattern() }}
             </template>
             <span class="ellipsis-container" v-text="row.periodic_task ? row.getRecurrencePattern() : '-'" />
           </a-tooltip>
         </template>
 
-        <a-dropdown slot="action" slot-scope="{ row }" :trigger="['click']" placement="bottomLeft">
-          <a-button>
-            {{ $t('Action') }}
-            <a-icon type="down" />
-          </a-button>
-          <a-menu slot="overlay">
-            <a-menu-item v-if="row.status == 'created'" key="run" @click="onRunClick(row)">
-              {{ $t('Action.Run') }}
-            </a-menu-item>
-            <a-menu-item
-              v-if="row.status == 'completed' || row.status == 'cancelled' || row.status == 'failed'"
-              key="Rerun"
-              @click="onRerunClick(row)">
-              {{ $t('Action.Rerun') }}
-            </a-menu-item>
-            <a-menu-item
-              v-if="row.status != 'running' && row.status != 'cancelling' && row.status != 'starting'"
-              key="edit"
-              @click="onEditClick(row)">
-              {{ $t('Action.Edit') }}
-            </a-menu-item>
-            <a-menu-item key="copy" @click="onCopyClick(row)">
-              {{ $t('Action.Copy') }}
-            </a-menu-item>
-            <a-menu-item
-              v-if="row.status == 'running' || row.status == 'starting'"
-              key="cancel"
-              @click="onCancelClick(row)">
-              {{ $t('Action.Cancel') }}
-            </a-menu-item>
-            <a-menu-item
-              v-if="row.status != 'running' && row.status != 'cancelling' && row.status != 'starting'"
-              key="delete"
-              @click="onDeleteClick(row)">
-              {{ $t('Action.Delete') }}
-            </a-menu-item>
-          </a-menu>
-        </a-dropdown>
+        <template #action="{ row }">
+          <a-dropdown :trigger="['click']" placement="bottomLeft">
+            <a-button>
+              {{ $t('Action') }}
+              <down-outlined />
+            </a-button>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item v-if="row.status == 'created'" key="run" @click="onRunClick(row)">
+                  {{ $t('Action.Run') }}
+                </a-menu-item>
+                <a-menu-item
+                  v-if="row.status == 'completed' || row.status == 'cancelled' || row.status == 'failed'"
+                  key="Rerun"
+                  @click="onRerunClick(row)">
+                  {{ $t('Action.Rerun') }}
+                </a-menu-item>
+                <a-menu-item
+                  v-if="row.status != 'running' && row.status != 'cancelling' && row.status != 'starting'"
+                  key="edit"
+                  @click="onEditClick(row)">
+                  {{ $t('Action.Edit') }}
+                </a-menu-item>
+                <a-menu-item key="copy" @click="onCopyClick(row)">
+                  {{ $t('Action.Copy') }}
+                </a-menu-item>
+                <a-menu-item
+                  v-if="row.status == 'running' || row.status == 'starting'"
+                  key="cancel"
+                  @click="onCancelClick(row)">
+                  {{ $t('Action.Cancel') }}
+                </a-menu-item>
+                <a-menu-item
+                  v-if="row.status != 'running' && row.status != 'cancelling' && row.status != 'starting'"
+                  key="delete"
+                  @click="onDeleteClick(row)">
+                  {{ $t('Action.Delete') }}
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </template>
       </composite-table>
       <workflow-create-dialog ref="workflowCreateDialog" />
     </div>
@@ -77,11 +85,11 @@
 </template>
 
 <script>
-import CompositeTable from '../component/composite-table'
-import WorkflowCreateDialog from './workflow-manage/workflow-create-dialog'
-import WorkflowStatusLabel from './workflow-manage/workflow-status-label'
-import WorkflowService from '../service/workflow'
-import Format from '../common/format'
+import Format from '@/common/format'
+import WorkflowService from '@/service/workflow'
+import CompositeTable from '@/component/composite-table.vue'
+import WorkflowCreateDialog from './workflow-manage/workflow-create-dialog.vue'
+import WorkflowStatusLabel from './workflow-manage/workflow-status-label.vue'
 export default {
   components: {
     'composite-table': CompositeTable,
@@ -102,26 +110,26 @@ export default {
           dataIndex: 'name',
           width: 260,
           ellipsis: true,
-          scopedSlots: { customRender: 'name' },
+          customSlot: true,
         },
         {
           title: this.$t('Workflow.Status'),
           dataIndex: 'status',
           sorter: true,
           align: 'left',
-          scopedSlots: { customRender: 'status' },
+          customSlot: true,
         },
         {
           title: this.$t('Workflow.CreateTime'),
           dataIndex: 'createTime',
           sorter: true,
           defaultSortOrder: 'descend',
-          customRender: val => Format.formatDateTime(new Date(val * 1000)),
+          customRender: ({ text }) => Format.formatDateTime(new Date(text * 1000)),
         },
         {
           title: this.$t('Workflow.Recurrence.Pattern'),
           dataIndex: 'periodic_task',
-          scopedSlots: { customRender: 'recurrence' },
+          customSlot: true,
         },
         {
           title: this.$t('Workflow.Description'),
@@ -131,7 +139,7 @@ export default {
         {
           title: this.$t('Action'),
           key: 'action',
-          scopedSlots: { customRender: 'action' },
+          customSlot: true,
         },
       ],
     }
@@ -185,7 +193,7 @@ export default {
     onCancelClick(row) {
       this.$confirm({
         title: this.$t('Workflow.Cancel.Title'),
-        content: this.$t('Workflow.Cancel.Tips', { name: row.name }),
+        content: this.$T('Workflow.Cancel.Tips', { name: row.name }),
         okText: this.$t('Action.Confirm'),
         cancelText: this.$t('Action.Cancel'),
         onOk: () => {
@@ -204,7 +212,7 @@ export default {
     onDeleteClick(row) {
       this.$confirm({
         title: this.$t('Workflow.Delete.Title'),
-        content: this.$t('Workflow.Delete.Tips', { name: row.name }),
+        content: this.$T('Workflow.Delete.Tips', { name: row.name }),
         okText: this.$t('Action.Confirm'),
         cancelText: this.$t('Action.Cancel'),
         onOk: () => {
@@ -212,7 +220,7 @@ export default {
             res => {
               this.$refs.workflowManageTable.fetchTableData(true)
               this.$message.success(
-                this.$t('Workflow.Delete.Success', {
+                this.$T('Workflow.Delete.Success', {
                   name: row.name,
                 }),
               )

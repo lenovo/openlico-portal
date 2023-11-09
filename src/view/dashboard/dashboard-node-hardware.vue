@@ -1,7 +1,7 @@
 <template>
   <ul class="" style="flex-grow: 1">
     <li class="cell-top">
-      <span class="cell-title" style="width: 55px">{{ $t(`Monitor.${data.type}`) }}</span>
+      <span class="cell-title dashboard-card-title" style="width: 55px">{{ $t(`Monitor.${data.type}`) }}</span>
       <span v-if="data.type != 'Net'" class="cell-rate">{{ data.util }}</span>
       <div v-else>
         <span class="cell-content-span" style="font-size: 12px">{{ `${data.in}/${$t('Unit.Second')}` }}</span>

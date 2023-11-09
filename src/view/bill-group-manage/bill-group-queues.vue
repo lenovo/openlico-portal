@@ -1,77 +1,80 @@
-<template lang="html">
-  <div>
-    <composite-table
-      id="tid_billgroup-queue-table"
-      ref="billGroupTable"
-      :columns="columns"
-      :row-key="row => row.id"
-      :table-data="tableData"
-      :pagination-enable="false"
-      :page-sizes="[]">
-      <a-dropdown slot="action" slot-scope="{ row }" :trigger="['click']" placement="bottomLeft">
+<template>
+  <composite-table
+    id="tid_billgroup-queue-table"
+    ref="billGroupTable"
+    :columns="columns"
+    :row-key="row => row.id"
+    :table-data="tableData"
+    :pagination-enable="false"
+    :page-sizes="[]">
+    <template #action="{ row }">
+      <a-dropdown :trigger="['click']" placement="bottomLeft">
         <a-button>{{ $t('Action') }}</a-button>
-        <a-menu slot="overlay">
-          <a-menu-item @click="onEditClick(row)">
-            {{ $t('Action.Edit') }}
-          </a-menu-item>
-          <a-menu-item @click="onDeleteClick(row)">
-            {{ $t('Action.Delete') }}
-          </a-menu-item>
-        </a-menu>
+        <template #overlay>
+          <a-menu>
+            <a-menu-item @click="onEditClick(row)">
+              {{ $t('Action.Edit') }}
+            </a-menu-item>
+            <a-menu-item @click="onDeleteClick(row)">
+              {{ $t('Action.Delete') }}
+            </a-menu-item>
+          </a-menu>
+        </template>
       </a-dropdown>
-    </composite-table>
-    <queue-policy-dialog ref="queuePolicyDialog" />
-  </div>
+    </template>
+  </composite-table>
+  <queue-policy-dialog ref="queuePolicyDialog" />
 </template>
 <script>
-import CompositeTable from '../../component/composite-table'
-import Format from '../../common/format'
-import QueuePolicyDialog from './set-queue-policy-dialog'
+import CompositeTable from '@/component/composite-table.vue'
+import Format from '@/common/format'
+import QueuePolicyDialog from './set-queue-policy-dialog.vue'
 export default {
   components: {
     'composite-table': CompositeTable,
     'queue-policy-dialog': QueuePolicyDialog,
   },
   props: ['billGroup'],
+  emits: ['update-billgroup'],
   data() {
     const columns = [
       {
         align: 'center',
         title: this.$t('BillGroup.Queues'),
         dataIndex: 'queueList',
-        customRender: val => val.toString(),
+        customRender: ({ text }) => text.toString(),
       },
       {
         align: 'center',
         title: this.$t('BillGroup.CpuChargeRate'),
         dataIndex: 'chargeRate',
         sorter: true,
-        customRender: (val, row) => {
-          if (row.chargeRateDisplayType === 'minute') {
+        customRender: ({ text, record }) => {
+          if (record.chargeRateDisplayType === 'minute') {
             return (
-              Format.formatBillingRate(row.chargeRateMinute, this.currency, true) +
+              Format.formatBillingRate(record.chargeRateMinute, this.currency, true) +
               ' / ' +
               this.$t('BillGroup.CpuChargeRate.Unit') +
               '*' +
-              this.$t(
+              this.$T(
                 'BillGroup.ChargeRate.' +
-                  row.chargeRateDisplayType.replace(
-                    row.chargeRateDisplayType[0],
-                    row.chargeRateDisplayType[0].toUpperCase(),
+                  record.chargeRateDisplayType.replace(
+                    record.chargeRateDisplayType[0],
+                    record.chargeRateDisplayType[0].toUpperCase(),
                   ),
               )
             )
           }
           return (
-            Format.formatBillingRate(row.chargeRate, this.currency, true) +
+            Format.formatBillingRate(record.chargeRate, this.currency, true) +
             ' / ' +
             this.$t('BillGroup.CpuChargeRate.Unit') +
             '*' +
-            this.$t(
+            this.$T(
               'BillGroup.ChargeRate.' +
-                row.chargeRateDisplayType.replace(
-                  row.chargeRateDisplayType[0],
-                  row.chargeRateDisplayType[0].toUpperCase(),
+                record.chargeRateDisplayType.replace(
+                  record.chargeRateDisplayType[0],
+                  record.chargeRateDisplayType[0].toUpperCase(),
                 ),
             )
           )
@@ -82,32 +85,32 @@ export default {
         title: this.$t('BillGroup.MemoryChargeRate'),
         dataIndex: 'memoryChargeRate',
         sorter: true,
-        customRender: (val, row) => {
-          if (row.memoryChargeRateDisplayType === 'minute') {
+        customRender: ({ text, record }) => {
+          if (record.memoryChargeRateDisplayType === 'minute') {
             return (
-              Format.formatBillingRate(row.memoryChargeRateMinute, this.currency, true) +
+              Format.formatBillingRate(record.memoryChargeRateMinute, this.currency, true) +
               ' / ' +
               this.$t('BillGroup.MemoryChargeRate.Unit') +
               '*' +
-              this.$t(
+              this.$T(
                 'BillGroup.ChargeRate.' +
-                  row.memoryChargeRateDisplayType.replace(
-                    row.memoryChargeRateDisplayType[0],
-                    row.memoryChargeRateDisplayType[0].toUpperCase(),
+                  record.memoryChargeRateDisplayType.replace(
+                    record.memoryChargeRateDisplayType[0],
+                    record.memoryChargeRateDisplayType[0].toUpperCase(),
                   ),
               )
             )
           }
           return (
-            Format.formatBillingRate(row.memoryChargeRate, this.currency, true) +
+            Format.formatBillingRate(record.memoryChargeRate, this.currency, true) +
             ' / ' +
             this.$t('BillGroup.MemoryChargeRate.Unit') +
             '*' +
-            this.$t(
+            this.$T(
               'BillGroup.ChargeRate.' +
-                row.memoryChargeRateDisplayType.replace(
-                  row.memoryChargeRateDisplayType[0],
-                  row.memoryChargeRateDisplayType[0].toUpperCase(),
+                record.memoryChargeRateDisplayType.replace(
+                  record.memoryChargeRateDisplayType[0],
+                  record.memoryChargeRateDisplayType[0].toUpperCase(),
                 ),
             )
           )
@@ -119,13 +122,13 @@ export default {
         dataIndex: 'updateTime',
         sorter: true,
         defaultSortOrder: 'ascend',
-        customRender: val => Format.formatDateTime(val),
+        customRender: ({ text }) => Format.formatDateTime(text),
       },
       {
         width: 120,
         title: this.$t('Action'),
         key: 'action',
-        scopedSlots: { customRender: 'action' },
+        customSlot: true,
       },
     ]
     const gresource = window.gApp.$store.getters['settings/getGResource']
@@ -133,18 +136,18 @@ export default {
     gresource.forEach(el => {
       gresColumns.push({
         align: 'center',
-        title: this.$t('BillGroup.GresChargeRate', {
+        title: this.$T('BillGroup.GresChargeRate', {
           value: el.display_name,
         }),
         dataIndex: el.code,
         key: el.id,
-        customRender: (val, row) => {
+        customRender: ({ text, record }) => {
           for (let index = 0; index < gresource.length; index++) {
             const element = gresource[index]
             if (el.code === element.code) {
-              if (row.gresChargeRateDisplayType[element.code] === 'minute') {
+              if (record.gresChargeRateDisplayType[element.code] === 'minute') {
                 return (
-                  Format.formatBillingRate(row.gresChargeRateMinute[element.code], this.currency, true) +
+                  Format.formatBillingRate(record.gresChargeRateMinute[element.code], this.currency, true) +
                   ' / ' +
                   element.unit +
                   '*' +
@@ -152,7 +155,7 @@ export default {
                 )
               }
               return (
-                Format.formatBillingRate(row.gresChargeRate[element.code], this.currency, true) +
+                Format.formatBillingRate(record.gresChargeRate[element.code], this.currency, true) +
                 ' / ' +
                 element.unit +
                 '*' +
@@ -219,5 +222,3 @@ export default {
   },
 }
 </script>
-
-<style lang="css"></style>

@@ -2,21 +2,20 @@
   <div class="runtime-management">
     <composite-form-dialog
       ref="innerDialog"
-      :title="title"
       size="580px"
+      :title="title"
       :loading="loading"
       :form-model="runtimeForm"
       :form-rules="runtimeRules"
       :success-message-formatter="successMessageFormatter"
-      :error-message-formatter="errorMessageFormatter"
       :external-validate="checkVerifyCount">
-      <a-form-model-item :label="$t('Admin.Runtime.Name')" prop="name">
+      <a-form-item :label="$t('Admin.Runtime.Name')" name="name">
         <a-input
-          v-model="runtimeForm.name"
+          v-model:value="runtimeForm.name"
           class="runtime-dialog-list-item btn_bottom_0"
           :disabled="mode == 'delete'" />
-      </a-form-model-item>
-      <a-form-model-item
+      </a-form-item>
+      <a-form-item
         :label="$t('Admin.Runtime.Items')"
         :label-positon="labelPosition"
         class="runtime-management-modules-item">
@@ -25,8 +24,8 @@
           <span>{{ $t('Admin.Runtime.Items.ModuleParentTitle') }}</span>
           <span />
         </a-row>
-      </a-form-model-item>
-      <a-form-model-item prop="selectedModules">
+      </a-form-item>
+      <a-form-item name="selectedModules">
         <a-row
           v-for="(module, index) in runtimeForm.selectedModules"
           :key="module.code"
@@ -39,21 +38,23 @@
           <template v-if="mode != 'delete'">
             <a-dropdown :trigger="['hover']" style="text-align: right; flex: 1">
               <span class="el-erp-more" @click="e => e.preventDefault()" />
-              <a-menu slot="overlay">
-                <a-menu-item v-if="index > 0" @click="moduleMove(index, 'up')">
-                  {{ $t('Action.MoveUp') }}
-                </a-menu-item>
-                <a-menu-item v-if="index < runtimeForm.selectedModules.length - 1" @click="moduleMove(index, 'down')">
-                  {{ $t('Action.MoveDown') }}
-                </a-menu-item>
-                <a-menu-item @click="moduleDelete(module)">
-                  {{ $t('Action.Delete') }}
-                </a-menu-item>
-              </a-menu>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item v-if="index > 0" @click="moduleMove(index, 'up')">
+                    {{ $t('Action.MoveUp') }}
+                  </a-menu-item>
+                  <a-menu-item v-if="index < runtimeForm.selectedModules.length - 1" @click="moduleMove(index, 'down')">
+                    {{ $t('Action.MoveDown') }}
+                  </a-menu-item>
+                  <a-menu-item @click="moduleDelete(module)">
+                    {{ $t('Action.Delete') }}
+                  </a-menu-item>
+                </a-menu>
+              </template>
             </a-dropdown>
           </template>
         </a-row>
-        <a-row class="runtime-dialog-list-item">
+        <a-row v-if="mode !== 'delete'" class="runtime-dialog-list-item">
           <a-button id="Add_Modules_Button" type="link" :disabled="mode == 'delete'" @click="selectOpen">
             {{ $t('Action.Add') }}
           </a-button>
@@ -67,8 +68,8 @@
             {{ $t('Action.Verify') }}
           </a-button>
         </a-row>
-      </a-form-model-item>
-      <a-form-model-item
+      </a-form-item>
+      <a-form-item
         :label="$t('Admin.Runtime.Env')"
         :label-positon="labelPosition"
         class="runtime-management-modules-item">
@@ -77,32 +78,34 @@
           <span>{{ $t('Admin.Runtime.Env.Value') }}</span>
           <span />
         </a-row>
-      </a-form-model-item>
-      <a-form-model-item prop="envs">
+      </a-form-item>
+      <a-form-item name="envs">
         <a-row v-for="env in runtimeForm.envs" :key="env.name" class="runtime-dialog-list-item">
           <span :title="env.name">{{ env.name }}</span>
           <span :title="env.value">{{ env.value }}</span>
           <template v-if="mode != 'delete'">
             <a-dropdown :trigger="['hover']" style="text-align: right; flex: 1">
               <span class="el-erp-more" @click="e => e.preventDefault()" />
-              <a-menu slot="overlay">
-                <a-menu-item @click="envEdit(env)">
-                  {{ $t('Action.Edit') }}
-                </a-menu-item>
-                <a-menu-item @click="envDelete(env)">
-                  {{ $t('Action.Delete') }}
-                </a-menu-item>
-              </a-menu>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item @click="envEdit(env)">
+                    {{ $t('Action.Edit') }}
+                  </a-menu-item>
+                  <a-menu-item @click="envDelete(env)">
+                    {{ $t('Action.Delete') }}
+                  </a-menu-item>
+                </a-menu>
+              </template>
             </a-dropdown>
           </template>
         </a-row>
-        <a-row class="runtime-dialog-list-item">
+        <a-row v-if="mode !== 'delete'" class="runtime-dialog-list-item">
           <a-button id="Add_Environment_Button" type="link" :disabled="mode == 'delete'" @click="envCreate">
             {{ $t('Action.Add') }}
           </a-button>
         </a-row>
-      </a-form-model-item>
-      <a-form-model-item
+      </a-form-item>
+      <a-form-item
         :label="$t('Admin.Runtime.Scripts')"
         :label-positon="labelPosition"
         class="runtime-management-modules-item">
@@ -110,11 +113,11 @@
           <span>{{ $t('Admin.Runtime.Scripts.File') }}</span>
           <span />
         </a-row>
-      </a-form-model-item>
-      <a-form-model-item prop="scripts">
+      </a-form-item>
+      <a-form-item name="scripts">
         <a-row v-for="(file, index) in runtimeForm.scripts" :key="index" class="runtime-dialog-list-item">
           <script-file
-            v-model="file.path"
+            v-model:value="file.path"
             :disabled="mode == 'delete'"
             :can-move-up="index > 0"
             :can-move-down="index < runtimeForm.scripts.length - 1"
@@ -122,7 +125,7 @@
             @move-up="scriptFileMove(index, 'up')"
             @move-down="scriptFileMove(index, 'down')" />
         </a-row>
-        <a-row class="runtime-dialog-list-item">
+        <a-row v-if="mode !== 'delete'" class="runtime-dialog-list-item">
           <a-button
             id="Add_File_Button"
             type="link"
@@ -131,19 +134,19 @@
             {{ $t('Action.Add') }}
           </a-button>
         </a-row>
-      </a-form-model-item>
+      </a-form-item>
     </composite-form-dialog>
     <module-select-dialog ref="moduleSelectDialog" @get-checked-modules="onModuleSelected" />
     <env-dialog ref="envDialog" @get-env="onEnvGeted" />
   </div>
 </template>
 <script>
-import RuntimeService from '../../service/runtime-manage'
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
-import ModuleSelectDialog from '../runtime-manage/module-select-dialog'
-import EnvDialog from '../runtime-manage/env-dialog'
-import Utils from '../../common/utils'
+import Utils from '@/common/utils'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import RuntimeService from '@/service/runtime-manage'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import ModuleSelectDialog from './module-select-dialog.vue'
+import EnvDialog from './env-dialog.vue'
 import ScriptFile from './script-file.vue'
 
 export default {
@@ -184,7 +187,7 @@ export default {
     validRuntimeName(itemLabel) {
       const pattern = '^(D|d)efault$'
       return {
-        validator(rule, value, callback, source, options) {
+        validator(rule, value) {
           const errors = []
           const regExp = new RegExp(pattern)
           if (regExp.test(value.toString())) {
@@ -196,7 +199,7 @@ export default {
               ),
             )
           }
-          callback(errors)
+          return Promise[errors.length ? 'reject' : 'resolve'](errors)
         },
       }
     },
@@ -248,26 +251,22 @@ export default {
     },
     successMessageFormatter(res) {
       if (this.mode === 'create') {
-        return this.$t('Admin.Runtime.Create.Ready', {
+        return this.$T('Admin.Runtime.Create.Ready', {
           name: this.runtimeForm.name,
         })
       } else if (this.mode === 'edit') {
-        return this.$t('Admin.Runtime.Edit.Ready', {
+        return this.$T('Admin.Runtime.Edit.Ready', {
           name: this.runtimeForm.name,
         })
       } else if (this.mode === 'duplicate') {
-        return this.$t('Admin.Runtime.Duplicate.Ready', {
+        return this.$T('Admin.Runtime.Duplicate.Ready', {
           name: this.runtimeForm.name,
         })
       } else {
-        return this.$t('Admin.Runtime.Delete.Ready', {
+        return this.$T('Admin.Runtime.Delete.Ready', {
           name: this.runtimeForm.name,
         })
       }
-    },
-    errorMessageFormatter(res) {
-      const errMsg = res
-      return this.$t(errMsg)
     },
     getSelectedModules(items) {
       const result = []
@@ -333,7 +332,7 @@ export default {
     },
     onVerify() {
       this.loading = true
-      RuntimeService.verifyModule(this.runtimeForm.selectedModules).then(
+      RuntimeService.verifyModule(this.runtimeForm.selectedModules, this.role).then(
         res => {
           this.loading = false
           this.verifyErrors = 0
@@ -364,6 +363,7 @@ export default {
       return this.$refs.innerDialog.popup(this.submitForm)
     },
     selectOpen() {
+      // this.loading = true
       const dialog = this.$refs.moduleSelectDialog
       dialog.doOpen(this.runtimeForm.selectedModules)
     },
@@ -495,7 +495,7 @@ export default {
   text-align: left;
 }
 
-.runtime-dialog-list-item + div.a-form-model-item__error {
+.runtime-dialog-list-item + div.a-form-item__error {
   margin: auto 10px;
 }
 

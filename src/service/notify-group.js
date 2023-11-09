@@ -16,8 +16,8 @@
 
 import Request from '../request/https'
 import Parser from '../common/parser'
-import TableDataFetcherFactory from '../common/table-data-fetcher-factory'
 import ErrorHandler from '../common/error-handler'
+import TableDataFetcherFactory from '../common/table-data-fetcher-factory'
 
 class NotifyGroup {
   constructor() {
@@ -36,46 +36,6 @@ class NotifyGroup {
     notifyGroup.mobiles = jsonObj.phone
     notifyGroup.updateTime = Parser.parseTimeFromRestApi(jsonObj.last_operation_time)
     return notifyGroup
-  }
-
-  get id() {
-    return this._id
-  }
-
-  set id(id) {
-    this._id = id
-  }
-
-  get name() {
-    return this._name
-  }
-
-  set name(name) {
-    this._name = name
-  }
-
-  get emails() {
-    return this._emails
-  }
-
-  set emails(emails) {
-    this._emails = emails
-  }
-
-  get mobiles() {
-    return this._mobiles
-  }
-
-  set mobiles(mobiles) {
-    this._mobiles = mobiles
-  }
-
-  get updateTime() {
-    return this._updateTime
-  }
-
-  set updateTime(updateTime) {
-    this._updateTime = updateTime
   }
 }
 

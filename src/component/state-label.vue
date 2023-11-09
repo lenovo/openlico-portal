@@ -1,9 +1,11 @@
 <template>
   <span>
-    <span class="state-label" :class="'state-label-bg-' + state">
-      <a-icon :type="loading ? 'loading' : '-'" />
+    <span class="state-status" :class="'state-label-bg-' + state">
+      <loading-outlined v-if="loading" />
     </span>
-    <slot />
+    <span style="margin-left: 5px; font-size: 14px; line-height: 16px">
+      <slot></slot>
+    </span>
   </span>
 </template>
 <script>
@@ -24,12 +26,12 @@ export default {
 }
 </script>
 <style>
-.state-label {
+.state-status {
   border-radius: 4px;
   display: inline-block;
   width: 16px;
   height: 16px;
-  vertical-align: middle;
+  vertical-align: text-bottom;
   text-align: center;
   font-size: 12px;
   line-height: 15px;

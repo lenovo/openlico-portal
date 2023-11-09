@@ -2,17 +2,18 @@
   <nav class="main-header">
     <div class="main-header-left">
       <span id="Shift_Menu" style="cursor: pointer" @click="shiftMenuSize">
-        <a-icon :type="collapsed ? 'menu-unfold' : 'menu-fold'" />
+        <menu-unfold-outlined v-if="collapsed" />
+        <menu-fold-outlined v-else />
       </span>
       <span class="main-heaser-title" />
     </div>
     <div v-if="license && license.licenseMessage" class="main-header-center">
-      <p style="">
+      <div>
         {{ license.licenseMessage }}
-      </p>
+      </div>
     </div>
     <div class="main-header-right">
-      <span class="welcome-user">{{ $t('Welcome.User', { name: userName }) }}</span>
+      <span class="welcome-user">{{ $T('Welcome.User', { name: userName }) }}</span>
       <file-editor />
       <mian-tools-icon v-if="isTools()" />
       <alertstatus v-if="isAlert()" id="Alert_Status" />
@@ -21,12 +22,13 @@
   </nav>
 </template>
 <script>
-import UserService from './../../service/user'
-import AccessService from './../../service/access'
-import Userstatus from './../../widget/user-status'
-import Alertstatus from './../../widget/alert-status'
+import UserService from '@/service/user'
+import AccessService from '@/service/access'
+import Userstatus from '@/widget/user-status.vue'
+import Alertstatus from '@/widget/alert-status.vue'
 import FileEditor from './topbar/file-editor.vue'
 import MianToolsIcon from './topbar/mian-tools-icon.vue'
+
 export default {
   components: {
     Userstatus,
@@ -53,7 +55,7 @@ export default {
   mounted() {
     this.getUser()
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.refreshTimeout > 0) {
       clearTimeout(this.refreshTimeout)
       this.refreshTimeout = 0
@@ -120,17 +122,20 @@ export default {
   align-items: baseline;
 }
 .main-header-center {
-  padding-top: 10px;
   text-align: center;
   width: 100%;
+  display: flex;
+  overflow: hidden;
+  justify-content: center;
 }
-.main-header-center > p {
-  display: inline-block;
+.main-header-center > div {
+  display: flex;
   color: red;
   font-size: 16px;
   background: #f8f8f8;
-  padding: 10px;
+  padding: 0 10px;
   border-radius: 4px;
+  align-items: center;
 }
 
 .main-header-right > span {

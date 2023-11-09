@@ -4,16 +4,15 @@
   </a-config-provider>
 </template>
 <script>
-import messageAntd from './locale/message-antd'
+import messageAntd from './i18n/message-antd'
 
-import moment from 'moment'
-import 'moment/locale/zh-cn'
+import dayjs from '@/dayjs'
+import 'dayjs/locale/zh-cn'
 
 export default {
   data() {
     return {
       locale: messageAntd[this.$i18n.locale],
-      moment,
       refreshLicense: null,
     }
   },
@@ -27,9 +26,9 @@ export default {
     this.$i18n.locale = this.$store.state.settings.langCode
   },
   mounted() {
-    moment.locale(this.$i18n.locale)
+    dayjs.locale(this.$i18n.locale)
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.refreshLicense)
   },
   methods: {

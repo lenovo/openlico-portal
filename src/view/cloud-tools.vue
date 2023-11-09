@@ -5,24 +5,22 @@
         <a-row>
           <a-col :span="12">
             <span class="cloud-tools-project">{{ $t('CloudTools.Project') }}</span>
-            <a-select v-model="defaultValue" class="antionsButton">
-              <div slot="dropdownRender" slot-scope="menu">
+            <a-select
+              v-model:value="defaultValue"
+              class="antionsButton"
+              :options="workspaceType.map(item => ({ value: item.name, id: item.id }))"
+              @change="selectValue">
+              <template #dropdownRender="{ menuNode: menu }">
                 <v-nodes :vnodes="menu" />
                 <a-divider style="margin: 4px 0" />
                 <div
                   style="padding: 4px 8px; cursor: pointer; color: #449fff"
                   @mousedown="e => e.preventDefault()"
                   @click="createProject">
+                  <plus-outlined />
                   {{ $t('CloudTools.Workspace.Create.Title') }}
                 </div>
-              </div>
-              <a-select-option
-                v-for="item in workspaceType"
-                :key="item.id"
-                :value="item.name"
-                @click="selectValue(item)">
-                {{ item.name }}
-              </a-select-option>
+              </template>
             </a-select>
             <span class="cloud-tools-settings" @click="projectSettingClick">{{ $t('CloudTools.Settings') }}</span>
           </a-col>
@@ -47,13 +45,7 @@
             <div v-if="item.status !== 'running'" class="box-time" />
             <div class="box-button">
               <a-button class="launch" :disabled="item.launchStatus" type="primary" @click="launchButton(item, $event)">
-                <p
-                  v-if="
-                    item.status == 'running' ||
-                    item.status == 'queueing' ||
-                    item.status == 'cancelling' ||
-                    item.status == 'suspending'
-                  ">
+                <p v-if="launched(item.status)">
                   {{ launchText }}
                 </p>
                 <p v-else>
@@ -61,17 +53,13 @@
                 </p>
               </a-button>
               <a-button
-                v-if="
-                  item.status == 'running' ||
-                  item.status == 'cancelling' ||
-                  item.status == 'queueing' ||
-                  item.status == 'suspending'
-                "
+                v-if="launched(item.status)"
                 type="primary"
-                icon="poweroff"
                 :disabled="item.closeStatus"
                 class="poweroff"
-                @click="closeButton(item)" />
+                @click="closeButton(item)"
+                ><template #icon><PoweroffOutlined /></template
+              ></a-button>
             </div>
             <div class="box-setting" @click="settingButton(item)">
               <a-tooltip placement="rightTop">
@@ -94,20 +82,27 @@
         <a-row class="dev-tools-table-footer">
           <a-col :span="24" style="text-align: right">
             <a-pagination
-              v-model="pagination.current"
+              v-model:current="pagination.current"
+              v-model:page-size="pagination.pageSize"
               class="totalStyle"
               size="small"
               show-quick-jumper
               :page-size-options="pagination.pageSizeOptions"
-              :page-size.sync="pagination.pageSize"
               :total="pagination.total"
               :show-total="pagination.showTotal" />
           </a-col>
         </a-row>
       </a-spin>
-      <div>
-        <a-modal class="waitBox" :visible="waitLoading" width="300px" :closable="false" @cancel="waitCancel">
-          <template slot="footer">
+      <div ref="clodtools" class="wait-tools">
+        <a-modal
+          class="waitBox"
+          :open="waitLoading"
+          width="300px"
+          :get-container="() => $refs.clodtools"
+          :closable="false"
+          @click="waitCancel"
+          @cancel="waitCancel">
+          <template #footer>
             <a-button type="primary" @click="waitCancel">
               {{ okText }}
             </a-button>
@@ -123,7 +118,7 @@
       <div>
         <a-modal
           class="shareBox"
-          :visible="shareLoading"
+          :open="shareLoading"
           width="600px"
           :title="$t('CloudTools.Share.Title')"
           :cancel-text="$t('CloudTools.Share.Close')"
@@ -142,33 +137,41 @@
       </div>
       <cloudtools-create-dialog
         ref="cloudtoolsCreateDialog"
-        @createSonCloudGetProjects="createSonCloudGetProjects"
-        @createSonCloudGetProjectsInfo="createSonCloudGetProjectsInfo" />
+        @create-son-cloud-get-projects="createSonCloudGetProjects"
+        @create-son-cloud-get-projects-info="createSonCloudGetProjectsInfo" />
       <cloudtools-setting-dialog
         ref="cloudtoolsSettingDialog"
-        @setSonCloudGetProjectsInfo="setSonCloudGetProjectsInfo"
-        @editSonCloudGetProjectsInfo="editSonCloudGetProjectsInfo" />
+        @set-son-cloud-get-projects-info="setSonCloudGetProjectsInfo"
+        @edit-son-cloud-get-projects-info="editSonCloudGetProjectsInfo" />
       <cloud-tools-close-dialog id="tid_job-manange-action-dialog" ref="cloudToolsCloseDialog" />
     </div>
   </div>
 </template>
 <script>
-import CloudToolsService from '../service/cloud-tools'
-import JobService from '../service/job'
-import Format from '../common/format'
-import CloudtoolsStatusLabel from './cloud-tools/cloudtools-status-label'
+import CloudToolsService from '@/service/cloud-tools'
+import JobService from '@/service/job'
+import Format from '@/common/format'
+import CloudtoolsStatusLabel from './cloud-tools/cloudtools-status-label.vue'
 import CloudtoolsSettingDialog from './cloud-tools/cloudtools-setting-dialog.vue'
-import CloudToolsCloseDialog from '../widget/cloud-tools-close-dialog'
+import CloudToolsCloseDialog from '@/widget/cloud-tools-close-dialog.vue'
 import CloudtoolsCreateDialog from './cloud-tools/cloudtools-create-dialog.vue'
+
 export default {
   components: {
     'cloudtools-create-dialog': CloudtoolsCreateDialog,
     'cloudtools-status-label': CloudtoolsStatusLabel,
     'cloudtools-setting-dialog': CloudtoolsSettingDialog,
     'cloud-tools-close-dialog': CloudToolsCloseDialog,
-    VNodes: {
-      functional: true,
-      render: (h, ctx) => ctx.props.vnodes,
+    'v-nodes': {
+      props: {
+        vnodes: {
+          type: Object,
+          required: true,
+        },
+      },
+      render() {
+        return this.vnodes
+      },
     },
   },
   data() {
@@ -194,7 +197,7 @@ export default {
         showSizeChanger: true,
         showQuickJumper: true,
         showTotal: total =>
-          this.$t('CompositeTable.Footer.Total', {
+          this.$T('CompositeTable.Footer.Total', {
             total,
           }),
       },
@@ -214,16 +217,23 @@ export default {
       pendingStatus: true,
     }
   },
+  computed: {
+    launched() {
+      return function (status) {
+        const launchedStatus = ['running', 'queueing', 'cancelling', 'suspending', 'held']
+        return launchedStatus.includes(status)
+      }
+    },
+  },
   watch: {
     urlValue: {
-      deep: true,
       immediate: true,
       handler(newV) {
         this.copyDisabled = !(newV.length > 0)
       },
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.refreshTimeout)
     clearTimeout(this.refreshJobRun)
     this.refreshTimeout = null
@@ -273,11 +283,11 @@ export default {
         },
       )
     },
-    selectValue(res) {
-      sessionStorage.setItem('projectId', res.id)
-      sessionStorage.setItem('projectName', res.name)
+    selectValue(value, option) {
+      sessionStorage.setItem('projectId', option.id)
+      sessionStorage.setItem('projectName', option.value)
       this.loading = true
-      this.cloudGetProjectsInfo(res.id, 1)
+      this.cloudGetProjectsInfo(option.id, 1)
     },
     cloudGetProjects() {
       CloudToolsService.getProject().then(
@@ -354,7 +364,7 @@ export default {
           workspaceInfo.forEach((item, index) => {
             if (item.job) {
               promiseList[index] = new Promise((resolve, reject) => {
-                JobService.getJobById(item.job, false).then(
+                JobService.getJobById(item.job, { jobtemplateSync: false }).then(
                   res => {
                     item.status =
                       res.status === 'cancelled' ||
@@ -368,7 +378,8 @@ export default {
                     item.launchStatus = !!(
                       res.status === 'cancelling' ||
                       res.status === 'queueing' ||
-                      res.status === 'suspending'
+                      res.status === 'suspending' ||
+                      res.status === 'held'
                     )
                     item.closeStatus = res.status === 'cancelling'
                     item.time = Format.formatDuration.call(this, res.runDuration)
@@ -596,7 +607,7 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style scoped>
 .dev-tools-table .workspace-logo img {
   width: 120px;
   height: 90px;
@@ -679,9 +690,9 @@ export default {
   cursor: pointer;
   width: 10px;
   height: 10px;
-  /deep/ .ant-tooltip-inner {
-    min-width: 50px;
-  }
+}
+.box-setting :deep(.ant-tooltip-inner) {
+  min-width: 50px;
 }
 .box-setting .anticon {
   color: #666;
@@ -693,41 +704,41 @@ export default {
   cursor: pointer;
   width: 10px;
   height: 10px;
-  /deep/ .ant-tooltip-inner {
-    min-width: 50px;
-  }
 }
-.waitBox {
-  /deep/ .ant-modal-footer {
-    text-align: center;
-  }
-  /deep/ .ant-btn-primary {
-    width: 100px;
-  }
-  /deep/ .ant-modal-footer {
-    border-top: 1px solid #fff;
-  }
-  /deep/ .ant-modal-body {
-    padding: 16px 0 0 0;
-  }
+.box-share :deep(.ant-tooltip-inner) {
+  min-width: 50px;
 }
-.shareBox {
-  .share-title {
-    font-weight: 600;
-  }
-  .share-url {
-    width: 100%;
-    border: 1px solid #ccc;
-    min-height: 100px;
-    padding: 5px 10px;
-    margin: 10px 0;
-    word-break: break-all;
-  }
+.waitBox :deep(.ant-modal-footer) {
+  text-align: center;
+}
+.waitBox :deep(.ant-btn-primary) {
+  width: 100px;
+}
+.waitBox :deep(.ant-modal-footer) {
+  border-top: 1px solid #fff;
+}
+.waitBox :deep(.ant-modal-body) {
+  padding: 16px 0 0 0;
+}
+.shareBox .share-title {
+  font-weight: 600;
+}
+.shareBox .share-url {
+  width: 100%;
+  border: 1px solid #ccc;
+  min-height: 100px;
+  padding: 5px 10px;
+  margin: 10px 0;
+  word-break: break-all;
 }
 .totalStyle {
   overflow: hidden;
-  /deep/ .ant-pagination-total-text {
-    float: left;
-  }
+}
+.totalStyle :deep(.ant-pagination-total-text) {
+  float: left;
+}
+.wait-tools :deep(.ant-modal-footer) {
+  text-align: center;
+  border-top: 0px;
 }
 </style>

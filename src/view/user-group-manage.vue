@@ -10,32 +10,39 @@
         :default-sort="{ prop: 'id', order: 'ascending' }"
         :search-enable="true"
         :search-props="['name']">
-        <ul slot="controller" class="user-group-controller">
-          <a-button v-show="isLDAPManaged" id="tid_user-group-create" type="primary" @click="onCreateClick">
-            {{ $t('UserGroup.Create') }}
-          </a-button>
-        </ul>
-        <a-dropdown slot="action" slot-scope="{ row }" placement="bottomLeft" :trigger="['click']">
-          <a-button>
-            {{ $t('Action') }}
-            <a-icon type="down" />
-          </a-button>
-          <a-menu slot="overlay">
-            <a-menu-item @click="onDeleteClick(row)">
-              {{ $t('Action.Delete') }}
-            </a-menu-item>
-          </a-menu>
-        </a-dropdown>
+        <template #controller>
+          <ul class="user-group-controller">
+            <a-button v-show="isLDAPManaged" id="tid_user-group-create" type="primary" @click="onCreateClick">
+              {{ $t('UserGroup.Create') }}
+            </a-button>
+          </ul>
+        </template>
+        <template #action="{ row }">
+          <a-dropdown placement="bottomLeft" :trigger="['click']">
+            <a-button>
+              {{ $t('Action') }}
+              <down-outlined />
+            </a-button>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item @click="onDeleteClick(row)">
+                  {{ $t('Action.Delete') }}
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </template>
       </composite-table>
       <user-group-dialog id="tid_user-group-dialog" ref="userGroupDialog" />
     </div>
   </div>
 </template>
 <script>
-import CompositeTable from '../component/composite-table'
-import UserGroupService from '../service/user-group'
-import UserGroupDialog from './user-group-manage/user-group-dialog'
-import AuthService from '../service/auth'
+import CompositeTable from '@/component/composite-table.vue'
+import UserGroupService from '@/service/user-group'
+import UserGroupDialog from './user-group-manage/user-group-dialog.vue'
+import AuthService from '@/service/auth'
+
 export default {
   components: {
     'composite-table': CompositeTable,
@@ -65,8 +72,8 @@ export default {
       this.columns.push({
         title: this.$t('Action'),
         key: 'action',
-        scopedSlots: { customRender: 'action' },
         width: 200,
+        customSlot: true,
       })
     }
   },

@@ -7,16 +7,16 @@
     :form-model="formModel"
     :form-rules="formRules"
     :buttons-text="[$t('Action.Connect')]">
-    <a-form-model-item prop="hostname" :label="$t('MainTools.Hostname')">
-      <a-select v-model="formModel.hostname" :filter-option="filterOption" show-search>
-        <a-select-option v-for="node in nodeOptions" :key="node.hostname">
+    <a-form-item name="hostname" :label="$t('MainTools.Hostname')">
+      <a-select v-model:value="formModel.hostname" :filter-option="filterOption" show-search>
+        <a-select-option v-for="node in nodeOptions" :key="node.id" :value="node.hostname">
           {{ node.hostname }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
+    </a-form-item>
 
-    <a-form-model-item v-if="showTerminalType" prop="terminalType" :label="$t('MainTools.TerminalType')">
-      <a-select v-model="formModel.terminalType">
+    <a-form-item v-if="showTerminalType" name="terminalType" :label="$t('MainTools.TerminalType')">
+      <a-select v-model:value="formModel.terminalType">
         <a-select-option value="shell">
           {{ $t('MainTools.TerminalType.Shell') }}
         </a-select-option>
@@ -24,13 +24,13 @@
           {{ $t('MainTools.TerminalType.Console') }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
+    </a-form-item>
   </composite-form-dialog>
 </template>
 <script>
-import CompositeFormDialog from '../../../component/composite-form-dialog.vue'
-import ValidRoleFactory from '../../../common/valid-role-factory'
-import NodeService from '../../../service/node'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import NodeService from '@/service/node'
 
 export default {
   components: {
@@ -46,10 +46,14 @@ export default {
       formRules: {
         hostname: [ValidRoleFactory.getRequireRoleForText(this.$t('MainTools.Hostname'))],
       },
-      showTerminalType: this.$store.state.auth.role === '300',
       access: this.$store.state.auth.access,
       nodeOptions: [],
     }
+  },
+  computed: {
+    showTerminalType() {
+      return this.$store.state.auth.access !== 'staff'
+    },
   },
   mounted() {},
   methods: {
@@ -75,7 +79,7 @@ export default {
       )
     },
     filterOption(input, option) {
-      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
     onConnect() {
       this.initNodeOptions()

@@ -24,6 +24,8 @@ class VNC {
     this.port = 0
     this.username = ''
     this.pid = 0
+    this.schedulerId = 0
+    this.jobId = 0
     this.index = ''
     this.token = ''
   }
@@ -36,73 +38,11 @@ class VNC {
     vnc.port = jsonObj.port
     vnc.username = jsonObj.username
     vnc.pid = jsonObj.pid
+    vnc.schedulerId = jsonObj.scheduler_id
+    vnc.jobId = jsonObj.job_id
     vnc.index = jsonObj.display
     vnc.token = jsonObj.token
     return vnc
-  }
-
-  get id() {
-    return this._id
-  }
-
-  set id(id) {
-    this._id = id
-  }
-
-  get name() {
-    return this._name
-  }
-
-  set name(name) {
-    this._name = name
-  }
-
-  get host() {
-    return this._host
-  }
-
-  set host(host) {
-    this._host = host
-  }
-
-  get port() {
-    return this._port
-  }
-
-  set port(port) {
-    this._port = port
-  }
-
-  get username() {
-    return this._username
-  }
-
-  set username(username) {
-    this._username = username
-  }
-
-  get pid() {
-    return this._pid
-  }
-
-  set pid(pid) {
-    this._pid = pid
-  }
-
-  get index() {
-    return this._index
-  }
-
-  set index(index) {
-    this._index = index
-  }
-
-  get token() {
-    return this._token
-  }
-
-  set token(token) {
-    this._token = token
   }
 }
 

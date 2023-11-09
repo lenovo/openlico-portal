@@ -6,24 +6,22 @@
     size="540px"
     :form-model="userForm"
     :form-rules="userRules"
-    composite-height="460"
-    :success-message-formatter="successMessageFormatter"
-    :error-message-formatter="errorMessageFormatter">
-    <a-form-model-item :label="$t('Auth.CurrentPassword')" prop="currentPassword">
-      <a-input id="tid_change-password-current-password" v-model="userForm.currentPassword" type="password" />
-    </a-form-model-item>
-    <a-form-model-item :label="$t('Auth.NewPassword')" prop="password">
-      <a-input id="tid_change-password-password" v-model="userForm.password" type="password" />
-    </a-form-model-item>
-    <a-form-model-item :label="$t('Auth.NewPassword.Check')" prop="passwordCheck">
-      <a-input id="tid_change-password-password-check" v-model="userForm.passwordCheck" type="password" />
-    </a-form-model-item>
+    :success-message-formatter="successMessageFormatter">
+    <a-form-item :label="$t('Auth.CurrentPassword')" name="currentPassword">
+      <a-input id="tid_change-password-current-password" v-model:value="userForm.currentPassword" type="password" />
+    </a-form-item>
+    <a-form-item :label="$t('Auth.NewPassword')" name="password">
+      <a-input id="tid_change-password-password" v-model:value="userForm.password" type="password" />
+    </a-form-item>
+    <a-form-item :label="$t('Auth.NewPassword.Check')" name="passwordCheck">
+      <a-input id="tid_change-password-password-check" v-model:value="userForm.passwordCheck" type="password" />
+    </a-form-item>
   </composite-form-dialog>
 </template>
 <script>
-import AuthService from '../../service/auth'
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import AuthService from '@/service/auth'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import ValidRoleFactory from '@/common/valid-role-factory'
 
 export default {
   components: {
@@ -66,10 +64,6 @@ export default {
     },
     successMessageFormatter(res) {
       return this.$t('Auth.ChangePassword.Success')
-    },
-    errorMessageFormatter(res) {
-      const errMsg = res
-      return this.$t(errMsg)
     },
     doChangePassword() {
       this.userForm = {

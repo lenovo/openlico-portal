@@ -8,24 +8,24 @@
       compact
       :size="size"
       :class="{ 'country-code-select': size == 'small' }">
-      <a-select
-        v-model="countryCode"
-        :dropdown-match-select-width="false"
-        show-search
-        :filter-option="filterOption"
-        style="width: 30%"
-        @change="onCountryCodeChange">
-        <a-select-option v-for="item in countries" :key="item.countryCode" :title="item.name" :value="item.value">
-          {{ item.name }}
-        </a-select-option>
-      </a-select>
+      <a-form-item-rest>
+        <a-select
+          v-model:value="countryCode"
+          show-search
+          style="width: 30%"
+          :options="countries"
+          :field-names="fieldNames"
+          :option-filter-prop="'name'"
+          @change="onCountryCodeChange">
+        </a-select>
+      </a-form-item-rest>
       <a-input
         id="tid_multi-phone-input"
         ref="newTagInput"
-        v-model="inputValue"
+        v-model:value="inputValue"
         style="width: 50%"
         :placeholder="$t('NotifyGroup.Mobiles')"
-        @keyup.enter.native="onNewTagInputConfirm"
+        @keyup.enter="onNewTagInputConfirm"
         @change="onNewTagInputConfirm" />
       <a-button :size="size" style="width: 20%" type="primary" @click="onNewTagInputConfirm">
         {{ $t('Action.Ok') }}
@@ -43,7 +43,8 @@
       v-if="!inputVisible && value.length > 0 && !disabled && allowClearAll"
       id="tid_multi-phone-clean"
       class="new-tag-button"
-      type="danger"
+      type="primary"
+      danger
       :size="size || 'small'"
       @click="cleanTags">
       {{ $t('Action.Clear') }}
@@ -53,8 +54,8 @@
 </template>
 <script>
 import Schema from 'async-validator'
-import ValidRoleFactory from '../common/valid-role-factory'
-import AboutService from '../service/about'
+// import ValidRoleFactory from '@/common/valid-role-factory'
+import AboutService from '@/service/about'
 
 export default {
   props: {
@@ -76,6 +77,7 @@ export default {
       default: null,
     },
   },
+  emits: ['input', 'update:value'],
   data() {
     return {
       // tags: [],
@@ -84,10 +86,14 @@ export default {
       errorMessage: '',
       countryCode: 'US',
       countries: [],
+      fieldNames: {
+        label: 'name',
+        key: 'countryCode',
+      },
     }
   },
-  mounted() {
-    const langCode = window.gApp.$store.state.settings.langCode
+  created() {
+    const langCode = this.$store.state.settings.langCode
     this.countryCode = langCode === 'zh' ? 'CN' : 'US'
     AboutService.getCountryCode(this.$i18n.locale).then(
       res => {
@@ -106,9 +112,6 @@ export default {
     )
   },
   methods: {
-    filterOption(input, option) {
-      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
-    },
     onCountryCodeChange(val) {
       this.onNewTagInputConfirm({ type: 'input' })
     },
@@ -124,20 +127,23 @@ export default {
       const newValue = this.copyArray(this.value)
       newValue.splice(newValue.indexOf(tag), 1)
       this.$emit('input', newValue)
+      this.$emit('update:value', newValue)
     },
     showInput() {
       this.inputVisible = true
       this.$nextTick(() => {
-        this.$refs.newTagInput.$refs.input.focus()
+        this.$refs.newTagInput.focus()
       })
     },
     cleanTags() {
       // this.value.splice(0, this.value.length);
       this.$emit('input', [])
+      this.$emit('update:value', [])
     },
     onNewTagInputConfirm(e) {
       const inputValue = this.inputValue
-      const validRoles = [ValidRoleFactory.getMobileRole(this.$t('NotifyGroup.Mobiles'), this.countryCode, true)]
+      // const validRoles = [ValidRoleFactory.getMobileRole(this.$t('NotifyGroup.Mobiles'), this.countryCode, true)]
+      const validRoles = []
       if (validRoles.length > 0 && inputValue) {
         const validator = new Schema({ phone: validRoles })
         validator.validate({ phone: inputValue }, (errors, fields) => {
@@ -164,6 +170,7 @@ export default {
         const newValue = this.copyArray(this.value)
         newValue.push(inputValue)
         this.$emit('input', newValue)
+        this.$emit('update:value', newValue)
       }
       this.inputVisible = false
       // this.inputVisible = true;

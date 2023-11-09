@@ -25,26 +25,10 @@ class VersionInfo {
   static parseFromRestApi(jsonObj) {
     const versionInfo = new VersionInfo()
 
-    versionInfo._version = jsonObj.version
-    versionInfo._buildNum = jsonObj.build_date
+    versionInfo.version = jsonObj.version
+    versionInfo.buildNum = jsonObj.build_date
 
     return versionInfo
-  }
-
-  get _version() {
-    return this.version
-  }
-
-  set _version(version) {
-    this.version = version
-  }
-
-  get _buildNum() {
-    return this.buildNum
-  }
-
-  set _buildNum(buildNum) {
-    this.buildNum = buildNum
   }
 }
 
@@ -67,9 +51,9 @@ function getAbout() {
   })
 }
 
-function getVersion(url) {
+function getVersion() {
   return new Promise((resolve, reject) => {
-    Request.get(url).then(
+    Request.get('/api/base/version/').then(
       res => {
         const versionInfo = VersionInfo.parseFromRestApi(res.body)
         resolve(versionInfo)
@@ -83,17 +67,14 @@ function getVersion(url) {
 
 function getCountryCode(locale) {
   return new Promise((resolve, reject) => {
-    try {
-      const countries = require.context('static/settings/countries-code', true, /\.json$/)
-      const path = countries.keys().filter(path => {
-        return new RegExp('^\\.\\/' + locale + '_').test(path)
-      })
-      const context = countries(path)
-      resolve(context)
-    } catch (error) {
-      console.log(error)
-      reject(new Error('Can not get country code'))
-    }
+    Request.get(`/static/settings/countries-code/${locale}_countries.json`).then(
+      res => {
+        resolve(res.data)
+      },
+      err => {
+        reject(err)
+      },
+    )
   })
 }
 

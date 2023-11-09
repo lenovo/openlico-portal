@@ -4,19 +4,25 @@
       placement="right"
       overlay-class-name="cluster-popover"
       trigger="hover"
-      @visibleChange="updateDurationTime"
+      @open-change="updateDurationTime"
       @hide="clearFreshDurationTime()">
-      <template slot="content">
+      <template #content>
         <ul class="clusterstatus-popover-ul" style="width: 250px">
           <li class="clusterstatus-item">
             <div class="cluster-popover-tips">
-              <span class="cluster-text">{{ $t('Cluster.Update.DurationTime', { durationTime: durationTime }) }}</span>
+              <!-- <span
+                class="cluster-text"
+                v-t="{ path: 'Cluster.Update.DurationTime', args: { durationTime: durationTime } }">
+              </span> -->
+              <span class="cluster-text">{{ $T('Cluster.Update.DurationTime', { durationTime: durationTime }) }}</span>
               <a-popover placement="right" overlay-class-name="cluster-popover" trigger="hover" visible-arrow>
-                <p slot="content" class="cluster-text cluster-tips">
-                  <a-icon type="info-circle" class="m-r-10 cluster-text" />
-                  <span class="cluster-text">{{ $t('Cluster.Update.Tips') }}</span>
-                </p>
-                <a-icon type="sync" class="cluster-refresh-icon" @click="refreshStatus" />
+                <template #content>
+                  <p class="cluster-text cluster-tips">
+                    <InfoCircleOutlined class="m-r-10 cluster-text" />
+                    <span class="cluster-text">{{ $t('Cluster.Update.Tips') }}</span>
+                  </p>
+                </template>
+                <sync-outlined class="cluster-refresh-icon" @click="refreshStatus" />
               </a-popover>
             </div>
           </li>
@@ -26,18 +32,20 @@
               placement="right"
               overlay-class-name="cluster-popover"
               trigger="hover">
-              <p slot="content" class="cluster-text cluster-tips">
-                {{ getDisplayErrorMessage(shedulerMessage) }}
-              </p>
-              <div class="cluster-popover-tips">
-                <i
-                  v-if="sheduler == 'inactive' && !clusterStatusLoading[0]"
-                  class="cluster-status-icon cluster-refresh-icon status-error" />
-              </div>
+              <template #content>
+                <p class="cluster-text cluster-tips">
+                  {{ getDisplayErrorMessage(shedulerMessage) }}
+                </p>
+                <div class="cluster-popover-tips">
+                  <i
+                    v-if="sheduler == 'inactive' && !clusterStatusLoading[0]"
+                    class="cluster-status-icon cluster-refresh-icon status-error" />
+                </div>
+              </template>
             </a-popover>
             <div class="cluster-popover-tips">
               <span class="cluster-text">{{ $t('Cluster.Sheduler') }}</span>
-              <a-icon v-if="clusterStatusLoading[0]" type="loading" class="cluster-refresh-icon" />
+              <LoadingOutlined v-if="clusterStatusLoading[0]" class="cluster-refresh-icon" />
               <i
                 v-if="sheduler == 'active' && !clusterStatusLoading[0]"
                 class="cluster-status-icon cluster-refresh-icon status-normal" />
@@ -50,25 +58,26 @@
                 placement="right"
                 overlay-class-name="cluster-popover"
                 trigger="hover">
-                <p slot="content" class="cluster-text cluster-tips">
-                  {{ getDisplayErrorMessage(parallelMessage) }}
-                </p>
-                <i
-                  v-if="parallel == 'inactive' && !clusterStatusLoading[1]"
-                  class="cluster-status-icon cluster-refresh-icon status-error" />
+                <template #content>
+                  <p class="cluster-text cluster-tips">
+                    {{ getDisplayErrorMessage(parallelMessage) }}
+                  </p>
+                  <i
+                    v-if="parallel == 'inactive' && !clusterStatusLoading[1]"
+                    class="cluster-status-icon cluster-refresh-icon status-error" />
+                </template>
               </a-popover>
               <span class="cluster-text">{{ $t('Cluster.ParallelFileSystem') }}</span>
-              <a-icon v-if="clusterStatusLoading[1]" type="loading" class="cluster-refresh-icon" />
+              <reload-outlined v-if="clusterStatusLoading[1]" spin class="cluster-refresh-icon" />
               <i
                 v-if="parallel == 'active' && !clusterStatusLoading[1]"
                 class="cluster-status-icon cluster-refresh-icon status-normal" />
               <a-tooltip>
-                <template slot="title">
+                <template #title>
                   {{ $t('Action.Deploy') }}
                 </template>
-                <a-icon
+                <PlayCircleOutlined
                   v-if="fmRestartShow && !clusterStatusLoading[1]"
-                  type="play-circle"
                   class="cluster-refresh-icon"
                   @click="deployFM" />
               </a-tooltip>
@@ -80,21 +89,23 @@
         <i class="clusterstatus-statusmin" :class="getStatusClass([sheduler, parallel])" />
       </div>
       <div v-else class="clusterstatus-cont">
-        <a-col :span="20" class="clusterstatus-title">
-          {{ clusterName }}
-        </a-col>
-        <a-col :span="4" class="clusterstatus-statusmax">
-          <i :class="getStatusClass([sheduler, parallel])" />
-        </a-col>
+        <a-row>
+          <a-col :span="20" class="clusterstatus-title">
+            {{ clusterName }}
+          </a-col>
+          <a-col :span="4" class="clusterstatus-statusmax">
+            <i :class="getStatusClass([sheduler, parallel])" />
+          </a-col>
+        </a-row>
       </div>
     </a-popover>
   </div>
 </template>
 <script type="text/javascript">
-import Format from './../common/format'
-import AccessService from './../service/access'
-import MonitorService from './../service/monitor-data'
-import FileManagerService from './../service/file-manager'
+import Format from '@/common/format'
+import AccessService from '@/service/access'
+import MonitorService from '@/service/monitor-data'
+import FileManagerService from '@/service/file-manager'
 
 export default {
   data() {
@@ -134,11 +145,11 @@ export default {
     window.gApp.$watch('isCollapse', function (newValue, oldValue) {
       _this.isMinMenu = newValue
     })
-    window.gApp.$on('refreshClusterStatus', this.init)
+    // window.gApp.$on('refreshClusterStatus', this.init)
     this.init()
   },
-  beforeDestroy() {
-    window.gApp.$off('refreshClusterStatus', this.init)
+  beforeUnmount() {
+    // window.gApp.$off('refreshClusterStatus', this.init)
     clearTimeout(this.refreshTimeout)
   },
   methods: {

@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model="visible" :title="title" :footer="null" width="450px" centered>
+  <a-modal v-model:open="visible" :title="title" :footer="null" width="450px" centered>
     <p v-for="msg in message" :key="msg.name">
       {{ msg.name + '=' + msg.value }}
     </p>

@@ -7,8 +7,8 @@
   </div>
 </template>
 <script>
-import * as ECharts from 'echarts'
 export default {
+  inject: ['resize'],
   props: ['initData'],
   data() {
     return {
@@ -22,29 +22,24 @@ export default {
         this.init()
       }
     },
+    resize(val) {
+      this.onResize()
+    },
   },
   mounted() {
     this.$nextTick(() => {
-      this.innerChart = ECharts.init(this.$refs.container, window.gApp.echartsTheme.nodegroupStatus)
-      window.removeEventListener('resize', this.onResize)
-      window.addEventListener('resize', this.onResize)
-      this.onResize()
+      this.$chart.init(this.$refs.container, window.gApp.echartsTheme.nodegroupStatus)
       if (this.initData) {
         this.init()
       }
-      window.gApp.$watch('isCollapse', (newValue, oldValue) => {
-        setTimeout(() => {
-          this.onResize()
-        }, 300)
-      })
     })
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener('resize', this.onResize)
   },
   methods: {
     onResize() {
-      this.innerChart.resize()
+      this.$chart.getInstanceByDom(this.$refs.container).resize()
     },
 
     init() {
@@ -157,7 +152,7 @@ export default {
           return series
         })(this.nodeStatus.status),
       }
-      this.innerChart.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.container).setOption(option)
     },
     processChartYCountData(data) {
       // var arr = [0, 0, 0, 0, 0, 0];
@@ -189,4 +184,4 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped></style>

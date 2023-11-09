@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import NodesTable from '../widget/nodes-table.vue'
+import NodesTable from '@/widget/nodes-table.vue'
 export default {
   components: {
     'nodes-table': NodesTable,

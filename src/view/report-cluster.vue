@@ -2,57 +2,63 @@
   <div class="report-cluster">
     <!-- filter -->
     <a-row class="b-w m-10 p-20">
-      <report-cluster-filter v-model="filters" @filter-change="onFilterChange" />
+      <report-cluster-filter
+        v-model:value="filters"
+        :loading="loading"
+        :no-data="isNoData"
+        @filter-change="onFilterChange" />
     </a-row>
 
-    <a-row v-if="summaryData && resourceData">
-      <!-- summary -->
-      <a-col :span="12">
-        <report-cluster-summary :data="summaryData" />
-      </a-col>
-      <!-- resource -->
-      <a-col :span="12">
-        <report-cluster-resource :data="resourceData" />
-      </a-col>
-    </a-row>
-    <!-- trend chart -->
-    <a-row v-if="trendChartData" class="b-w m-10 p-20">
-      <report-cluster-trend :data="trendChartData" />
-    </a-row>
-    <!-- time chart -->
-    <a-row v-if="timeChartData" class="b-w m-10 m-t-20 p-20">
-      <report-cluster-time :data="timeChartData" />
-    </a-row>
+    <div v-if="!loading">
+      <a-row v-if="summaryData && resourceData">
+        <!-- summary -->
+        <a-col :span="12">
+          <report-cluster-summary :data="summaryData" />
+        </a-col>
+        <!-- resource -->
+        <a-col :span="12">
+          <report-cluster-resource :data="resourceData" />
+        </a-col>
+      </a-row>
+      <!-- trend chart -->
+      <a-row v-if="trendChartData" class="b-w m-10 p-20">
+        <report-cluster-trend :data="trendChartData" />
+      </a-row>
+      <!-- time chart -->
+      <a-row v-if="timeChartData" class="b-w m-10 m-t-20 p-20">
+        <report-cluster-time :data="timeChartData" />
+      </a-row>
 
-    <a-row>
-      <!-- time distribution chart -->
-      <a-col v-if="timeDistributionData" :span="12" style="position: relative">
-        <report-cluster-time-distribution :data="timeDistributionData" />
-      </a-col>
-      <!-- resource map chart -->
-      <a-col v-if="resourceMapData" :span="12" style="position: relative">
-        <report-cluster-resource-map :data="resourceMapData" />
-      </a-col>
-    </a-row>
-    <div v-if="isNoData" class="cluster-nodata b-w m-10 p-20">
-      <div style="margin-top: 100px">
-        <img src="/static/img/system/main/nodata.png" />
+      <a-row>
+        <!-- time distribution chart -->
+        <a-col v-if="timeDistributionData" :span="12" style="position: relative">
+          <report-cluster-time-distribution :data="timeDistributionData" />
+        </a-col>
+        <!-- resource map chart -->
+        <a-col v-if="resourceMapData" :span="12" style="position: relative">
+          <report-cluster-resource-map :data="resourceMapData" />
+        </a-col>
+      </a-row>
+      <div v-if="isNoData" class="cluster-nodata b-w m-10 p-20">
+        <div style="margin-top: 100px">
+          <img src="/static/img/system/main/nodata.png" />
+        </div>
+        <p style="color: rgb(204, 204, 204); font-size: 16px">
+          {{ $t('No.Data') }}
+        </p>
       </div>
-      <p style="color: rgb(204, 204, 204); font-size: 16px">
-        {{ $t('No.Data') }}
-      </p>
     </div>
   </div>
 </template>
 <script>
-import ReportClusterService from './../service/report-cluster'
-import ReportClusterFilter from './report-cluster/report-cluster-filter'
-import ReportClusterSummary from './report-cluster/report-cluster-summary'
-import ReportClusterResource from './report-cluster/report-cluster-resource'
-import ReportClusterTime from './report-cluster/report-cluster-time'
-import ReportClusterTrend from './report-cluster/report-cluster-trend'
-import ReportClusterResourceMap from './report-cluster/report-cluster-resource-map'
-import ReportClusterTimeDistribution from './report-cluster/report-cluster-time-distribution'
+import ReportClusterService from '@/service/report-cluster'
+import ReportClusterTime from './report-cluster/report-cluster-time.vue'
+import ReportClusterTrend from './report-cluster/report-cluster-trend.vue'
+import ReportClusterFilter from './report-cluster/report-cluster-filter.vue'
+import ReportClusterSummary from './report-cluster/report-cluster-summary.vue'
+import ReportClusterResource from './report-cluster/report-cluster-resource.vue'
+import ReportClusterResourceMap from './report-cluster/report-cluster-resource-map.vue'
+import ReportClusterTimeDistribution from './report-cluster/report-cluster-time-distribution.vue'
 
 export default {
   components: {
@@ -73,7 +79,8 @@ export default {
       timeChartData: null,
       timeDistributionData: null,
       resourceMapData: null,
-      isNoData: false,
+      isNoData: null,
+      loading: false,
     }
   },
   watch: {
@@ -89,28 +96,34 @@ export default {
       this.timeChartData = null
       this.timeDistributionData = null
       this.resourceMapData = null
+      this.isNoData = null
     },
     onPreview(filters) {
+      this.loading = true
       const apiList = [
         ReportClusterService.getCluserOver(filters),
         ReportClusterService.getClusterTrend(filters),
         ReportClusterService.getClusterTime(filters),
         ReportClusterService.getClusterDistribution(filters),
       ]
-      Promise.all(apiList).then(
-        res => {
-          this.isNoData = !(res[0] && res[1] && res[2] && res[3])
-          this.summaryData = res[0]
-          this.resourceData = res[0]
-          this.trendChartData = res[1]
-          this.timeChartData = res[2]
-          this.timeDistributionData = res[3]
-          this.resourceMapData = res[3]
-        },
-        err => {
-          this.$message.error(err)
-        },
-      )
+      Promise.all(apiList)
+        .then(
+          res => {
+            this.isNoData = !(res[0] && res[1] && res[2] && res[3])
+            this.summaryData = res[0]
+            this.resourceData = res[0]
+            this.trendChartData = res[1]
+            this.timeChartData = res[2]
+            this.timeDistributionData = res[3]
+            this.resourceMapData = res[3]
+          },
+          err => {
+            this.$message.error(err)
+          },
+        )
+        .finally(() => {
+          this.loading = false
+        })
     },
   },
 }

@@ -4,9 +4,8 @@
   </div>
 </template>
 <script>
-import * as EChart from 'echarts'
 export default {
-  components: {},
+  inject: ['resize'],
   props: ['essemble'],
   data() {
     return {
@@ -14,25 +13,20 @@ export default {
     }
   },
   watch: {
-    essemble: {
-      handler: function (val) {
-        this.$nextTick(() => {
-          this.essembleObject.resize()
-          this.draw()
-        })
-      },
-      deep: true,
+    essemble(val) {
+      this.draw()
+    },
+    resize(val) {
+      this.onResize()
     },
   },
   mounted() {
-    this.essembleObject = EChart.init(this.$refs.innerChart, window.gApp.echartsTheme.common)
+    this.$chart.init(this.$refs.innerChart, window.gApp.echartsTheme.common)
     this.draw()
-    window.removeEventListener('resize', this.onResize)
-    window.addEventListener('resize', this.onResize)
   },
   methods: {
     onResize() {
-      this.essembleObject.resize()
+      this.$chart.getInstanceByDom(this.$refs.innerChart).resize()
     },
     draw: function (data) {
       const unit = this.essemble.type && this.essemble.type !== 'job' ? this.essemble.type : 'CPU'
@@ -109,7 +103,7 @@ export default {
           },
         },
       }
-      this.essembleObject.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.innerChart).setOption(option)
     },
   },
 }

@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <a-select v-model="mode" class="report-time-select" @change="onModeChange">
+  <div style="width: 100%">
+    <a-select v-model:value="mode" class="report-time-select" @change="onModeChange">
       <a-select-option value="week">
         {{ $t('Report.Cluster.Chart.Time.Day') }}
       </a-select-option>
@@ -12,9 +12,8 @@
   </div>
 </template>
 <script>
-import * as EChart from 'echarts'
-
 export default {
+  inject: ['resize'],
   props: ['data'],
   data() {
     return {
@@ -50,18 +49,14 @@ export default {
         })
       }
     },
+    resize(val) {
+      this.onResize()
+    },
   },
   mounted() {
     this.$nextTick(function () {
-      this.innerChart = EChart.init(this.$refs.container, window.gApp.echartsTheme.jobQueueStatus)
-      window.removeEventListener('resize', this.onResize)
-      window.addEventListener('resize', this.onResize)
+      this.$chart.init(this.$refs.container, window.gApp.echartsTheme.jobQueueStatus)
       this.initChart()
-      window.gApp.$watch('isCollapse', (newValue, oldValue) => {
-        setTimeout(() => {
-          this.onResize()
-        }, 300)
-      })
     })
   },
   methods: {
@@ -116,7 +111,7 @@ export default {
           },
         ],
       }
-      this.innerChart.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.container).setOption(option)
     },
     initData() {
       const arr = {
@@ -139,7 +134,7 @@ export default {
       this.initChart()
     },
     onResize() {
-      this.innerChart.resize()
+      this.$chart.getInstanceByDom(this.$refs.container).resize()
     },
   },
 }

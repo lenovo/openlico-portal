@@ -1,19 +1,20 @@
 <template>
-  <div>
+  <div class="job-detali-file">
     <file-select
       ref="jobFileSelector"
-      v-model="fileFullPath"
+      v-model:value="fileFullPath"
       class="job-file-detail"
       type="file"
-      style="width: 500px" />
+      style="width: 500px"
+      @change="updateFilePath" />
     <div id="detail_edit" class="grid-content height--100" />
   </div>
 </template>
 
 <script>
-import JobService from '../../service/job'
-import FileSelect from '../../component/file-select'
-import Format from '../../common/format'
+import Format from '@/common/format'
+import JobService from '@/service/job'
+import FileSelect from '@/component/file-select.vue'
 
 export default {
   components: {
@@ -35,25 +36,6 @@ export default {
       this.updateJobFile()
     },
   },
-  mounted() {
-    // if (this.jobType=='cmd') {
-    //   this.fileFullPath='/'
-    //   this.editor = ace.edit("detail_edit");
-    //   this.editor.setFontSize(16);
-    //   this.editor.setReadOnly(true);
-    // } else {
-    //   this.updateJobFile();
-    // }
-    this.updateJobFile()
-    this.$refs.jobFileSelector.$on(
-      'input',
-      function (path) {
-        this.filePath = Format.formatWorkspace(path)
-
-        this.updateJobFile()
-      }.bind(this),
-    )
-  },
   methods: {
     updateJobFile() {
       const that = this
@@ -66,6 +48,10 @@ export default {
         that.editor.setValue(contain, -1)
       })
     },
+    updateFilePath(path) {
+      this.filePath = Format.formatWorkspace(path)
+      this.updateJobFile()
+    },
   },
 }
 </script>
@@ -76,7 +62,10 @@ export default {
   min-height: 450px;
 }
 
-.job-file-detail >>> .select-file-input {
+.job-file-detail :deep(.select-file-input) {
   width: 500px;
+}
+.job-detali-file :deep(.grid-content) {
+  z-index: 0 !important;
 }
 </style>

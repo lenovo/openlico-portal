@@ -15,10 +15,10 @@
  */
 
 import Request from '../request/https'
-import TableDataFetcherFactory from '../common/table-data-fetcher-factory'
-import ErrorHandler from '../common/error-handler'
-import FormatHandler from '../common/format'
 import Parser from '../common/parser'
+import FormatHandler from '../common/format'
+import ErrorHandler from '../common/error-handler'
+import TableDataFetcherFactory from '../common/table-data-fetcher-factory'
 
 const imageStatusEnums = ['waiting', 'uploading', 'success', 'failure']
 const FrameworkTypeSingularity = [
@@ -31,6 +31,7 @@ const FrameworkTypeSingularity = [
   'letrain',
   'chainer',
   'jupyter',
+  'jupyterlab',
   'pytorch',
   'scikit',
   'tensorrt',
@@ -71,88 +72,16 @@ class Image {
 
   static parseFromRestApi(jsonObj) {
     const image = new Image()
-    image._id = jsonObj.id
-    image._name = jsonObj.name
-    image._status = imageStatusEnums[jsonObj.status]
-    image._framework = jsonObj.framework
-    image._version = jsonObj.version
-    image._tags = jsonObj.tags
-    image._description = jsonObj.description
-    image._username = jsonObj.username ? jsonObj.username : ''
-    image._imagePath = jsonObj.image_path
+    image.id = jsonObj.id
+    image.name = jsonObj.name
+    image.status = imageStatusEnums[jsonObj.status]
+    image.framework = jsonObj.framework
+    image.version = jsonObj.version
+    image.tags = jsonObj.tags
+    image.description = jsonObj.description
+    image.username = jsonObj.username ? jsonObj.username : ''
+    image.imagePath = jsonObj.image_path
     return image
-  }
-
-  get _id() {
-    return this.id
-  }
-
-  set _id(id) {
-    return (this.id = id)
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    return (this.name = name)
-  }
-
-  get _status() {
-    return this.status
-  }
-
-  set _status(status) {
-    return (this.status = status)
-  }
-
-  get _version() {
-    return this.version
-  }
-
-  set _version(version) {
-    return (this.version = version)
-  }
-
-  get _framework() {
-    return this.framework
-  }
-
-  set _framework(framework) {
-    return (this.framework = framework)
-  }
-
-  get _tags() {
-    return this.tags
-  }
-
-  set _tags(tags) {
-    return (this.tags = tags)
-  }
-
-  get _description() {
-    return this.description
-  }
-
-  set _description(description) {
-    return (this.description = description)
-  }
-
-  get _username() {
-    return this.username
-  }
-
-  set _username(username) {
-    return (this.username = username)
-  }
-
-  get _imagePath() {
-    return this.imagePath
-  }
-
-  set _imagePath(imagePath) {
-    return (this.imagePath = imagePath)
   }
 }
 

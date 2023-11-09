@@ -7,7 +7,7 @@
   </span>
 </template>
 <script>
-import AlertService from './../service/alert'
+import AlertService from '@/service/alert'
 export default {
   data() {
     return {
@@ -20,7 +20,7 @@ export default {
   mounted() {
     this.init()
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.refreshTimeout)
     this.refreshTimeout = null
   },
@@ -67,7 +67,7 @@ export default {
 .alertstatus-icon-yello {
   color: #ffc107;
 }
-.alertstatus-item >>> .ant-badge-count {
+.alertstatus-item :deep() .ant-badge-count {
   top: 2px;
   right: 3px;
 }

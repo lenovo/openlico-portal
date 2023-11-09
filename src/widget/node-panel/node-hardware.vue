@@ -85,7 +85,7 @@
   </a-row>
 </template>
 <script>
-import Format from '../../common/format'
+import Format from '@/common/format'
 export default {
   props: ['node'],
   methods: {
@@ -126,6 +126,7 @@ export default {
   border-radius: 50%;
   background: #5fb4f9;
   position: relative;
+  line-height: 30px;
 }
 .cpuStatus-icon i {
   color: #fff;

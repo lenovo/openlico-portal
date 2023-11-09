@@ -5,16 +5,15 @@
     size="500px"
     :form-model="operateForm"
     :form-rules="operateRules"
-    :success-message-formatter="successMessageFormatter"
-    :error-message-formatter="errorMessageFormatter">
-    <a-form-model-item :label="$t('BillGroup.Name')" prop="billGroupName">
+    :success-message-formatter="successMessageFormatter">
+    <a-form-item :label="$t('BillGroup.Name')" name="billGroupName">
       <form-value-displayer id="tid_account-operate-billgroup-name" :value="operateForm.billGroupName" />
-    </a-form-model-item>
-    <a-form-model-item :label="$t('BillGroup.AccountBalance')" prop="balance">
+    </a-form-item>
+    <a-form-item :label="$t('BillGroup.AccountBalance')" name="balance">
       <form-value-displayer id="tid_account-operate-billgroup-balance" :value="formatMoney(operateForm.balance)" />
-    </a-form-model-item>
-    <a-form-model-item :label="$t('BillGroup.AccountOperate')" prop="operate">
-      <a-select id="tid_account-operate-operate" v-model="operateForm.operate">
+    </a-form-item>
+    <a-form-item :label="$t('BillGroup.AccountOperate')" name="operate">
+      <a-select id="tid_account-operate-operate" v-model:value="operateForm.operate">
         <a-select-option key="deposit" value="deposit">
           {{ $t('BillGroup.AccountOperate.Deposit') }}
         </a-select-option>
@@ -22,18 +21,18 @@
           {{ $t('BillGroup.AccountOperate.Withdraw') }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item :label="$t('BillGroup.AccountOperate.Amount')" prop="amount">
-      <a-input id="tid_account-operate-amount" v-model="operateForm.amount" :prefix="currency" />
-    </a-form-model-item>
+    </a-form-item>
+    <a-form-item :label="$t('BillGroup.AccountOperate.Amount')" name="amount">
+      <a-input id="tid_account-operate-amount" v-model:value="operateForm.amount" :prefix="currency" />
+    </a-form-item>
   </composite-form-dialog>
 </template>
 <script>
-import BillGroupService from '../../service/bill-group'
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import FormValueDisplayer from '../../component/form-value-displayer'
-import ValidRoleFactory from '../../common/valid-role-factory'
-import Format from '../../common/format'
+import BillGroupService from '@/service/bill-group'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import FormValueDisplayer from '@/component/form-value-displayer.vue'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import Format from '@/common/format'
 
 export default {
   components: {
@@ -75,11 +74,7 @@ export default {
     },
     successMessageFormatter(res) {
       const billGroup = res
-      return this.$t('BillGroup.AccountOperate.Success', { name: billGroup.name })
-    },
-    errorMessageFormatter(res) {
-      const errMsg = res
-      return this.$t(errMsg)
+      return this.$T('BillGroup.AccountOperate.Success', { name: billGroup.name })
     },
     doOperate(billGroup) {
       this.mode = 'edit'
@@ -90,7 +85,7 @@ export default {
         operate: 'deposit',
         amount: '0.00',
       }
-      this.title = this.$t('BillGroup.AccountOperate.Title', { id: billGroup.id })
+      this.title = this.$T('BillGroup.AccountOperate.Title', { id: billGroup.id })
       return this.$refs.innerDialog.popup(this.submitForm)
     },
   },

@@ -1,7 +1,7 @@
 <template>
   <div id="tid_dashboard-message" class="dashboard-message">
     <a-row class="dashboard-message-title m-b-20">
-      <span class="dashboard-message-left">{{ $t('Dashboard.Message.title') }}</span>
+      <span class="dashboard-message-left dashboard-card-title">{{ $t('Dashboard.Message.title') }}</span>
     </a-row>
     <div class="dashboard-message-contenter">
       <ul v-for="(item, index) in messageData" :key="index" class="dashboard-message-card m-b-20">
@@ -17,7 +17,7 @@
   </div>
 </template>
 <script>
-import Format from './../../common/format'
+import Format from '@/common/format'
 export default {
   props: ['initData', 'arch'],
   data() {
@@ -39,40 +39,38 @@ export default {
         this.messageData = []
         this.initData.forEach(item => {
           this.messageData.push({
-            title: this.getMessagetitle(item),
-            name: item.target[0].name,
+            title: this.getMessageTitle(item),
+            name: this.getMessageTargets(item),
             time: Format.formatDateTime(item.actionTime),
           })
         })
       }
     },
-    getMessagetitle(item) {
+    getMessageTitle(item) {
       let text = this.$t('Operation.Module.' + item.action)
       if (item.module) {
         text += this.$t('Operation.Module.' + item.module) + ': '
       } else {
         text += ': '
       }
-      // if (item.target.length > 1) {
-      //     for (var i = 0; i < item.target.length; i++) {
-      //         if (i < 2) {
-      //             text += item.target[i].name + ", ";
-      //         } else if (i == 2) {
-      //             text += item.target[i].name + ", ... ";
-      //         } else {
-      //             break;
-      //         }
-      //     }
-      // } else if (item.target.length == 1) {
-      //     text += item.target[0].name + " ";
-      // }
       return text
+    },
+    getMessageTargets(item) {
+      let target = ''
+      item.target.forEach((obj, index) => {
+        if (index === item.target.length - 1) {
+          target += obj.name
+        } else {
+          target += obj.name + ', '
+        }
+      })
+      return target
     },
   },
 }
 </script>
 
-<style>
+<style scoped>
 .dashboard-message-card {
   padding: 15px 20px;
   display: flex;

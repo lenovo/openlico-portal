@@ -4,32 +4,28 @@
     class="training-steps-dialog"
     :title="$t('JobTemplate.TrainingSteps.Dialog.Title')"
     size="580px"
-    :composite-height="370"
     :form-model="innerForm"
     :form-rules="innerRules">
     <!--Log Every Steps-->
-    <a-form-model-item
-      prop="logPerIterations"
-      label-width="180px"
-      :label="$t('JobTemplate.TrainingEpochs.LogPerIteration')">
-      <a-input v-model="innerForm.logPerIterations" :addon-after="$t('JobTemplate.TrainingEpochs.Unit')" />
-    </a-form-model-item>
+    <a-form-item name="logPerIterations" label-width="180px" :label="$t('JobTemplate.TrainingEpochs.LogPerIteration')">
+      <a-input v-model:value="innerForm.logPerIterations" :addon-after="$t('JobTemplate.TrainingEpochs.Unit')" />
+    </a-form-item>
     <!--Save Every Steps-->
-    <a-form-model-item
-      prop="savePerIterations"
+    <a-form-item
+      name="savePerIterations"
       label-width="180px"
       :label="$t('JobTemplate.TrainingEpochs.SavePerIteration')">
-      <a-input v-model="innerForm.savePerIterations" :addon-after="$t('JobTemplate.TrainingEpochs.Unit')" />
-    </a-form-model-item>
+      <a-input v-model:value="innerForm.savePerIterations" :addon-after="$t('JobTemplate.TrainingEpochs.Unit')" />
+    </a-form-item>
   </composite-form-dialog>
 </template>
 <script>
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
-    'composite-form-dialog': CompositeFormDialog,
+    CompositeFormDialog,
   },
   data() {
     return {

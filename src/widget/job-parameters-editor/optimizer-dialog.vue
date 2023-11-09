@@ -3,36 +3,35 @@
     ref="innerDialog"
     :title="$t('JobTemplate.Optimizer.Dialog.Title')"
     size="580px"
-    :composite-height="540"
     :form-model="innerForm"
     :form-rules="innerRules">
-    <a-form-model-item prop="optimizerType" label-width="200px" :label="$t('JobTemplate.Optimizer')">
-      <a-select v-model="optimizerType">
+    <a-form-item name="optimizerType" label-width="200px" :label="$t('JobTemplate.Optimizer')">
+      <a-select v-model:value="optimizerType">
         <a-select-option v-for="option in optimizerOptions" :key="option.key" :value="option.key">
           {{ $t(option.label) }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item
+    </a-form-item>
+    <a-form-item
       v-for="param in optimizerParams"
       :key="param.key"
       :label="$t(param.label)"
       label-width="200px"
-      :prop="param.key">
-      <a-input v-if="param.type == 'number'" v-model="innerForm[param.key]" />
-      <a-checkbox v-if="param.type == 'bool'" v-model="innerForm[param.key]" />
-    </a-form-model-item>
+      :name="param.key">
+      <a-input v-if="param.type == 'number'" v-model:value="innerForm[param.key]" />
+      <a-checkbox v-if="param.type == 'bool'" v-model:checked="innerForm[param.key]" />
+    </a-form-item>
   </composite-form-dialog>
 </template>
 
 <script>
-import ValidRoleFactory from '../../common/valid-role-factory'
-import CompositeFormDialog from '../../component/composite-form-dialog'
 import OptimizerDefine from './optimizer-define'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
-    'composite-form-dialog': CompositeFormDialog,
+    CompositeFormDialog,
   },
   data() {
     return {

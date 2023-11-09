@@ -1,7 +1,7 @@
 <template>
   <div v-if="billGroup" class="height--100 m-10 billgroup-bj">
     <a-spin :spinning="spinning">
-      <a-row class="p-20">
+      <a-row class="p-20" style="display: block">
         <div class="billgroup-header billgroup-title p-b-10">
           <h4>{{ $t('BillGroup.Default.Policy') }}</h4>
           <a-button class="billgroup-edit-but m-l-20" @click="onEditClick">
@@ -20,7 +20,7 @@
         <!-- <p class="p-t-10 m-l-20">{{billGroupRate.storage}}</p> -->
       </a-row>
     </a-spin>
-    <a-row class="p-20">
+    <a-row class="p-20" style="display: block">
       <div class="billgroup-header billgroup-title p-b-10">
         <h4>{{ $t('BillGroup.Detail.Queue') }}</h4>
         <a-button class="billgroup-queue-edit-but m-l-20" @click="onCreateQueueClick">
@@ -29,7 +29,7 @@
       </div>
       <billgroup-queue ref="billGroupQueue" :bill-group="billGroup" @update-billgroup="freshBillGroup" />
     </a-row>
-    <a-row class="p-20">
+    <a-row class="p-20" style="display: block">
       <div class="billgroup-header billgroup-title p-b-10">
         <h4>{{ $t('BillGroup.Detail.Storage') }}</h4>
         <a-button class="billgroup-storage-edit-but m-l-20" @click="onCreateStorageClick">
@@ -42,11 +42,11 @@
   </div>
 </template>
 <script>
-import BillGroupService from '../service/bill-group'
-import Format from '../common/format'
-import BillGroupDialog from './bill-group-manage/bill-group-dialog'
-import BillGroupQueues from './bill-group-manage/bill-group-queues'
-import BillGroupStorage from './bill-group-manage/bill-group-storage'
+import BillGroupService from '@/service/bill-group'
+import Format from '@/common/format'
+import BillGroupDialog from './bill-group-manage/bill-group-dialog.vue'
+import BillGroupQueues from './bill-group-manage/bill-group-queues.vue'
+import BillGroupStorage from './bill-group-manage/bill-group-storage.vue'
 
 export default {
   components: {
@@ -85,9 +85,9 @@ export default {
           ? res.chargeRate
           : '0.0000'
         const cpuTimeUnit = res.chargeRateDisplayType ? res.chargeRateDisplayType : 'hour'
-        this.billGroupRate.cpu = this.$t('BillGroup.Detail.CpuChargeRate', {
+        this.billGroupRate.cpu = this.$T('BillGroup.Detail.CpuChargeRate', {
           value: Format.formatBillingRate(cpuRate, this.currency, true),
-          time_type: this.$t(
+          time_type: this.$T(
             'BillGroup.ChargeRate.' + cpuTimeUnit.replace(cpuTimeUnit[0], cpuTimeUnit[0].toUpperCase()),
           ),
         })
@@ -99,9 +99,9 @@ export default {
           ? res.memoryChargeRate
           : '0.00'
         const memoryTimeUnit = res.memoryChargeRateDisplayType ? res.memoryChargeRateDisplayType : 'hour'
-        this.billGroupRate.memory = this.$t('BillGroup.Detail.MemoryChargeRate', {
+        this.billGroupRate.memory = this.$T('BillGroup.Detail.MemoryChargeRate', {
           value: Format.formatBillingRate(memoryRate, this.currency, true),
-          time_type: this.$t(
+          time_type: this.$T(
             'BillGroup.ChargeRate.' + memoryTimeUnit.replace(memoryTimeUnit[0], memoryTimeUnit[0].toUpperCase()),
           ),
         })
@@ -118,11 +118,11 @@ export default {
           const timeUnit = res.gresChargeRateDisplayType[el] ? res.gresChargeRateDisplayType[el] : 'hour'
           const gresItem = this.getGresourceItem(el)
           this.billGroupRate.gres.push(
-            this.$t('BillGroup.Detail.GresChargeRate', {
+            this.$T('BillGroup.Detail.GresChargeRate', {
               name: gresItem.display_name,
               value: Format.formatBillingRate(rate, this.currency, true),
               unit: gresItem.unit,
-              time_type: this.$t('BillGroup.ChargeRate.' + timeUnit.replace(timeUnit[0], timeUnit[0].toUpperCase())),
+              time_type: this.$T('BillGroup.ChargeRate.' + timeUnit.replace(timeUnit[0], timeUnit[0].toUpperCase())),
             }),
           )
         })

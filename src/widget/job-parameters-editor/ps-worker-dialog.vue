@@ -2,12 +2,11 @@
   <composite-form-dialog
     ref="innerDialog"
     size="580px"
-    :composite-height="500"
     :title="$t('JobTemplate.PSWorker.Dialog.Title')"
     :form-model="innerForm"
     :form-rules="innerRules">
-    <a-form-model-item :label="$t('JobTemplate.PSWorker.Mode')" label-width="180px">
-      <a-select v-model="innerForm.mode">
+    <a-form-item :label="$t('JobTemplate.PSWorker.Mode')" label-width="180px">
+      <a-select v-model:value="innerForm.mode">
         <a-select-option value="auto">
           {{ $t('JobTemplate.PSWorker.Mode.Auto') }}
         </a-select-option>
@@ -15,37 +14,37 @@
           {{ $t('JobTemplate.PSWorker.Mode.Manual') }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item
+    </a-form-item>
+    <a-form-item
       v-if="innerForm.mode == 'manual'"
-      prop="psNumber"
+      name="psNumber"
       :label="$t('JobTemplate.PSWorker.PSNumber')"
       label-width="180px">
-      <a-input v-model="innerForm.psNumber" />
-    </a-form-model-item>
-    <a-form-model-item
+      <a-input v-model:value="innerForm.psNumber" />
+    </a-form-item>
+    <a-form-item
       v-if="innerForm.mode == 'manual'"
-      prop="workerNumber"
+      name="workerNumber"
       :label="$t('JobTemplate.PSWorker.WorkerNumber')"
       label-width="180px">
-      <a-input v-model="innerForm.workerNumber" :disabled="gpuPerNode > 0" />
-    </a-form-model-item>
-    <a-form-model-item
+      <a-input v-model:value="innerForm.workerNumber" :disabled="gpuPerNode > 0" />
+    </a-form-item>
+    <a-form-item
       v-if="innerForm.mode == 'manual' && gpuPerNode > 0"
-      prop="gpuPerWorker"
+      name="gpuPerWorker"
       :label="$t('JobTemplate.PSWorker.GPUPerWorker')"
       label-width="180px">
-      <a-input v-model="innerForm.gpuPerWorker" />
-    </a-form-model-item>
+      <a-input v-model:value="innerForm.gpuPerWorker" />
+    </a-form-item>
   </composite-form-dialog>
 </template>
 <script>
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
-    'composite-form-dialog': CompositeFormDialog,
+    CompositeFormDialog,
   },
   data() {
     return {

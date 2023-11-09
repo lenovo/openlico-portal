@@ -6,39 +6,39 @@
       :form-model="formModel"
       :form-rules="formRules"
       size="600px"
-      :success-message-formatter="successMessageFormatter"
-      :error-message-formatter="errorMessageFormatter">
-      <a-form-model-item :label="$t('CloudTools.Name')" prop="name">
-        <a-input v-model="formModel.name" :disabled="nameFalse" />
-      </a-form-model-item>
-      <a-form-model-item :label="$t('CloudTools.Workspace')" label-width="200px" prop="workspace">
+      :success-message-formatter="successMessageFormatter">
+      <a-form-item :label="$t('CloudTools.Name')" name="name">
+        <a-input v-model:value="formModel.name" :disabled="nameFalse" />
+      </a-form-item>
+      <a-form-item :label="$t('CloudTools.Workspace')" label-width="200px" name="workspace">
         <file-select
-          v-model="formModel.workspace"
+          v-model:value="formModel.workspace"
           :special_character="true"
           :disabled="workspaceDisabled"
           type="folder" />
-      </a-form-model-item>
-      <a-form-model-item :label="$t('CloudTools.Environment')" label-width="200px" prop="environment">
+      </a-form-item>
+      <a-form-item :label="$t('CloudTools.Environment')" label-width="200px" name="environment">
         <file-select
-          v-model="formModel.environment"
+          v-model:value="formModel.environment"
           :special_character="true"
           :disabled="workspaceDisabled"
           type="folder" />
-      </a-form-model-item>
-      <a-button :disabled="delteteFalse" class="delete" type="danger" @click="delteteButton">
+      </a-form-item>
+      <a-button :disabled="delteteFalse" class="delete" type="primary" danger @click="delteteButton">
         {{ $t('CloudTools.Delete') }}
       </a-button>
     </composite-form-dialog>
     <a-modal
       :title="deleteTitle"
-      :visible="visible"
+      :open="visible"
       :footer="!isDetail ? null : undefined"
       :closable="!confirmLoading"
       :mask-closable="false"
+      destroy-on-close
       @cancel="handleCancel">
-      <template slot="footer">
+      <template #footer>
         <div>
-          <a-button type="white" @click="handleCancel">
+          <a-button @click="handleCancel">
             {{ $t('Action.Cancel') }}
           </a-button>
           <a-button type="primary" @click="handleOk">
@@ -50,7 +50,7 @@
         <p style="margin-bottom: 15px">
           {{ ModalText }}
         </p>
-        <a-checkbox v-model="delete_completely" @change="onChange">
+        <a-checkbox v-model:checked="delete_completely" @change="onChange">
           {{ $t('CloudTools.Delete') }}{{ $t('Admin.Runtime.Env') }}
         </a-checkbox>
       </a-spin>
@@ -58,16 +58,17 @@
   </div>
 </template>
 <script>
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
-import FileSelect from '../../component/file-select'
-import CloudToolsService from '../../service/cloud-tools'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import FileSelect from '@/component/file-select.vue'
+import CloudToolsService from '@/service/cloud-tools'
 
 export default {
   components: {
     'composite-form-dialog': CompositeFormDialog,
     'file-select': FileSelect,
   },
+  emits: ['createSonCloudGetProjects', 'createSonCloudGetProjectsInfo'],
   data() {
     return {
       projectAllInfo: {},
@@ -120,7 +121,7 @@ export default {
           this.delete_completely = false
           this.confirmLoading = false
           this.$message.success(
-            this.$t('CloudTools.Project.Delete.Success', {
+            this.$T('CloudTools.Project.Delete.Success', {
               name: this.projectAllInfo.name,
             }),
           )
@@ -144,10 +145,10 @@ export default {
     },
     delteteButton() {
       this.visible = true
-      this.deleteTitle = this.$t('CloudTools.Delete.Title', {
+      this.deleteTitle = this.$T('CloudTools.Delete.Title', {
         name: this.formModel.name,
       })
-      this.ModalText = this.$t('CloudTools.Delete.Confirm', {
+      this.ModalText = this.$T('CloudTools.Delete.Confirm', {
         name: this.formModel.name,
       })
     },
@@ -178,18 +179,14 @@ export default {
     },
     successMessageFormatter(res) {
       if (this.projectAllInfo.id) {
-        return this.$t('CloudTools.Action.Put.Ready', {
+        return this.$T('CloudTools.Action.Put.Ready', {
           name: this.formModel.name,
         })
       } else {
-        return this.$t('CloudTools.Action.Create.Ready', {
+        return this.$T('CloudTools.Action.Create.Ready', {
           name: this.formModel.name,
         })
       }
-    },
-    errorMessageFormatter(res) {
-      const errMsg = res
-      return this.$t(errMsg)
     },
     doCreate() {
       this.delteteFalse = true

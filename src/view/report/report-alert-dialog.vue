@@ -5,27 +5,26 @@
     size="900px"
     :form-model="reportDownloadForm"
     :form-rules="reportDownloadRules"
-    :success-message-formatter="successMessageFormatter"
-    :error-message-formatter="errorMessageFormatter">
+    :success-message-formatter="successMessageFormatter">
     <a-alert :message="$t('Report.Message.Dialog')" type="info" show-icon />
-    <a-form-model-item :label="$t('Report.Label.Content')" class="p-t-20">
-      <a-radio-group v-model="reportMode" button-style="solid">
+    <a-form-item :label="$t('Report.Label.Content')" class="p-t-20">
+      <a-radio-group v-model:value="reportMode" button-style="solid">
         <a-radio-button v-for="(item, index) in reportModeOptions" :key="index" :value="item.value">
           {{ item.label }}
         </a-radio-button>
       </a-radio-group>
-    </a-form-model-item>
-    <a-form-model-item v-if="reportMode == 'details'" :label="$t('Report.Label.Level')">
-      <a-radio-group v-model="reportDownloadForm.level" button-style="solid" @change="onAlertLevelChange">
+    </a-form-item>
+    <a-form-item v-if="reportMode == 'details'" :label="$t('Report.Label.Level')">
+      <a-radio-group v-model:value="reportDownloadForm.level" button-style="solid" @change="onAlertLevelChange">
         <a-radio-button v-for="(item, index) in levelOptions" :key="index" :value="item.value">
           {{ item.label }}
         </a-radio-button>
       </a-radio-group>
-    </a-form-model-item>
-    <a-form-model-item v-show="reportMode == 'details'" :label="$t('Report.Label.Node')">
+    </a-form-item>
+    <a-form-item v-show="reportMode == 'details'" :label="$t('Report.Label.Node')">
       <multi-node-selector ref="multiNodeSelector" :hostname-max="50" @nodes-selected-change="nodeSelectedChange" />
-    </a-form-model-item>
-    <a-form-model-item :label="$t('Report.Title.Format')">
+    </a-form-item>
+    <a-form-item :label="$t('Report.Title.Format')">
       <a-row class="reportFormats">
         <a-col :span="2">
           <input
@@ -56,7 +55,7 @@
         </a-col>
       </a-row>
       <a-row v-if="reportDownloadForm.format == 'pdf' && reportMode == 'statistics'">
-        <a-radio-group v-model="reportDownloadForm.direction">
+        <a-radio-group v-model:value="reportDownloadForm.direction">
           <a-radio id="tid_reportPdfHorizontal" value="landscape">
             {{ $t('Report.Direction.Horizontal') }}
           </a-radio>
@@ -65,14 +64,14 @@
           </a-radio>
         </a-radio-group>
       </a-row>
-    </a-form-model-item>
+    </a-form-item>
   </composite-form-dialog>
 </template>
 <script>
-import ReportService from '../../service/report'
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import MultiNodeSelector from '../../widget/multi-node-selector'
-import download from '../../service/download'
+import download from '@/service/download'
+import ReportService from '@/service/report'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import MultiNodeSelector from '@/widget/multi-node-selector.vue'
 
 export default {
   components: {
@@ -177,9 +176,6 @@ export default {
     successMessageFormatter(res) {
       return this.$t('Report.Message.Success')
     },
-    errorMessageFormatter(err) {
-      return this.$t(err)
-    },
     download(data) {
       this.reportDownloadForm = {
         content: 'statistics',
@@ -220,22 +216,22 @@ export default {
   height: 60px;
 }
 .reportFormatExcel ~ label {
-  background-image: url('static/img/system/report/xlsx.png');
+  background-image: url('/static/img/system/report/xlsx.png');
 }
 .reportFormatExcel:checked ~ label {
-  background-image: url('static/img/system/report/xlsx_check.png');
+  background-image: url('/static/img/system/report/xlsx_check.png');
 }
 .reportFormatPDF ~ label {
-  background-image: url('static/img/system/report/pdf.png');
+  background-image: url('/static/img/system/report/pdf.png');
 }
 .reportFormatPDF:checked ~ label {
-  background-image: url('static/img/system/report/pdf_check.png');
+  background-image: url('/static/img/system/report/pdf_check.png');
 }
 .reportFormatHTML ~ label {
-  background-image: url('static/img/system/report/html.png');
+  background-image: url('/static/img/system/report/html.png');
 }
 .reportFormatHTML:checked ~ label {
-  background-image: url('static/img/system/report/html_check.png');
+  background-image: url('/static/img/system/report/html_check.png');
 }
 
 .inline {

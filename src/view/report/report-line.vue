@@ -2,9 +2,8 @@
   <div><div id="report-line" ref="innerChart" class="report-line" /></div>
 </template>
 <script>
-import * as EChart from 'echarts'
 export default {
-  components: {},
+  inject: ['resize'],
   props: ['line'],
   data() {
     return {
@@ -14,15 +13,24 @@ export default {
   watch: {
     line: {
       handler: function () {
-        this.draw(this.line)
+        this.$nextTick(() => {
+          this.draw(this.line)
+        })
       },
       deep: true,
     },
+    resize(val) {
+      this.onResize()
+    },
+  },
+  mounted() {
+    this.draw(this.line)
   },
   methods: {
     draw: function (data) {
-      if (Object.keys(this.lineObject).length === 0) {
-        this.lineObject = EChart.init(this.$refs.innerChart, window.gApp.echartsTheme.common)
+      let chart = this.$chart.getInstanceByDom(this.$refs.innerChart)
+      if (!chart) {
+        chart = this.$chart.init(this.$refs.innerChart, window.gApp.echartsTheme.common)
       }
       const format = this.line.format
       const option = {
@@ -78,14 +86,12 @@ export default {
         //     type:'line'
         //   }
       }
-      this.lineObject.clear()
-      this.lineObject.setOption(option)
-      window.removeEventListener('resize', () => {
-        this.lineObject.resize()
-      })
-      window.addEventListener('resize', () => {
-        this.lineObject.resize()
-      })
+      chart.clear()
+      chart.setOption(option)
+      this.onResize()
+    },
+    onResize() {
+      this.$chart.getInstanceByDom(this.$refs.innerChart).resize()
     },
   },
 }

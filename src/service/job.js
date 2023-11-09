@@ -31,32 +31,29 @@ const JobStatusEnums = [
   'running',
   'suspending',
   'waiting',
-  'holding',
+  'held',
   'error',
   'cancelled',
   'createfailed',
   'cancelling',
 ]
 const JobWebStatusEnums = {
-  running: ['running'],
-  waiting: ['queueing', 'suspending', 'waiting', 'holding'],
+  running: ['running', 'suspending'],
+  waiting: ['queueing', 'waiting', 'held'],
   finished: ['completed', 'error', 'cancelled', 'createfailed'],
 }
 const JobWebStateEnums = {
-  running: ['R'],
-  waiting: ['Q', 'S', 'H'],
+  running: ['R', 'S'],
+  waiting: ['Q', 'H'],
   finished: ['C'],
 }
 
-// Remove hold/release/pause/resume actions
-// const JobActionEnums = ['browse', 'cancel', 'rerun', 'copy', 'delete', 'hold', 'release', 'pause', 'resume'];
-const JobActionEnums = ['browse', 'cancel', 'rerun', 'copy', 'delete', 'errmsg']
 // format backend return data
 const JobStateMapping = {
   c: 'completed',
   q: 'queueing',
   r: 'running',
-  h: 'holding',
+  h: 'held',
   s: 'suspending',
   un: 'unknown',
 }
@@ -107,6 +104,10 @@ class Job {
     this.comment = ''
     this.pass = ''
     this.vnc = ''
+    this.priority = 0
+    this.template = null
+    this.runtime = 0
+    this.displayRuntime = 0
   }
 
   static parseFromRestApi(jsonObj) {
@@ -124,6 +125,7 @@ class Job {
     job.comment = jsonObj.user_comment
     job.pass = jsonObj.password
     job.vnc = jsonObj.entrance_uri
+    job.priority = jsonObj.priority
     const tags = []
     for (let i = 0; i < jsonObj.tags.length; i++) {
       tags.push(Tag.parseFromRestApi(jsonObj.tags[i]))
@@ -138,6 +140,8 @@ class Job {
     job.workingDirectory = Format.formatMyFolder(jsonObj.workspace)
     job.workspace = jsonObj.workspace
     job.jobFilename = Format.formatMyFolder(jsonObj.job_file)
+    job.runtime = jsonObj.runtime
+    job.displayRuntime = jsonObj.display_runtime
     if (jsonObj.standard_output_file) {
       job.outputFilename = Format.formatMyFolder(jsonObj.standard_output_file)
     }
@@ -162,21 +166,7 @@ class Job {
   }
 
   get runDuration() {
-    if (JobWebStatusEnums.waiting.indexOf(this.status) >= 0) {
-      return 0
-    } else if (JobWebStatusEnums.running.indexOf(this.status) >= 0 || this.status === 'cancelling') {
-      if (this.beginTime) {
-        return Math.round((new Date() - this.beginTime) / 1000)
-      } else {
-        return 0
-      }
-    } else {
-      if (this.finishTime && this.beginTime) {
-        return Math.round((this.finishTime - this.beginTime) / 1000)
-      } else {
-        return 0
-      }
-    }
+    return JobWebStateEnums.running.includes(this.state.toUpperCase()) ? this.displayRuntime : this.runtime
   }
 
   get status() {
@@ -223,70 +213,6 @@ class RunningJob {
     }
     return job
   }
-
-  get id() {
-    return this._id
-  }
-
-  set id(id) {
-    this._id = id
-  }
-
-  get schedulerId() {
-    return this._schedulerId
-  }
-
-  set schedulerId(schedulerId) {
-    this._schedulerId = schedulerId
-  }
-
-  get submitUser() {
-    return this._submitUser
-  }
-
-  set submitUser(submitUser) {
-    this._submitUser = submitUser
-  }
-
-  get name() {
-    return this._name
-  }
-
-  set name(name) {
-    this._name = name
-  }
-
-  get queue() {
-    return this._queue
-  }
-
-  set queue(queue) {
-    this._queue = queue
-  }
-
-  get beginTime() {
-    return this._beginTime
-  }
-
-  set beginTime(beginTime) {
-    this._beginTime = beginTime
-  }
-
-  get usedCores() {
-    return this._usedCores
-  }
-
-  set usedCores(usedCores) {
-    this._usedCores = usedCores
-  }
-
-  get usedGpus() {
-    return this._usedGpus
-  }
-
-  set usedGpus(usedGpus) {
-    this._usedGpus = usedGpus
-  }
 }
 
 class Tag {
@@ -301,61 +227,13 @@ class Tag {
 
   static parseFromRestApi(jsonObj) {
     const tag = new Tag()
-    tag._id = jsonObj.id
-    tag._name = jsonObj.name
-    tag._count = jsonObj.count
-    tag._username = jsonObj.username
-    tag._createTime = Parser.parseTimeFromRestApi(jsonObj.create_time)
-    tag._updateTime = Parser.parseTimeFromRestApi(jsonObj.update_time)
+    tag.id = jsonObj.id
+    tag.name = jsonObj.name
+    tag.count = jsonObj.count
+    tag.username = jsonObj.username
+    tag.createTime = Parser.parseTimeFromRestApi(jsonObj.create_time)
+    tag.updateTime = Parser.parseTimeFromRestApi(jsonObj.update_time)
     return tag
-  }
-
-  get _id() {
-    return this.id
-  }
-
-  set _id(id) {
-    return (this.id = id)
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    return (this.name = name)
-  }
-
-  get _count() {
-    return this.count
-  }
-
-  set _count(count) {
-    return (this.count = count)
-  }
-
-  get _username() {
-    return this.username
-  }
-
-  set _username(username) {
-    return (this.username = username)
-  }
-
-  get _createTime() {
-    return this.createTime
-  }
-
-  set _createTime(createTime) {
-    return (this.createTime = createTime)
-  }
-
-  get _updateTime() {
-    return this.updateTime
-  }
-
-  set _updateTime(updateTime) {
-    return (this.updateTime = updateTime)
   }
 }
 
@@ -368,6 +246,20 @@ function jobTableDataParser(res) {
     offset: res.offset,
     total: res.total,
     data: jobs,
+  }
+}
+
+class Priority {
+  constructor() {
+    this.min = 0
+    this.max = 0
+  }
+
+  static parseFromRestApi(jsonObj) {
+    const priority = new Priority()
+    priority.min = jsonObj.priority_min
+    priority.max = jsonObj.priority_max
+    return priority
   }
 }
 
@@ -414,7 +306,7 @@ function getJobTableDataFetcher(access) {
   )
 }
 
-function getJobById(id, templateSync = true) {
+function getJobById(id, syncType = {}) {
   return new Promise((resolve, reject) => {
     Request.get(`/api/job/${id}/`).then(
       res => {
@@ -422,8 +314,9 @@ function getJobById(id, templateSync = true) {
         if (!job.id) {
           job.id = id
         }
-        if (templateSync) {
-          initTemplateJobFields(job).finally(() => {
+        const { jobtemplateSync = true } = typeof syncType === 'function' ? syncType(job) : syncType
+        if (jobtemplateSync) {
+          initTemplateJobFields(job, syncType).finally(() => {
             resolve(job)
           })
         } else {
@@ -480,6 +373,22 @@ function getJobLog(file, offset, lines) {
   })
 }
 
+function requeueJob(idList) {
+  return new Promise((resolve, reject) => {
+    const req = {
+      job_ids: idList,
+    }
+    Request.post(`/api/job/requeue/`, req).then(
+      res => {
+        resolve(res.body)
+      },
+      res => {
+        ErrorHandler.restApiErrorHandler(res, reject)
+      },
+    )
+  })
+}
+
 function cancelJob(id) {
   return new Promise((resolve, reject) => {
     const req = {
@@ -491,6 +400,70 @@ function cancelJob(id) {
       },
       res => {
         ErrorHandler.restApiErrorHandler(res, reject)
+      },
+    )
+  })
+}
+
+function holdJob(idList) {
+  return new Promise((resolve, reject) => {
+    const req = {
+      job_ids: idList,
+    }
+    Request.post('/api/job/hold/', req).then(
+      res => {
+        resolve(res.body)
+      },
+      err => {
+        ErrorHandler.restApiErrorHandler(err, reject)
+      },
+    )
+  })
+}
+
+function releaseJob(idList) {
+  return new Promise((resolve, reject) => {
+    const req = {
+      job_ids: idList,
+    }
+    Request.post('/api/job/release/', req).then(
+      res => {
+        resolve(res.body)
+      },
+      err => {
+        ErrorHandler.restApiErrorHandler(err, reject)
+      },
+    )
+  })
+}
+
+function suspendJob(idList) {
+  return new Promise((resolve, reject) => {
+    const req = {
+      job_ids: idList,
+    }
+    Request.post('/api/job/suspend/', req).then(
+      res => {
+        resolve(res.body)
+      },
+      err => {
+        ErrorHandler.restApiErrorHandler(err, reject)
+      },
+    )
+  })
+}
+
+function resumeJob(idList) {
+  return new Promise((resolve, reject) => {
+    const req = {
+      job_ids: idList,
+    }
+    Request.post('/api/job/resume/', req).then(
+      res => {
+        resolve(res.body)
+      },
+      err => {
+        ErrorHandler.restApiErrorHandler(err, reject)
       },
     )
   })
@@ -774,22 +747,32 @@ function getJoblatest(length, status, role) {
   })
 }
 
-async function getJobActions(access, operateStatus, status, type, errmsg = null) {
+async function getJobActions(access, job) {
+  const { operateStatus, status, type, errmsg = null, template } = job
   const actions = []
   // Set available actions by access and arch.
   let availActions = []
   const arch = AccessService.getSchedulerArch()
   if ((access === 'admin' || access === 'operator') && arch === 'host') {
-    availActions = ['Cancel', 'Errmsg']
+    availActions = ['Requeue', 'Priority', 'Cancel', 'Hold', 'Release', 'Suspend', 'Resume', 'Errmsg']
   }
   if (access === 'staff') {
-    availActions = ['Browse', 'Cancel', 'Rerun', 'Copy', 'Delete', 'Errmsg', 'Comment']
+    availActions = ['Browse', 'Requeue', 'Cancel', 'Hold', 'Release', 'Rerun', 'Copy', 'Delete', 'Errmsg', 'Comment']
   }
 
   // Get actions by job status
   const statusActions = []
+  if (JobWebStatusEnums.running.indexOf(status) >= 0) {
+    statusActions.push('Requeue')
+  }
+  if (JobWebStatusEnums.running.indexOf(status) >= 0 && status !== 'suspending') {
+    statusActions.push('Suspend')
+  }
   if (JobWebStatusEnums.running.indexOf(status) >= 0 || JobWebStatusEnums.finished.indexOf(status) >= 0) {
     statusActions.push('Browse')
+  }
+  if (JobWebStatusEnums.waiting.indexOf(status) >= 0) {
+    statusActions.push('Priority')
   }
   if (operateStatus !== 'cancelling' && JobWebStatusEnums.finished.indexOf(status) < 0) {
     statusActions.push('Cancel')
@@ -797,6 +780,15 @@ async function getJobActions(access, operateStatus, status, type, errmsg = null)
   if (JobWebStatusEnums.finished.indexOf(status) >= 0) {
     statusActions.push('Rerun')
     statusActions.push('Delete')
+  }
+  if (status !== 'held' && JobWebStatusEnums.waiting.indexOf(status) >= 0) {
+    statusActions.push('Hold')
+  }
+  if (status === 'held') {
+    statusActions.push('Release')
+  }
+  if (status === 'suspending') {
+    statusActions.push('Resume')
   }
   statusActions.push('Copy')
   statusActions.push('Comment')
@@ -823,12 +815,13 @@ async function getJobActions(access, operateStatus, status, type, errmsg = null)
   if (type === 'openapi' || type === 'cmd') {
     Collection.removeByValue(actions, 'Rerun')
     Collection.removeByValue(actions, 'Copy')
-  } else {
-    const data = await JobTemplateService.getJobTemplate(type)
-    if (!data.display) {
-      Collection.removeByValue(actions, 'Rerun')
-      Collection.removeByValue(actions, 'Copy')
-    }
+  }
+  if (template && !template.display && template.type === 'system') {
+    Collection.removeByValue(actions, 'Rerun')
+    Collection.removeByValue(actions, 'Copy')
+  }
+  if (!isNaN(type) && !template) {
+    Collection.removeByValue(actions, 'Copy')
   }
 
   // Unknown type job can't copy.
@@ -932,10 +925,10 @@ function parseTRES(tres) {
   return result
 }
 
-function initTemplateJobFields(job) {
+function initTemplateJobFields(job, syncType = {}) {
   return new Promise((resolve, reject) => {
     Request.get('/api/template/templatejob/' + job.id + '/').then(
-      res => {
+      async res => {
         const templateJob = res.body
         job.type = templateJob.template_code
         job.realType = job.type
@@ -944,17 +937,13 @@ function initTemplateJobFields(job) {
         job.req = {
           params,
         }
-        // 判断类型是否为数字
-        if (!isNaN(Number(job.realType))) {
-          const templateId = job.realType
-          JobTemplateService.getJobTemplate(templateId).then(
-            res => {
-              job.realType = res.name
-            },
-            _ => {
-              // do nothing
-            },
-          )
+        const { templateSync = true } = typeof syncType === 'function' ? syncType(job) : syncType
+        if (templateSync) {
+          const data = await JobTemplateService.getJobTemplate(job.type).catch(_ => {})
+          if (data) {
+            job.realType = data.name
+            job.template = data
+          }
         }
         resolve()
       },
@@ -1037,15 +1026,90 @@ function editCommentForJob(jobId, comment) {
   })
 }
 
+function getSchedulerPriority() {
+  return new Promise((resolve, reject) => {
+    Request.get('/api/job/priority/').then(
+      res => {
+        resolve(Priority.parseFromRestApi(res.body))
+      },
+      err => {
+        ErrorHandler.restApiErrorHandler(err, reject)
+      },
+    )
+  })
+}
+
+function setJobPriority(req) {
+  return new Promise((resolve, reject) => {
+    Request.post(`/api/job/priority/`, req).then(
+      res => {
+        resolve(res.body)
+      },
+      err => {
+        ErrorHandler.restApiErrorHandler(err, reject)
+      },
+    )
+  })
+}
+
+function cancelBatchJob(arrId) {
+  return new Promise((resolve, reject) => {
+    const req = {
+      job_ids: arrId,
+    }
+    Request.post('/api/job/cancel/', req).then(
+      res => {
+        resolve(res.body)
+      },
+      res => {
+        ErrorHandler.restApiErrorHandler(res, reject)
+      },
+    )
+  })
+}
+
+function deleteBatchJob(arrId) {
+  return new Promise((resolve, reject) => {
+    const req = {
+      job_ids: arrId,
+    }
+    Request.delete('/api/job/delete/', { data: req }).then(
+      res => {
+        resolve(res.body)
+      },
+      res => {
+        ErrorHandler.restApiErrorHandler(res, reject)
+      },
+    )
+  })
+}
+
+function getEntranceUrl(id) {
+  return new Promise((resolve, reject) => {
+    Request.get(`/api/template/entrance_url/${id}/`).then(
+      res => {
+        resolve(res.body)
+      },
+      res => {
+        ErrorHandler.restApiErrorHandler(res, reject)
+      },
+    )
+  })
+}
+
 export default {
   Job,
   JobStatusEnums,
   JobWebStatusEnums,
   JobWebStateEnums,
-  JobActionEnums,
   getJobTableDataFetcher,
   batchCancelJob,
+  requeueJob,
   cancelJob,
+  holdJob,
+  releaseJob,
+  suspendJob,
+  resumeJob,
   deleteJob,
   rerunJob,
   getJobById,
@@ -1064,4 +1128,9 @@ export default {
   AddTagsforJob,
   DeleteTagsforJob,
   editCommentForJob,
+  getSchedulerPriority,
+  setJobPriority,
+  cancelBatchJob,
+  deleteBatchJob,
+  getEntranceUrl,
 }

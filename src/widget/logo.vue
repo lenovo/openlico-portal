@@ -1,6 +1,6 @@
-<template lang="html">
+<template>
   <div class="main-logo">
-    <a :href="logolink" :class="isMinLogo ? 'logo-min' : 'logo-max'" :title="$t('Menu.MonitorDashboard')" />
+    <a :href="logolink" :class="isMinLogo ? 'logo-min' : 'logo-max'" :title="$t('Menu.MonitorDashboard')"></a>
   </div>
 </template>
 <script>
@@ -38,14 +38,14 @@ export default {
   background-color: #001529;
 }
 .logo-max {
-  background: url('static/img/brand/logo_small.png') no-repeat;
+  background: url('/static/img/brand/logo_small.png') no-repeat;
   height: 32px;
   width: 60%;
   display: inline-block;
   background-size: contain;
 }
 .logo-min {
-  background: url('static/img/brand/logo_icon.png') no-repeat;
+  background: url('/static/img/brand/logo_icon.png') no-repeat;
   height: 35px;
   display: inline-block;
   width: 40%;

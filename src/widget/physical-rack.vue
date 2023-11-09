@@ -2,12 +2,14 @@
   <div class="">
     <div v-if="repeatNames.length > 0" style="margin-bottom: 10px; color: red; word-break: break-word">
       <a-alert :closable="false" type="error">
-        <div slot="description" class="rack-alert">
-          <p>{{ $t('Node.Error') }}</p>
-          <p :title="repeatNames.join(', ')">
-            {{ repeatNames.join(', ') }}
-          </p>
-        </div>
+        <template #description>
+          <div class="rack-alert">
+            <p>{{ $t('Node.Error') }}</p>
+            <p :title="repeatNames.join(', ')">
+              {{ repeatNames.join(', ') }}
+            </p>
+          </div>
+        </template>
       </a-alert>
     </div>
     <div :style="rack_css">
@@ -39,7 +41,7 @@
               width="200"
               trigger="hover"
               :title="c.name">
-              <template slot="content">
+              <template #content>
                 <p>
                   {{ $t('Node.MachineType') + '：' + c.machinetype }}
                 </p>
@@ -71,8 +73,8 @@
 </template>
 
 <script type="text/javascript">
-import PhysicalNode from './physical-rack/physical-node'
-import LevelCard from '../widget/level-card'
+import PhysicalNode from './physical-rack/physical-node.vue'
+import LevelCard from '@/widget/level-card.vue'
 
 export default {
   components: {
@@ -80,6 +82,7 @@ export default {
     'level-card': LevelCard,
   },
   props: ['mode', 'rackInfo'],
+  emits: ['node-click'],
   data() {
     return {
       rack: {},
@@ -98,7 +101,7 @@ export default {
         height: '0px',
         padding: '0px 0px',
         'box-sizing': 'border-box',
-        background: "url('static/img/rack/RACK.png') no-repeat",
+        background: "url('/static/img/rack/RACK.png') no-repeat",
       },
       levelRanges: {
         temperature: [0, 100],
@@ -253,7 +256,6 @@ export default {
           left: cssLeft,
         }
       }
-
       return nodeCss
     },
     onNodeClick(node) {
@@ -267,7 +269,6 @@ export default {
       return !!result.length
     },
     getChartColor(colors) {
-      // console.log(colors);
       this.levelColors = colors
     },
     check_location() {
@@ -360,7 +361,6 @@ export default {
           namePairList.push(inner.name, outer.name)
         }
       })
-
       for (let i = 0; i < innerList.length; i++) {
         for (let j = i + 1; j < innerList.length; j++) {
           if (this.is_rect_intersect(innerList[i].rect, innerList[j].rect)) {
@@ -408,7 +408,7 @@ export default {
 }
 </script>
 
-<style media="screen">
+<style media="screen" scoped>
 .rack-inner-public {
   position: relative;
   width: 100%;

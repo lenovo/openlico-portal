@@ -1,13 +1,15 @@
 <template>
   <a-modal
+    v-model:open="dialogVisible"
     width="500px"
     :title="$t('JobManage.ShowErrorMessage.Title')"
-    :visible.sync="dialogVisible"
     @cancel="dialogVisible = false">
     <span>{{ errmsg }}</span>
-    <span slot="footer" class="dialog-footer">
-      <a-button type="primary" @click="dialogVisible = false"> {{ $t('Dialog.Ok') }}</a-button>
-    </span>
+    <template #footer>
+      <span class="dialog-footer">
+        <a-button type="primary" @click="dialogVisible = false"> {{ $t('Dialog.Ok') }}</a-button>
+      </span>
+    </template>
   </a-modal>
 </template>
 <script>

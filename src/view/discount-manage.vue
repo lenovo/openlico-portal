@@ -7,9 +7,9 @@
   </div>
 </template>
 <script>
-import DiscountService from '../service/discount'
-import UserDiscountTable from './discount-manage/user-discount'
-import UserGroupDiscountTable from './discount-manage/user-group-discount'
+import DiscountService from '@/service/discount'
+import UserDiscountTable from './discount-manage/user-discount.vue'
+import UserGroupDiscountTable from './discount-manage/user-group-discount.vue'
 export default {
   components: {
     'user-discount': UserDiscountTable,

@@ -1,7 +1,7 @@
 <template>
   <div class="b-w p-20 m-10">
     <div class="report-resource-select">
-      <a-select v-model="resource" @change="onModeChange">
+      <a-select v-model:value="resource" @change="onModeChange">
         <a-select-option v-for="option in resourceOption" :key="option.id" :value="option.code">
           {{ option.display_name }}
         </a-select-option>
@@ -11,11 +11,11 @@
   </div>
 </template>
 <script>
-import Format from './../../common/format'
-import Collection from './../../common/collection'
-import * as EChart from 'echarts'
+import Format from '@/common/format'
+import Collection from '@/common/collection'
 
 export default {
+  inject: ['resize'],
   props: ['data'],
   data() {
     return {
@@ -42,22 +42,18 @@ export default {
         })
       }
     },
+    resize(val) {
+      this.onResize()
+    },
   },
   mounted() {
     this.$nextTick(function () {
-      this.innerChart = EChart.init(this.$refs.container, window.gApp.echartsTheme.jobQueueStatus)
-      window.removeEventListener('resize', this.onResize)
-      window.addEventListener('resize', this.onResize)
+      this.$chart.init(this.$refs.container, window.gApp.echartsTheme.jobQueueStatus)
       const options = this.resourceOption.concat(this.$store.getters['settings/getGResource'])
       Collection.sortObjectsByProp(options, 'id', '')
       this.xTitle = `${options[0].display_name}(${options[0].unit})`
       this.resourceOption = options
       this.initChart()
-      window.gApp.$watch('isCollapse', (newValue, oldValue) => {
-        setTimeout(() => {
-          this.onResize()
-        }, 300)
-      })
     })
   },
   methods: {
@@ -127,7 +123,7 @@ export default {
           },
         ],
       }
-      this.innerChart.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.container).setOption(option)
     },
     initData() {
       const step = 5
@@ -148,7 +144,7 @@ export default {
       this.initChart(this.xTitle)
     },
     onResize() {
-      this.innerChart.resize()
+      this.$chart.getInstanceByDom(this.$refs.container).resize()
     },
   },
 }

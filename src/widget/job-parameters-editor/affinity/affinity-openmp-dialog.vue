@@ -2,47 +2,46 @@
   <composite-form-dialog
     ref="innerDialog"
     class="job-parameters-affinity-dialog"
-    :title="$t('JobTemplate.Affinity.Dialog.Title', { action: $t(`Action.${mode}`) })"
+    :title="$T('JobTemplate.Affinity.Dialog.Title', { action: $t(`Action.${mode}`) })"
     size="800px"
-    :composite-height="500"
     :form-model="innerForm"
     :form-rules="innerRules"
     :external-validate="externalValidate"
     :success-message-formatter="successMessageFormatter"
     :error-message-formatter="errorMessageFormatter">
-    <a-form-model-item prop="name" label-width="180px" :label="$t('JobTemplate.Affinity.Name')">
-      <a-input v-model="innerForm.name" />
-    </a-form-model-item>
-    <a-tabs v-model="innerForm.mode">
+    <a-form-item name="name" label-width="180px" :label="$t('JobTemplate.Affinity.Name')">
+      <a-input v-model:value="innerForm.name" />
+    </a-form-item>
+    <a-tabs v-model:activeKey="innerForm.mode">
       <a-tab-pane key="quick" :tab="$t('JobTemplate.Affinity.Quick')">
         <a-row :gutter="16">
           <a-col class="gutter-row" :span="6">
-            <a-form-model-item prop="granularity" label-width="180px" :label="$t('JobTemplate.Affinity.Granularity')">
-              <a-select v-model="innerForm.granularity">
+            <a-form-item name="granularity" label-width="180px" :label="$t('JobTemplate.Affinity.Granularity')">
+              <a-select v-model:value="innerForm.granularity">
                 <a-select-option v-for="item in granularityOptions" :key="item">
                   {{ item }}
                 </a-select-option>
               </a-select>
-            </a-form-model-item>
+            </a-form-item>
           </a-col>
           <a-col class="gutter-row" :span="6">
-            <a-form-model-item prop="bind_type" label-width="180px" :label="$t('JobTemplate.Affinity.BindType')">
-              <a-select v-model="innerForm.bind_type">
+            <a-form-item name="bind_type" label-width="180px" :label="$t('JobTemplate.Affinity.BindType')">
+              <a-select v-model:value="innerForm.bind_type">
                 <a-select-option v-for="item in bindTypeOptions" :key="item">
                   {{ item }}
                 </a-select-option>
               </a-select>
-            </a-form-model-item>
+            </a-form-item>
           </a-col>
           <a-col class="gutter-row" :span="6">
-            <a-form-model-item prop="permute" label-width="180px" :label="$t('JobTemplate.Affinity.Permute')">
-              <a-input v-model="innerForm.permute" />
-            </a-form-model-item>
+            <a-form-item name="permute" label-width="180px" :label="$t('JobTemplate.Affinity.Permute')">
+              <a-input v-model:value="innerForm.permute" />
+            </a-form-item>
           </a-col>
           <a-col class="gutter-row" :span="6">
-            <a-form-model-item prop="offset" label-width="180px" :label="$t('JobTemplate.Affinity.Offset')">
-              <a-input v-model="innerForm.offset" />
-            </a-form-model-item>
+            <a-form-item name="offset" label-width="180px" :label="$t('JobTemplate.Affinity.Offset')">
+              <a-input v-model:value="innerForm.offset" />
+            </a-form-item>
           </a-col>
         </a-row>
         <div class="job-parameters-affinity-environment">
@@ -54,20 +53,20 @@
           <p class="m-b-10" style="display: flex">
             <span>{{ $t('JobTemplate.Affinity.Layout') }}</span>
             <a-tooltip placement="topLeft">
-              <template slot="title">
+              <template #title>
                 {{ $t('JobTemplate.Affinity.Layout.Help') }}
               </template>
-              <a-icon style="margin: 4px 0 0 5px" type="question-circle" />
+              <question-circle-outlined style="margin: 4px 0 0 5px" />
             </a-tooltip>
           </p>
           <affinity-layout ref="affinityLayout" :form="innerForm" :type="type" />
         </div>
       </a-tab-pane>
       <a-tab-pane key="advanced" :tab="$t('JobTemplate.Affinity.Advanced')">
-        <affinity-advanced v-model="innerForm.envs" :type="type" @submitStatus="onSubmitStatus" />
+        <affinity-advanced v-model:value="innerForm.envs" :type="type" @submit-status="onSubmitStatus" />
       </a-tab-pane>
     </a-tabs>
-    <template v-if="mode == 'Edit'" slot="footer">
+    <template v-if="mode == 'Edit'" #footer>
       <a-button @click="onDeleteSettings()">
         {{ $t('Action.Delete') }}
       </a-button>
@@ -76,19 +75,20 @@
   </composite-form-dialog>
 </template>
 <script>
-import AffinityService from './../../../service/job-template-affiity'
-import CompositeFormDialog from './../../../component/composite-form-dialog'
-import ValidRoleFactory from './../../../common/valid-role-factory'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import AffinityService from '@/service/job-template-affiity'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 import AffinityEnvDialog from './affinity-env-dialog.vue'
 import AffinityAdvanced from './affinity-advanced.vue'
 import AffinityLayout from './affinity-layout.vue'
 export default {
   components: {
-    'composite-form-dialog': CompositeFormDialog,
+    CompositeFormDialog,
     AffinityEnvDialog,
     AffinityAdvanced,
     AffinityLayout,
   },
+  emits: ['delete'],
   data() {
     return {
       type: 'openmp',

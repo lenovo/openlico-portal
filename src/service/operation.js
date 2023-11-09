@@ -28,7 +28,13 @@ const ModuleEnums = [
     value: 'job',
     children: [
       { value: 'create' },
-      { value: 'rerun', featureCode: ['sc.host.*'] },
+      { value: 'rerun' },
+      { value: 'priority' },
+      { value: 'hold' },
+      { value: 'release' },
+      { value: 'requeue' },
+      { value: 'suspend' },
+      { value: 'resume' },
       { value: 'cancel' },
       { value: 'delete' },
     ],
@@ -60,29 +66,6 @@ const ModuleEnums = [
   },
 ]
 
-// class Target {
-//   constructor () {
-//     this.id = 0
-//     this.name = ''
-//   }
-
-//   get id () {
-//     return this._id
-//   }
-
-//   set id (id) {
-//     this._id = id
-//   }
-
-//   get name () {
-//     return this._name
-//   }
-
-//   set name (name) {
-//     this._name = name
-//   }
-// }
-
 class Operation {
   constructor() {
     this.logId = 0
@@ -108,54 +91,6 @@ class Operation {
       })
     })
     return operation
-  }
-
-  get logId() {
-    return this._logId
-  }
-
-  set logId(logId) {
-    this._logId = logId
-  }
-
-  get userName() {
-    return this._userName
-  }
-
-  set userName(userName) {
-    this._userName = userName
-  }
-
-  get action() {
-    return this._action
-  }
-
-  set action(action) {
-    this._action = action
-  }
-
-  get actionTime() {
-    return this._actionTime
-  }
-
-  set actionTime(actionTime) {
-    this._actionTime = actionTime
-  }
-
-  get target() {
-    return this._target
-  }
-
-  set target(target) {
-    this._target = target
-  }
-
-  get module() {
-    return this._module
-  }
-
-  set module(module) {
-    this._module = module
   }
 }
 function getModuleEnums(modul) {
@@ -184,6 +119,12 @@ function getOperationEnums(operation) {
     solve: 'solve',
     recharge: 'recharge',
     chargeback: 'chargeback',
+    priority: 'priority',
+    hold: 'hold',
+    release: 'release',
+    requeue: 'requeue',
+    suspend: 'suspend',
+    resume: 'resume',
   }
   return operations[operation]
 }

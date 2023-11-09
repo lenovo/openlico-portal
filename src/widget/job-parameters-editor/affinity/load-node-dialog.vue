@@ -1,16 +1,16 @@
 <template>
-  <a-modal :visible="visible" layout="vertical" width="400px" centered @ok="submitForm" @cancel="visible = false">
-    <a-form-model ref="innerForm" :model="innerForm" :rules="rules">
-      <a-form-model-item :label="$t('Node.HostName')" prop="hostname" :colon="false" :class="{ 'has-error': error }">
-        <a-input v-model="innerForm.hostname" />
+  <a-modal :open="visible" layout="vertical" width="400px" centered @ok="submitForm" @cancel="visible = false">
+    <a-form ref="innerForm" :model="innerForm" :rules="rules">
+      <a-form-item :label="$t('Node.HostName')" name="hostname" :colon="false" :class="{ 'has-error': error }">
+        <a-input v-model:value="innerForm.hostname" />
         <span v-if="error" class="ant-form-explain">{{ error }}</span>
-      </a-form-model-item>
-    </a-form-model>
+      </a-form-item>
+    </a-form>
   </a-modal>
 </template>
 <script>
-import AffinityService from './../../../service/job-template-affiity'
-import ValidRoleFactory from './../../../common/valid-role-factory'
+import AffinityService from '@/service/job-template-affiity'
+import ValidRoleFactory from '@/common/valid-role-factory'
 export default {
   data() {
     return {
@@ -31,8 +31,8 @@ export default {
   },
   methods: {
     submitForm() {
-      this.$refs.innerForm.validate(vaild => {
-        if (vaild) {
+      this.$refs.innerForm.validate().then(
+        _ => {
           AffinityService.getNodeHardware(this.innerForm.hostname).then(
             res => {
               this.error = ''
@@ -43,8 +43,9 @@ export default {
               this.error = err
             },
           )
-        }
-      })
+        },
+        _ => {},
+      )
     },
     doLoadNode() {
       return new Promise((resolve, reject) => {

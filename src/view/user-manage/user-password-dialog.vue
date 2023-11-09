@@ -5,37 +5,46 @@
     size="500px"
     :form-model="userForm"
     :form-rules="userRules"
-    composite-height="460"
-    :success-message-formatter="successMessageFormatter"
-    :error-message-formatter="errorMessageFormatter">
-    <a-form-model-item :label="$t('User.Username')" prop="username">
-      <a-input id="tid_user-change-password-username" v-model="userForm.username" :disabled="true" />
-    </a-form-model-item>
-    <a-form-model-item :label="$t('User.Password')" prop="password">
-      <a-input id="tid_user-change-password-password" v-model="userForm.password" type="password" />
-    </a-form-model-item>
-    <a-form-model-item :label="$t('User.Password.Check')" prop="passwordCheck">
-      <a-input id="tid_user-change-password-password-check" v-model="userForm.passwordCheck" type="password" />
-    </a-form-model-item>
+    :success-message-formatter="successMessageFormatter">
+    <a-form-item :label="$t('User.Username')" name="username">
+      <a-input id="tid_user-change-password-username" v-model:value="userForm.username" :disabled="true" />
+    </a-form-item>
+    <a-form-item :label="$t('User.Password')" name="password">
+      <a-input
+        id="tid_user-change-password-password"
+        v-model:value="userForm.password"
+        type="password"
+        autocomplete="new-password" />
+    </a-form-item>
+    <a-form-item :label="$t('User.Password.Check')" name="passwordCheck">
+      <a-input
+        id="tid_user-change-password-password-check"
+        v-model:value="userForm.passwordCheck"
+        type="password"
+        autocomplete="new-password" />
+    </a-form-item>
   </composite-form-dialog>
 </template>
 <script>
-import UserService from '../../service/user'
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import UserService from '@/service/user'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import ValidRoleFactory from '@/common/valid-role-factory'
 
 export default {
   components: {
     'composite-form-dialog': CompositeFormDialog,
   },
   data() {
-    const validatePasswordCheck = (rule, value, callback) => {
-      if (this.userForm.password !== this.userForm.passwordCheck) {
-        return callback(new Error(this.$t('User.Password.Check.Valid')))
-      } else {
-        callback()
-      }
+    const validatePasswordCheck = (rule, value) => {
+      return new Promise((resolve, reject) => {
+        if (this.userForm.password !== this.userForm.passwordCheck) {
+          reject(new Error(this.$t('User.Password.Check.Valid')))
+        } else {
+          resolve()
+        }
+      })
     }
+
     return {
       userId: 0,
       userForm: {
@@ -67,11 +76,7 @@ export default {
       return UserService.changeUserPassword(this.userId, this.userForm.password)
     },
     successMessageFormatter(res) {
-      return this.$t('User.ChangePassword.Success', { name: this.userForm.username })
-    },
-    errorMessageFormatter(res) {
-      const errMsg = res
-      return this.$t(errMsg)
+      return this.$T('User.ChangePassword.Success', { name: this.userForm.username })
     },
     doChangePassword(user) {
       this.userId = user.id

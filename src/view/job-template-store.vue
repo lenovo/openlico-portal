@@ -1,16 +1,16 @@
 <template>
   <div class="height--100 p-10">
     <div class="store-container">
-      <div v-if="!workflowId" class="job-template-store-header m-b-20">
+      <div v-if="!isWorkflow" class="job-template-store-header m-b-20">
         <span class="job-template-store-title">{{ $t('JobTemplateStore.Title') }}</span>
       </div>
       <a-row class="store-container-top">
         <a-col :span="12" align="left" class="job-template-store-filter">
           <a-select
-            v-model="filter"
+            v-model:value="filter"
             class="job-template-store-filter-select"
             size="large"
-            dropdown-class-name="job-template-store-filter-select-menu"
+            popup-class-name="job-template-store-filter-select-menu"
             @change="onCategoryChange">
             <template v-for="(item, index) in filterOptions">
               <a-select-option
@@ -29,7 +29,7 @@
                 </div>
                 <a-checkbox
                   v-if="index > 0 && filter != category.key"
-                  v-model="filterChenk[category.key]"
+                  v-model:checked="filterChenk[category.key]"
                   style="width: 16px"
                   @click.stop
                   @change="onFilterChecked($event, category.key)" />
@@ -38,14 +38,16 @@
           </a-select>
 
           <a-dropdown v-if="!isWorkflow" overlay-class-name="job-template-store-action-menu">
-            <a-menu slot="overlay" @click="onActionMenuClick">
-              <a-menu-item key="create">
-                <i class="el-erp-createtemplate job-template-store-action-menu-icon" />{{ $t('Action.Create') }}
-              </a-menu-item>
-              <a-menu-item key="import">
-                <i class="el-erp-importtemplate job-template-store-action-menu-icon" />{{ $t('Action.Import') }}
-              </a-menu-item>
-            </a-menu>
+            <template #overlay>
+              <a-menu @click="onActionMenuClick">
+                <a-menu-item key="create">
+                  <i class="el-erp-createtemplate job-template-store-action-menu-icon" />{{ $t('Action.Create') }}
+                </a-menu-item>
+                <a-menu-item key="import">
+                  <i class="el-erp-importtemplate job-template-store-action-menu-icon" />{{ $t('Action.Import') }}
+                </a-menu-item>
+              </a-menu>
+            </template>
             <a-button style="margin-left: 16px" class="job-template-store-action" size="large" :title="$t('Action')">
               <i class="el-erp-moreaction" />
             </a-button>
@@ -54,9 +56,9 @@
         <a-col :span="12" align="right">
           <span class="m-r-10" style="font-size: 16px">{{ $t('JobTemplateStore.Sort') }}</span>
           <a-select
-            v-model="sort"
-            style="width: 150px"
-            dropdown-class-name="job-template-store-sort"
+            v-model:value="sort"
+            style="width: 150px; text-align: left"
+            popup-class-name="job-template-store-sort"
             size="large"
             @change="onSortChange">
             <a-select-option value="default">
@@ -73,21 +75,21 @@
             </a-select-option>
           </a-select>
           <a-input
-            v-model="search"
+            v-model:value="search"
             class="job-template-store-search"
             :placeholder="$t('Action.Search')"
             :title="$t('Action.Search')"
             size="large"
             @change="onSearch">
-            <a-icon slot="prefix" type="search" />
+            <template #prefix>
+              <search-outlined />
+            </template>
           </a-input>
         </a-col>
       </a-row>
       <a-row type="flex" :gutter="[20, 20]">
         <a-col v-for="jobTemplate in jobTemplates" :key="jobTemplate.code" :span="span" class="store-container-middle">
           <job-template-card
-            :workflow-id="workflowId"
-            :workflow-step-id="workflowStepId"
             :job-template="jobTemplate"
             @action-trigger="onCardActionClick"
             @toggle-favorite-click="toggleFavoriteClick" />
@@ -95,11 +97,12 @@
       </a-row>
       <a-row class="m-t-10">
         <a-col :span="12">
-          {{ $t('CompositeTable.Footer.Total', { total: total }) }}
+          {{ $T('CompositeTable.Footer.Total', { total: total }) }}
         </a-col>
         <a-col :span="12" style="text-align: right">
           <a-pagination
             show-quick-jumper
+            :show-size-changer="false"
             :current="currentPage"
             :page-size="pageSize"
             size="small"
@@ -110,27 +113,23 @@
         </a-col>
       </a-row>
     </div>
-    <job-template-action-dialog id="tid_job-template-action-dialog" ref="actionDialog" />
     <job-template-import-dialog id="tid_job-template-import-dialog" ref="importDialog" />
   </div>
 </template>
 <script>
-import JobTemplateService from '../service/job-template.js'
-import JobTemplateCard from './job-template-store/job-template-card'
-import JobTemplateActionDialog from './job-template-store/job-template-action-dialog'
-import JobTemplateImportDialog from './job-template-store/job-template-import-dialog'
+import JobTemplateService from '@/service/job-template.js'
+import JobTemplateCard from './job-template-store/job-template-card.vue'
+import JobTemplateImportDialog from './job-template-store/job-template-import-dialog.vue'
 
 export default {
   components: {
     'job-template-card': JobTemplateCard,
-    'job-template-action-dialog': JobTemplateActionDialog,
     'job-template-import-dialog': JobTemplateImportDialog,
   },
   data() {
     return {
       jobTemplates: [],
       filterOptions: [],
-      workflowId: '',
       currentPage: 1,
       pageSize: 20,
       total: 0,
@@ -152,19 +151,16 @@ export default {
   },
   mounted() {
     // var route = this.$route.path;
-    this.workflowStepId = this.$route.params.stepId
-    this.workflowId = this.$route.params.workflowId
-
     window.addEventListener('resize', this.resizeTemplateSpan)
 
     this.init()
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener('resize', this.resizeTemplateSpan)
   },
   methods: {
     init() {
-      this.filter = this.$route.params.code || ''
+      this.filter = this.$route.params.category || ''
       const filtersCheck = this.$route.query.filters ? JSON.parse(this.$route.query.filters) : []
       for (const key in this.filterChenk) {
         this.filterChenk[key] = filtersCheck.includes(key)
@@ -214,7 +210,7 @@ export default {
             : ''
 
         this.$confirm({
-          title: this.$t(`JobTemplate.${msgKey}.Title`, { name: template.name }),
+          title: this.$T(`JobTemplate.${msgKey}.Title`, { name: template.name }),
           content: this.$t(`JobTemplate.${msgKey}.Confirm`),
           centered: true,
           okText: this.$t('Action.Yes'),
@@ -223,7 +219,7 @@ export default {
             JobTemplateService[`${command}JobTemplate`](template.code).then(
               res => {
                 this.getAllCategories('init')
-                this.$message.success(this.$t(`JobTemplate.${msgKey}.Success`, { name: template.name }))
+                this.$message.success(this.$T(`JobTemplate.${msgKey}.Success`, { name: template.name }))
               },
               err => {
                 this.$message.error(err)
@@ -285,9 +281,12 @@ export default {
         res => {
           this.filterOptions = res
           const options = res.reduce((a, b) => a.concat(b))
+          const favorites = options.filter(i => i.key === 'favorites')[0]
           this.filter =
             options.length && (!this.filter || options.map(i => i.key).indexOf(this.filter) === -1)
-              ? options[0].key
+              ? favorites.counts
+                ? favorites.key
+                : options[0].key
               : this.filter
           if (type === 'init') {
             this.resizeTemplateSpan()
@@ -327,12 +326,12 @@ export default {
       for (const key in this.filterChenk) {
         if (this.filterChenk[key]) filters.push(key)
       }
-      const pathArr = this.$route.path.split('/')
-      if (pathArr[pathArr.length - 1] !== 'job-template-store') {
-        pathArr.pop()
-      }
       this.$store.dispatch('settings/setpTemplateFilter', this.filter + '?filters=' + JSON.stringify(filters))
-      this.$router.push({ path: `${pathArr.join('/')}/${this.filter}`, query: { filters: JSON.stringify(filters) } })
+      this.$router.push({
+        name: this.$route.name,
+        params: { category: this.filter },
+        query: { filters: JSON.stringify(filters) },
+      })
     },
   },
 }
@@ -344,11 +343,13 @@ export default {
 .store-container {
   box-sizing: border-box;
 }
-
+.store-container :deep(.ant-row) {
+  width: auto;
+}
 .job-template-store-header {
   height: 190px;
   width: 100%;
-  background: url('static/img/system/main/job-template.png') no-repeat;
+  background: url('/static/img/system/main/job-template.png') no-repeat;
   background-size: 100% 100%;
 }
 .job-template-store-title {
@@ -361,16 +362,19 @@ export default {
 .job-template-store-filter {
   display: flex;
 }
-.store-container >>> .job-template-store-filter-hr.ant-select-dropdown-menu-item-disabled {
+.store-container :deep(.job-template-store-filter-hr.ant-select-dropdown-menu-item-disabled) {
   cursor: default !important;
 }
 
-.store-container >>> .job-template-store-filter-hr,
-.store-container >>> .job-template-store-filter-hr > hr {
+.store-container :deep(.job-template-store-filter-hr),
+.store-container :deep(.job-template-store-filter-hr > hr) {
   margin: 0;
   padding: 0 10px;
+  height: 1px;
+  min-height: 1px;
 }
-.store-container >>> .job-template-store-filter-hr > hr {
+.store-container :deep(.job-template-store-filter-hr > div),
+.store-container :deep(.job-template-store-filter-hr > span) {
   border: none;
   height: 1px;
   background: #eee;
@@ -378,15 +382,15 @@ export default {
 .job-template-store-filter-select {
   min-width: 320px;
 }
-.job-template-store-filter-select >>> .ant-select-selection-selected-value,
-.job-template-store-sort >>> .ant-select-selection-selected-value {
+.job-template-store-filter-select :deep(.ant-select-selection-selected-value),
+.job-template-store-sort :deep(.ant-select-selection-selected-value) {
   color: rgba(0, 0, 0, 0.8);
 }
-.store-container >>> .job-template-store-filter-select-item {
+.store-container :deep(.job-template-store-filter-select-item > div) {
   display: flex;
   padding: 10px 20px;
 }
-.store-container >>> .job-template-store-filter-select-item-label {
+.store-container :deep(.job-template-store-filter-select-item-label) {
   width: 100%;
 }
 .job-template-store-action {
@@ -399,7 +403,7 @@ export default {
 .job-template-store-action-menu .ant-dropdown-menu-item {
   width: 140px;
 }
-.store-container >>> .job-template-store-sort {
+.store-container :deep(.job-template-store-sort) {
   text-align: left !important;
 }
 .job-template-store-search {

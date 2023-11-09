@@ -2,10 +2,10 @@
   <div class="job-detail-log">
     <a-row class="m-b-10">
       <a-col :span="14">
-        <file-select ref="fileSelect" v-model="innerFile" type="file" style="width: 500px" />
+        <file-select ref="fileSelect" v-model:value="innerFile" type="file" style="width: 500px" />
       </a-col>
       <a-col :span="10" align="right">
-        <a-checkbox v-model="autoRefresh" unchecked @change="onAutoRefreshChange">
+        <a-checkbox v-model:checked="autoRefresh" unchecked @change="onAutoRefreshChange">
           {{ $t('LogViewer.Auto.Refresh') }}
         </a-checkbox>
         <a-button :disabled="autoRefresh" :loading="!autoRefresh && loading" @click="refreshLog(true)">
@@ -25,8 +25,8 @@
   </div>
 </template>
 <script>
-import JobService from '../service/job'
-import FileSelect from '../component/file-select'
+import JobService from '@/service/job'
+import FileSelect from '@/component/file-select.vue'
 
 export default {
   components: {
@@ -58,7 +58,9 @@ export default {
       this.innerFile = val
     },
     $route(val, oldVal) {
-      this.init()
+      if (val.params.id) {
+        this.init()
+      }
     },
   },
   mounted() {
@@ -70,7 +72,7 @@ export default {
     }
     this.scrollHeight = this.$refs.output.scrollHeight - this.$refs.output.scrollTop
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.autoRefreshTimerId > 0) {
       clearTimeout(this.autoRefreshTimerId)
     }
@@ -94,12 +96,7 @@ export default {
         return
       }
       this.loading = true
-      // The backend only accept the relative directory base on MyFolder/ for SSRB
-      // if(this.mappingPath) {
-      //   filename = this.innerFile.replace('MyFolder', this.mappingPath);
-      // } else {
-      //   filename = this.innerFile.replace('MyFolder/', '');
-      // }
+
       const filename = this.innerFile.replace('MyFolder/', '').replace(this.$store.state.auth.workspace + '/', '')
       JobService.getJobLog(filename, this.offset)
         .then(
@@ -155,7 +152,7 @@ export default {
 .job-detail-log .el-row {
   margin-bottom: 10px;
 }
-.job-detail-log >>> .select-file-input {
+.job-detail-log :deep(.select-file-input) {
   width: 500px;
 }
 </style>

@@ -16,6 +16,7 @@
 
 import Request from '../request/https'
 import ErrorHandler from '../common/error-handler'
+import Utils from '../common/utils'
 
 const GranularityEnums = ['fine', 'thread', 'core', 'tile']
 
@@ -104,11 +105,11 @@ class Openmp {
 
   static parseFromRestApi(jsonObj) {
     const openmp = new Openmp()
-    openmp._id = jsonObj.pk
-    openmp._name = jsonObj.name
+    openmp.id = jsonObj.pk
+    openmp.name = jsonObj.name
     const tag = getAffinityTag(jsonObj.tag)
-    openmp._mode = tag.split('.').pop()
-    if (openmp._mode === 'quick' && jsonObj.envs.length) {
+    openmp.mode = tag.split('.').pop()
+    if (openmp.mode === 'quick' && jsonObj.envs.length) {
       const env = jsonObj.envs.filter(i => i.name === DefaultEnv.openmp)[0]
       const val = env.value.split(',').filter(i => i !== 'verbose')
       for (let i = 0; i < ParamsMap.openmp.length; i++) {
@@ -119,74 +120,10 @@ class Openmp {
         }
       }
     }
-    if (openmp._mode === 'advanced') {
-      openmp._envs = jsonObj.envs
+    if (openmp.mode === 'advanced') {
+      openmp.envs = jsonObj.envs
     }
     return openmp
-  }
-
-  get _id() {
-    return this.id
-  }
-
-  set _id(id) {
-    this.id = id
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    this.name = name
-  }
-
-  get _mode() {
-    return this.mode
-  }
-
-  set _mode(mode) {
-    this.mode = mode
-  }
-
-  get _granularity() {
-    return this.granularity
-  }
-
-  set _granularity(granularity) {
-    this.granularity = granularity
-  }
-
-  get _bind_type() {
-    return this.bind_type
-  }
-
-  set _bind_type(bindType) {
-    this.bind_type = bindType
-  }
-
-  get _permute() {
-    return this.permute
-  }
-
-  set _permute(permute) {
-    this.permute = permute
-  }
-
-  get _offset() {
-    return this.offset
-  }
-
-  set _offset(offset) {
-    this.offset = offset
-  }
-
-  get _envs() {
-    return this.envs
-  }
-
-  set _envs(envs) {
-    this.envs = envs
   }
 }
 
@@ -208,16 +145,16 @@ class Intelmpi {
 
   static parseFromRestApi(jsonObj) {
     const intelmpi = new Intelmpi()
-    intelmpi._id = jsonObj.pk
-    intelmpi._name = jsonObj.name
+    intelmpi.id = jsonObj.pk
+    intelmpi.name = jsonObj.name
     const tag = getAffinityTag(jsonObj.tag)
-    intelmpi._mode = tag.split('.').pop()
-    if (intelmpi._mode === 'quick' && jsonObj.envs.length) {
+    intelmpi.mode = tag.split('.').pop()
+    if (intelmpi.mode === 'quick' && jsonObj.envs.length) {
       const envMap = DefaultEnv.intelmpi
       const paramsMap = ParamsMap.intelmpi
-      intelmpi._run_mode = jsonObj.envs.filter(i => envMap.mpi.includes(i.name))[0] ? 'mpi' : 'mpi+openmp'
+      intelmpi.run_mode = jsonObj.envs.filter(i => envMap.mpi.includes(i.name))[0] ? 'mpi' : 'mpi+openmp'
       const env = jsonObj.envs.filter(i => {
-        return envMap[intelmpi._run_mode].includes(i.name)
+        return envMap[intelmpi.run_mode].includes(i.name)
       })
 
       const val = env
@@ -226,8 +163,8 @@ class Intelmpi {
         .replace(':', ',')
         .split(',')
 
-      for (let i = 0; i < paramsMap[intelmpi._run_mode].length; i++) {
-        const item = paramsMap[intelmpi._run_mode][i]
+      for (let i = 0; i < paramsMap[intelmpi.run_mode].length; i++) {
+        const item = paramsMap[intelmpi.run_mode][i]
         if (item.requireKey) {
           const result = val.filter(i => new RegExp(`^${item.label}=.*$`).test(i))[0]
           if (result) {
@@ -240,114 +177,14 @@ class Intelmpi {
         }
       }
     }
-    if (intelmpi._mode === 'advanced') {
-      intelmpi._envs = jsonObj.envs
+    if (intelmpi.mode === 'advanced') {
+      intelmpi.envs = jsonObj.envs
     }
     return intelmpi
   }
 
   get _id() {
     return this.id
-  }
-
-  set _id(id) {
-    this.id = id
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    this.name = name
-  }
-
-  get _mode() {
-    return this.mode
-  }
-
-  set _mode(mode) {
-    this.mode = mode
-  }
-
-  get _run_mode() {
-    return this.run_mode
-  }
-
-  set _run_mode(runMode) {
-    this.run_mode = runMode
-  }
-
-  get _procset() {
-    return this.procset
-  }
-
-  set _procset(procset) {
-    this.procset = procset
-  }
-
-  get _map() {
-    return this.map
-  }
-
-  set _map(map) {
-    this.map = map
-  }
-
-  get _grain() {
-    return this.grain
-  }
-
-  set _grain(grain) {
-    this.grain = grain
-  }
-
-  get _shift() {
-    return this.shift
-  }
-
-  set _shift(shift) {
-    this.shift = shift
-  }
-
-  get _preoffset() {
-    return this.preoffset
-  }
-
-  set _preoffset(preoffset) {
-    this.preoffset = preoffset
-  }
-
-  get _postoffset() {
-    return this.postoffset
-  }
-
-  set _postoffset(postoffset) {
-    this.postoffset = postoffset
-  }
-
-  get _size() {
-    return this.size
-  }
-
-  set _size(size) {
-    this.size = size
-  }
-
-  get _layout() {
-    return this.layout
-  }
-
-  set _layout(layout) {
-    this.layout = layout
-  }
-
-  get _envs() {
-    return this.envs
-  }
-
-  set _envs(envs) {
-    this.envs = envs
   }
 }
 
@@ -360,35 +197,11 @@ class Layout {
 
   static parseFromRestApi(jsonObj) {
     const layout = new Layout()
-    layout._env = jsonObj.affinity_env
-    layout._cpuInfo = jsonObj.cpuinfo
-    layout._threadBind = jsonObj.bind
+    layout.env = jsonObj.affinity_env
+    layout.cpuInfo = jsonObj.cpuinfo
+    layout.threadBind = jsonObj.bind
 
     return layout
-  }
-
-  get _env() {
-    return this.env
-  }
-
-  set _env(env) {
-    this.env = env
-  }
-
-  get _cpuInfo() {
-    return this.cpuInfo
-  }
-
-  set _cpuInfo(cpuInfo) {
-    this.cpuInfo = cpuInfo
-  }
-
-  get _threadBind() {
-    return this.threadBind
-  }
-
-  set _threadBind(threadBind) {
-    this.threadBind = threadBind
   }
 }
 
@@ -415,8 +228,7 @@ function parseFromWebForm(form, type) {
           return i.label + '=' + form[i.label]
         }
         if (i.visible) {
-          // eslint-disable-next-line no-eval
-          return eval(i.visible) ? form[i.label] : ''
+          return Utils.getExecResult(i.visible) ? form[i.label] : ''
         }
         return form[i.label]
       })
@@ -438,7 +250,8 @@ function parseFromWebForm(form, type) {
         }
         if (i.visible) {
           // eslint-disable-next-line no-eval
-          return eval(i.visible) ? temp : ''
+          // return eval(i.visible) ? temp : ''
+          return Utils.getExecResult(i.visible) ? temp : ''
         }
         return temp
       })

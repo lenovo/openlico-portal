@@ -1,7 +1,7 @@
 <template>
   <span>
     <a-popover :title="node.hostname" width="200">
-      <template slot="content">
+      <template #content>
         <p>{{ $t('Status') + ': ' + node.status }}</p>
         <div v-if="mode == 'network'">
           <p v-for="item in extra_property" :key="item">{{ item }}</p>
@@ -11,7 +11,7 @@
           {{ $t('Rack.Node.Chassis') + ': ' + chassisName }}
         </p>
         <p v-if="node.frontimage == 'default_1X.png'" style="color: #ffc107">
-          {{ $t('Rack.Node.Machinetype.Error', { machineType: node.machinetype }) }}
+          {{ $T('Rack.Node.Machinetype.Error', { machineType: node.machinetype }) }}
         </p>
       </template>
       <template v-if="node_display">

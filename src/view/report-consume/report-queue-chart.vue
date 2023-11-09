@@ -3,10 +3,10 @@
 </template>
 
 <script>
-import Format from './../../common/format'
-import * as EChart from 'echarts'
+import Format from '@/common/format'
 
 export default {
+  inject: ['resize'],
   props: ['data'],
   data() {
     return {
@@ -21,18 +21,14 @@ export default {
         })
       }
     },
+    resize(val) {
+      this.onResize()
+    },
   },
   mounted() {
     this.$nextTick(function () {
-      this.innerChart = EChart.init(this.$refs.container, window.gApp.echartsTheme.common)
-      window.removeEventListener('resize', this.onResize)
-      window.addEventListener('resize', this.onResize)
+      this.$chart.init(this.$refs.container, window.gApp.echartsTheme.common)
       this.initChart()
-      window.gApp.$watch('isCollapse', (newValue, oldValue) => {
-        setTimeout(() => {
-          this.onResize()
-        }, 300)
-      })
     })
   },
   methods: {
@@ -90,7 +86,7 @@ export default {
           },
         ],
       }
-      this.innerChart.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.container).setOption(option)
     },
     initData() {
       const data = this.data
@@ -132,7 +128,7 @@ export default {
       }
     },
     onResize() {
-      this.innerChart.resize()
+      this.$chart.getInstanceByDom(this.$refs.container).resize()
     },
   },
 }

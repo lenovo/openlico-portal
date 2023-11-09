@@ -1,23 +1,26 @@
 <template>
   <div style="display: flex" class="file-select-container">
     <a-input-group compact class="file-select-outer">
+      <!-- eslint-disable -->
       <a-input
-        v-model="currentPath"
+        v-model:value="currentPath"
         class="select-file-input"
-        read-only
+        readOnly
         :disabled="disabled"
         style="width: 80%"
         @mouseover="showClearIcon"
         @mouseleave="hideClearIcon">
-        <a-icon
-          ref="clearIcon"
-          slot="suffix"
-          theme="filled"
-          class="clear-icon"
-          type="close-circle"
-          @click="clearPath"
-          @mouseover="hightLightIcon"
-          @mouseleave="cancelhightLight" />
+        <!-- eslint-enable -->
+        <template #suffix>
+          <close-circle-outlined
+            ref="clearIcon"
+            theme="filled"
+            class="clear-icon"
+            type="close-circle"
+            @click="clearPath"
+            @mouseover="hightLightIcon"
+            @mouseleave="cancelhightLight" />
+        </template>
       </a-input>
       <a-button style="width: 20%" :disabled="disabled" @click="onBrowserClick">
         {{ $t('FileSelect.Browser') }}
@@ -27,15 +30,18 @@
   </div>
 </template>
 <script>
-import FileManagerDialog from './file-manager-dialog'
+import FileManagerDialog from './file-manager-dialog.vue'
+import { Form } from 'ant-design-vue'
 export default {
   components: {
     'file-manager-dialog': FileManagerDialog,
   },
-  props: ['value', 'type', 'disabled', 'special_character'],
+  props: ['value', 'type', 'disabled', 'specialCharacter'],
+  emits: ['input', 'change', 'update:value'],
   data() {
     return {
       currentPath: '',
+      formItemContext: Form.useInjectFormItemContext(),
     }
   },
   watch: {
@@ -44,8 +50,7 @@ export default {
     },
     currentPath(val, oldVal) {
       if (val !== oldVal) {
-        this.$emit('input', this.currentPath)
-        this.$emit('change', this.currentPath)
+        this.emitPath()
       }
     },
   },
@@ -74,11 +79,10 @@ export default {
       const self = this
       // eslint-disable-next-line no-useless-escape
       const pattern = /^[a-zA-Z0-9\/._\-\[\]]+$/
-      if (this.special_character) {
+      if (this.specialCharacter) {
         if (pattern.test(path)) {
           this.currentPath = path
-          this.$emit('input', this.currentPath)
-          this.$emit('change', this.currentPath)
+          this.emitPath()
         } else {
           this.$error({
             title: self.$t('FileSelect.Tips'),
@@ -95,29 +99,35 @@ export default {
         }
       } else {
         this.currentPath = path
-        this.$emit('input', this.currentPath)
-        this.$emit('change', this.currentPath)
+        this.emitPath()
       }
     },
     clearPath() {
       this.currentPath = ''
-      this.$emit('input', this.currentPath)
-      this.$emit('change', this.currentPath)
+      this.emitPath()
+      this.hideClearIcon()
     },
     showClearIcon() {
       if (this.currentPath && this.currentPath.length) {
-        this.$refs.clearIcon.$el.style = 'display: block;'
+        this.$refs.clearIcon.style = 'display: block;'
       }
     },
     hideClearIcon() {
-      this.$refs.clearIcon.$el.style = 'display: none;'
+      this.$refs.clearIcon.style = 'display: none;'
     },
     hightLightIcon() {
-      this.$refs.clearIcon.$el.style = 'display: block;'
-      this.$refs.clearIcon.$el.classList.add('close-active')
+      this.showClearIcon()
+      this.$refs.clearIcon.classList.add('close-active')
     },
     cancelhightLight() {
-      this.$refs.clearIcon.$el.classList.remove('close-active')
+      this.hideClearIcon()
+      this.$refs.clearIcon.classList.remove('close-active')
+    },
+    emitPath() {
+      this.$emit('input', this.currentPath)
+      this.$emit('change', this.currentPath)
+      this.$emit('update:value', this.currentPath)
+      this.formItemContext.onFieldChange()
     },
   },
 }

@@ -35,51 +35,11 @@ class NodeLocation {
 
   static parseFromRestApi(jsonObj) {
     const location = new NodeLocation()
-    location._slot = jsonObj.u
-    location._height = parseInt(jsonObj.height)
-    location._width = parseFloat(jsonObj.width)
-    location._rackId = jsonObj.rack_id
-    location._chassisId = jsonObj.chassis_id
-  }
-
-  get _slot() {
-    return this.slot
-  }
-
-  set _slot(slot) {
-    return (this.slot = slot)
-  }
-
-  get _height() {
-    return this.height
-  }
-
-  set _height(height) {
-    return (this.height = height)
-  }
-
-  get _width() {
-    return this.width
-  }
-
-  set _width(width) {
-    return (this.width = width)
-  }
-
-  get _rackId() {
-    return this.rackId
-  }
-
-  set _rackId(rackId) {
-    return (this.rackId = rackId)
-  }
-
-  get _chassisId() {
-    return this.chassisId
-  }
-
-  set _chassisId(chassisId) {
-    return (this.chassisId = chassisId)
+    location.slot = jsonObj.u
+    location.height = parseInt(jsonObj.height)
+    location.width = parseFloat(jsonObj.width)
+    location.rackId = jsonObj.rack_id
+    location.chassisId = jsonObj.chassis_id
   }
 }
 
@@ -91,54 +51,6 @@ class Gpu {
     this.vendor = ''
     this.used = false
     this.devUsed = false
-  }
-
-  get _index() {
-    return this.index
-  }
-
-  set _index(index) {
-    return (this.index = index)
-  }
-
-  get _devId() {
-    return this.devId
-  }
-
-  set _devId(devId) {
-    return (this.devId = devId)
-  }
-
-  get _type() {
-    return this.type
-  }
-
-  set _type(type) {
-    return (this.type = type)
-  }
-
-  get _vendor() {
-    return this.vendor
-  }
-
-  set _vendor(vendor) {
-    return (this.vendor = vendor)
-  }
-
-  get _used() {
-    return this.used
-  }
-
-  set _used(used) {
-    return (this.used = used)
-  }
-
-  get _devUsed() {
-    return this.devUsed
-  }
-
-  set _devUsed(devUsed) {
-    return (this.devUsed = devUsed)
   }
 }
 
@@ -168,249 +80,74 @@ class Node {
     this.gpuTotal = 0
   }
 
-  static parseFromRestApi(jsonObj, monitor) {
+  static parseFromRestApi(jsonObj) {
     const node = new Node()
-    node._id = jsonObj.id
-    node._hostname = jsonObj.hostname
-    node._type = jsonObj.type.toLowerCase()
-    node._osIP = jsonObj.mgt_address
-    node._bmcIP = jsonObj.bmc_address
-    node._machineType = jsonObj.machinetype
-    node._frontImageUrl = jsonObj.frontimage
-    node._onCloud = jsonObj.on_cloud
-    node._groups = jsonObj.groups.map(i => i.name).join()
-    node._location = jsonObj.location ? NodeLocation.parseFromRestApi(jsonObj.location) : ''
-    node._alertPolicyLevel =
+    node.id = jsonObj.id
+    node.hostname = jsonObj.hostname
+    node.type = jsonObj.type.toLowerCase()
+    node.osIP = jsonObj.mgt_address
+    node.bmcIP = jsonObj.bmc_address
+    node.machineType = jsonObj.machinetype
+    node.frontImageUrl = jsonObj.frontimage
+    node.onCloud = jsonObj.on_cloud
+    node.groups = jsonObj.groups.map(i => i.name).join()
+    node.location = jsonObj.location ? NodeLocation.parseFromRestApi(jsonObj.location) : ''
+    node.alertPolicyLevel =
       jsonObj.alarm_level === null ? null : AlertPolicyService.AlertLevelToParse[String(jsonObj.alarm_level)]
-    if (monitor === undefined) {
-      getNodeHardwareByHostname(jsonObj.hostname, node)
-    } else {
-      Node.setNodeMonitor(node, jsonObj)
-    }
+    Node.setNodeMonitor(node, jsonObj)
     return node
   }
 
   static setNodeMonitor(node, jsonObj) {
-    node._status = jsonObj.status === 'used' ? 'busy' : jsonObj.status
-    node._health = jsonObj.health && Constants.NodeHealthState.includes(jsonObj.health) ? jsonObj.health : ''
-    node._powerStatus = jsonObj.power_status
-    node._cpuUsed = 0.0
-    node._cpuTotal = !isNaN(jsonObj.cpu_total) ? jsonObj.cpu_total : null
-    node._ramUsed = jsonObj.memory_used ? jsonObj.memory_used * 1024 : null
-    node._ramTotal = !isNaN(jsonObj.memory_total) ? jsonObj.memory_total * 1024 : null
-    node._diskUsed = !isNaN(jsonObj.disk_used) ? jsonObj.disk_used * 1024 * 1024 * 1024 : null
-    node._diskTotal = !isNaN(jsonObj.disk_total) ? jsonObj.disk_total * 1024 * 1024 * 1024 : null
-    node._gpus = []
+    node.status = jsonObj.status === 'used' ? 'busy' : jsonObj.status
+    node.health = jsonObj.health && Constants.NodeHealthState.includes(jsonObj.health) ? jsonObj.health : ''
+    node.powerStatus = jsonObj.power_status
+    node.cpuUsed = 0.0
+    node.cpuTotal = !isNaN(jsonObj.cpu_total) ? jsonObj.cpu_total : null
+    node.ramUsed = jsonObj.memory_used ? jsonObj.memory_used * 1024 : null
+    node.ramTotal = !isNaN(jsonObj.memory_total) ? jsonObj.memory_total * 1024 : null
+    node.diskUsed = !isNaN(jsonObj.disk_used) ? jsonObj.disk_used * 1024 * 1024 * 1024 : null
+    node.diskTotal = !isNaN(jsonObj.disk_total) ? jsonObj.disk_total * 1024 * 1024 * 1024 : null
+    node.gpus = []
     if (jsonObj.gpu) {
-      node._gpuTotal = jsonObj.gpu.product.length
+      node.gpuTotal = jsonObj.gpu.product.length
       for (let i = 0; i < jsonObj.gpu.product.length; i++) {
         const dev = jsonObj.gpu.logical_dev_info[i]
         if (jsonObj.gpu.vendor[i] === 'INTEL' && dev.length > 0) {
           for (let devId = 0; devId < dev.length; devId++) {
             const gpu = new Gpu()
-            gpu._index = i
-            gpu._devId = devId
-            gpu._type = jsonObj.gpu.product[i]
-            gpu._vendor = jsonObj.gpu.vendor[i]
-            gpu._used = jsonObj.gpu.used[i]
-            gpu._devUsed = dev[devId][1]
-            node._gpus.push(gpu)
+            gpu.index = i
+            gpu.devId = devId
+            gpu.type = jsonObj.gpu.product[i]
+            gpu.vendor = jsonObj.gpu.vendor[i]
+            gpu.used = jsonObj.gpu.used[i]
+            gpu.devUsed = dev[devId][1]
+            node.gpus.push(gpu)
           }
         } else {
           const gpu = new Gpu()
-          gpu._index = i
-          gpu._type = jsonObj.gpu.product[i]
-          gpu._vendor = jsonObj.gpu.vendor[i]
-          gpu._used = jsonObj.gpu.used[i]
-          node._gpus.push(gpu)
+          gpu.index = i
+          gpu.type = jsonObj.gpu.product[i]
+          gpu.vendor = jsonObj.gpu.vendor[i]
+          gpu.used = jsonObj.gpu.used[i]
+          node.gpus.push(gpu)
         }
       }
     }
   }
-
-  get _id() {
-    return this.id
-  }
-
-  set _id(id) {
-    return (this.id = id)
-  }
-
-  get _hostname() {
-    return this.hostname
-  }
-
-  set _hostname(hostname) {
-    return (this.hostname = hostname)
-  }
-
-  get _status() {
-    return this.status
-  }
-
-  set _status(status) {
-    return (this.status = status)
-  }
-
-  get _health() {
-    return this.health
-  }
-
-  set _health(health) {
-    return (this.health = health)
-  }
-
-  get _powerStatus() {
-    return this.powerStatus
-  }
-
-  set _powerStatus(powerStatus) {
-    return (this.powerStatus = powerStatus)
-  }
-
-  get _type() {
-    return this.type
-  }
-
-  set _type(type) {
-    return (this.type = type)
-  }
-
-  get _osIP() {
-    return this.osIP
-  }
-
-  set _osIP(osIP) {
-    return (this.osIP = osIP)
-  }
-
-  get _bmcIP() {
-    return this.bmcIP
-  }
-
-  set _bmcIP(bmcIP) {
-    return (this.bmcIP = bmcIP)
-  }
-
-  get _machineType() {
-    return this.machineType
-  }
-
-  set _machineType(machineType) {
-    return (this.machineType = machineType)
-  }
-
-  get _frontImageUrl() {
-    return this.frontImageUrl
-  }
-
-  set _frontImageUrl(frontImageUrl) {
-    return (this.frontImageUrl = frontImageUrl)
-  }
-
-  get _groups() {
-    return this.groups
-  }
-
-  set _groups(groups) {
-    return (this.groups = groups)
-  }
-
-  get _cpuUsed() {
-    return this.cpuUsed
-  }
-
-  set _cpuUsed(cpuUsed) {
-    return (this.cpuUsed = cpuUsed)
-  }
-
-  get _cpuTotal() {
-    return this.cpuTotal
-  }
-
-  set _cpuTotal(cpuTotal) {
-    return (this.cpuTotal = cpuTotal)
-  }
-
-  get _ramUsed() {
-    return this.ramUsed
-  }
-
-  set _ramUsed(ramUsed) {
-    return (this.ramUsed = ramUsed)
-  }
-
-  get _ramTotal() {
-    return this.ramTotal
-  }
-
-  set _ramTotal(ramTotal) {
-    return (this.ramTotal = ramTotal)
-  }
-
-  get _diskUsed() {
-    return this.diskUsed
-  }
-
-  set _diskUsed(diskUsed) {
-    return (this.diskUsed = diskUsed)
-  }
-
-  get _diskTotal() {
-    return this.diskTotal
-  }
-
-  set _diskTotal(diskTotal) {
-    return (this.diskTotal = diskTotal)
-  }
-
-  get _alertPolicyLevel() {
-    return this.alertPolicyLevel
-  }
-
-  set _alertPolicyLevel(alertPolicyLevel) {
-    return (this.alertPolicyLevel = alertPolicyLevel)
-  }
-
-  get _location() {
-    return this.location
-  }
-
-  set _location(location) {
-    return (this.location = location)
-  }
-
-  get _gpus() {
-    return this.gpus
-  }
-
-  set _gpus(gpus) {
-    return (this.gpus = gpus)
-  }
-
-  get _onCloud() {
-    return this.onCloud
-  }
-
-  set _onCloud(onCloud) {
-    return (this.onCloud = onCloud)
-  }
-
-  get _gpuTotal() {
-    return this.gpuTotal
-  }
-
-  set _gpuTotal(gpuTotal) {
-    return (this.gpuTotal = gpuTotal)
-  }
 }
 
-function nodesTableDataParser(res) {
+async function nodesTableDataParser(res) {
   const nodes = res.data
+  const hostnames = nodes.map(i => i.hostname)
+  const nodesMonitor = await getNodeHardwareByHostname(hostnames)
+
   return {
     offset: res.offset,
     total: res.total,
-    data: nodes.map(node => Node.parseFromRestApi(node)),
+    data: nodes.map(node =>
+      Node.parseFromRestApi({ ...node, ...(nodesMonitor.filter(i => i.hostname === node.hostname)[0] || {}) }),
+    ),
   }
 }
 
@@ -440,23 +177,19 @@ function getNodesTableDataFetcher() {
   )
 }
 
-function getNodeHardwareByHostname(name, node) {
+function getNodeHardwareByHostname(name) {
   return new Promise((resolve, reject) => {
     const req = {
       args: {
         offset: 0,
         length: 50,
-        filters: [{ prop: 'hostname', type: 'in', values: [name] }],
+        filters: [{ prop: 'hostname', type: 'in', values: name }],
         sort: { prop: 'hostname', order: 'ascend' },
       },
     }
     Request.get('/api/monitor/node/', { params: req }).then(
       res => {
-        const data = res.body.data[0]
-        if (node && data && node.hostname === data.hostname) {
-          Node.setNodeMonitor(node, data)
-        }
-        resolve(data)
+        resolve(res.body.data)
       },
       err => {
         ErrorHandler.restApiErrorHandler(err, reject)
@@ -506,17 +239,14 @@ function getNodeByName(hostname) {
   return new Promise((resolve, reject) => {
     const nodeInfo = Request.get(`/api/cluster/node/${hostname}/`)
     const nodeAlert = Request.get(`/api/alert/node/${hostname}/`)
-    const nodeMonitor = getNodeHardwareByHostname(hostname)
+    const nodeMonitor = getNodeHardwareByHostname([hostname])
     Promise.all([nodeInfo, nodeAlert, nodeMonitor]).then(
       res => {
-        const node = Node.parseFromRestApi(
-          {
-            ...res[0].body,
-            ...res[1].body.node,
-            ...res[2],
-          },
-          true,
-        )
+        const node = Node.parseFromRestApi({
+          ...res[0].body,
+          ...res[1].body.node,
+          ...res[2][0],
+        })
         resolve(node)
       },
       err => {
@@ -554,11 +284,11 @@ function getAllNodes(type) {
 }
 
 function getNodeConsoleServiceUrl(hostname) {
-  return `/api/external/confluent/console/${hostname}/`
+  return `/api/confluent/console/${hostname}/`
 }
 
 function getNodeShellServiceUrl(hostname) {
-  return `/api/external/confluent/shell/${hostname}/`
+  return `/api/confluent/shell/${hostname}/`
 }
 
 export default {

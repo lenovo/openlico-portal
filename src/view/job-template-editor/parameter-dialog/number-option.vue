@@ -1,14 +1,14 @@
 <template>
   <div class="">
-    <a-form-model-item :label="$t('JobTemplate.Parameters.Min.Value')" prop="minValue">
-      <a-input id="tid_jobTemplate-parameter-minValue" v-model="formParam.minValue" @change="minValueFunction" />
-    </a-form-model-item>
-    <a-form-model-item :label="$t('JobTemplate.Parameters.Max.Value')" prop="maxValue">
-      <a-input id="tid_jobTemplate-parameter-maxValue" v-model="formParam.maxValue" @change="maxValueFunction" />
-    </a-form-model-item>
-    <a-form-model-item :label="$t('JobTemplate.Parameters.Float.Length')" prop="floatLength">
-      <a-input id="tid_jobTemplate-parameter-floatLength" v-model="formParam.floatLength" />
-    </a-form-model-item>
+    <a-form-item :label="$t('JobTemplate.Parameters.Min.Value')" name="minValue">
+      <a-input id="tid_jobTemplate-parameter-minValue" v-model:value="formParam.minValue" @change="minValueFunction" />
+    </a-form-item>
+    <a-form-item :label="$t('JobTemplate.Parameters.Max.Value')" name="maxValue">
+      <a-input id="tid_jobTemplate-parameter-maxValue" v-model:value="formParam.maxValue" @change="maxValueFunction" />
+    </a-form-item>
+    <a-form-item :label="$t('JobTemplate.Parameters.Float.Length')" name="floatLength">
+      <a-input id="tid_jobTemplate-parameter-floatLength" v-model:value="formParam.floatLength" />
+    </a-form-item>
   </div>
 </template>
 <script>

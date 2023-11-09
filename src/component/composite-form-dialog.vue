@@ -2,20 +2,22 @@
   <a-modal
     id="tid_popup-dialog"
     ref="popupDialog"
+    wrap-class-name="composite-form-dialog"
+    destroy-on-close
     :title="title"
     :width="size"
-    :visible="dialogVisible"
+    :open="dialogVisible"
     :keyboard="!submitting"
     :mask-closable="!submitting"
     :closable="!submitting"
-    class="composite-form-dialog"
     @cancel="onCancelClick"
-    @afterClose="onDialogClose">
-    <a-form-model
+    @after-close="onDialogClose">
+    <a-form
       v-show="onSubmitCode == 0 ? !submitting : !continueSubmitting"
       id="tid_popup-dialog-form"
       ref="innerForm"
       class="composite-form-content"
+      auto-complete="new-password"
       :colon="false"
       :layout="'vertical'"
       :model="formModel"
@@ -23,57 +25,55 @@
       :label-col="labelCols"
       :wrapper-col="wrapperCols">
       <slot />
-    </a-form-model>
+    </a-form>
     <a-spin v-show="submitting || continueSubmitting" style="height: 100%">
       <div class="spin-content">
         {{ loadingMessage }}
       </div>
     </a-spin>
-    <div slot="footer" class="dialog-footer">
-      <div class="composite-form-dialog-footer">
-        <div name="customFooter" style="width: 100%; text-align: left; flex: 1">
-          <slot name="footer" />
-        </div>
-        <div style="width: 100%; flex: 2">
-          <a-button
-            v-show="!submitting && !continueSubmitting && cancelButtonText"
-            id="tid_popup-dialog-cancel"
-            @click="onCancelClick">
-            {{ cancelButtonText }}
-          </a-button>
-          <a-button
-            v-show="!continueSubmitting && submitButtonText"
-            id="tid_popup-dialog-submit"
-            type="primary"
-            :loading="submitting"
-            :disabled="submitDisable"
-            @click="onSubmitClick">
-            {{ submitButtonText }}
-          </a-button>
-          <a-button
-            v-show="submitContinue && !submitting && submitContinueButtonText"
-            id="tid_popup-dialog-submit"
-            type="primary"
-            :loading="continueSubmitting"
-            @click="onSubmitContinueClick">
-            {{ submitContinueButtonText }}
-          </a-button>
+    <template #footer>
+      <div class="dialog-footer">
+        <div class="composite-form-dialog-footer">
+          <div name="customFooter" style="width: 100%; text-align: left; flex: 1">
+            <slot name="footer" />
+          </div>
+          <div style="width: 100%; flex: 2">
+            <a-button
+              v-show="!submitting && !continueSubmitting && cancelButtonText"
+              id="tid_popup-dialog-cancel"
+              @click="onCancelClick">
+              {{ cancelButtonText }}
+            </a-button>
+            <a-button
+              v-show="!continueSubmitting && submitButtonText"
+              id="tid_popup-dialog-submit"
+              type="primary"
+              :loading="submitting"
+              :disabled="submitDisable"
+              @click="onSubmitClick">
+              {{ submitButtonText }}
+            </a-button>
+            <a-button
+              v-show="submitContinue && !submitting && submitContinueButtonText"
+              id="tid_popup-dialog-submit"
+              type="primary"
+              :loading="continueSubmitting"
+              @click="onSubmitContinueClick">
+              {{ submitContinueButtonText }}
+            </a-button>
+          </div>
         </div>
       </div>
-    </div>
+    </template>
   </a-modal>
 </template>
 <script>
-// import Utils from '../common/utils'
-
 export default {
   props: [
     // eslint-disable-next-line vue/require-prop-types
     'title',
     // eslint-disable-next-line vue/require-prop-types
     'size',
-    // eslint-disable-next-line vue/require-prop-types
-    'compositeHeight',
     // eslint-disable-next-line vue/require-prop-types
     'formModel',
     // eslint-disable-next-line vue/require-prop-types
@@ -102,7 +102,9 @@ export default {
     'wrapperCols',
     // eslint-disable-next-line vue/require-prop-types
     'submitContinue',
+    'failedCloseDialog',
   ],
+  emits: ['dialog-opened', 'dialog-closed'],
   data() {
     return {
       labelCol: this.formLabelCol ? this.formLabelCol : 6,
@@ -172,46 +174,43 @@ export default {
     },
     onSubmitContinueClick() {
       this.onSubmitCode = 1
+
       if (this.externalValidate) {
         this.externalValidate(extValid => {
-          this.$refs.innerForm.validate(valid => {
-            if (extValid && valid) {
-              this.doSubmit()
-            } else {
-              return false
-            }
-          })
-        })
-      } else {
-        this.$refs.innerForm.validate(valid => {
-          if (valid) {
-            this.doSubmit()
-          } else {
-            return false
-          }
+          if (!extValid) return
         })
       }
+
+      this.$refs.innerForm.validate().then(res => {
+        this.doSubmit()
+      })
     },
     onSubmitClick() {
       this.onSubmitCode = 0
       if (this.externalValidate) {
         this.externalValidate(extValid => {
-          this.$refs.innerForm.validate(valid => {
-            if (extValid && valid) {
-              this.doSubmit()
-            } else {
+          this.$refs.innerForm.validate().then(
+            _ => {
+              if (extValid) {
+                this.doSubmit()
+              } else {
+                return false
+              }
+            },
+            err => {
               return false
-            }
-          })
+            },
+          )
         })
       } else {
-        this.$refs.innerForm.validate(valid => {
-          if (valid) {
+        this.$refs.innerForm.validate().then(
+          _ => {
             this.doSubmit()
-          } else {
+          },
+          err => {
             return false
-          }
-        })
+          },
+        )
       }
     },
     doSubmit() {
@@ -235,7 +234,11 @@ export default {
               message = this.successMessageFormatter(res)
             }
             if (message) {
-              this.$message.success(message)
+              if (res && res.action_status === 'partial') {
+                this.$message.warning(message)
+              } else {
+                this.$message.success(message)
+              }
             }
             this.innerResolve(res)
           },
@@ -244,7 +247,7 @@ export default {
             // this.autoReject = false;
             this.continueSubmitting = false
             this.submitting = false
-            let message = this.$t('Dialog.DefaultSubmitMessage.Fail')
+            let message = res || this.$t('Dialog.DefaultSubmitMessage.Fail')
             if (this.errorMessageFormatter) {
               message = this.errorMessageFormatter(res)
             }
@@ -252,6 +255,11 @@ export default {
             this.onSubmitCode = 0
             // Do not reject when error, then the promise is not broken user can resubmit.
             // this.innerReject(res);
+            // Hide the dialog and refresh the job list immediately when the some requests fails(priority, hold, requeue and release action)
+            if (this.failedCloseDialog) {
+              this.dialogVisible = false
+              this.innerReject(res)
+            }
           },
         )
       } else {
@@ -281,28 +289,36 @@ export default {
     enableSubmit() {
       this.submitDisable = false
     },
+    validateItems(items = []) {
+      if (!this.$refs.innerForm) return Promise.reject()
+      if (items.length) {
+        return this.$refs.innerForm.validate(items)
+      } else {
+        return this.$refs.innerForm.validate()
+      }
+    },
   },
 }
 </script>
-<style>
-/* .composite-form-dialog .ant-modal-content{
-    height: 100%;
-}
-.composite-form-dialog .ant-modal-body{
-    position: absolute;
-    bottom: 53px;
-    top: 55px;
-    width: 100%;
-    padding: 24px 40px;
-    overflow: auto;
-}
-.composite-form-dialog .ant-modal-footer{
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-} */
+<style scoped>
 .composite-form-dialog-footer {
   display: flex;
+}
+</style>
+<style>
+.composite-form-dialog .ant-modal-content {
+  padding: 0;
+}
+.composite-form-dialog .ant-modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e8e8e8;
+}
+.composite-form-dialog .ant-modal-body {
+  padding: 24px;
+}
+.composite-form-dialog .ant-modal-footer {
+  padding: 10px 16px;
+  border-top: 1px solid #e8e8e8;
+  text-align: right;
 }
 </style>

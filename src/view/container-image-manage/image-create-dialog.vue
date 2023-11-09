@@ -7,55 +7,54 @@
       :form-model="imageForm"
       :form-rules="imageRules"
       :success-message-formatter="successMessageFormatter"
-      :error-message-formatter="errorMessageFormatter"
       :external-validate="externalValidate">
-      <a-form-model-item :label="$t('Image.Name')" :prop="mode == 'import' ? 'name' : ''">
-        <a-input v-model="imageForm.name" :disabled="mode != 'import'"> </a-input>
-      </a-form-model-item>
-      <a-form-model-item v-if="mode != 'edit'" :label="$t('Image.Framework')" prop="framework">
-        <a-select v-model="imageForm.framework">
+      <a-form-item :label="$t('Image.Name')" :name="mode == 'import' ? 'name' : ''">
+        <a-input v-model:value="imageForm.name" :disabled="mode != 'import'"> </a-input>
+      </a-form-item>
+      <a-form-item v-if="mode != 'edit'" :label="$t('Image.Framework')" name="framework">
+        <a-select v-model:value="imageForm.framework">
           <a-select-option v-for="item in frameworkOptions" :key="item.value" :value="item.value"
             >{{ item.label }}
           </a-select-option>
         </a-select>
-      </a-form-model-item>
-      <a-form-model-item v-if="arch == 'host' && mode != 'edit'" :label="$t('Image.SourceFile')" prop="sourceFile">
-        <file-select v-model="imageForm.sourceFile" type="file"></file-select>
-      </a-form-model-item>
-      <a-form-model-item v-if="arch == 'host' && mode != 'edit'" :label="$t('Image.targetFile')" prop="targetFile">
+      </a-form-item>
+      <a-form-item v-if="arch == 'host' && mode != 'edit'" :label="$t('Image.SourceFile')" name="sourceFile">
+        <file-select v-model:value="imageForm.sourceFile" type="file"></file-select>
+      </a-form-item>
+      <a-form-item v-if="arch == 'host' && mode != 'edit'" :label="$t('Image.targetFile')" name="targetFile">
         <div class style="display: flex">
-          <a-input v-model="targetFile" read-only></a-input>
+          <a-input v-model:value="targetFile" read-only></a-input>
         </div>
-      </a-form-model-item>
-      <a-form-model-item :label="$t('Image.Version')" prop="version">
-        <a-input v-model="imageForm.version"></a-input>
-      </a-form-model-item>
-      <a-form-model-item ref="tagFormItem" :label="$t('Image.Tag')" class="image-container-tag" prop="dynamicTags">
+      </a-form-item>
+      <a-form-item :label="$t('Image.Version')" name="version">
+        <a-input v-model:value="imageForm.version"></a-input>
+      </a-form-item>
+      <a-form-item ref="tagFormItem" :label="$t('Image.Tag')" class="image-container-tag" name="dynamicTags">
         <multi-tags-input
           id="tid_image-tags"
           ref="tagInput"
-          v-model="imageForm.dynamicTags"
+          v-model:value="imageForm.dynamicTags"
           :new-tag-button-text="$t('Action.Add')"
           :valid-roles="tagRules"
           :disabled="false">
         </multi-tags-input>
-      </a-form-model-item>
-      <a-form-model-item :label="$t('Image.Description')" prop="description">
-        <a-input v-model="imageForm.description" type="textarea" style="resize: none"></a-input>
-      </a-form-model-item>
+      </a-form-item>
+      <a-form-item :label="$t('Image.Description')" name="description">
+        <a-textarea v-model:value="imageForm.description" style="resize: none"></a-textarea>
+      </a-form-item>
     </composite-form-dialog>
     <file-manager-dialog ref="ImagefileManagerDialog" />
   </div>
 </template>
 
 <script>
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import FileManagerDialog from '../../component/file-manager-dialog'
-import MultiTagsInput from '../../component/multi-tags-input'
-import FileSelect from '../../component/file-select'
-import ValidRoleFactory from '../../common/valid-role-factory'
-import AccessService from '../../service/access'
-import ImageService from '../../service/image'
+import ImageService from '@/service/image'
+import AccessService from '@/service/access'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import FileSelect from '@/component/file-select.vue'
+import MultiTagsInput from '@/component/multi-tags-input.vue'
+import FileManagerDialog from '@/component/file-manager-dialog.vue'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
@@ -65,20 +64,24 @@ export default {
     'multi-tags-input': MultiTagsInput,
   },
   data() {
-    const checkImagePath = (rule, value, callback) => {
+    const checkImagePath = (rule, value) => {
       const pattern = /^[A-Za-z0-9_\.\-/:]*$/ // eslint-disable-line no-useless-escape
       const regExp = new RegExp(pattern)
       const errors = []
       if (value.toString().length > 0 && !regExp.test(value.toString())) {
         errors.push(
           new Error(
-            this.$t('Image.Path.Value.Valid', {
+            this.$T('Image.Path.Value.Valid', {
               name: this.$t('Image.Path'),
             }),
           ),
         )
       }
-      callback(errors)
+      if (errors.length) {
+        return Promise.reject(errors)
+      } else {
+        return Promise.resolve()
+      }
     }
     return {
       inputVisible: false,
@@ -136,7 +139,7 @@ export default {
         return
       }
       this.$nextTick(() => {
-        this.$refs.tagFormItem.validate()
+        this.$refs.innerDialog.validateItems(['dynamicTags'])
       })
     },
   },
@@ -176,10 +179,7 @@ export default {
     },
     successMessageFormatter(res) {
       const mode = this.mode === 'import' ? 'Import' : this.mode === 'edit' ? 'Edit' : this.mode
-      return this.$t(`Image.${mode}.${this.arch === 'host' ? 'Ready' : 'Success'}`, { name: this.imageForm.name })
-    },
-    errorMessageFormatter(res) {
-      return this.$t(res)
+      return this.$T(`Image.${mode}.${this.arch === 'host' ? 'Ready' : 'Success'}`, { name: this.imageForm.name })
     },
     doImport(name, sourceFile, framework) {
       this.mode = 'import'
@@ -190,11 +190,7 @@ export default {
         framework: framework || 'tensorflow',
         version: '',
         dynamicTags: [],
-      }
-      if (this.arch === 'host') {
-        this.$set(this.imageForm, 'sourceFile', sourceFile || '')
-      } else {
-        this.$set(this.imageForm, 'imagePath', sourceFile || '')
+        sourceFile: sourceFile || '',
       }
       this.title = this.$t('Image.Import.Title')
       this.$nextTick(() => {
@@ -204,16 +200,16 @@ export default {
     },
     doEdit(data) {
       this.mode = 'edit'
+      this.imageId = data.id
+      this.imageForm = {
+        name: data.name,
+        description: data.description,
+        framework: data.framework,
+        version: data.version,
+        dynamicTags: data.tags,
+      }
+      this.title = this.$t('Image.Edit.Title')
       this.$nextTick(() => {
-        this.imageId = data.id
-        this.imageForm = {
-          name: data.name,
-          description: data.description,
-          framework: data.framework,
-          version: data.version,
-          dynamicTags: data.tags,
-        }
-        this.title = this.$t('Image.Edit.Title')
         this.$refs.tagInput.cleanInput()
       })
       return this.$refs.innerDialog.popup(this.submitForm)
@@ -230,7 +226,7 @@ export default {
       ImageService.checkImage(this.targetFile, this.$store.state.auth.access).then(res => {
         if (res.exists) {
           this.$message.error(
-            this.$t('Image.Check.message', {
+            this.$T('Image.Check.message', {
               name: this.imageForm.name,
             }),
           )

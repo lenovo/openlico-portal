@@ -1,10 +1,11 @@
 <template>
-  <div class="accounting-statement">
+  <div>
     <a-modal
-      v-model="visible"
+      :open="visible"
       :title="$t('Action.Accounting.Statement')"
       :footer="null"
       :width="1000"
+      :body-style="{ 'min-height': '450px' }"
       destroy-on-close
       class="accounting-statement-modal"
       @cancel="visible = false">
@@ -25,41 +26,29 @@
         :search-enable="true"
         :search-props="['displayType', 'description', 'user']"
         :external-filter="dataFilterTemp">
-        <template slot="controller">
-          <div>
-            <span class="statement-label">{{ $t('BillGroup.Statement.Month') }}</span>
-            <a-month-picker
-              v-model="filterMonth"
-              format="YYYY/MM"
-              :allow-clear="false"
-              :disabled-date="disabledDate"
-              @change="onMonthChange" />
-            <a-button
-              type="link"
-              style="padding: 10px"
-              @click="
-                exportall = false
-                downloadVisible = true
-              ">
-              {{ $t('BillGroup.Statement.Export') }}
-            </a-button>
-            <a-button
-              type="link"
-              style="padding: 0px"
-              @click="
-                exportall = true
-                downloadVisible = true
-              ">
-              {{ $t('BillGroup.Statement.ExportAll') }}
-            </a-button>
-          </div>
+        <template #controller>
+          <span class="statement-label">{{ $t('BillGroup.Statement.Month') }}</span>
+          <a-date-picker
+            v-model:value="filterMonth"
+            format="YYYY/MM"
+            picker="month"
+            :allow-clear="false"
+            :disabled-date="disabledDate"
+            @change="onMonthChange"></a-date-picker>
+          <a-button type="link" style="padding: 10px" @click="exportClick">
+            {{ $t('BillGroup.Statement.Export') }}
+          </a-button>
+          <a-button type="link" style="padding: 0px" @click="exportAllClick">
+            {{ $t('BillGroup.Statement.ExportAll') }}
+          </a-button>
         </template>
       </composite-table>
     </a-modal>
     <a-modal
-      v-model="downloadVisible"
+      :open="downloadVisible"
       :title="$t('BillGroup.Statement.Download')"
       centered
+      destroy-on-close
       class="statement-download-modal"
       :confirm-loading="loading"
       @cancel="downloadVisible = false"
@@ -85,16 +74,14 @@
   </div>
 </template>
 <script>
-import moment from 'moment'
-import Format from '../../common/format'
-import compositeTable from '../../component/composite-table.vue'
-import BillingService from '../../service/bill-group'
-
+import dayjs from '@/dayjs'
+import Format from '@/common/format'
+import compositeTable from '@/component/composite-table.vue'
+import BillingService from '@/service/bill-group'
 export default {
   components: { compositeTable },
   data() {
     return {
-      moment,
       visible: false,
       downloadVisible: false,
       tableData: [],
@@ -103,7 +90,7 @@ export default {
           dataIndex: 'approvedTime',
           title: this.$t('BillGroup.Statement.Date'),
           sorter: true,
-          customRender: (text, recorde) => {
+          customRender: ({ text, record }) => {
             return Format.formatDateTime(text)
           },
           defaultSortOrder: 'descend',
@@ -128,7 +115,7 @@ export default {
           title: this.$t('BillGroup.Statement.Amount'),
           align: 'right',
           sorter: true,
-          customRender: (text, recorde) => {
+          customRender: ({ text, record }) => {
             return Format.formatMoney(text)
           },
         },
@@ -137,7 +124,7 @@ export default {
           title: this.$t('BillGroup.Statement.Balance'),
           align: 'right',
           sorter: true,
-          customRender: (text, recorde) => {
+          customRender: ({ text, record }) => {
             return Format.formatMoney(text)
           },
         },
@@ -145,7 +132,7 @@ export default {
       dataFilterTemp: {
         applyTime: {},
       },
-      filterMonth: moment(),
+      filterMonth: dayjs(),
       billingGroup: {},
       exportall: false,
       type: 'xlsx',
@@ -158,11 +145,18 @@ export default {
     },
   },
   created() {
-    this.setFilterMonth(moment())
+    this.setFilterMonth(dayjs())
   },
   methods: {
+    exportClick() {
+      this.exportall = false
+      this.downloadVisible = true
+    },
+    exportAllClick() {
+      this.exportall = true
+      this.downloadVisible = true
+    },
     showModel(data) {
-      this.filterMonth = moment()
       this.setFilterMonth(this.filterMonth)
       this.billingGroup = data
       this.visible = true
@@ -174,7 +168,7 @@ export default {
       this.loading = true
       let time = this.dataFilterTemp.applyTime.values
       if (this.exportall) {
-        time = [moment('2000/01/01'), moment()]
+        time = [dayjs('2000/01/01'), dayjs()]
       }
       BillingService.downloadStatement(this.billingGroup.id, this.type, time).then(
         res => {
@@ -188,11 +182,11 @@ export default {
       )
     },
     disabledDate(current) {
-      return current && current > moment().endOf('month')
+      return current && current > dayjs().endOf('month')
     },
     setFilterMonth(date) {
       this.dataFilterTemp.applyTime = {
-        values: [moment(date).startOf('month'), moment(date).endOf('month')],
+        values: [dayjs(date).startOf('month'), dayjs(date).endOf('month')],
         type: 'range',
       }
     },
@@ -208,7 +202,6 @@ export default {
   display: inline-block;
   margin-right: 5px;
 }
-
 .statement-download-modal input[type='radio'] {
   display: none;
 }
@@ -218,21 +211,21 @@ export default {
   height: 60px;
 }
 .statement-download-modal .reportFormatExcel ~ label {
-  background-image: url('static/img/system/report/xlsx.png');
+  background-image: url('/static/img/system/report/xlsx.png');
 }
 .statement-download-modal .reportFormatExcel:checked ~ label {
-  background-image: url('static/img/system/report/xlsx_check.png');
+  background-image: url('/static/img/system/report/xlsx_check.png');
 }
 .statement-download-modal .reportFormatPDF ~ label {
-  background-image: url('static/img/system/report/pdf.png');
+  background-image: url('/static/img/system/report/pdf.png');
 }
 .statement-download-modal .reportFormatPDF:checked ~ label {
-  background-image: url('static/img/system/report/pdf_check.png');
+  background-image: url('/static/img/system/report/pdf_check.png');
 }
 .statement-download-modal .reportFormatHTML ~ label {
-  background-image: url('static/img/system/report/html.png');
+  background-image: url('/static/img/system/report/html.png');
 }
 .statement-download-modal .reportFormatHTML:checked ~ label {
-  background-image: url('static/img/system/report/html_check.png');
+  background-image: url('/static/img/system/report/html_check.png');
 }
 </style>

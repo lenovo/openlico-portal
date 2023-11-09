@@ -2,14 +2,12 @@
   <div :id="tendencyCategory + 'TrendChart'" class="TrendChart" />
 </template>
 <script>
-import * as ECharts from 'echarts'
-import MonitorDataService from '../../../service/monitor-data'
-import Format from '../../../common/format'
-// import ElCol from "element-ui/packages/col/src/col";
+import MonitorDataService from '@/service/monitor-data'
+import Format from '@/common/format'
 
 export default {
+  inject: ['resize'],
   props: ['groupId', 'tendencyCategory', 'timeUnit', 'chartTitle'],
-  // components: { ElCol },
   data() {
     return {
       dataFetcherMap: {
@@ -41,6 +39,9 @@ export default {
     timeUnit: function (curTimeUnit) {
       this.fetchChartData(this.groupId, curTimeUnit)
     },
+    resize(val) {
+      this.onResize()
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -64,17 +65,14 @@ export default {
         job: this.$t('NodeGroup.Trend.Job'),
         jobUnit: '',
       }
-      this.trendChartObj = ECharts.init(
+      this.trendChartObj = this.$chart.init(
         document.getElementById(this.tendencyCategory + 'TrendChart'),
         window.gApp.echartsTheme.common,
       )
       this.fetchChartData(this.groupId, this.timeUnit)
-      window.removeEventListener('resize', this.onResize)
-      window.addEventListener('resize', this.onResize)
     })
   },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.onResize)
+  beforeUnmount() {
     if (this.setTimeoutId > 0) clearTimeout(this.setTimeoutId)
   },
   methods: {
@@ -97,11 +95,9 @@ export default {
               }
             })
           }
-          // if(dataSet.length > 0){
           this.yAxis = this.initAxis(dataSet)
           this.drawTrendCharts(dataSet)
           this.refreshChartData(groupId, timeUnit)
-          // }
         },
         res => {
           // Do nothing
@@ -110,25 +106,21 @@ export default {
     },
     refreshChartData(groupId, timeUnit) {
       this.setTimeoutId = setTimeout(() => {
-        // _this.fetchChartData(groupId, timeUnit, _this.nextStartTime);
         this.fetchChartData(groupId, timeUnit)
       }, this.timeoutValue)
     },
     onResize() {
-      this.trendChartObj.resize()
+      this.$chart.getInstanceByDom(document.getElementById(this.tendencyCategory + 'TrendChart')).resize()
     },
     drawTrendCharts(dataSet) {
-      const tendencyChart = this.trendChartObj
       this.getAxisData(dataSet)
       const series = this.getChartSeries()
       const options = this.getEChartOption(series)
-      tendencyChart.setOption(options)
+      this.$chart.getInstanceByDom(document.getElementById(this.tendencyCategory + 'TrendChart')).setOption(options)
     },
     getAxisData(dataSet) {
       const yDataSet = []
       dataSet.forEach(ds => {
-        // if(this.axisData.xAxis.length > this.maxValueNum)
-        //   this.axisData.xAxis.shift();
         this.nextStartTime = ds.time
         this.axisData.xAxis.push(ds.time)
         yDataSet.push(ds.values)

@@ -28,13 +28,13 @@ function restApiErrorHandler(res, reject) {
               reject(window.gApp.$t('Error.2013.Ban.Long'))
             }
             reject(
-              window.gApp.$t('Error.2013.Ban', {
+              window.gApp.$T('Error.2013.Ban', {
                 try_after_hours: tryAfterTime,
               }),
             )
           } else if (res.body.detail.fail_chances >= 0) {
             reject(
-              window.gApp.$t('Error.2013.LeftTimes', {
+              window.gApp.$T('Error.2013.LeftTimes', {
                 left_times: res.body.detail.remain_chances,
               }),
             )
@@ -49,7 +49,7 @@ function restApiErrorHandler(res, reject) {
         console.log('%c Error Message：', 'color:red')
         console.log('%c ' + res.body.msg, 'color:red')
         reject(
-          window.gApp.$t('Error.ErrorMessage', {
+          window.gApp.$T('Error.ErrorMessage', {
             message: res.body.msg,
           }),
         )
@@ -67,7 +67,7 @@ function restApiErrorHandler(res, reject) {
           reject(window.gApp.$t('Error.' + res.body.code))
         } else if (res.body.description) {
           reject(
-            window.gApp.$t('Error.ErrorMessage', {
+            window.gApp.$T('Error.ErrorMessage', {
               message: res.body.description,
             }),
           )
@@ -94,6 +94,14 @@ function restApiErrorHandler(res, reject) {
   }
 }
 
+// Used in calls using async/await
+function awaitableErrorHandler(res) {
+  return new Promise((resolve, reject) => {
+    restApiErrorHandler(res, reject)
+  })
+}
+
 export default {
   restApiErrorHandler,
+  awaitableErrorHandler,
 }

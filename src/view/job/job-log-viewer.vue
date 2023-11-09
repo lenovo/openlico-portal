@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import LogViewer from '../../widget/log-viewer'
+import LogViewer from '@/widget/log-viewer.vue'
 export default {
   components: {
     'log-viewer': LogViewer,
@@ -18,7 +18,7 @@ export default {
   },
   watch: {
     job(val, oldVal) {
-      this.init()
+      if (val) this.init()
     },
   },
   mounted() {
@@ -27,16 +27,6 @@ export default {
   methods: {
     init() {
       if (this.job) {
-        // if(this.job.type == 'vnc' && this.job.schedulerId) {
-        //   this.defaultLogFile = this.job.workingDirectory + '/vnc_' + this.job.schedulerId + '.log';
-        // }
-        // else if(this.job.outputFilename && this.job.workingDirectory) {
-        //   this.defaultLogFile = this.job.outputFilename.replace(this.$store.state.auth.workspace, 'MyFolder');
-        // }
-        // else if(this.job.type != 'general' && this.job.type != 'cmd' && this.job.type != 'file')
-        // {
-        //   this.defaultLogFile = this.job.workingDirectory + '/' + this.job.name + '-' + this.job.id + '.out';
-        // }
         this.workspace = this.$store.state.auth.workspace
         this.workingDirectory = this.job.workingDirectory
         this.defaultLogFile = this.job.outputFilename

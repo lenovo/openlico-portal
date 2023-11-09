@@ -2,14 +2,14 @@
   <a-badge v-if="editorOptions.length" :count="editorOptions.length" :number-style="{ backgroundColor: '#5fbdfc' }">
     <span class="file-editor">
       <a-popover ref="fileEditor" placement="bottomRight">
-        <template slot="content">
+        <template #content>
           <p
             v-for="(item, index) in editorOptions"
             :key="item.editor.instance.id"
             class="file-editor-item"
             :class="{ 'file-editor-item-border': editorOptions.length > 1 && editorOptions.length > index + 1 }">
             <span class="file-editor-item-name" @click="onNameClick(item)">{{ item.editor.file.name }}</span>
-            <a-icon class="file-editor-item-close" type="close" @click="onCloseEditor(item)" />
+            <close-outlined @click="onCloseEditor(item)" />
           </p>
         </template>
         <i class="el-erp-FileManagerEdit" style="font-size: 20px; color: #5fbdfc; cursor: pointer" />
@@ -29,7 +29,7 @@ export default {
   mounted() {
     window.addEventListener('elEditorAction', this.getEditorOptions)
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener('elEditorAction', this.getEditorOptions)
   },
   methods: {
@@ -55,7 +55,7 @@ export default {
       }
     },
     onNameClick(item) {
-      const dialog = $jq(item[0]).parents('.elfinder-dialog')
+      const dialog = $(item[0]).parents('.elfinder-dialog')
       if (dialog.is(':visible')) {
         dialog.trigger('mousedown')
       } else {
@@ -63,13 +63,13 @@ export default {
       }
     },
     onCloseEditor(item) {
-      $jq(item[0]).parents('.elfinder-dialog').find('.ui-dialog-titlebar-close').trigger('mousedown')
+      $(item[0]).parents('.elfinder-dialog').find('.ui-dialog-titlebar-close').trigger('mousedown')
     },
   },
 }
 </script>
 <style scoped>
-.file-editor >>> .ant-popover-inner-content {
+.file-editor :deep() .ant-popover-inner-content {
   padding: 0;
 }
 .file-editor-item {

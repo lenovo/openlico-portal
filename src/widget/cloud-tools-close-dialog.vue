@@ -5,15 +5,14 @@
     size="500px"
     :form-model="jobForm"
     :success-message-formatter="successMessageFormatter"
-    :error-message-formatter="errorMessageFormatter"
     type="confirm">
     <div>{{ jobActionConfirm }}</div>
   </composite-form-dialog>
 </template>
 
 <script>
-import CompositeFormDialog from '../component/composite-form-dialog'
-import JobService from '../service/job'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import JobService from '@/service/job'
 
 export default {
   components: {
@@ -40,14 +39,10 @@ export default {
     },
     successMessageFormatter(res) {
       if (this.jobActionType === 'cancel') {
-        return this.$t('CloudTools.Close.Success', {
+        return this.$T('CloudTools.Close.Success', {
           name: this.jobName,
         })
       }
-    },
-    errorMessageFormatter(res) {
-      const errMsg = res
-      return this.$t(errMsg)
     },
     doClose(cloudClose) {
       this.jobActionType = 'cancel'
@@ -56,7 +51,7 @@ export default {
       this.jobName = cloudClose.name
       this.jobForm.name = cloudClose.name
       this.jobForm.id = cloudClose.id
-      this.title = this.$t('CloudTools.Close.Title', {
+      this.title = this.$T('CloudTools.Close.Title', {
         name: cloudClose.name,
       })
       return this.$refs.innerDialog.popup(this.submitForm)

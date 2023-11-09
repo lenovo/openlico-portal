@@ -1,7 +1,7 @@
 <template>
   <div class="training-steps-editor">
     <a-input-group compact>
-      <a-input v-model.number="setting.maxEpochs" style="width: 300px" @change="onValueChanged" />
+      <a-input v-model:value="setting.maxEpochs" style="width: 300px" @change="onValueChanged" />
       <a-button @click="onSettingClick">
         {{ $t('JobTemplate.TrainingSteps.Setting') }}
       </a-button>
@@ -10,12 +10,12 @@
   </div>
 </template>
 <script>
-import TrainingStepsDialog from './training-steps-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import TrainingStepsDialog from './training-steps-dialog.vue'
 
 export default {
   components: {
-    'training-steps-dialog': TrainingStepsDialog,
+    TrainingStepsDialog,
   },
   props: {
     value: {
@@ -29,6 +29,7 @@ export default {
       },
     },
   },
+  emits: ['input', 'change', 'update:value'],
   data() {
     return {
       // maxEpochs: String(this.value.maxEpochs),
@@ -63,6 +64,7 @@ export default {
       }
       this.$emit('input', trainingSteps)
       this.$emit('change', trainingSteps)
+      this.$emit('update:value', trainingSteps)
     },
   },
   getValidRules(paramName) {

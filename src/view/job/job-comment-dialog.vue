@@ -1,29 +1,29 @@
 <template>
   <composite-form-dialog
     ref="innerDialog"
-    :title="$t('Job.Comment')"
     size="500px"
+    :title="$t('Job.Comment')"
     :form-model="commentForm"
     :form-rules="commentRules"
     :success-message-formatter="successMessageFormatter"
     :error-message-formatter="errorMessageFormatter">
-    <a-form-model-item prop="comment">
+    <a-form-item name="comment">
       <a-textarea
-        v-model="commentForm.comment"
+        v-model:value="commentForm.comment"
         :auto-size="{ minRows: 6, maxRows: 10 }"
         :placeholder="$t('JobManager.Comment.Placeholder')"
         style="resize: none" />
-    </a-form-model-item>
+    </a-form-item>
   </composite-form-dialog>
 </template>
 <script>
-import JobService from '../../service/job'
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import JobService from '@/service/job'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
-    'composite-form-dialog': CompositeFormDialog,
+    CompositeFormDialog,
   },
   data() {
     return {

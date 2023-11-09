@@ -5,8 +5,8 @@
       :key="getOptimizerDisplayName(optimizer.type) + index"
       :closable="multi"
       :close-transition="true"
-      @close="onOptimizerRemove(optimizer)"
-      @click.native="onOptimizerSetting(optimizer)">
+      @close.prevent="onOptimizerRemove(optimizer)"
+      @click="onOptimizerSetting(optimizer)">
       {{ getOptimizerDisplayName(optimizer.type) }}
     </a-tag>
     <a-button v-show="multi" class="new-optimizer-button" size="small" @click="onCreateClick"> + </a-button>
@@ -14,15 +14,16 @@
   </div>
 </template>
 <script>
-import OptimizerDialog from './optimizer-dialog'
+import Utils from '@/common/utils'
 import OptimizerDefine from './optimizer-define'
-import Utils from './../../common/utils'
+import OptimizerDialog from './optimizer-dialog.vue'
 
 export default {
   components: {
-    'optimizer-dialog': OptimizerDialog,
+    OptimizerDialog,
   },
   props: ['value', 'multi'],
+  emits: ['input', 'update:value'],
   data() {
     return {
       optimizers: this.multi ? this.value : [this.value],
@@ -33,8 +34,10 @@ export default {
       handler(val, oldVal) {
         if (this.multi) {
           this.$emit('input', this.optimizers)
+          this.$emit('update:value', this.optimizers)
         } else {
           this.$emit('input', this.optimizers[0])
+          this.$emit('update:value', this.optimizers[0])
         }
       },
     },

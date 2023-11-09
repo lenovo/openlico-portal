@@ -1,12 +1,13 @@
 <template>
-  <div class="dev-tools-setting-dialog">
+  <div ref="setclodtools" class="setdl">
     <a-modal
       :title="title"
-      :visible="visible"
+      :open="visible"
       width="700px"
       :confirm-loading="confirmLoading"
       :ok-text="okText"
       :footer="!footerNull ? null : undefined"
+      :get-container="() => $refs.setclodtools"
       @ok="handleOk"
       @cancel="handleCancel">
       <a-spin :spinning="setLoading">
@@ -14,35 +15,27 @@
           ref="runningParamsEditor"
           form-id="Cloudtools_Task_Running_Form"
           :params="runningParams"
-          :context="paramValues"
-          class="dialogStyle" />
+          :context="paramValues" />
       </a-spin>
     </a-modal>
-    <a-modal
-      :title="title"
-      :visible="visibleRun"
-      wrap-class-name="confirmDialogTitle"
-      @ok="handleOkRun"
-      @cancel="handleCancelRun">
+    <a-modal :title="title" :open="visibleRun" @ok="handleOkRun" @cancel="handleCancelRun">
       <p style="height: 24px; line-height: 24px">
-        <a-icon
-          style="display: inline-block; margin-right: 10px; font-size: 24px"
-          type="exclamation-circle"
-          theme="twoTone" />
+        <ExclamationCircleOutlined style="color: #1890ff; display: inline-block; margin-right: 10px; font-size: 24px" />
         {{ ModalText }}
       </p>
     </a-modal>
   </div>
 </template>
 <script>
-import CloudToolsService from '../../service/cloud-tools'
-import JobTemplate from '../../service/job-template'
-import JobParametersEditor from '../../widget/job-parameters-editor'
+import CloudToolsService from '@/service/cloud-tools'
+import JobTemplate from '@/service/job-template'
+import JobParametersEditor from '@/widget/job-parameters-editor.vue'
 
 export default {
   components: {
     'job-parameters-editor': JobParametersEditor,
   },
+  emits: ['setSonCloudGetProjectsInfo', 'editSonCloudGetProjectsInfo'],
   data() {
     return {
       runningParams: [],
@@ -133,7 +126,7 @@ export default {
       CloudToolsService.putSetting(this.workspaceInfo.settings.id, tempSettingData).then(
         res => {
           this.$message.success(
-            this.$t('CloudTools.Job.Edit.Success', {
+            this.$T('CloudTools.Job.Edit.Success', {
               name: this.title,
             }),
           )
@@ -152,7 +145,7 @@ export default {
       this.footerNull = null
       this.workspaceInfo = res
       this.visible = true
-      this.title = this.$t('CloudTools.Settings.Title', {
+      this.title = this.$T('CloudTools.Settings.Title', {
         name: res.name,
       })
       this.runningParams = []
@@ -194,39 +187,51 @@ export default {
   },
 }
 </script>
-<style>
-.dialogStyle .job-parameters-editor-form.ant-form {
-  padding-left: 0;
+<style scoped>
+.setdl :deep(.job-parameters-editor-form) {
+  padding-left: 0px;
 }
-.dialogStyle .job-parameters-editor-form.ant-form .ant-input {
+.setdl :deep(.queue-selector) {
   width: 100% !important;
 }
-.dialogStyle .job-parameters-editor-form.ant-form .ant-input-password {
-  width: 100% !important;
-}
-.dialogStyle .file-select-container {
-  width: 100% !important;
-}
-.dialogStyle .job-parameters-editor-form .image-select-content {
-  display: flex;
-  width: 100%;
-}
-.dialogStyle .job-parameters-editor-form .load-module-editor {
-  width: 100% !important;
-  position: relative;
-  clear: both;
-}
-.dialogStyle .job-parameters-editor-form .ant-input-group {
-  display: flex;
-}
-.dialogStyle .job-parameters-editor-form .ant-select {
-  width: 100% !important;
-  flex: 1;
-}
-.dialogStyle .container {
+.setdl :deep(.container) {
   display: block !important;
 }
-.dialogStyle .m-l-10 {
-  margin-left: 0px !important;
+.setdl :deep(.maxresourse) {
+  margin-top: 5px;
+}
+.setdl :deep(.ant-form-item .ant-form-item-control-input) {
+  display: block;
+  width: 100% !important;
+}
+.setdl :deep(.ant-form .ant-input) {
+  width: 100% !important;
+}
+.setdl :deep(.jobtempalte-mig-select) {
+  width: 100% !important;
+}
+.setdl :deep(.ant-select-show-search) {
+  width: 83% !important;
+}
+.setdl :deep(.ant-input-password) {
+  width: 100% !important;
+}
+.setdl :deep(.load-module-editor) {
+  width: 100% !important;
+}
+.setdl :deep(.file-select-container) {
+  width: 100% !important;
+}
+.setdl :deep(.image-selection) {
+  display: block;
+}
+.setdl :deep(.ant-input-group-compact) {
+  width: 100% !important;
+}
+.setdl :deep(.image-version-tag) {
+  margin-top: 5px;
+}
+.setdl :deep(.ant-input-group.ant-input-group-compact) {
+  display: flex;
 }
 </style>

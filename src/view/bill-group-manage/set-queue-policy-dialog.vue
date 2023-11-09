@@ -7,64 +7,54 @@
     :form-rules="queuePolicyFormRules"
     :form-label-width="8"
     :success-message-formatter="successMessageFormatter"
-    :error-message-formatter="errorMessageFormatter"
-    class="set-queue-policy-dialog">
-    <a-form-model-item ref="queuesFormItem" :label="$t('BillGroup.Queues')" prop="queueList">
+    :error-message-formatter="errorMessageFormatter">
+    <a-form-item ref="queuesFormItem" :label="$t('BillGroup.Queues')" name="queueList">
       <multi-tags-input
-        id=""
         ref="queuesInput"
-        v-model="queuePolicyForm.queueList"
+        v-model:value="queuePolicyForm.queueList"
         :new-tag-button-text="$t('BillGroup.Policy.FormItemTags.Add')"
         :valid-roles="queueRules"
-        :disabled="mode == 'delete'"
-        @tag-change="tagChange" />
-    </a-form-model-item>
-    <a-form-model-item
-      ref="chargeRateFormItem"
-      class="bill-rate-input-item"
-      :label="$t('BillGroup.CpuChargeRate')"
-      prop="chargeRate">
+        :disabled="mode == 'delete'" />
+    </a-form-item>
+    <a-form-item class="bill-rate-input-item" :label="$t('BillGroup.CpuChargeRate')" name="chargeRate">
       <bill-rate-minute-hour-input
-        v-model="innerCpuChargeRate"
+        v-model:value="queuePolicyForm.chargeRate"
+        v-model:timeType="queuePolicyForm.cpuChargeRateTimeType"
         :currency="currency"
         :unit="$t('BillGroup.CpuChargeRate.Unit')"
         :disabled="mode == 'delete'" />
-    </a-form-model-item>
-    <a-form-model-item
-      ref="memoryChargeRateFormItem"
-      class="bill-rate-input-item"
-      :label="$t('BillGroup.MemoryChargeRate')"
-      prop="memoryChargeRate">
+    </a-form-item>
+    <a-form-item class="bill-rate-input-item" :label="$t('BillGroup.MemoryChargeRate')" name="memoryChargeRate">
       <bill-rate-minute-hour-input
-        v-model="innerMemoryChargeRate"
+        v-model:value="queuePolicyForm.memoryChargeRate"
+        v-model:timeType="queuePolicyForm.memoryChargeRateTimeType"
         :currency="currency"
         :unit="$t('BillGroup.MemoryChargeRate.Unit')"
         :disabled="mode == 'delete'" />
-    </a-form-model-item>
-    <a-form-model-item
-      v-for="(item, index) in queuePolicyForm.gResourceChargeRate"
-      :ref="'gResourceChargeRate' + index"
-      :key="item.id"
-      class="bill-rate-input-item"
-      :label="$t('BillGroup.GresChargeRate', { value: item.label })"
-      :prop="'gResourceChargeRate.' + index + '.value'"
-      :rules="item.rules">
-      <bill-rate-minute-hour-input
-        v-model="innerGresRate[index]"
-        :currency="currency"
-        :unit="item.unit"
-        :disabled="mode == 'delete'" />
-    </a-form-model-item>
+    </a-form-item>
+    <div v-for="(item, index) in queuePolicyForm.gResourceChargeRate" :key="item.id">
+      <a-form-item
+        class="bill-rate-input-item"
+        :label="$T('BillGroup.GresChargeRate', { value: item.label })"
+        :name="['gResourceChargeRate', index, 'value']"
+        :rules="item.rules">
+        <bill-rate-minute-hour-input
+          v-model:value="item.value"
+          v-model:timeType="queuePolicyForm.gResourceChargeRateTimeType[index]"
+          :currency="currency"
+          :unit="item.unit"
+          :disabled="mode == 'delete'" />
+      </a-form-item>
+    </div>
   </composite-form-dialog>
 </template>
 <script>
-import BillGroupService from '../../service/bill-group'
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import MultiTagsInput from '../../component/multi-tags-input'
-import BillingRateInput from './billing-rate-input'
-import ValidRoleFactory from '../../common/valid-role-factory'
-import Format from '../../common/format'
-
+import BillGroupService from '@/service/bill-group'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import MultiTagsInput from '@/component/multi-tags-input.vue'
+import BillingRateInput from './billing-rate-input.vue'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import Format from '@/common/format'
 export default {
   components: {
     'composite-form-dialog': CompositeFormDialog,
@@ -73,15 +63,6 @@ export default {
   },
   data() {
     return {
-      innerCpuChargeRate: {
-        value: '1.00',
-        timeUnit: 'hour',
-      },
-      innerMemoryChargeRate: {
-        value: '1.00',
-        timeUnit: 'hour',
-      },
-      innerGresRate: [],
       currency: this.$store.getters['settings/getCurrency'],
       title: '',
       mode: '',
@@ -97,8 +78,8 @@ export default {
         gResourceChargeRateTimeType: [],
       },
       queueRules: [
-        ValidRoleFactory.getLengthRoleForText(this.$t('BillGroup.Queues'), 1, 20),
         ValidRoleFactory.getValidQueueNameRoleForText(this.$t('BillGroup.Queues')),
+        ValidRoleFactory.getLengthRoleForText(this.$t('BillGroup.Queues'), 1, 20),
       ],
       queuePolicyFormRules: {
         chargeRate: [
@@ -114,82 +95,45 @@ export default {
           ValidRoleFactory.getNumberDecimalRoleForText(this.$t('BillGroup.MemoryChargeRate'), 4),
         ],
         queueList: [
-          ValidRoleFactory.getRequireRoleForText(this.$t('BillGroup.Queues')),
+          ValidRoleFactory.getRequireRoleForArray(this.$t('BillGroup.Queues')),
           ValidRoleFactory.getUniqueRoleForArray(this.$t('BillGroup.Queues')),
           ValidRoleFactory.getLengthRoleForArray(this.$t('BillGroup.Queues'), 0, 200),
         ],
       },
     }
   },
-  watch: {
-    innerCpuChargeRate: {
-      handler: function (val, oldVal) {
-        this.queuePolicyForm.chargeRate = val.value
-        this.queuePolicyForm.cpuChargeRateTimeType = val.timeUnit
-        this.$nextTick(() => {
-          this.$refs.chargeRateFormItem.validate()
-        })
-      },
-      deep: true,
-    },
-    innerMemoryChargeRate: {
-      handler: function (val, oldVal) {
-        this.queuePolicyForm.memoryChargeRate = val.value
-        this.queuePolicyForm.memoryChargeRateTimeType = val.timeUnit
-        this.$nextTick(() => {
-          this.$refs.memoryChargeRateFormItem.validate()
-        })
-      },
-      deep: true,
-    },
-    innerGresRate: {
-      handler: function (val, oldVal) {
-        val.forEach((el, index) => {
-          this.queuePolicyForm.gResourceChargeRate[index].value = el.value
-          this.queuePolicyForm.gResourceChargeRateTimeType[index] = el.timeUnit
-          this.$nextTick(() => {
-            if (this.$refs['gResourceChargeRate' + index] && this.$refs['gResourceChargeRate' + index][0]) {
-              this.$refs['gResourceChargeRate' + index][0].validate()
-            }
-          })
-        })
-      },
-      deep: true,
-    },
-  },
   mounted() {
     this.initGResource()
   },
   methods: {
-    initGResource() {
-      this.innerGresRate = []
+    initGResource(rate) {
       this.gresource.forEach(el => {
         this.queuePolicyForm.gResourceChargeRate.push({
-          value: '1.00',
+          value: rate ? String(rate[el.code]) : '1.00',
           code: el.code,
           label: el.display_name,
           unit: el.unit,
           id: el.id,
           rules: [
             ValidRoleFactory.getRequireRoleForText(
-              this.$t('BillGroup.GresChargeRate', {
+              this.$T('BillGroup.GresChargeRate', {
                 value: el.code.toUpperCase(),
               }),
             ),
             ValidRoleFactory.getValidNumberRoleForText(
-              this.$t('BillGroup.GresChargeRate', {
+              this.$T('BillGroup.GresChargeRate', {
                 value: el.code.toUpperCase(),
               }),
             ),
             ValidRoleFactory.getNumberRangeRoleForText(
-              this.$t('BillGroup.GresChargeRate', {
+              this.$T('BillGroup.GresChargeRate', {
                 value: el.code.toUpperCase(),
               }),
               0,
               999999.9999,
             ),
             ValidRoleFactory.getNumberDecimalRoleForText(
-              this.$t('BillGroup.GresChargeRate', {
+              this.$T('BillGroup.GresChargeRate', {
                 value: el.code.toUpperCase(),
               }),
               4,
@@ -197,10 +141,6 @@ export default {
           ],
         })
         this.queuePolicyForm.gResourceChargeRateTimeType.push('hour')
-        this.innerGresRate.push({
-          value: '0.0000',
-          timeUnit: 'hour',
-        })
       })
     },
     submitForm() {
@@ -271,62 +211,35 @@ export default {
     doCreate(billGroup) {
       this.mode = 'create'
       this.billGroupId = 0
-      this.innerCpuChargeRate = {
-        value: '1.00',
-        timeUnit: 'hour',
-      }
-      this.innerMemoryChargeRate = {
-        value: '1.00',
-        timeUnit: 'hour',
-      }
       this.queuePolicyForm = {
-        chargeRate: '',
-        cpuChargeRateTimeType: '',
-        memoryChargeRate: '',
-        memoryChargeRateTimeType: '',
+        chargeRate: billGroup.chargeRate,
+        cpuChargeRateTimeType: billGroup.cpuChargeRateTimeType,
+        memoryChargeRate: billGroup.memoryChargeRate,
+        memoryChargeRateTimeType: billGroup.memoryChargeRateDisplayType,
         queuePolicyId: billGroup.id,
         queueList: [],
         gResourceChargeRate: [],
         gResourceChargeRateTimeType: [],
       }
-      this.initGResource()
-      this.innerCpuChargeRate = {
-        value:
-          billGroup.chargeRateDisplayType === 'minute'
-            ? Format.formatBillingRate(billGroup.chargeRateMinute, false)
-            : Format.formatBillingRate(billGroup.chargeRate, false),
-        timeUnit: billGroup.chargeRateDisplayType,
-      }
-      this.innerMemoryChargeRate = {
-        value:
+      this.initGResource(billGroup.gresChargeRate)
+      ;(this.queuePolicyForm.chargeRate =
+        billGroup.chargeRateDisplayType === 'minute'
+          ? Format.formatBillingRate(billGroup.chargeRateMinute, false)
+          : Format.formatBillingRate(billGroup.chargeRate, false)),
+        (this.queuePolicyForm.cpuChargeRateTimeType = billGroup.chargeRateDisplayType),
+        (this.queuePolicyForm.memoryChargeRate =
           billGroup.memoryChargeRateDisplayType === 'minute'
             ? Format.formatBillingRate(billGroup.memoryChargeRateMinute, false)
-            : Format.formatBillingRate(billGroup.memoryChargeRate, false),
-        timeUnit: billGroup.memoryChargeRateDisplayType,
-      }
-      this.innerGresRate = this.innerGresRate.map((el, index) => {
-        const element = this.queuePolicyForm.gResourceChargeRate[index].code
-        if (billGroup.gresChargeRateDisplayType[element] === 'minute') {
-          el.value = billGroup.gresChargeRateMinute[element]
-            ? Format.formatBillingRate(billGroup.gresChargeRateMinute[element])
-            : '0.00'
-        } else {
-          el.value = billGroup.gresChargeRate[element]
-            ? Format.formatBillingRate(billGroup.gresChargeRate[element])
-            : '0.00'
-        }
-        el.timeUnit = billGroup.gresChargeRateDisplayType[element]
-          ? billGroup.gresChargeRateDisplayType[element]
-          : 'hour'
-        return el
-      })
-      this.$nextTick(() => {
-        this.$refs.queuesInput.cleanInput()
-      })
+            : Format.formatBillingRate(billGroup.memoryChargeRate, false)),
+        (this.queuePolicyForm.memoryChargeRateTimeType = billGroup.memoryChargeRateDisplayType),
+        this.$nextTick(() => {
+          this.$refs.queuesInput.cleanInput()
+        })
       this.title = this.$t('BillGroup.Queue.Create.Title')
       return this.$refs.innerDialog.popup(this.submitForm)
     },
     doEdit(billGroup, policy) {
+      console.log(billGroup)
       this.mode = 'edit'
       this.billGroupId = billGroup.id
       this.queuePolicyForm = {
@@ -339,37 +252,21 @@ export default {
         gResourceChargeRate: [],
         gResourceChargeRateTimeType: [],
       }
-      this.initGResource()
-      this.innerCpuChargeRate = {
-        value:
-          policy.chargeRateDisplayType === 'minute'
-            ? Format.formatBillingRate(policy.chargeRateMinute, false)
-            : Format.formatBillingRate(policy.chargeRate, false),
-        timeUnit: policy.chargeRateDisplayType,
-      }
-      this.innerMemoryChargeRate = {
-        value:
+      this.initGResource(policy.gresChargeRate)
+      ;(this.queuePolicyForm.chargeRate =
+        policy.chargeRateDisplayType === 'minute'
+          ? Format.formatBillingRate(policy.chargeRateMinute, false)
+          : Format.formatBillingRate(policy.chargeRate, false)),
+        (this.queuePolicyForm.cpuChargeRateTimeType = policy.chargeRateDisplayType),
+        (this.queuePolicyForm.memoryChargeRate =
           policy.memoryChargeRateDisplayType === 'minute'
             ? Format.formatBillingRate(policy.memoryChargeRateMinute, false)
-            : Format.formatBillingRate(policy.memoryChargeRate, false),
-        timeUnit: policy.memoryChargeRateDisplayType,
-      }
-      this.innerGresRate = this.innerGresRate.map((el, index) => {
-        const element = this.queuePolicyForm.gResourceChargeRate[index].code
-        if (policy.gresChargeRateDisplayType[element] === 'minute') {
-          el.value = policy.gresChargeRateMinute[element]
-            ? Format.formatBillingRate(policy.gresChargeRateMinute[element])
-            : '0.00'
-        } else {
-          el.value = policy.gresChargeRate[element] ? Format.formatBillingRate(policy.gresChargeRate[element]) : '0.00'
-        }
-        el.timeUnit = policy.gresChargeRateDisplayType[element] ? policy.gresChargeRateDisplayType[element] : 'hour'
-        return el
-      })
-      this.$nextTick(() => {
-        this.$refs.queuesInput.cleanInput()
-      })
-      this.title = this.$t('BillGroup.Queue.Edit.Title', {
+            : Format.formatBillingRate(policy.memoryChargeRate, false)),
+        (this.queuePolicyForm.memoryChargeRateTimeType = policy.memoryChargeRateDisplayType),
+        this.$nextTick(() => {
+          this.$refs.queuesInput.cleanInput()
+        })
+      this.title = this.$T('BillGroup.Queue.Edit.Title', {
         id: billGroup.id,
       })
       return this.$refs.innerDialog.popup(this.submitForm)
@@ -387,43 +284,24 @@ export default {
         gResourceChargeRate: [],
         gResourceChargeRateTimeType: [],
       }
-      this.initGResource()
-      this.innerCpuChargeRate = {
-        value:
-          policy.chargeRateDisplayType === 'minute'
-            ? Format.formatBillingRate(policy.chargeRateMinute, false)
-            : Format.formatBillingRate(policy.chargeRate, false),
-        timeUnit: policy.chargeRateDisplayType,
-      }
-      this.innerMemoryChargeRate = {
-        value:
+      this.initGResource(policy.gresChargeRate)
+      ;(this.queuePolicyForm.chargeRate =
+        policy.chargeRateDisplayType === 'minute'
+          ? Format.formatBillingRate(policy.chargeRateMinute, false)
+          : Format.formatBillingRate(policy.chargeRate, false)),
+        (this.queuePolicyForm.cpuChargeRateTimeType = policy.chargeRateDisplayType),
+        (this.queuePolicyForm.memoryChargeRate =
           policy.memoryChargeRateDisplayType === 'minute'
             ? Format.formatBillingRate(policy.memoryChargeRateMinute, false)
-            : Format.formatBillingRate(policy.memoryChargeRate, false),
-        timeUnit: policy.memoryChargeRateDisplayType,
-      }
-      this.innerGresRate = this.innerGresRate.map((el, index) => {
-        const element = this.queuePolicyForm.gResourceChargeRate[index].code
-        if (policy.gresChargeRateDisplayType[element] === 'minute') {
-          el.value = policy.gresChargeRateMinute[element]
-            ? Format.formatBillingRate(policy.gresChargeRateMinute[element])
-            : '0.00'
-        } else {
-          el.value = policy.gresChargeRate[element] ? Format.formatBillingRate(policy.gresChargeRate[element]) : '0.00'
-        }
-        el.timeUnit = policy.gresChargeRateDisplayType[element] ? policy.gresChargeRateDisplayType[element] : 'hour'
-        return el
-      })
-      this.$nextTick(() => {
-        this.$refs.queuesInput.cleanInput()
-      })
-      this.title = this.$t('BillGroup.Queue.Delete.Title', {
+            : Format.formatBillingRate(policy.memoryChargeRate, false)),
+        (this.queuePolicyForm.memoryChargeRateTimeType = policy.memoryChargeRateDisplayType),
+        this.$nextTick(() => {
+          this.$refs.queuesInput.cleanInput()
+        })
+      this.title = this.$T('BillGroup.Queue.Delete.Title', {
         id: policy.id,
       })
       return this.$refs.innerDialog.popup(this.submitForm)
-    },
-    tagChange() {
-      this.$refs.queuesFormItem.validate()
     },
   },
 }

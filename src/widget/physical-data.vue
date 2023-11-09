@@ -1,20 +1,20 @@
 <template>
-  <div>
-    <a-table
-      row-key="hostname"
-      :columns="columns"
-      :data-source="data"
-      :pagination="data.length > 14"
-      @change="handleTableChange">
-      <template slot="status" slot-scope="status">
-        <node-power-status-label :power-status="status" />
+  <a-table
+    row-key="hostname"
+    :columns="columns"
+    :data-source="data"
+    :pagination="data.length > 14"
+    @change="handleTableChange">
+    <template #bodyCell="{ column, record }">
+      <template v-if="column.key === 'status'">
+        <node-power-status-label :power-status="record.status" />
       </template>
-    </a-table>
-  </div>
+    </template>
+  </a-table>
 </template>
 <script>
-import NodePowerStatusLabel from '../widget/node-power-status-label'
-import Format from '../common/format'
+import NodePowerStatusLabel from '@/widget/nodes-table/node-power-status-label.vue'
+import Format from '@/common/format'
 
 export default {
   components: {
@@ -80,7 +80,8 @@ export default {
               return valA - valB
             },
             sortOrder: sortedInfo.columnKey === n && sortedInfo.order,
-            customRender: val => `${Format.formatNumber(val[i] + val[i + 2], 2)}${this.dataMap[this.mode + '_unit']}`,
+            customRender: ({ text }) =>
+              `${Format.formatNumber(text[i] + text[i + 2], 2)}${this.dataMap[this.mode + '_unit']}`,
           })
         })
       } else if (this.mode === 'common') {
@@ -91,7 +92,6 @@ export default {
           key: 'status',
           sorter: (a, b) => a.status.localeCompare(b.status),
           sortOrder: sortedInfo.columnKey === 'status' && sortedInfo.order,
-          scopedSlots: { customRender: 'status' },
         })
       } else {
         columns.push({
@@ -101,7 +101,8 @@ export default {
           key: this.dataMap[this.mode],
           sorter: (a, b) => a[this.dataMap[this.mode]] - b[this.dataMap[this.mode]],
           sortOrder: sortedInfo.columnKey === this.dataMap[this.mode] && sortedInfo.order,
-          customRender: val => (val === null || val === 'NaN' ? '-' : `${val}${this.dataMap[this.mode + '_unit']}`),
+          customRender: ({ text }) =>
+            text === null || text === 'NaN' ? '-' : `${text}${this.dataMap[this.mode + '_unit']}`,
         })
       }
       return columns

@@ -60,43 +60,11 @@ class ServiceStatus {
 
   static parseFromRestApi(jsonObj) {
     const serviceStatus = new ServiceStatus()
-    serviceStatus._shedulerStatus = jsonObj.scheduler_status.status
-    serviceStatus._shedulerMessage = jsonObj.scheduler_status.msg
-    serviceStatus._fileSystemStatus = jsonObj.shared_storage_status.status
-    serviceStatus._fileSystemMessage = jsonObj.shared_storage_status.msg
+    serviceStatus.shedulerStatus = jsonObj.scheduler_status.status
+    serviceStatus.shedulerMessage = jsonObj.scheduler_status.msg
+    serviceStatus.fileSystemStatus = jsonObj.shared_storage_status.status
+    serviceStatus.fileSystemMessage = jsonObj.shared_storage_status.msg
     return serviceStatus
-  }
-
-  get _shedulerStatus() {
-    return this.shedulerStatus
-  }
-
-  set _shedulerStatus(shedulerStatus) {
-    return (this.shedulerStatus = shedulerStatus)
-  }
-
-  get _fileSystemStatus() {
-    return this.fileSystemStatus
-  }
-
-  set _fileSystemStatus(fileSystemStatus) {
-    return (this.fileSystemStatus = fileSystemStatus)
-  }
-
-  get _shedulerMessage() {
-    return this.shedulerMessage
-  }
-
-  set _shedulerMessage(shedulerMessage) {
-    return (this.shedulerMessage = shedulerMessage)
-  }
-
-  get _fileSystemMessage() {
-    return this.fileSystemMessage
-  }
-
-  set _fileSystemMessage(fileSystemMessage) {
-    return (this.fileSystemMessage = fileSystemMessage)
   }
 }
 
@@ -108,35 +76,19 @@ class TimeSeriesItem {
 
   static parseFromRestApi(jsonObj, category) {
     const item = new TimeSeriesItem()
-    item._time = new Date(jsonObj.time * 1000)
+    item.time = new Date(jsonObj.time * 1000)
     if (typeof jsonObj.value === 'string') {
       const valStrs = jsonObj.value.split(',')
       valStrs.forEach(valStr => {
-        item._values.push(Format.formatNumber(Number(valStr), DataDigitMap[category]))
+        item.values.push(Format.formatNumber(Number(valStr), DataDigitMap[category]))
       })
     } else if (typeof jsonObj.value === 'number') {
-      item._values.push(Format.formatNumber(jsonObj.value, DataDigitMap[category]))
+      item.values.push(Format.formatNumber(jsonObj.value, DataDigitMap[category]))
     } else {
-      item._values.push('-')
+      item.values.push('-')
       // console.log('Invalid value type');
     }
     return item
-  }
-
-  get _time() {
-    return this.time
-  }
-
-  set _time(time) {
-    return (this.time = time)
-  }
-
-  get _values() {
-    return this.values
-  }
-
-  set _values(values) {
-    return (this.values = values)
   }
 }
 
@@ -145,53 +97,31 @@ class Heat {
     this.id = 0
     this.hostname = ''
     this.value = 0
+    this.gpuIndex = 0
   }
 
   static parseFromRestApi(obj, category) {
     const heat = new Heat()
-    heat._id = obj.id
-    heat._hostname = obj.hostname
-    heat._value = []
+    heat.id = obj.id
+    heat.hostname = obj.hostname
+    heat.value = []
+    heat.gpuIndex = obj.gpu_index
     if (typeof obj.value === 'string') {
       const valStrs = obj.value.split(',')
       valStrs.forEach(valStr => {
         if (isNaN(valStr) || valStr === '') {
           // filter none and ""
-          heat._value.push('-')
+          heat.value.push('-')
         } else {
-          heat._value.push(Format.formatNumber(Number(valStr), DataDigitMap[category]))
+          heat.value.push(Format.formatNumber(Number(valStr), DataDigitMap[category]))
         }
       })
     } else if (typeof obj.value === 'number') {
-      heat._value.push(Format.formatNumber(obj.value, DataDigitMap[category]))
+      heat.value.push(Format.formatNumber(obj.value, DataDigitMap[category]))
     } else {
-      heat._value.push('-')
+      heat.value.push('-')
     }
     return heat
-  }
-
-  get _id() {
-    return this.id
-  }
-
-  set _id(id) {
-    return (this.id = id)
-  }
-
-  get _hostname() {
-    return this.hostname
-  }
-
-  set _hostname(hostname) {
-    return (this.hostname = hostname)
-  }
-
-  get _value() {
-    return this.value
-  }
-
-  set _value(value) {
-    return (this.value = value)
   }
 }
 
@@ -200,14 +130,13 @@ class NodeGpuHeat {
     this.hostname = ''
     this.values = []
     this.used = []
+    this.gpuIndex = []
     this.types = []
     this.vendors = []
     this.devList = []
   }
 
   static parseFromRestApi(jsonObj) {
-    const heat = new NodeGpuHeat()
-    heat.hostname = jsonObj.hostname
     const values = []
     const used = []
     const gpuIndex = []
@@ -232,78 +161,16 @@ class NodeGpuHeat {
         )
       }
     }
-    heat._values = values
-    heat._used = used
-    heat._gpuIndex = gpuIndex
-    heat._types = types
-    heat._vonders = vendors
-    heat._devList = devList
+    const heat = new NodeGpuHeat()
+    heat.hostname = jsonObj.hostname
+    heat.values = values
+    heat.used = used
+    heat.gpuIndex = gpuIndex
+    heat.types = types
+    heat.vendors = vendors
+    heat.devList = devList
 
     return heat
-  }
-
-  get _id() {
-    return this.id
-  }
-
-  set _id(id) {
-    return (this.id = id)
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    return (this.name = name)
-  }
-
-  get _values() {
-    return this.values
-  }
-
-  set _values(values) {
-    return (this.values = values)
-  }
-
-  get _used() {
-    return this.used
-  }
-
-  set _used(used) {
-    return (this.used = used)
-  }
-
-  get _gpuIndex() {
-    return this.gpuIndex
-  }
-
-  set _gpuIndex(gpuIndex) {
-    return (this.gpuIndex = gpuIndex)
-  }
-
-  get _types() {
-    return this.types
-  }
-
-  set _types(types) {
-    return (this.types = types)
-  }
-
-  get _vonders() {
-    return this.vendors
-  }
-
-  set _vonders(vendors) {
-    return (this.vendors = vendors)
-  }
-
-  get _devList() {
-    return this.devList
-  }
-
-  set _devList(devList) {
-    return (this.devList = devList)
   }
 }
 class NodeCpuHeat {
@@ -314,25 +181,9 @@ class NodeCpuHeat {
 
   static parseFromRestApi(jsonObj) {
     const heat = new NodeCpuHeat()
-    heat._name = jsonObj.hostname
-    heat._values = jsonObj.value
+    heat.name = jsonObj.hostname
+    heat.values = jsonObj.value
     return heat
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    return (this.name = name)
-  }
-
-  get _values() {
-    return this.values
-  }
-
-  set _values(values) {
-    return (this.values = values)
   }
 }
 
@@ -346,44 +197,12 @@ class NodeHealthDetail {
 
   static parseFromRestApi(jsonObj) {
     const healthDetail = new NodeHealthDetail()
-    healthDetail._id = jsonObj.id
-    healthDetail._name = jsonObj.name
-    healthDetail._health =
+    healthDetail.id = jsonObj.id
+    healthDetail.name = jsonObj.name
+    healthDetail.health =
       jsonObj.health && Constants.NodeHealthState.includes(jsonObj.health) ? jsonObj.health : 'unknown'
-    healthDetail._states = jsonObj.states
+    healthDetail.states = jsonObj.states
     return healthDetail
-  }
-
-  get _id() {
-    return this.id
-  }
-
-  set _id(id) {
-    return (this.id = id)
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    return (this.name = name)
-  }
-
-  get _health() {
-    return this.health
-  }
-
-  set _health(health) {
-    return (this.health = health)
-  }
-
-  get _states() {
-    return this.states
-  }
-
-  set _states(states) {
-    return (this.states = states)
   }
 }
 
@@ -495,6 +314,29 @@ function getGroupHeatData(name, dataCategory) {
         res.body.heat.forEach(item => {
           heats.push(Heat.parseFromRestApi(item, dataCategory))
         })
+        resolve({
+          data: heats,
+        })
+      },
+      res => {
+        reject(res)
+      },
+    )
+  })
+}
+
+function getGroupHeatGpuData(name, dataCategory) {
+  const _url = `/api/monitor/nodegroup/${name}/heat/latest/gpu/${getRestApiCategory(dataCategory)}/`
+  return new Promise((resolve, reject) => {
+    const req = ''
+    Request.get(_url, req).then(
+      res => {
+        const heats = {}
+        for (let index = 0; index < res.data.heat.length; index++) {
+          const heat = Heat.parseFromRestApi(res.data.heat[index], dataCategory)
+          heat.id = index
+          heats[heat.hostname + '_' + heat.gpuIndex] = heat
+        }
         resolve({
           data: heats,
         })
@@ -764,4 +606,5 @@ export default {
   getCpuDataByPod,
   getNodeGpuDataByhostnames,
   execHostsDecode,
+  getGroupHeatGpuData,
 }

@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-
 html,
-body {
-    margin: 0 auto;
-    font-family: Arial, Helvetica, sans-serif;
-    width: 100%;
-    height: 100%;
-    background: #f0f0f0 !important;
-    color: #333;
-    font-size: 14px;
+body,
+#app,
+textarea {
+  margin: 0 auto;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 100% !important;
+  height: 100%;
+  background: #f0f0f0 !important;
+  color: #333;
+  font-size: 14px;
+}
+body[style] {
+  overflow: inherit !important;
+  width: 100% !important;
 }
 ul,
 p,
@@ -32,239 +37,301 @@ h2,
 h3,
 h4,
 h5,
-h6 {
-    margin: 0;
-    padding: 0;
+h6,
+textarea {
+  margin: 0;
+  padding: 0;
 }
 a {
-    text-decoration: none;
+  text-decoration: none;
+}
+textarea {
+  background: #fff !important;
+  font-size: 14px;
+  line-height: 18px;
+  color: #666;
+  padding-left: 5px;
 }
 ul {
-    list-style: none;
+  list-style: none;
 }
 .box {
-    background: #fff;
-    padding: 20px;
-    margin-bottom: 20px;
+  background: #fff;
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
 /*--------- background color #fff ---------*/
 .b-w {
-    background-color: #fff;
+  background-color: #fff;
 }
 /*--------- height 100% ---------*/
 .height--100 {
-    height: 100%;
-    box-sizing: border-box;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 /*---------padding 20---------*/
 .p-20 {
-    padding: 20px;
+  padding: 20px;
 }
 .p-t-20 {
-    padding-top: 20px;
+  padding-top: 20px;
 }
 .p-r-20 {
-    padding-right: 20px;
+  padding-right: 20px;
 }
 .p-b-20 {
-    padding-bottom: 20px;
+  padding-bottom: 20px;
 }
 .p-l-20 {
-    padding-left: 20px;
+  padding-left: 20px;
 }
 /*---------padding 10---------*/
 .p-10 {
-    padding: 10px;
+  padding: 10px;
 }
 .p-t-10 {
-    padding-top: 10px;
+  padding-top: 10px;
 }
 .p-r-10 {
-    padding-right: 10px;
+  padding-right: 10px;
 }
 .p-b-10 {
-    padding-bottom: 10px;
+  padding-bottom: 10px;
 }
 .p-l-10 {
-    padding-left: 10px;
+  padding-left: 10px;
 }
 /*---------margin 10---------*/
 .m-10 {
-    margin: 10px;
+  margin: 10px;
 }
 .m-t-10 {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 .m-r-10 {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 .m-b-10 {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 .m-l-10 {
-    margin-left: 10px;
+  margin-left: 10px;
 }
 /*---------margin 20---------*/
 .m-20 {
-    margin: 20px;
+  margin: 20px;
 }
 .m-t-20 {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 .m-r-20 {
-    margin-right: 20px;
+  margin-right: 20px;
 }
 .m-b-20 {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 .m-l-20 {
-    margin-left: 20px;
+  margin-left: 20px;
 }
 
 .el-button--wrap {
-    white-space: inherit;
+  white-space: inherit;
 }
 
 .lico-auto-loading {
-    animation: loading 2s infinite linear;
+  animation: loading 2s infinite linear;
 }
- @keyframes loading {
-    100% {
-        transform: rotate(360deg);
-    }
- }
+@keyframes loading {
+  100% {
+    transform: rotate(360deg);
+  }
+}
 /*--------- component table ----------*/
 .reportFilter {
-    padding: 20px;
-    font-size: 14px;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
+  padding: 20px;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 .report-alert-bottom {
-    margin-top: 20px;
-    box-sizing: border-box;
+  margin-top: 20px;
+  box-sizing: border-box;
 }
 
 .nodata {
-    height: 500px;
-    text-align: center;
-    padding: 20px;
-    box-sizing: border-box;
-    margin-top: 20px;
+  height: 500px;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+  margin-top: 20px;
 }
 
 /* scroll bar */
 *::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  width: 6px;
+  height: 6px;
 }
 *::-webkit-scrollbar-track {
-    background: #efefef;
-    border-radius: 2px;
+  background: #efefef;
+  border-radius: 2px;
 }
 *::-webkit-scrollbar-thumb {
-    background: #bfbfbf;
-    border-radius: 10px;
+  background: #bfbfbf;
+  border-radius: 10px;
 }
 *::-webkit-scrollbar-thumb:hover {
-    background: #333;
+  background: #333;
 }
 
 .alert-table-note {
-    min-height: 24px;
-    cursor: pointer;
+  min-height: 24px;
+  cursor: pointer;
 }
 /* node gpu */
 .node-gpu-tooltip-chart {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 .node-gpu-tooltip-current-value {
-    font-size: 12px;
-    position: absolute;
-    right: 0;
+  font-size: 12px;
+  position: absolute;
+  right: 0;
 }
 .default-select {
-    min-width: 220px;
+  min-width: 220px;
 }
 
 .turn90 {
-    transform: rotateZ(90deg);
-    transition: 0.5s;
+  transform: rotateZ(90deg);
+  transition: 0.5s;
 }
 .turn-0 {
-    transform: rotateZ(0deg);
-    transition: 0.5s;
+  transform: rotateZ(0deg);
+  transition: 0.5s;
 }
 
 /* Ant Design */
 /* antd-table */
 .ant-table-thead > tr > th {
-    padding: 10px 6px !important;
+  padding: 10px 6px !important;
+  font-weight: 400 !important;
 }
 .ant-table-tbody > tr > td {
-    padding: 8px !important;
+  padding: 8px !important;
 }
+.ant-table-column-sorters {
+  display: unset !important;
+  position: relative;
+}
+.ant-table-column-sorter.ant-table-column-sorter-full {
+  position: absolute;
+  top: 0.5px;
+}
+.ant-table-cell {
+  font-size: 14px;
+}
+
 /* .ant-breadcrumb */
 .ant-breadcrumb a {
-    font-weight: bold;
+  /* font-weight: bold; */
 }
 .ant-breadcrumb > span:last-child a {
-    font-weight: 100;
-    cursor: inherit;
+  font-weight: 100;
+  cursor: inherit;
 }
 
 /* antd-dropdown */
 .ant-select-selection-selected-value {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 /* ant-button */
 .ant-btn:not(.ant-btn-link) {
-    font-size: 12px;
-    padding: 0 10px;
+  font-size: 12px;
+  padding: 0 10px;
 }
 
 .placeholder-img {
-    width: 240px;
+  width: 240px;
 }
 /* Use this css style to fix bug 209870 */
-.ant-collapse-content{
-    overflow: initial;
+.ant-collapse-content {
+  overflow: initial;
 }
 
 .ant-message-notice {
-    word-break: break-all;
+  word-break: break-all;
 }
-.ant-message-notice .ant-message-notice-content{
-    text-align: left;
-    max-width: 80%;
+.ant-message-notice .ant-message-notice-content {
+  text-align: left;
+  max-width: 80%;
+}
+
+.ant-row {
+  width: 100%;
+}
+
+/* antd-modal */
+.ant-modal-content {
+  padding: 0 !important;
+}
+.ant-modal-header {
+  padding: 16px 24px;
+  margin: 0 !important;
+  border-bottom: 1px solid #e8e8e8;
+}
+.ant-modal-body {
+  padding: 24px;
+}
+.ant-modal-footer {
+  padding: 10px 16px;
+  margin: 0 !important;
+  border-top: 1px solid #e8e8e8;
+}
+
+.ant-modal-root .ant-form-item-label {
+  overflow: unset !important;
 }
 
 /* elFinder file editor */
 i.ui-dialog-max-size {
-    color: #333;
-    position: absolute;
-    right: 1.5em;
-    top: 50%;
-    width: 20px;
-    margin: -11px 0 0 0;
-    padding: 2px 3px 0;
-    height: 20px;
-    font-size: 13px;
-    cursor: pointer;
+  color: #333;
+  position: absolute;
+  right: 1.5em;
+  top: 50%;
+  width: 20px;
+  margin: -11px 0 0 0;
+  padding: 2px 3px 0;
+  height: 20px;
+  font-size: 13px;
+  cursor: pointer;
 }
 span.ace-file-manage-title-name {
-    display: inline-block;
-    max-width: 76%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  display: inline-block;
+  max-width: 76%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-div.ace-editor-titie-bar{
-    display: flex;
-    justify-content: flex-start;
+div.ace-editor-titie-bar {
+  display: flex;
+  justify-content: flex-start;
+}
+.main-tools-drawer-continer .ant-drawer-header,
+.main-tools-drawer-continer .ant-drawer-body {
+  padding: 0;
+}
+.main-tools-drawer-continer .ant-drawer-content,
+.main-tools-drawer-continer .ant-drawer-body {
+  overflow: unset;
+}
+.ant-dropdown .ant-dropdown-menu {
+  padding: 0;
+  text-align: left;
+}
+.anticon-spin {
+  color: #fff;
 }

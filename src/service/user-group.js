@@ -30,22 +30,6 @@ class UserGroup {
     userGroup.id = jsonObj.gid
     return userGroup
   }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    this.name = name
-  }
-
-  get _id() {
-    return this.id
-  }
-
-  set _id(id) {
-    this.id = id
-  }
 }
 
 function userGroupsTableDataParser(res) {

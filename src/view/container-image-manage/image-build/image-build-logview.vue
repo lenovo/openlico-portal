@@ -5,11 +5,11 @@
         {{ $t('Image.Build.Log.Title') }}
       </a-col>
       <a-col v-if="startTime != '-'" :span="12" style="text-align: right">
-        {{ $t('Image.Build.Log.Create.Time', { time: startTime }) }}
+        {{ $T('Image.Build.Log.Create.Time', { time: startTime }) }}
       </a-col>
     </a-row>
     <a-row class="build-log-row">
-      <a-col>
+      <a-col style="width: 100%">
         <textarea
           ref="buildLogContent"
           class="build-log-content"
@@ -33,11 +33,12 @@
   </div>
 </template>
 <script>
-import JobService from '../../../service/job'
-import ImageService from '../../../service/image'
+import JobService from '@/service/job'
+import ImageService from '@/service/image'
 
 export default {
   props: ['canImport', 'canCancel', 'startTime'],
+  emits: ['importImageDialogShow', 'getBuildStatus'],
   data() {
     return {
       scrollLatest: true,
@@ -60,7 +61,7 @@ export default {
       this.$refs.buildLogContent.addEventListener('scroll', this.handleScroll)
     })
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.$refs.buildLogContent.removeEventListener('scroll', this.handleScroll)
   },
   methods: {
@@ -120,6 +121,7 @@ export default {
   height: 100%;
   padding: 10px 20px 20px;
   background: #f8f8f8;
+  box-sizing: border-box;
 }
 .build-log-content {
   overflow: auto;

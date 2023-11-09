@@ -1,10 +1,10 @@
-<template lang="html">
+<template lang="">
   <div ref="container" class="node-monitor-chart-style" />
 </template>
 <script>
-import Format from './../../../common/format'
-import * as ECharts from 'echarts'
+import Format from '@/common/format'
 export default {
+  inject: ['resize'],
   props: ['gpuData'],
   data() {
     return {
@@ -17,24 +17,22 @@ export default {
     gpuData(val, oldVal) {
       this.processData(this.gpuData)
     },
+    resize(val) {
+      this.onResize()
+    },
   },
   mounted() {
     this.$nextTick(() => {
-      this.innerChart = ECharts.init(this.$refs.container, window.gApp.echartsTheme.common)
-      window.removeEventListener('resize', this.onResize)
-      window.addEventListener('resize', this.onResize)
+      this.$chart.init(this.$refs.container, window.gApp.echartsTheme.common)
       this.processData(this.gpuData)
       this.onResize()
       this.setOption()
     })
   },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.onResize)
-  },
   methods: {
     onResize() {
       this.$nextTick(() => {
-        this.innerChart.resize()
+        this.$chart.getInstanceByDom(this.$refs.container).resize()
       })
     },
     processData(data) {
@@ -112,7 +110,7 @@ export default {
           },
         ],
       }
-      this.innerChart.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.container).setOption(option)
     },
   },
 }

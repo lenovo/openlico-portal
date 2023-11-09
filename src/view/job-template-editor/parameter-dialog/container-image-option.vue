@@ -1,30 +1,30 @@
 <template>
   <div class="">
-    <a-form-model-item v-if="showFramework" :label="$t('JobTemplate.Parameters.framework')" prop="framework">
-      <a-select id="tid_jobTemplate-parameter-framework" v-model="formParam.framework">
+    <a-form-item v-if="showFramework" :label="$t('JobTemplate.Parameters.framework')" name="framework">
+      <a-select id="tid_jobTemplate-parameter-framework" v-model:value="formParam.framework">
         <a-select-option v-for="item in frameworkOptions" :key="item.value" :value="item.value">
           {{ item.label }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item
+    </a-form-item>
+    <a-form-item
       ref="tagFormItem"
       :label="$t('JobTemplate.Parameters.FilterTags')"
       class="jobTemplate-parameter-image-tag"
-      prop="tags">
+      name="tags">
       <multi-tags-input
         id="tid_image-tags"
         ref="tagInput"
-        v-model="formParam.tags"
+        v-model:value="formParam.tags"
         :new-tag-button-text="$t('Action.Add')"
         :valid-roles="tagRules"
         :disabled="false" />
-    </a-form-model-item>
+    </a-form-item>
   </div>
 </template>
 <script>
-import MultiTagsInput from '../../../component/multi-tags-input'
-import ValidRoleFactory from '../../../common/valid-role-factory'
+import MultiTagsInput from '@/component/multi-tags-input.vue'
+import ValidRoleFactory from '@/common/valid-role-factory'
 export default {
   components: {
     'multi-tags-input': MultiTagsInput,

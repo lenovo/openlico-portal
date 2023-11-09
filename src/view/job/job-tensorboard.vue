@@ -2,7 +2,7 @@
   <div class="job-tensorboard">
     <a-row>
       <a-col :span="14">
-        <file-select id="tid_file" v-model="path" type="folder" />
+        <file-select id="tid_file" v-model:value="path" type="folder" />
       </a-col>
       <a-col :span="10" align="right">
         <a-button :disabled="path == '' || !onViewClickEnadle" @click="onViewClick">
@@ -17,16 +17,19 @@
       </a-col>
     </a-row>
     <a-row class="p-t-10 p-b-10">
-      <a-spin :spinning="loading">
-        <div ref="tensorflowIframeDiv" class="tensorflow-iframe-div" />
-      </a-spin>
+      <a-col :span="24">
+        <a-spin v-if="loading || showIframe" :spinning="loading">
+          <div ref="tensorflowIframeDiv" class="tensorflow-iframe-div" />
+        </a-spin>
+        <div v-else class="tensorflow-iframe-div"></div>
+      </a-col>
     </a-row>
   </div>
 </template>
 <script>
-import FileSelect from '../../component/file-select'
-import JobService from '../../service/job'
-import Format from '../../common/format'
+import Format from '@/common/format'
+import JobService from '@/service/job'
+import FileSelect from '@/component/file-select.vue'
 
 export default {
   components: {
@@ -50,7 +53,7 @@ export default {
       this.showIframe = false
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.waitingPortTimerId > 0) {
       clearTimeout(this.waitingPortTimerId)
     }

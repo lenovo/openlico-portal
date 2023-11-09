@@ -1,27 +1,28 @@
 <template>
   <div>
-    <a-form-model-item :label="$t('Scheduler.Nodes')" :prop="modelItemProp">
-      <a-textarea v-model="textarea" :disabled="disabled" />
+    <a-form-item :label="$t('Scheduler.Nodes')" :name="modelItemProp">
+      <a-textarea v-model:value="textarea" :disabled="disabled" />
 
       <a @click.prevent="modal.add = true">
-        <a-icon type="plus" />
+        <plus-outlined />
         {{ $t('Action.Add') }}
       </a>
       <a style="margin-left: 8px; color: gray" @click.prevent="modal.clear = true">
-        <a-icon type="close" />
+        <close-outlined />
         {{ $t('Action.Clear') }}
       </a>
-    </a-form-model-item>
+    </a-form-item>
 
     <a-modal
-      v-model="modal.add"
+      v-model:open="modal.add"
       :confirm-loading="loading"
       :title="$t('NodeEditor.Title')"
       centered
+      destroy-on-close
       @ok="add"
       @cancel="reset">
       <div class="" v-text="$t('NodeEditor.FilterType')" />
-      <a-select v-model="select" default-value="group" style="width: 100%">
+      <a-select v-model:value="select" default-value="group" style="width: 100%">
         <a-select-option v-for="filter in filters" :key="filter.key" :value="filter.key">
           {{ filter.label }}
         </a-select-option>
@@ -29,7 +30,7 @@
 
       <div v-if="select === 'group'" key="group">
         <div class="mt-4" v-text="$t('NodeEditor.Group')" />
-        <a-select v-model="selected.group" mode="multiple" style="width: 100%">
+        <a-select v-model:value="selected.group" mode="multiple" style="width: 100%">
           <a-select-option v-for="group in groups" :key="group.id" :value="group.name">
             {{ group.name }}
           </a-select-option>
@@ -37,7 +38,12 @@
       </div>
       <div v-if="select === 'rack'" key="rack">
         <div class="mt-4" v-text="$t('NodeEditor.Rack')" />
-        <a-tree-select v-model="selected.rack" :tree-data="treeData" style="width: 100%" tree-checkable />
+        <a-tree-select
+          v-model:value="selected.rack"
+          :tree-data="treeData"
+          style="width: 100%"
+          tree-checkable
+          tree-icon />
       </div>
       <div v-if="select === 'hardware' && hardware != null" key="hardware">
         <a-divider />
@@ -50,7 +56,7 @@
         <a-row>
           <a-col span="24">
             <a-slider
-              v-model="selected.hardware.cpu"
+              v-model:value="selected.hardware.cpu"
               :min="hardware.cpu.min"
               :max="hardware.cpu.max"
               range
@@ -68,7 +74,7 @@
           <a-col span="24">
             <!-- slider values are in GB -->
             <a-slider
-              v-model="selected.hardware.mem"
+              v-model:value="selected.hardware.mem"
               :min="kbToGb(hardware.mem.min)"
               :max="getSliderMax(kbToGb(hardware.mem.max, 'ceil'), kbToGb(hardware.mem.min))"
               :step="8"
@@ -94,7 +100,7 @@
         <a-row>
           <a-col span="24">
             <a-slider
-              v-model="selected.hardware.disk"
+              v-model:value="selected.hardware.disk"
               :min="Math.floor(hardware.disk.min)"
               :max="getSliderMax(hardware.disk.max, hardware.disk.min, 64)"
               :step="64"
@@ -120,7 +126,7 @@
         <a-row>
           <a-col span="24">
             <a-slider
-              v-model="selected.hardware.gpu"
+              v-model:value="selected.hardware.gpu"
               :min="hardware.gpu.min"
               :max="hardware.gpu.max"
               range
@@ -133,9 +139,10 @@
     </a-modal>
 
     <a-modal
-      v-model="modal.clear"
+      v-model:open="modal.clear"
       :title="$t('NodeEditor.Clear.Title')"
       centered
+      destroy-on-close
       @ok="clear"
       @cancel="modal.clear = false">
       <p>{{ $t('NodeEditor.Msg.Clear') }}</p>
@@ -164,6 +171,7 @@ export default {
       default: false,
     },
   },
+  emits: ['selected', 'cleared'],
   data() {
     return {
       textarea: '',
@@ -177,7 +185,6 @@ export default {
         { key: 'rack', label: this.$t('NodeEditor.Rack') },
         { key: 'hardware', label: this.$t('NodeEditor.Hardware') },
       ],
-
       loading: false,
       errorMessage: '',
       errors: {
@@ -186,16 +193,14 @@ export default {
         // NO_NODES_FOUND: 'Cannot find any nodes. Try different filters.',
         // SELECT_ITEM: 'Must select at least one item.',
       },
-
       // below are refreshed on mounted
       groups: [],
       rooms: [],
       hardware: null,
-
       // this is what the user selects
       selected: {
         group: [],
-        rack: [], // from room tree data
+        rack: [],
         hardware: {},
       },
     }
@@ -204,19 +209,22 @@ export default {
     treeData() {
       return this.rooms.map(room => {
         return {
-          title: room.name,
+          label: room.name,
           key: `room-${room.id}`,
-          value: room.id,
+          value: `room-${room.id}`,
+          // value: room.id,
           children: room.rows.map(row => {
             return {
-              title: row.name,
+              label: row.name,
               key: `row-${row.id}`,
-              value: row.id,
+              value: `row-${row.id}`,
+              // value: row.id,
               children: row.racks.map(rack => {
                 return {
-                  title: rack.name,
+                  label: rack.name,
                   key: `rack-${rack.id}`,
-                  value: rack.id,
+                  value: `rack-${rack.id}`,
+                  // value: rack.id,
                 }
               }),
             }
@@ -249,7 +257,6 @@ export default {
     let resp = await Request.get('/api/cluster/node-editor-fixtures/')
     this.groups = resp.data.groups
     this.rooms = resp.data.rooms
-
     resp = await Request.get('/api/monitor/node/node-editor-fixtures/')
     this.hardware = resp.data.hardware
     this.selected.hardware = this.getInnerHardWare()
@@ -260,12 +267,24 @@ export default {
       for (const key in this.hardware) {
         const min = key !== 'mem' ? parseInt(this.hardware[key].min) : this.kbToGb(this.hardware[key].min)
         const max = key !== 'mem' ? parseInt(this.hardware[key].max) : this.kbToGb(this.hardware[key].max, 'ceil')
-        hardware[key] = [min, max]
+        if (key === 'mem') {
+          hardware[key] = [
+            min,
+            this.getSliderMax(this.kbToGb(this.hardware.mem.max, 'ceil'), this.kbToGb(this.hardware.mem.min)),
+          ]
+        } else if (key === 'disk') {
+          hardware[key] = [min, this.getSliderMax(this.hardware.disk.max, this.hardware.disk.min, 64)]
+        } else {
+          hardware[key] = [min, max]
+        }
       }
       return hardware
     },
     getSliderMax(max, min, step = 8) {
-      return max + step - ((max - min) % step)
+      if ((max - min) % step !== 0) {
+        return parseInt(max + step - ((max - min) % step))
+      }
+      return max
     },
     kbToGb(kbValue, type = 'floor') {
       return Math[type](kbValue / Math.pow(2, 20))
@@ -281,26 +300,23 @@ export default {
     async add() {
       this.loading = true
       this.errorMessage = ''
-
       if (!this.canSubmit) {
         this.errorMessage = this.errors.SELECT_ITEM
         this.loading = false
         return false
       }
-
       const nodes = []
-
       if (this.select === 'group') {
         const groups = this.groups.filter(group => this.selected.group.includes(group.name))
-
         for (const group of groups) {
           nodes.push(...group.nodes)
         }
       } else if (this.select === 'rack') {
+        const selected = this.selected.rack.map(i => Number(i.split('-').pop()))
         for (const room of this.rooms) {
           for (const row of room.rows) {
             for (const rack of row.racks) {
-              if (this.selected.rack.includes(rack.id)) {
+              if (selected.includes(rack.id)) {
                 nodes.push(...rack.nodes)
               }
             }
@@ -318,37 +334,28 @@ export default {
           gpu_min: this.selected.hardware.gpu[0],
           gpu_max: this.selected.hardware.gpu[1],
         }
-
         const { data } = await Request.get('/api/monitor/node/nodes-by-hardware/', { params })
-
         this.loading = false
-
         if (data.length === 0) {
           this.errorMessage = this.errors.NO_NODES_FOUND
           return false
         }
-
         nodes.push(...data)
       }
-
       // final check
       if (nodes.length === 0) {
         this.errorMessage = this.errors.NO_NODES_FOUND
         this.loading = false
         return false
       }
-
       let hosts = nodes.map(n => n.hostname)
-
       if (this.textarea !== '') {
         const { data } = await Request.post('/api/cluster/hostlist/expand/', { hosts: this.textarea })
         hosts.push(...data)
       }
       hosts = hosts.join(',')
-
       // all good, fold nodes then assign to textarea so it propagates from the watcher
       const { data } = await Request.post('/api/cluster/hostlist/fold/', { hosts })
-
       this.loading = false
       this.textarea = data
       this.modal.add = false
@@ -361,7 +368,7 @@ export default {
       this.select = 'group'
       this.selected = {
         group: [],
-        rack: [], // from room tree data
+        rack: [],
         hardware: this.getInnerHardWare(),
       }
     },

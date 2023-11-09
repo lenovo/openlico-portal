@@ -11,16 +11,16 @@
     :external-filter="dataFilter"
     :controller-header-enable="false"
     :auto-refresh="30 * 1000">
-    <template slot="policyLevel" slot-scope="{ policyLevel }">
+    <template #policyLevel="{ policyLevel }">
       <alert-table-level alert-level-size="normal" :level="policyLevel" />
     </template>
   </composite-table>
 </template>
 <script>
-import CompositeTable from '../../component/composite-table'
+import CompositeTable from '@/component/composite-table.vue'
 import AlertTablelevel from '../alert-policy-level-label.vue'
-import AlertService from '../../service/alert'
-import Format from '../../common/format'
+import AlertService from '@/service/alert'
+import Format from '@/common/format'
 
 export default {
   components: {
@@ -55,7 +55,7 @@ export default {
         },
         {
           title: this.$t('Level'),
-          scopedSlots: { customRender: 'policyLevel' },
+          customSlot: true,
           dataIndex: 'policyLevel',
           sorter: true,
           align: 'left',
@@ -65,13 +65,13 @@ export default {
           title: this.$t('Status'),
           dataIndex: 'status',
           sorter: true,
-          customRender: val => this.$t(`Alert.Status.${val}`),
+          customRender: ({ text }) => this.$t(`Alert.Status.${text}`),
         },
         {
           title: this.$t('Time'),
           dataIndex: 'createTime',
           sorter: true,
-          customRender: val => Format.formatDateTime(val),
+          customRender: ({ text }) => Format.formatDateTime(text),
         },
       ],
     }

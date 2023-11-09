@@ -4,7 +4,7 @@
       <a-row type="flex" justify="space-between">
         <a-col :span="12">
           <a-select
-            v-model="topLevelValue"
+            v-model:value="topLevelValue"
             :placeholder="$t('Monitor.Cluster.All')"
             class="selector-cluster"
             @change="topLevelChange">
@@ -14,7 +14,7 @@
           </a-select>
           <a-select
             v-if="topLevelValue == 'group'"
-            v-model="subLevelValue"
+            v-model:value="subLevelValue"
             :placeholder="subLevelPlaceholder"
             class="selector-sub-cluster">
             <a-select-option v-for="item in groupOption" :key="item.value" :value="item.value">
@@ -23,31 +23,31 @@
           </a-select>
           <a-cascader
             v-else-if="topLevelValue == 'rack'"
-            v-model="selectedRack"
+            v-model:value="selectedRack"
             class="selector-sub-cluster"
             :options="rackOptions"
             :placeholder="subLevelPlaceholder"
             @change="setSelectRack" />
           <a-input
             v-else
-            v-model="inputValue"
+            v-model:value="inputValue"
             class="selector-sub-cluster"
             :class="validInputMessage ? 'error-border' : ''"
             :placeholder="subLevelPlaceholder"
             :disabled="topLevelValue === undefined"
             @change="validInput"
             @blur="setInputValue"
-            @pressEnter="setInputValue" />
+            @press-enter="setInputValue" />
           <p v-if="validInputMessage" class="valid-input-message">
             {{ validInputMessage }}
           </p>
         </a-col>
         <a-col :span="12" style="text-align: right">
-          <a-switch v-model="autoReFresh" size="small" :loading="loading" />
+          <a-switch v-model:checked="autoReFresh" size="small" :loading="loading" />
           <span v-if="autoReFresh" class="fresn-text">{{
             loading
               ? $t('Monitor.Cluster.Refreshing')
-              : $t('Monitor.Cluster.Refresh.Seconds.Tips', { number: reFreshSeconds })
+              : $T('Monitor.Cluster.Refresh.Seconds.Tips', { number: reFreshSeconds })
           }}</span>
           <span v-else class="fresn-text">{{
             loading ? $t('Monitor.Cluster.Refreshing') : $t('Monitor.Cluster.AutoRefresh')
@@ -62,7 +62,7 @@
       <div class="b-w p-20 overview">
         <p class="overview-title">
           <span>{{ $t('Monitor.Cluster.Overview') }}</span>
-          <span>{{ $t('Monitor.Cluster.Nodes.On.Tips', { number: nodes.length }) }}</span>
+          <span>{{ $T('Monitor.Cluster.Nodes.On.Tips', { number: nodes.length }) }}</span>
         </p>
         <a-row :gutter="[20, 10]">
           <a-col v-for="item in overViewData" :key="item.key" :span="6">
@@ -125,14 +125,14 @@
 </template>
 
 <script>
-import ResourceUtilization from '../widget/resource-utilization'
-import ClusterNodesResource from './monitor-cluster/cluster-nodes-resource'
-import NodeGroupService from '../service/node-group'
-import MonitorClusterService from '../service/monitor-cluster'
-import RackService from '../service/rack'
+import Format from '@/common/format'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import RackService from '@/service/rack'
+import NodeGroupService from '@/service/node-group'
+import MonitorClusterService from '@/service/monitor-cluster'
+import ResourceUtilization from '@/widget/resource-utilization.vue'
+import ClusterNodesResource from './monitor-cluster/cluster-nodes-resource.vue'
 import Schema from 'async-validator'
-import ValidRoleFactory from '../common/valid-role-factory'
-import Format from '../common/format'
 export default {
   components: {
     ResourceUtilization,
@@ -205,7 +205,7 @@ export default {
     this.getAllGroups()
     this.autoReFresh = true
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.reFreshTimer)
   },
   methods: {
@@ -477,13 +477,13 @@ export default {
 .selector-cluster {
   width: 110px;
 }
-.selector-cluster >>> .ant-select-selection {
+.selector-cluster :deep(.ant-select-selection) {
   border-radius: 4px 0 0 4px;
   border-right: none;
 }
-.selector-sub-cluster >>> .ant-select-selection,
+.selector-sub-cluster :deep(.ant-select-selection),
 .selector-sub-cluster.ant-input,
-.selector-sub-cluster >>> .ant-cascader-input {
+.selector-sub-cluster :deep(.ant-cascader-input) {
   border-radius: 0 4px 4px 0;
 }
 .selector-sub-cluster {

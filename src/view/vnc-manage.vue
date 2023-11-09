@@ -8,7 +8,7 @@
       row-key="id"
       :table-data-fetcher="tableDataFetcher"
       :search-enable="true"
-      :search-props="['name', 'username']"
+      :search-props="['name', 'username', 'schedulerId']"
       :current-page="1"
       :page-sizes="['10', '20', '40', '50']"
       :page-size="20"
@@ -16,17 +16,27 @@
       :auto-refresh="autoRefresh"
       :show-error-message="false"
       @table-data-fetch-error="tableDataFetchError">
-      <a-dropdown slot="action" slot-scope="{ row }" placement="bottomLeft" :trigger="['click']">
-        <a-button>
-          {{ $t('Action') }}
-          <a-icon type="down" />
-        </a-button>
-        <a-menu slot="overlay">
-          <a-menu-item @click="OpenVNC(row)">
-            {{ $t('VNC.Button.Open') }}
-          </a-menu-item>
-        </a-menu>
-      </a-dropdown>
+      <template #schedulerId="{ row, schedulerId }">
+        <a v-if="schedulerId !== 0" href="javascript:;" class="el-button--wrap" @click="onSchedulerIdClick(row)">{{
+          schedulerId
+        }}</a>
+        <span v-else>-</span>
+      </template>
+      <template #action="{ row }">
+        <a-dropdown placement="bottomLeft" :trigger="['click']">
+          <a-button>
+            {{ $t('Action') }}
+            <down-outlined />
+          </a-button>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item @click="OpenVNC(row)">
+                {{ $t('VNC.Button.Open') }}
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
+      </template>
     </composite-table>
     <div v-else class="vnc-cannot-content">
       <img class="vnc-cannot-img placeholder-img" src="/static/img/system/main/vnc-cannot.svg" />
@@ -34,15 +44,23 @@
         {{ $t('Error.RestAPI.Unavailable') }}
       </p>
     </div>
+    <a-modal
+      :open="showJobSchedulerInfo"
+      :footer="null"
+      :title="$t('JobManage.JobSchedulerInfo.Title')"
+      @cancel="showJobSchedulerInfo = false">
+      <a-textarea :auto-size="{ maxRows: 10 }" read-only :value="jobSchedulerInfo" style="resize: none" />
+    </a-modal>
   </div>
 </template>
 <script>
-import CompositeTable from '../component/composite-table'
-import VNCService from '../service/vnc'
+import VNCService from '@/service/vnc'
+import JobService from '@/service/job'
+import CompositeTable from '@/component/composite-table.vue'
 
 export default {
   components: {
-    'composite-table': CompositeTable,
+    CompositeTable,
   },
   data() {
     const username = this.$store.state.auth.access === 'admin' ? '' : this.$store.state.auth.username
@@ -77,18 +95,38 @@ export default {
           sorter: true,
         },
         {
+          title: this.$t('VNC.Title.SchedulerId'),
+          dataIndex: 'schedulerId',
+          sorter: true,
+          customSlot: true,
+        },
+        {
           title: this.$t('VNC.Title.Index'),
           dataIndex: 'index',
           sorter: true,
         },
         {
           title: this.$t('VNC.Title.Operation'),
-          scopedSlots: { customRender: 'action' },
+          key: 'action',
+          customSlot: true,
         },
       ],
+      showJobSchedulerInfo: false,
+      jobSchedulerInfo: '',
     }
   },
   methods: {
+    onSchedulerIdClick(vnc) {
+      JobService.getJobSchedulerInfo(vnc.jobId).then(
+        res => {
+          this.jobSchedulerInfo = res
+          this.showJobSchedulerInfo = true
+        },
+        err => {
+          this.$message.error(err)
+        },
+      )
+    },
     OpenVNC(data) {
       const origin = location.origin
       const params = {

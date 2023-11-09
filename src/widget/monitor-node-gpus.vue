@@ -1,8 +1,6 @@
 <template>
   <div class="gpusView-charts-content">
     <a-spin :spinning="loading">
-      <!-- <p v-if='nodes.length == 0' class="gpusViewNoData">
-            {{$t('No.Data')}}</p> -->
       <a-row v-if="nodes.length == 0" class="m-b-20">
         <a-col :span="24" class="ant-table-placeholder">
           <div class="ant-empty ant-empty-normal">
@@ -34,7 +32,7 @@
       </a-row>
       <div class="gpusPagination">
         <a-pagination
-          v-model="currentPage"
+          v-model:value="currentPage"
           :hide-on-single-page="true"
           :page-size="pageSize"
           :total="total"
@@ -45,12 +43,13 @@
   </div>
 </template>
 <script>
-import NodeGpuCard from './node-gpu-card'
+import NodeGpuCard from './node-gpu-card.vue'
 export default {
   components: {
     'node-gpu-card': NodeGpuCard,
   },
   props: ['monitorNodes', 'valueType', 'pageOffset', 'job', 'loading'],
+  emits: ['offset-change'],
   data() {
     return {
       nodes: [],
@@ -69,7 +68,9 @@ export default {
     },
   },
   mounted() {
-    this.init()
+    this.$nextTick(() => {
+      this.init()
+    })
   },
   methods: {
     init() {
@@ -109,7 +110,7 @@ export default {
   padding: 20px;
 }
 
-.gpusView-charts-content >>> .ant-row {
+.gpusView-charts-content :deep(.ant-row) {
   padding-top: 20px;
 }
 .gpusViewNoData {
@@ -122,5 +123,21 @@ export default {
 }
 .gpusPagination {
   text-align: center;
+}
+.gpusView-charts-content :deep(.ant-empty-normal) {
+  margin: 70px 0 32px 0;
+}
+.gpusView-charts-content :deep(.ant-table-placeholder) {
+  position: relative;
+  z-index: 1;
+  margin-top: -1px;
+  padding: 16px 16px;
+  color: rgba(0, 0, 0, 0.25);
+  font-size: 14px;
+  text-align: center;
+  background: #fff;
+  border-top: 1px solid #e8e8e8;
+  border-bottom: 1px solid #e8e8e8;
+  border-radius: 0 0 4px 4px;
 }
 </style>

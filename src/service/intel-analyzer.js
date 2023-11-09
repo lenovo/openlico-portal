@@ -54,43 +54,11 @@ class Result {
 
   static parseFromRestApi(jsonObj) {
     const result = new Result()
-    result._show = jsonObj.show
-    result._command = jsonObj.command
-    result._result = jsonObj.report_path.map(item => [Format.formatMyFolder(item[0]), item[1], item[0]])
-    result._dataFiles = jsonObj.dir_path.map(item => [Format.formatMyFolder(item[0]), item[1], item[0]])
+    result.show = jsonObj.show
+    result.command = jsonObj.command
+    result.result = jsonObj.report_path.map(item => [Format.formatMyFolder(item[0]), item[1], item[0]])
+    result.dataFiles = jsonObj.dir_path.map(item => [Format.formatMyFolder(item[0]), item[1], item[0]])
     return result
-  }
-
-  get _show() {
-    return this.show
-  }
-
-  set _show(show) {
-    this.show = show
-  }
-
-  get _command() {
-    return this.command
-  }
-
-  set _command(command) {
-    this.command = command
-  }
-
-  get _result() {
-    return this.result
-  }
-
-  set _result(result) {
-    this.result = result
-  }
-
-  get _dataFiles() {
-    return this.dataFiles
-  }
-
-  set _dataFiles(dataFiles) {
-    this.dataFiles = dataFiles
   }
 }
 

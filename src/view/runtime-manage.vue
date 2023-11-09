@@ -11,35 +11,43 @@
         :table-data-fetcher="tableDataFetcher"
         :search-enable="true"
         @selection-change="onTableSelectionChange">
-        <div slot="controller" class="composite-table-controller">
-          <a-button id="Runtime_Create_Button" type="primary" @click="onCreate">
-            {{ $t('Action.Create') }}
-          </a-button>
-        </div>
-        <div slot="name" slot-scope="{ name, row }" @click="onDetailClick(row)">
-          <img :src="getSrc(row.tag.includes('sys:intel'))" class="rcicon" style="width: 15px; height: 15px" />
-          {{ name }}
-        </div>
-        <a-dropdown slot="action" slot-scope="{ row }" placement="bottomLeft" :trigger="['click']">
-          <a-button>
-            {{ $t('Action') }}
-            <a-icon type="down" />
-          </a-button>
-          <a-menu slot="overlay">
-            <a-menu-item v-if="canAction(row)" @click="onEdit(row)">
-              {{ $t('Action.Edit') }}
-            </a-menu-item>
-            <a-menu-item @click="onDuplicate(row)">
-              {{ $t('Action.Duplicate') }}
-            </a-menu-item>
-            <a-menu-item v-if="canAction(row)" :disabled="row.items.length <= 0" @click="onVerify(row)">
-              {{ $t('Action.Verify') }}
-            </a-menu-item>
-            <a-menu-item v-if="canAction(row)" @click="onDelete(row)">
-              {{ $t('Action.Delete') }}
-            </a-menu-item>
-          </a-menu>
-        </a-dropdown>
+        <template #controller>
+          <div class="composite-table-controller">
+            <a-button id="Runtime_Create_Button" type="primary" @click="onCreate">
+              {{ $t('Action.Create') }}
+            </a-button>
+          </div>
+        </template>
+        <template #name="{ name, row }">
+          <div class="runtime-table-name" @click="onDetailClick(row)">
+            <img :src="getSrc(row.tag.includes('sys:intel'))" class="rcicon" style="width: 15px; height: 15px" />
+            {{ name }}
+          </div>
+        </template>
+        <template #action="{ row }">
+          <a-dropdown placement="bottomLeft" :trigger="['click']">
+            <a-button>
+              {{ $t('Action') }}
+              <DownOutlined />
+            </a-button>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item v-if="canAction(row)" @click="onEdit(row)">
+                  {{ $t('Action.Edit') }}
+                </a-menu-item>
+                <a-menu-item @click="onDuplicate(row)">
+                  {{ $t('Action.Duplicate') }}
+                </a-menu-item>
+                <a-menu-item v-if="canAction(row)" :disabled="row.items.length <= 0" @click="onVerify(row)">
+                  {{ $t('Action.Verify') }}
+                </a-menu-item>
+                <a-menu-item v-if="canAction(row)" @click="onDelete(row)">
+                  {{ $t('Action.Delete') }}
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </template>
       </composite-table>
       <runtime-dialog ref="runtimeDialog" />
       <runtime-view-dialog ref="runtimeViewDialog" />
@@ -47,10 +55,10 @@
   </div>
 </template>
 <script>
-import RuntimeService from '../service/runtime-manage'
-import CompositeTable from '../component/composite-table'
-import RuntimeDialog from './runtime-manage/runtime-action-dialog'
-import RuntimeViewDialog from './runtime-manage/runtime-view-dialog'
+import RuntimeService from '@/service/runtime-manage'
+import CompositeTable from '@/component/composite-table.vue'
+import RuntimeDialog from './runtime-manage/runtime-action-dialog.vue'
+import RuntimeViewDialog from './runtime-manage/runtime-view-dialog.vue'
 
 export default {
   components: {
@@ -69,26 +77,26 @@ export default {
           sorter: true,
           align: 'left',
           defaultSortOrder: 'descend',
-          scopedSlots: { customRender: 'name' },
+          customSlot: true,
         },
         {
           title: this.$t('Admin.Runtime.Items'),
           dataIndex: 'items',
           sorter: true,
           align: 'left',
-          customRender: val => this.displayProperties(val, 'module'),
+          customRender: ({ text }) => this.displayProperties(text, 'module'),
         },
         {
           title: this.$t('Admin.Runtime.Type'),
           dataIndex: 'type',
           sorter: true,
-          customRender: text => this.$t(`Admin.Runtime.Type.${text}`),
+          customRender: ({ text }) => this.$t(`Admin.Runtime.Type.${text}`),
         },
         {
           title: this.$t('Admin.Runtime.Env'),
           dataIndex: 'envs',
           sorter: true,
-          customRender: val => this.displayProperties(val, 'name'),
+          customRender: ({ text }) => this.displayProperties(text, 'name'),
         },
         {
           title: this.$t('Admin.Runtime.CreateTime'),
@@ -98,7 +106,7 @@ export default {
         {
           title: this.$t('Action'),
           key: 'action',
-          scopedSlots: { customRender: 'action' },
+          customSlot: true,
         },
       ],
       show: false,
@@ -177,11 +185,11 @@ export default {
     },
     onVerify(data) {
       this.tableLoading = true
-      RuntimeService.verifyRuntime(data.id).then(
+      RuntimeService.verifyRuntime(data.id, this.access).then(
         res => {
           this.tableLoading = false
           this.$success({
-            title: this.$t('Admin.Runtime.Verify.Success.title', {
+            title: this.$T('Admin.Runtime.Verify.Success.title', {
               name: data.name,
             }),
           })
@@ -189,7 +197,7 @@ export default {
         res => {
           this.tableLoading = false
           this.$error({
-            title: this.$t('Admin.Runtime.Verify.Fail.title', {
+            title: this.$T('Admin.Runtime.Verify.Fail.title', {
               name: data.name,
             }),
             content: res.body.output,
@@ -223,7 +231,10 @@ export default {
   },
 }
 </script>
-<style>
+<style scoped>
+.runtime-table-name {
+  cursor: pointer;
+}
 .includes:hover {
   cursor: auto;
 }

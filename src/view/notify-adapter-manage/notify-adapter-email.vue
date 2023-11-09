@@ -2,10 +2,16 @@
   <a-row>
     <a-col :span="24">
       <div class="section">
-        <a-form-model ref="innerform" :model="mail" :rules="mailRules" class="notify-email-form" :colon="false">
+        <a-form
+          ref="innerform"
+          layout="vertical"
+          :model="mail"
+          :rules="mailRules"
+          class="notify-email-form"
+          :colon="false">
           <a-radio-group
             id="tid_notify-adapter-email-enable"
-            v-model="mail.status"
+            v-model:value="mail.status"
             :disabled="disabled"
             button-style="solid"
             size="small"
@@ -19,19 +25,19 @@
             </a-radio-button>
           </a-radio-group>
           <div class="notify-settings-img">
-            <img src="static/img/system/notify/Mail.svg" alt="" />
+            <img src="/static/img/system/notify/Mail.svg" alt="" />
             <div>{{ $t('AlertSetting.Title.Mail') }}</div>
           </div>
 
-          <a-form-model-item :label="$t('AlertSetting.Label.Mail.SMTPAddress')" prop="address" class="notify-email-ssl">
+          <a-form-item :label="$t('AlertSetting.Label.Mail.SMTPAddress')" name="address" class="notify-email-ssl">
             <a-input
               id="tid_notify-adapter-email-smtp-address"
-              v-model="mail.address"
+              v-model:value="mail.address"
               :placeholder="$t('AlertSetting.Mail.Address')"
               :disabled="disabled || !mail.status" />
-          </a-form-model-item>
-          <a-form-model-item :label="$t('AlertSetting.Mail.SSL.Protocol')">
-            <a-select v-model="mail.ssl" :disabled="disabled || !mail.status" @change="changeProtocol">
+          </a-form-item>
+          <a-form-item :label="$t('AlertSetting.Mail.SSL.Protocol')">
+            <a-select v-model:value="mail.ssl" :disabled="disabled || !mail.status" @change="changeProtocol">
               <a-select-option id="tid_notify-adapter-email-mode-null" value="NULL">
                 {{ $t('AlertSetting.Mail.SSL.Null') }}
               </a-select-option>
@@ -42,36 +48,36 @@
                 {{ 'TLS' }}
               </a-select-option>
             </a-select>
-          </a-form-model-item>
-          <a-form-model-item :label="$t('AlertSetting.Label.Mail.SMTPPort')" prop="port">
+          </a-form-item>
+          <a-form-item :label="$t('AlertSetting.Label.Mail.SMTPPort')" name="port">
             <a-input
               id="tid_notify-adapter-email-smtp-port"
-              v-model="mail.port"
+              v-model:value="mail.port"
               :placeholder="$t('AlertSetting.Mail.Port')"
               :disabled="disabled || !mail.status" />
-          </a-form-model-item>
-          <a-form-model-item :label="$t('AlertSetting.Label.Mail.Name')" prop="id">
+          </a-form-item>
+          <a-form-item :label="$t('AlertSetting.Label.Mail.Name')" name="id">
             <a-input
               id="tid_notify-adapter-email-smtp-name"
-              v-model="mail.id"
+              v-model:value="mail.id"
               :placeholder="$t('AlertSetting.Mail.ID')"
               :disabled="disabled || !mail.status" />
-          </a-form-model-item>
-          <a-form-model-item :label="$t('AlertSetting.Label.Mail.Password')" prop="password">
+          </a-form-item>
+          <a-form-item :label="$t('AlertSetting.Label.Mail.Password')" name="password">
             <a-input
               id="tid_notify-adapter-email-smtp-password"
-              v-model="mail.password"
+              v-model:value="mail.password"
               type="password"
               :placeholder="$t('AlertSetting.Mail.Password')"
               :disabled="disabled || !mail.status" />
-          </a-form-model-item>
-          <a-form-model-item :label="$t('AlertSetting.Mail.Sender')" prop="mailbox">
+          </a-form-item>
+          <a-form-item :label="$t('AlertSetting.Mail.Sender')" name="mailbox">
             <a-input
               id="tid_notify-adapter-email-sender"
-              v-model="mail.mailbox"
+              v-model:value="mail.mailbox"
               :placeholder="$t('AlertSetting.Mail.Mailbox')"
               :disabled="disabled || !mail.status" />
-          </a-form-model-item>
+          </a-form-item>
           <div style="text-align: center; margin-bottom: 22px">
             <a-button
               id="tid_email-confirm"
@@ -85,16 +91,16 @@
               {{ $t('AlertSetting.Button.Test') }}
             </a-button>
           </div>
-        </a-form-model>
+        </a-form>
       </div>
     </a-col>
     <EmailDialog ref="TestEmailDialog" />
   </a-row>
 </template>
 <script>
-import ValidRoleFactory from '../../common/valid-role-factory'
-import EmailService from '../../service/notify-email'
-import EmailDialog from './notify-adapter-email-dialog'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import EmailService from '@/service/notify-email'
+import EmailDialog from './notify-adapter-email-dialog.vue'
 
 export default {
   components: {
@@ -135,9 +141,9 @@ export default {
     init() {
       EmailService.getNotifyEmail().then(
         res => {
-          this.mail = res
-          this.resMail = res
-          this.resetData = res
+          this.mail = { ...res }
+          this.resMail = { ...res }
+          this.resetData = { ...res }
           this.testDisabled = !res.status
           this.disabled = false
         },
@@ -148,11 +154,12 @@ export default {
       )
     },
     testMail() {
-      this.$refs.innerform.validate(valid => {
-        if (valid) {
+      this.$refs.innerform.validate().then(
+        _ => {
           this.$refs.TestEmailDialog.sendEmail(this.mail)
-        }
-      })
+        },
+        _ => {},
+      )
     },
     changeStatus(e) {
       this.$refs.innerform.clearValidate()
@@ -174,15 +181,16 @@ export default {
       }
     },
     confirmMail() {
-      this.$refs.innerform.validate(valid => {
-        if (valid) {
+      this.$refs.innerform.validate().then(
+        _ => {
           this.subMail()
-        }
-      })
+        },
+        _ => {},
+      )
     },
     subMail() {
       this.$refs.TestEmailDialog.confirmSetting(this.mail).then(
-        res => {
+        _ => {
           this.init()
         },
         err => {

@@ -1,11 +1,11 @@
 <template>
-  <div ref="jobResourceChart" class="job-resource-chart" />
+  <div ref="container" class="job-resource-chart" />
 </template>
 
 <script>
-import * as ECharts from 'echarts'
-import Format from '../../../common/format'
+import Format from '@/common/format'
 export default {
+  inject: ['resize'],
   props: ['initData', 'color', 'type'],
   data() {
     return {
@@ -22,26 +22,22 @@ export default {
     initData(val, oldVal) {
       this.setChartData()
     },
+    resize(val) {
+      this.resizeChart()
+    },
   },
   mounted() {
-    this.innerChart = ECharts.init(this.$refs.jobResourceChart)
-    window.removeEventListener('resize', this.resizeChart)
-    window.addEventListener('resize', this.resizeChart)
+    this.$chart.init(this.$refs.container)
+
     this.resizeChart()
     this.init()
-    window.gApp.$watch('isCollapse', (newValue, oldValue) => {
-      setTimeout(() => {
-        this.resizeChart()
-      }, 300)
-    })
   },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.resizeChart)
-    this.innerChart.clear()
+  beforeUnmount() {
+    this.$chart.getInstanceByDom(this.$refs.container).clear()
   },
   methods: {
     resizeChart() {
-      this.innerChart.resize()
+      this.$chart.getInstanceByDom(this.$refs.container).resize()
     },
     init() {
       const option = {
@@ -55,11 +51,11 @@ export default {
               time = curent.value[0]
               return `${Format.formatDateTime(time, 'hh:mm MM-dd')}<br>
                                     ${curent.marker}${curent.seriesName}: ${
-                curent.value[1] !== '-' ? curent.value[1] + '%' : '-'
-              }<br>
+                                      curent.value[1] !== '-' ? curent.value[1] + '%' : '-'
+                                    }<br>
                                     ${others.marker}${others.seriesName}: ${
-                others.value[1] !== '-' ? others.value[1] + '%' : '-'
-              }
+                                      others.value[1] !== '-' ? others.value[1] + '%' : '-'
+                                    }
                                     `
             } else {
               const o = params[0]
@@ -118,7 +114,7 @@ export default {
           },
         ],
       }
-      this.innerChart.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.container).setOption(option)
     },
     setChartData() {
       let series = []
@@ -173,7 +169,7 @@ export default {
             },
           ]
         }
-        this.innerChart.setOption({ series })
+        this.$chart.getInstanceByDom(this.$refs.container).setOption({ series })
         this.resizeChart()
       }
     },

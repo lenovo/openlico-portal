@@ -1,38 +1,41 @@
-<template lang="html">
-  <div>
-    <composite-table
-      id="tid_billgroup-storage-table"
-      ref="billGroupTable"
-      :columns="columns"
-      :row-key="row => row.id"
-      :table-data="tableData"
-      :pagination-enable="false"
-      :page-sizes="[]">
-      <a-dropdown slot="action" slot-scope="{ row }" :trigger="['click']" placement="bottomLeft">
+<template>
+  <composite-table
+    id="tid_billgroup-storage-table"
+    ref="billGroupTable"
+    :columns="columns"
+    :row-key="row => row.id"
+    :table-data="tableData"
+    :pagination-enable="false"
+    :page-sizes="[]">
+    <template #action="{ row }">
+      <a-dropdown :trigger="['click']" placement="bottomLeft">
         <a-button>{{ $t('Action') }}</a-button>
-        <a-menu slot="overlay">
-          <a-menu-item @click="onEditClick(row)">
-            {{ $t('Action.Edit') }}
-          </a-menu-item>
-          <a-menu-item @click="onDeleteClick(row)">
-            {{ $t('Action.Delete') }}
-          </a-menu-item>
-        </a-menu>
+        <template #overlay>
+          <a-menu>
+            <a-menu-item @click="onEditClick(row)">
+              {{ $t('Action.Edit') }}
+            </a-menu-item>
+            <a-menu-item @click="onDeleteClick(row)">
+              {{ $t('Action.Delete') }}
+            </a-menu-item>
+          </a-menu>
+        </template>
       </a-dropdown>
-    </composite-table>
-    <storage-policy-dialog ref="storagePolifyDialog" />
-  </div>
+    </template>
+  </composite-table>
+  <storage-policy-dialog ref="storagePolifyDialog" />
 </template>
 <script>
-import CompositeTable from '../../component/composite-table'
-import Format from '../../common/format'
-import StoragePolicyDialog from './set-storage-policy-dialog'
+import CompositeTable from '@/component/composite-table.vue'
+import Format from '@/common/format'
+import StoragePolicyDialog from './set-storage-policy-dialog.vue'
 export default {
   components: {
     'composite-table': CompositeTable,
     'storage-policy-dialog': StoragePolicyDialog,
   },
   props: ['billGroup'],
+  emits: ['update-billgroup'],
   data() {
     return {
       tableData: [],
@@ -41,16 +44,16 @@ export default {
           align: 'center',
           title: this.$t('BillGroup.StoragePath'),
           dataIndex: 'pathList',
-          customRender: val => val.toString(),
+          customRender: ({ text }) => text.toString(),
         },
         {
           align: 'center',
           title: this.$t('BillGroup.StorageChargeRate'),
           dataIndex: 'storageChargeRate',
-          customRender: (val, row) => {
+          customRender: ({ text, record }) => {
             return (
               Format.formatBillingRate(
-                row.storageChargeRate,
+                record.storageChargeRate,
                 window.gApp.$store.getters['settings/getCurrency'],
                 true,
               ) +
@@ -64,7 +67,7 @@ export default {
           align: 'center',
           title: this.$t('BillGroup.UpdateTime'),
           dataIndex: 'updateTime',
-          customRender: val => Format.formatDateTime(val),
+          customRender: ({ text }) => Format.formatDateTime(text),
           sorter: true,
           defaultSortOrder: 'ascend',
         },
@@ -72,7 +75,7 @@ export default {
           width: 120,
           title: this.$t('Action'),
           key: 'action',
-          scopedSlots: { customRender: 'action' },
+          customSlot: true,
         },
       ],
     }
@@ -124,5 +127,3 @@ export default {
   },
 }
 </script>
-
-<style lang="css"></style>

@@ -1,5 +1,9 @@
 <template>
-  <a-modal v-model="dialogFormVisible" :title="$t('User.Import.Detail.Title')" width="70%">
+  <a-modal
+    :open="dialogFormVisible"
+    :title="$t('User.Import.Detail.Title')"
+    width="70%"
+    @cancel="dialogFormVisible = false">
     <div>
       <ul class="import-table-title clearfix">
         <li>
@@ -15,7 +19,7 @@
           <span>{{ failUsers }} users</span>
         </li>
         <li>
-          <a-checkbox v-model="showFailed" class="detailbox" @change="shouFailedUsers">
+          <a-checkbox v-model:checked="showFailed" class="detailbox" @change="shouFailedUsers">
             {{ $t('User.Import.Title.OnlyShowFailedUsers') }}
           </a-checkbox>
         </li>
@@ -33,7 +37,7 @@
         :page-size="20"
         :total="0" />
     </div>
-    <template slot="footer">
+    <template #footer>
       <a-button @click="dialogFormVisible = false">
         {{ $t('Action.Close') }}
       </a-button>
@@ -42,10 +46,10 @@
 </template>
 
 <script>
-import CompositeTable from '../../component/composite-table'
-import UserBatchImportService from '../../service/user-batch-import'
-import AccessService from '../../service/access'
-import UserService from '../../service/user'
+import CompositeTable from '@/component/composite-table.vue'
+import UserBatchImportService from '@/service/user-batch-import'
+import AccessService from '@/service/access'
+import UserService from '@/service/user'
 
 export default {
   components: {
@@ -71,7 +75,7 @@ export default {
         align: 'center',
         title: this.$t('User.Import.Table.Title.Role'),
         dataIndex: 'role',
-        customRender: val => UserService.getUserRoleDisplayName(val),
+        customRender: ({ text }) => UserService.getUserRoleDisplayName(text),
       },
       {
         align: 'center',
@@ -92,9 +96,9 @@ export default {
         align: 'center',
         title: this.$t('User.Import.Table.Title.Result'),
         dataIndex: 'status',
-        customRender: (val, row) => {
-          if (val === true) return this.$t('Status.Success')
-          if (val === false) return row.errorMessage
+        customRender: ({ text, record }) => {
+          if (text === true) return this.$t('Status.Success')
+          if (text === false) return record.errorMessage
           return this.$t('Status.CanCeled')
         },
       },
@@ -158,7 +162,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .import-table-title {
   padding: 0 20px;
 }

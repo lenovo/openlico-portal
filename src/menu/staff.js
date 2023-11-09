@@ -29,11 +29,6 @@ export default [
     type: 'job-template-store',
     details: [
       {
-        type: 'job-template-editor-copy',
-        param: 'code',
-        path: '/main/job-template-editor/copy',
-      },
-      {
         type: 'job-template-editor',
         param: 'code',
         path: '/main/job-template-editor',
@@ -107,16 +102,19 @@ export default [
         type: 'workflow-job-template-ex',
         path: '/main/workflow-job-template-ex',
       },
-      {
-        type: 'workflow-job-template-ex',
-        path: '/mian/workflow-job-template-ex/edit/',
-      },
     ],
   },
   {
     label: 'Tools',
     icon: 'tools',
     children: [
+      {
+        label: 'Softwares',
+        icon: 'Softwares',
+        path: '/main/softwares',
+        type: 'softwares-manage',
+        featureCode: 'easybuild',
+      },
       {
         label: 'ContainerImageStore',
         icon: 'container',
