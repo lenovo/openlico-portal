@@ -15,7 +15,7 @@
  */
 
 import Collection from '../common/collection'
-import store from '../storage/store'
+import store from '../store'
 import menu from '../menu/menu'
 import Request from '../request/https'
 import ErrorHandler from '../common/error-handler'
@@ -46,7 +46,7 @@ function shiftAccess(access) {
 function getMenuByAccess(access) {
   let result = []
   if (menu[access]) {
-    result = menu[access]
+    result = [...menu[access]]
   }
   filterMenuForLDAP(result)
   filterMenuForFeatureCodes(result, window.gApp.$store.state.auth.featureCodes)
@@ -229,7 +229,7 @@ function checkUrlByAccess(target) {
     }
 
     if (!access) {
-      reject(new Error('permission denied'))
+      reject('permission denied')
     }
 
     if (auth.access !== access) {

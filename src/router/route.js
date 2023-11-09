@@ -23,7 +23,7 @@ let Routes = [
     meta: {
       auth: false,
     },
-    component: resolve => require(['../view/login'], resolve),
+    component: _ => import('@/view/login.vue'),
   },
   {
     path: '/login',
@@ -31,7 +31,7 @@ let Routes = [
     meta: {
       auth: false,
     },
-    component: resolve => require(['../view/login'], resolve),
+    component: _ => import('@/view/login.vue'),
   },
   {
     path: '/main',
@@ -40,24 +40,31 @@ let Routes = [
       auth: true,
       access: ['admin', 'operator', 'staff'],
     },
-    component: resolve => require(['../view/main'], resolve),
+    component: _ => import('@/view/main.vue'),
     children: [].concat(mainInnerRoute),
   },
 ]
 
 try {
-  let routes = []
-  const valued = require('./commercial').default.reduce((a, b) => a.concat(b))
-  routes = Routes.map(item => {
-    const children = valued.filter(i => item.name === i.parent)
-    if (item.children) {
-      item.children = item.children.concat(children)
-    } else {
-      item.children = children
+  const res = import.meta.globEager('./commercial/*.js')
+  if (Object.keys(res).length) {
+    let valued = []
+    for (const key in res) {
+      valued = valued.concat(res[key].default)
     }
-    return item
-  })
-  Routes = routes.concat(valued.filter(i => i.parent === undefined))
-} catch (error) {}
+    const routes = Routes.map(item => {
+      const children = valued.filter(i => item.name === i.parent)
+      if (item.children) {
+        item.children = item.children.concat(children)
+      } else {
+        item.children = children
+      }
+      return item
+    })
+    Routes = routes.concat(valued.filter(i => i.parent === undefined))
+  }
+} catch (error) {
+  // nothing
+}
 
 export default Routes

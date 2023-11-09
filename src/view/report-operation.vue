@@ -5,7 +5,7 @@
         <a-col :span="24" style="display: flex" class="report-operation-col m-b-20">
           <span class="report-operation-filter-label">{{ $t('Report.Label.Index') }}</span>
           <a-radio-group
-            v-model="reportFilterForm.monitor_type"
+            v-model:value="reportFilterForm.monitor_type"
             button-style="solid"
             class="reportFilter-button"
             @change="onMonitorTypeChange">
@@ -27,7 +27,7 @@
           <span class="report-operation-filter-label">{{ $t('Report.Title.Time') }}</span>
           <a-select
             id="report-operation-time-select"
-            v-model="reportFilterForm.timeType"
+            v-model:value="reportFilterForm.timeType"
             style="width: 300px"
             @change="onSelectedTimeChang">
             <a-select-option v-for="item in timeSelectOptions" :key="item.value" :value="item.value">
@@ -47,7 +47,7 @@
         </a-col>
         <hr class="halving-line" style="width: 100%; margin: 20px 0" />
         <div class="lico-date-picke">
-          <a-button id="tid_report-submit" type="primary" :disabled="isDisabled" @click="submit()">
+          <a-button id="tid_report-submit" type="primary" :disabled="isDisabled || loading" @click="submit()">
             {{ $t('Report.Button.Preview') }}
           </a-button>
           <a-button :disabled="isDisabled" @click="download()">
@@ -55,7 +55,9 @@
           </a-button>
         </div>
       </div>
-      <div v-show="isShow" class="nodata">
+    </div>
+    <div v-if="!loading" class="m-t-20">
+      <div v-show="preview === 'nodata'" class="nodata">
         <div style="margin-top: 160px">
           <img src="/static/img/system/main/nodata.png" style="height: 60px; width: 80px" />
         </div>
@@ -64,7 +66,7 @@
         </div>
       </div>
 
-      <div v-show="show" class="reportPreview b-w">
+      <div v-show="preview === 'preview'" class="reportPreview b-w">
         <a-col :span="24">
           <a-tabs v-model="activeName" default-active-key="chart" :animated="false">
             <a-tab-pane key="chart" :tab="$t('Report.Tab.Chart')">
@@ -73,16 +75,16 @@
           </a-tabs>
         </a-col>
       </div>
-      <report-dialog ref="ReportDialog" :export-list="['csv', 'xlsx']" />
     </div>
+    <report-dialog ref="ReportDialog" :export-list="['csv', 'xlsx']" />
   </div>
 </template>
 <script>
-import ReportDialog from './report/report-dialog'
-import ReportLine from './report/report-line'
-import ReportService from '../service/report'
 import _ from 'lodash'
-import MultiNodeSelector from '../widget/multi-node-selector'
+import ReportService from '@/service/report'
+import MultiNodeSelector from '@/widget/multi-node-selector.vue'
+import ReportDialog from './report/report-dialog.vue'
+import ReportLine from './report/report-line.vue'
 
 export default {
   components: {
@@ -94,8 +96,8 @@ export default {
     return {
       activeName: 'chart',
       data_line: [],
-      show: false,
-      isShow: false,
+      preview: '',
+      loading: false,
       reportFilterForm: {
         node: [],
         monitor_type: 'cpu',
@@ -153,46 +155,43 @@ export default {
     },
     nodeSelectChange(val) {
       this.reportFilterForm.node = val
-      this.isShow = false
-      this.show = false
+      this.preview = ''
     },
     submit() {
       const $this = this
       const format = this.reportFilterForm.monitor_type === 'network' ? 'MB/s' : '%'
-
-      ReportService.previewLogReport(this.reportFilterForm).then(res => {
-        if (res.length > 0) {
-          $this.show = true
-          $this.isShow = false
-        } else {
-          $this.show = false
-          $this.isShow = true
-        }
-        const hostname = [...new Set(res.map(item => item.hostname))]
-        const time = []
-        const series = []
-        // var monitor_type = res[0]['type'];
-        hostname.forEach(function (item) {
-          const lineData = []
-          _.filter(res, { hostname: item })[0].history.forEach(function (cell) {
-            lineData.push([cell.time, Number(cell.usage)])
-            time.push(cell.time)
+      this.loading = true
+      ReportService.previewLogReport(this.reportFilterForm)
+        .then(res => {
+          this.preview = res.length ? 'preview' : 'nodata'
+          const hostname = [...new Set(res.map(item => item.hostname))]
+          const time = []
+          const series = []
+          // var monitor_type = res[0]['type'];
+          hostname.forEach(function (item) {
+            const lineData = []
+            _.filter(res, { hostname: item })[0].history.forEach(function (cell) {
+              lineData.push([cell.time, Number(cell.usage)])
+              time.push(cell.time)
+            })
+            series.push({
+              name: item,
+              type: 'line',
+              // stack: monitor_type,
+              data: lineData,
+            })
           })
-          series.push({
-            name: item,
-            type: 'line',
-            // stack: monitor_type,
-            data: lineData,
-          })
+          const uniqueTime = [...new Set(time.map(item => item))]
+          $this.data_line = {
+            time: uniqueTime,
+            legend: hostname,
+            series,
+            format,
+          }
         })
-        const uniqueTime = [...new Set(time.map(item => item))]
-        $this.data_line = {
-          time: uniqueTime,
-          legend: hostname,
-          series,
-          format,
-        }
-      })
+        .finally(() => {
+          this.loading = false
+        })
     },
     onMonitorTypeChange(val) {
       this.show = false

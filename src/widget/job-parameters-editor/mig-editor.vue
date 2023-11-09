@@ -1,5 +1,5 @@
 <template>
-  <a-select v-model="migType" class="jobtempalte-mig-select" @change="$emit('input', migType)">
+  <a-select v-model:value="migType" class="jobtempalte-mig-select" @change="emitChange">
     <a-select-option v-for="item in migOptions" :key="item.key" :value="item.value">
       {{ item.label }}
     </a-select-option>
@@ -8,6 +8,7 @@
 <script>
 export default {
   props: ['value', 'migOptions'],
+  emits: ['input', 'update:value'],
   data() {
     return {
       migType: this.value,
@@ -16,6 +17,12 @@ export default {
   watch: {
     value(val) {
       this.migType = val
+    },
+  },
+  methods: {
+    emitChange() {
+      this.$emit('input', this.migType)
+      this.$emit('update:value', this.migType)
     },
   },
 }

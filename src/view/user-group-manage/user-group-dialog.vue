@@ -3,20 +3,18 @@
     ref="innerDialog"
     :title="title"
     size="500px"
-    :composite-height="280"
     :form-model="userGroupForm"
     :form-rules="userGroupRules"
-    :success-message-formatter="successMessageFormatter"
-    :error-message-formatter="errorMessageFormatter">
-    <a-form-model-item :label="$t('UserGroup.Name')" prop="name">
-      <a-input id="tid_user-group-name" v-model="userGroupForm.name" :disabled="mode == 'delete'" />
-    </a-form-model-item>
+    :success-message-formatter="successMessageFormatter">
+    <a-form-item :label="$t('UserGroup.Name')" name="name">
+      <a-input id="tid_user-group-name" v-model:value="userGroupForm.name" :disabled="mode == 'delete'" />
+    </a-form-item>
   </composite-form-dialog>
 </template>
 <script>
-import UserGroupService from '../../service/user-group'
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import UserGroupService from '@/service/user-group'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import ValidRoleFactory from '@/common/valid-role-factory'
 
 export default {
   components: {
@@ -54,18 +52,14 @@ export default {
     successMessageFormatter(res) {
       const userGroup = res
       if (this.mode === 'create') {
-        return this.$t('UserGroup.Create.Success', { name: userGroup.name })
+        return this.$T('UserGroup.Create.Success', { name: userGroup.name })
       }
       if (this.mode === 'edit') {
-        return this.$t('UserGroup.Edit.Success', { name: userGroup.name })
+        return this.$T('UserGroup.Edit.Success', { name: userGroup.name })
       }
       if (this.mode === 'delete') {
-        return this.$t('UserGroup.Delete.Success', { name: userGroup.name })
+        return this.$T('UserGroup.Delete.Success', { name: userGroup.name })
       }
-    },
-    errorMessageFormatter(res) {
-      const errMsg = res
-      return this.$t(errMsg)
     },
     doCreate() {
       this.mode = 'create'
@@ -82,7 +76,7 @@ export default {
       this.userGroupForm = {
         name: userGroup.name,
       }
-      this.title = this.$t('UserGroup.Edit.Title', { id: userGroup.name })
+      this.title = this.$T('UserGroup.Edit.Title', { id: userGroup.name })
       return this.$refs.innerDialog.popup(this.submitForm)
     },
     doDelete(userGroup) {
@@ -91,7 +85,7 @@ export default {
       this.userGroupForm = {
         name: userGroup.name,
       }
-      this.title = this.$t('UserGroup.Delete.Title', { id: userGroup.name })
+      this.title = this.$T('UserGroup.Delete.Title', { id: userGroup.name })
       return this.$refs.innerDialog.popup(this.submitForm)
     },
   },

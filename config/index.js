@@ -14,100 +14,59 @@
  * limitations under the License.
  */
 
-const DEV_PORT = 8080
+import { loadEnv } from 'vite'
 
-let host = 'localhost'
-let protocol = 'https:'
-
-try {
-  const reg = /^--(http[s]?:\/\/)?([0-9]{1,3}\.){3}[0-9]{1,3}(:[0-9]{1,5})?/
-  const configArgv = require('process').argv
-  const domain = configArgv.filter(argv => reg.test(argv)).map(argv => argv.replace(/--/g, ''))[0] || host
-
-  if (/^http/.test(domain)) {
-    protocol = domain.split('//')[0]
-    host = domain.split('//')[1]
-  } else {
-    host = domain
-  }
-} catch (err) {
-  // console.log(err);
-}
+/* eslint-env node */
+const config = loadEnv(process.env.NODE_ENV, './')
+const DEV = process.env.NODE_ENV === 'development'
 
 // repuest proxy
 const proxy = {
   '/api': {
-    target: protocol + '//' + host,
+    target: config.VITE_BACKEND_URL,
     changeOrigin: true,
     secure: false,
-    pathRewrite: {
-      '^/api': '/api',
-    },
   },
   '/config': {
-    target: protocol + '//' + host,
+    target: config.VITE_BACKEND_URL,
     changeOrigin: true,
     secure: false,
-    pathRewrite: {
-      '^/config': '/config',
-    },
-  },
-  '/docs': {
-    target: protocol + '//' + host,
-    changeOrigin: true,
-    secure: false,
-    pathRewrite: {
-      '^/docs': '/docs',
-    },
-  },
-  '/tensorboard': {
-    target: 'https://' + host,
-    changeOrigin: true,
-    secure: false,
-    pathRewrite: {
-      '^/tensorboard': '/tensorboard',
-    },
-  },
-  '/dev': {
-    target: 'https://' + host,
-    changeOrigin: true,
-    secure: false,
-    pathRewrite: {
-      '^/dev': '/dev',
-    },
-  },
-  '/novnc': {
-    target: 'https://' + host,
-    changeOrigin: true,
-    secure: false,
-    pathRewrite: {
-      '^/novnc': '/novnc',
-    },
   },
   '/jobtemplates': {
-    target: 'https://' + host,
+    target: config.VITE_BACKEND_URL,
     changeOrigin: true,
     secure: false,
-    pathRewrite: {
-      '^/jobtemplates': '/jobtemplates',
-    },
+  },
+  '/dev': {
+    target: config.VITE_BACKEND_URL,
+    changeOrigin: true,
+    secure: false,
+  },
+  '/novnc': {
+    target: config.VITE_BACKEND_URL,
+    changeOrigin: true,
+    secure: false,
+  },
+  '/tensorboard': {
+    target: config.VITE_BACKEND_URL,
+    changeOrigin: true,
+    secure: false,
+  },
+  '/docs': {
+    target: config.VITE_BACKEND_URL,
+    changeOrigin: true,
+    secure: false,
   },
   '/oneapi': {
-    target: 'https://' + host,
+    target: config.VITE_BACKEND_URL,
     changeOrigin: true,
     secure: false,
-    pathRewrite: {
-      '^/oneapi': '/oneapi',
-    },
   },
 }
 
-const env = process.env.NODE_ENV
-const isDev = process.env.NODE_ENV === 'development'
-
-if (isDev) {
+if (DEV) {
   console.log('------------------ PROXY ------------------')
-  console.log(`[Proxy Host]: ${protocol}//${host}`)
+  console.log(`[Proxy Host]: ${config.VITE_BACKEND_URL}`)
 
   for (const key in proxy) {
     console.log(`[Proxy Request]: http://localhost${key} => ${proxy[key].target}${key}`)
@@ -117,9 +76,8 @@ if (isDev) {
   console.log('------------------ PROXY ------------------')
 }
 
+/* eslint-env node */
 module.exports = {
-  DEV_PORT,
   proxy,
-  env,
-  isDev,
+  DEV,
 }

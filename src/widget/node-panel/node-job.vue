@@ -10,9 +10,9 @@
       :page-size="5"
       :controller-header-enable="false"
       :auto-refresh="15 * 1000">
-      <template slot="name" slot-scope="{ row }">
+      <template #name="{ row }">
         <a-popover placement="right">
-          <template slot="content">
+          <template #content>
             <p class="job-name">
               {{ row.name }}
             </p>
@@ -20,40 +20,45 @@
           <span class="ellipsis-container">{{ row.name }}</span>
         </a-popover>
       </template>
-      <template slot="schedulerId" slot-scope="{ row, schedulerId }">
+      <template #schedulerId="{ row, schedulerId }">
         <a href="javascript:;" class="el-button--wrap" @click="onSchedulerIdClick(row)">{{ schedulerId }}</a>
       </template>
-      <a-dropdown slot="action" slot-scope="{ row }" :trigger="['click']" placement="bottomLeft">
-        <a-button>
-          {{ $t('Action') }}
-          <a-icon type="down" />
-        </a-button>
-        <a-menu slot="overlay">
-          <a-menu-item @click="onViewProcessClick(row)">
-            {{ $t('Monitor.Process.Action.ViewProcess') }}
-          </a-menu-item>
-        </a-menu>
-      </a-dropdown>
+      <template #action="{ row }">
+        <a-dropdown :trigger="['click']" placement="bottomLeft">
+          <a-button>
+            {{ $t('Action') }}
+            <down-outlined />
+          </a-button>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item @click="onViewProcessClick(row)">
+                {{ $t('Monitor.Process.Action.ViewProcess') }}
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
+      </template>
     </composite-table>
     <a-modal
-      :visible="showJobSchedulerInfo"
+      :open="showJobSchedulerInfo"
       :footer="null"
       :title="$t('JobManage.JobSchedulerInfo.Title')"
       @cancel="showJobSchedulerInfo = false">
-      <a-input type="textarea" :auto-size="{ maxRows: 10 }" read-only :value="jobSchedulerInfo" style="resize: none" />
+      <a-textarea :auto-size="{ maxRows: 10 }" read-only :value="jobSchedulerInfo" style="resize: none" />
     </a-modal>
   </div>
 </template>
 <script>
-import Format from '../../common/format'
-import JobService from '../../service/job'
-import CompositeTable from '../../component/composite-table'
+import Format from '@/common/format'
+import JobService from '@/service/job'
+import CompositeTable from '@/component/composite-table.vue'
 
 export default {
   components: {
     'composite-table': CompositeTable,
   },
   props: ['nodeId', 'isGpus'],
+  emits: ['view-process'],
   data() {
     return {
       tableDataFetcher: JobService.getRunningJobsTableDataFetcher(this.nodeId),
@@ -70,15 +75,13 @@ export default {
           dataIndex: 'name',
           sorter: true,
           ellipsis: true,
-          scopedSlots: { customRender: 'name' },
+          customSlot: true,
         },
         {
           title: this.$t('Job.SchedulerId'),
           dataIndex: 'schedulerId',
           sorter: true,
-          scopedSlots: {
-            customRender: 'schedulerId',
-          },
+          customSlot: true,
         },
         {
           title: this.$t('Job.SubmitUser'),
@@ -95,19 +98,18 @@ export default {
           title: this.$t('Job.Cpu'),
           dataIndex: 'usedCores',
           sorter: true,
-          customRender: val => val + ' ' + this.$t('Job.Cpu.Cores'),
+          customRender: ({ text }) => text + ' ' + this.$t('Job.Cpu.Cores'),
         },
         {
           title: this.$t('Job.BeginTime.running'),
           dataIndex: 'beginTime',
           sorter: true,
-          customRender: val => Format.formatDateTime(val),
+          customRender: ({ text }) => Format.formatDateTime(text),
         },
         {
           title: this.$t('Action'),
-          scopedSlots: {
-            customRender: 'action',
-          },
+          key: 'action',
+          customSlot: true,
         },
       ],
       showJobSchedulerInfo: false,

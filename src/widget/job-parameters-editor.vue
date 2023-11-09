@@ -1,58 +1,63 @@
 <template>
   <a-spin :spinning="loading">
-    <a-form-model
+    <a-form
       :id="formId"
       ref="innerForm"
       :model="formModel"
       :rules="formRules"
       :colon="false"
+      layout="vertical"
       class="job-parameters-editor-form">
       <slot name="paramsTop" />
-      <template v-for="param in displayParams">
-        <a-form-model-item :key="param.id" :prop="param.id">
-          <span v-if="!param.help" slot="label">{{ param.name }}</span>
-          <span v-else slot="label">
-            {{ param.name }}
-            <a-tooltip :title="param.help" placement="topLeft" :get-popup-container="n => n.ownerDocument.body">
-              <a-icon type="question-circle-o" />
-            </a-tooltip>
-          </span>
+      <template v-for="param in displayParams" :key="param.id">
+        <a-form-item :name="param.id">
+          <template #label>
+            <span v-if="!param.help">{{ param.name }}</span>
+            <span v-else>
+              {{ param.name }}
+              <a-tooltip :title="param.help" placement="topLeft" :get-popup-container="n => n.ownerDocument.body">
+                <question-circle-outlined style="margin: 4px 0 0 5px" />
+              </a-tooltip>
+            </span>
+          </template>
           <a-input
             v-if="param.type == 'string' && param.mode == 'input'"
-            v-model="formModel[param.id]"
+            v-model:value="formModel[param.id]"
             style="width: 300px"
             :class="param.id == 'job_name' && defaultName == formModel[param.id] ? 'prefill' : ''"
             @focus="emptyCall($event, param.id)"
             @blur="fillDefaultName(param.id)" />
           <a-input
             v-if="param.type == 'number' && param.mode == 'input' && !param.multi"
-            v-model="formModel[param.id]"
+            v-model:value="formModel[param.id]"
             style="width: 300px"
             :disabled="param.disabled"
             @focus="emptyCall" />
           <a-input-password
             v-if="param.type == 'password'"
-            v-model="formModel[param.id]"
+            v-model:value="formModel[param.id]"
             :disabled="param.disabled"
             autocomplete="new-password"
             style="width: 300px"
             @focus="emptyCall" />
           <multi-tags-input
             v-if="param.type == 'number' && param.mode == 'input' && param.multi"
-            v-model="formModel[param.id]"
+            v-model:value="formModel[param.id]"
             :valid-roles="multiInputRules[param.id]"
             :disabled="false"
             :allow-clear-all="false" />
           <a-select
             v-if="(param.type == 'string' || param.type == 'number') && param.mode == 'select'"
-            v-model="formModel[param.id]"
+            v-model:value="formModel[param.id]"
             style="width: 300px">
             <template v-for="item in param.options">
               <a-select-option v-if="!item.children" :key="item.value">
                 {{ item.label }}
               </a-select-option>
               <a-select-opt-group v-else :key="item.label">
-                <span slot="label">{{ item.label }}</span>
+                <template #label>
+                  <span>{{ item.label }}</span>
+                </template>
                 <a-select-option v-for="child in item.children" :key="child.value">
                   {{ child.label }}
                 </a-select-option>
@@ -61,68 +66,69 @@
           </a-select>
           <div v-if="param.tipsHelp && param.tipsHelp[formModel[param.id]]" class="remotely_debug_tip">
             <p>
-              <a-icon type="exclamation-circle" theme="filled" class="help-icon" />
+              <question-circle-outlined style="margin: 4px 0 0 5px" />
             </p>
             <p>{{ getLocalizeVal($i18n.locale, param.tipsHelp[formModel[param.id]]) }}</p>
           </div>
-          <a-checkbox v-if="param.type == 'boolean'" v-model="formModel[param.id]" :label="param.label" />
-          <a-input
+          <a-checkbox v-if="param.type == 'boolean'" v-model:checked="formModel[param.id]" :label="param.label" />
+          <a-textarea
             v-if="param.type == 'text'"
-            v-model="formModel[param.id]"
-            type="textarea"
+            v-model:value="formModel[param.id]"
             style="width: 600px"
-            :auto-size="{ minRows: 10 }"
-            resize="none" />
+            :auto-size="{ minRows: 10 }" />
           <file-select
             v-if="param.type == 'file'"
-            v-model="formModel[param.id]"
-            :special_character="true"
+            v-model:value="formModel[param.id]"
+            :special-character="true"
             type="file"
             style="width: 375px" />
           <file-select
             v-if="param.type == 'folder'"
-            v-model="formModel[param.id]"
-            :special_character="true"
+            v-model:value="formModel[param.id]"
+            :special-character="true"
             type="folder"
             style="width: 375px" />
           <image-selection
             v-if="param.type == 'image'"
-            v-model="formModel[param.id]"
+            v-model:value="formModel[param.id]"
             :arch="arch"
             :images="imageOptions" />
           <queue-selector
             v-if="param.type == 'queue'"
             ref="queueSelector"
-            v-model="formModel[param.id]"
+            v-model:value="formModel[param.id]"
             select-style="width: 300px;" />
           <learning-rate-editor
             v-if="param.type == 'ext.learning_rate'"
-            v-model="formModel[param.id]"
+            v-model:value="formModel[param.id]"
             :multi="param.multi" />
-          <optimizer-editor v-if="param.type == 'ext.optimizer'" v-model="formModel[param.id]" :multi="param.multi" />
-          <training-steps-editor v-if="param.type == 'ext.training_epochs'" v-model="formModel[param.id]" />
+          <optimizer-editor
+            v-if="param.type == 'ext.optimizer'"
+            v-model:value="formModel[param.id]"
+            :multi="param.multi" />
+          <training-steps-editor v-if="param.type == 'ext.training_epochs'" v-model:value="formModel[param.id]" />
           <ps-worker-editor
             v-if="param.type == 'ext.psworker'"
-            v-model="formModel[param.id]"
+            v-model:value="formModel[param.id]"
             :nodes="context[param.nodesField]"
             :gpu-per-node="context[param.gpuPerNodeField]"
             :worker-auto-policy="param.workerAutoPolicy"
             :ps-policy="param.psPolicy" />
           <load-module-editor
             v-if="param.type == 'runtime'"
-            v-model="formModel[param.id]"
+            v-model:value="formModel[param.id]"
             :param="param"
             style="width: 450px" />
           <affinity-editor
             v-if="param.type.split('.').includes('affinity')"
-            v-model="formModel[param.id]"
+            v-model:value="formModel[param.id]"
             :type="param.type.split('.').pop()" />
-          <mig-editor v-if="param.type == 'mig'" v-model="formModel[param.id]" :mig-options="migOptions" />
+          <mig-editor v-if="param.type == 'mig'" v-model:value="formModel[param.id]" :mig-options="migOptions" />
           <early-stop-editor
             v-if="param.type == 'ext.early_stop'"
-            v-model="formModel[param.id]"
+            v-model:value="formModel[param.id]"
             :settings="param.settings" />
-          <license-feature v-if="param.type == 'license_feature'" v-model="formModel[param.id]" />
+          <license-feature v-if="param.type == 'license_feature'" v-model:value="formModel[param.id]" />
           <span v-if="param.tips">
             <a v-if="param.tips.type == 'link'" :href="param.tips.url" class="tips-link" target="_blank">{{
               param.tips.name
@@ -131,44 +137,44 @@
               {{ param.tips.content }}</span
             >
           </span>
-        </a-form-model-item>
+        </a-form-item>
       </template>
-    </a-form-model>
+    </a-form>
   </a-spin>
 </template>
 <script>
-import ImageService from '../service/image'
-import ValidRoleFactory from '../common/valid-role-factory'
-import FileSelect from '../component/file-select'
-import QueueSelector from './queue-selector'
-import AccessService from '../service/access'
-import JobTemplateService from '../service/job-template'
-import LearningRateEditor from './job-parameters-editor/learning-rate-editor'
-import OptimizerEditor from './job-parameters-editor/optimizer-editor'
-import TrainingStepsEditor from './job-parameters-editor/training-steps-editor'
-import PSWorkerEditor from './job-parameters-editor/ps-worker-editor'
-import MultiTagsInput from '../component/multi-tags-input'
-import LoadModuleEditor from './job-parameters-editor/load-module-editor'
-import ImageSelection from '../widget/image-selection'
-import AffinityEditor from '../widget/job-parameters-editor/affinity-editor'
+import Utils from '@/common/utils'
+import Format from '@/common/format'
+import ImageService from '@/service/image'
+import AccessService from '@/service/access'
+import JobTemplateService from '@/service/job-template'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import FileSelect from '@/component/file-select.vue'
+import MultiTagsInput from '@/component/multi-tags-input.vue'
 import MigEditor from './job-parameters-editor/mig-editor.vue'
-import Format from '../common/format'
-import Utils from '../common/utils'
-import EarlyStopEditor from './job-parameters-editor/early-stop-editor.vue'
 import LicenseFeature from './job-parameters-editor/license-feature.vue'
+import PsWorkerEditor from './job-parameters-editor/ps-worker-editor.vue'
+import EarlyStopEditor from './job-parameters-editor/early-stop-editor.vue'
+import OptimizerEditor from './job-parameters-editor/optimizer-editor.vue'
+import LoadModuleEditor from './job-parameters-editor/load-module-editor.vue'
+import LearningRateEditor from './job-parameters-editor/learning-rate-editor.vue'
+import TrainingStepsEditor from './job-parameters-editor/training-steps-editor.vue'
+import QueueSelector from './queue-selector.vue'
+import ImageSelection from '@/widget/image-selection.vue'
+import AffinityEditor from '@/widget/job-parameters-editor/affinity-editor.vue'
 
 export default {
   components: {
-    'file-select': FileSelect,
-    'queue-selector': QueueSelector,
-    'learning-rate-editor': LearningRateEditor,
-    'optimizer-editor': OptimizerEditor,
-    'training-steps-editor': TrainingStepsEditor,
-    'ps-worker-editor': PSWorkerEditor,
-    'multi-tags-input': MultiTagsInput,
-    'load-module-editor': LoadModuleEditor,
-    'image-selection': ImageSelection,
-    'affinity-editor': AffinityEditor,
+    FileSelect,
+    QueueSelector,
+    LearningRateEditor,
+    OptimizerEditor,
+    TrainingStepsEditor,
+    PsWorkerEditor,
+    MultiTagsInput,
+    LoadModuleEditor,
+    ImageSelection,
+    AffinityEditor,
     MigEditor,
     EarlyStopEditor,
     LicenseFeature,
@@ -198,6 +204,7 @@ export default {
       promiseList: [],
       loading: false,
       migOptions: [],
+      syncContext: false,
     }
   },
   watch: {
@@ -233,14 +240,26 @@ export default {
     this.init()
   },
   methods: {
-    initContext(context) {
+    async initContext(context = this.context) {
+      if (this.syncContext) return
+      this.syncContext = true
       // chenjun19 2021/9/8
       // bug 239421
       // filter need display params
-      this.displayParams = this.innerParams.filter(param => {
+      for (let i = 0; i < this.innerParams.length; i++) {
+        const param = this.innerParams[i]
         if (param.visible) {
           // eslint-disable-next-line no-eval
-          this.paramVisible[param.id] = eval(param.visible)
+          // this.paramVisible[param.id] = eval(param.visible)
+          if (param.visible === 'false') {
+            this.paramVisible[param.id] = false
+          } else {
+            this.paramVisible[param.id] = await Utils.getExecResult(param.visible, {
+              context,
+              migOptions: this.migOptions,
+            })
+          }
+
           // wengmh1 2021/5/25
           // Bug 232018
           // When the param became unvisible, if the input value
@@ -264,7 +283,8 @@ export default {
             oldOne = this.paramTriggerCache[param.id]
           }
           // eslint-disable-next-line no-eval
-          const newOne = eval(param.valueTrigger)
+          // const newOne = eval(param.valueTrigger)
+          const newOne = await Utils.getExecResult(param.valueTrigger, { context, migOptions: this.migOptions })
           const currentOne = context[param.id]
           // A quick way to match the copy job
           if (oldOne === null && currentOne !== newOne) {
@@ -276,9 +296,10 @@ export default {
           }
           this.paramTriggerCache[param.id] = newOne
         }
+      }
 
-        return this.paramVisible[param.id]
-      })
+      this.displayParams = this.innerParams.filter(param => this.paramVisible[param.id])
+      this.syncContext = false
     },
     init() {
       const formModel = {}
@@ -357,7 +378,12 @@ export default {
             }
           }
         } else if (param.type === 'image') {
-          this.initImage(param.id, param.hypervisor, param.framework, param.require, param.tags)
+          this.promiseList.push({
+            id: param.id,
+            request: ImageService.getAllImages({ framework: param.framework, tags: param.tags }),
+            callback: this.initImage,
+          })
+          // this.initImage(param.id, param.hypervisor, param.framework, param.require, param.tags)
         } else if (param.type === 'ext.training_epochs') {
           rules = TrainingStepsEditor.getValidRules(param.name)
         } else if (param.type === 'password') {
@@ -367,7 +393,7 @@ export default {
           )
         } else if (param.type === 'mig') {
           this.promiseList.push({
-            id: 'gpu_resource_name',
+            id: param.id,
             request: JobTemplateService.getMIGSelectOptions(),
             callback: this.initMIG,
           })
@@ -380,7 +406,8 @@ export default {
                 tempObj[item.value] = item.content
               }
             })
-            this.$set(param, 'tipsHelp', tempObj)
+            param['tipsHelp'] = tempObj
+            // this.$set(param, 'tipsHelp', tempObj)
           }
           if (!formModel[param.id] || !Utils.matchValueBySelectOptions(param.options, formModel[param.id])[0]) {
             formModel[param.id] = param.options[0].value
@@ -395,11 +422,11 @@ export default {
       this.formRules = formRules
       this.innerParams = params
       this.formModel = { ...this.formModel }
-      this.initContext(this.context)
-      this.startPromiseList(params).then(
-        res => {},
-        _ => {},
-      )
+      this.startPromiseList(params)
+        .catch(_ => {})
+        .finally(_ => {
+          this.initContext()
+        })
     },
     getLocalizeVal(lang, label) {
       if (label[lang]) {
@@ -445,6 +472,8 @@ export default {
           obj.gpuPerNodeField = param.gpuPerNodeField
           obj.workerAutoPolicy = param.workerAutoPolicy
           obj.psPolicy = param.psPolicy
+        } else if (obj.type === 'ear') {
+          obj.policy = param.policy
         } else if (obj.type === 'password') {
           obj.maxLength = param.maxLength
           obj.minLength = param.minLength
@@ -528,11 +557,11 @@ export default {
         setTimeout(resolve, interval)
       })
     },
-    initImage(paramId, hypervisor, framework, require, tags) {
+    initImage(res, param) {
       this.imageOptions = []
-      ImageService.getAllImages({ framework, tags }).then(res => {
-        res.forEach(image => {
-          if (this.paramValues) {
+      res.forEach(image => {
+        if (image.username === this.$store.state.auth.username || !image.username) {
+          if (image.status === 'success' || !image.status) {
             this.imageOptions.push({
               username: image.username,
               tag: image.tags,
@@ -540,38 +569,12 @@ export default {
               value: image.imagePath,
               label: image.name,
             })
-          } else {
-            // Bug 199680
-            // Common template need support all kinds of images.
-            // Add by wengmh1 2020/4/1
-            // var frameworkList = [];
-            // if (framework) {
-            //     framework.split(",").forEach(val => {
-            //         frameworkList.push(val.trim());
-            //     });
-            // }
-            // if (
-            //     framework &&
-            //     frameworkList.indexOf(image.framework) >= 0
-            // ) {
-            if (image.username === this.$store.state.auth.username || !image.username) {
-              if (image.status === 'success' || !image.status) {
-                this.imageOptions.push({
-                  username: image.username,
-                  tag: image.tags,
-                  version: image.version,
-                  value: image.imagePath,
-                  label: image.name,
-                })
-              }
-            }
           }
-          // }
-        })
-        if (this.imageOptions.length > 0 && this.formModel[paramId] === '' && require) {
-          this.formModel[paramId] = this.imageOptions[0].value
         }
       })
+      if (this.imageOptions.length > 0 && this.formModel[param.id] === '' && param.require) {
+        this.formModel[param.id] = this.imageOptions[0].value
+      }
     },
     initMIG(res, param) {
       const mig = param
@@ -580,13 +583,10 @@ export default {
       if (this.migOptions.length > 0 && !this.formModel[param.id]) {
         this.formModel[param.id] = this.migOptions[0].value
       }
-      this.initContext(this.context)
+      window.migOptions = res
       return mig
     },
-    getParamValues(formModel) {
-      if (formModel === undefined) {
-        formModel = this.formModel
-      }
+    getParamValues(formModel = this.formModel) {
       const obj = {}
       this.innerParams.forEach(param => {
         if (param.type === 'number') {
@@ -632,13 +632,14 @@ export default {
     },
     validate() {
       return new Promise((resolve, reject) => {
-        this.$refs.innerForm.validate(valid => {
-          if (valid) {
+        this.$refs.innerForm.validate().then(
+          res => {
             resolve()
-          } else {
+          },
+          err => {
             reject(new Error('Invalid'))
-          }
-        })
+          },
+        )
       })
     },
     emptyCall(e, param) {
@@ -707,8 +708,14 @@ export default {
 .job-parameters-editor-form {
   padding-left: 200px;
 }
-.job-parameters-editor-form >>> .image-select-content {
+.job-parameters-editor-form .image-selection {
+  display: flex;
+}
+.job-parameters-editor-form :deep(.image-select-content) {
   width: 300px;
+}
+.job-parameters-editor-form :deep(.ant-input) {
+  margin-right: 5px;
 }
 .prefill {
   color: #bfbfbf;

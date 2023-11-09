@@ -9,37 +9,51 @@
         :table-data-fetcher="tableDataFetcher"
         :search-enable="true"
         :search-props="['id', 'name']">
-        <ul slot="controller" class="composite-table-controller">
-          <a-button id="tid_alert-policy-create" type="primary" @click="onCreateClick">
-            {{ $t('Action.Create') }}
-          </a-button>
-        </ul>
-        <alert-table-level slot="level" slot-scope="{ level }" :level="level" />
-        <span slot="status" slot-scope="{ status }">
-          <span :class="['status', status ? 'on' : 'off']" />
-          <span>&nbsp;{{ $t(`Status.${status ? 'ON' : 'OFF'}`) }}</span>
-        </span>
-        <a-dropdown slot="action" slot-scope="{ row }" :trigger="['click']" placement="bottomLeft">
-          <a-button>{{ $t('Action') }} <a-icon type="down" /></a-button>
-          <a-menu slot="overlay">
-            <a-menu-item @click="onEditClick(row)">
-              {{ $t('Action.Edit') }}
-            </a-menu-item>
-            <a-menu-item @click="onDeleteClick(row)">
-              {{ $t('Action.Delete') }}
-            </a-menu-item>
-          </a-menu>
-        </a-dropdown>
+        <template #controller>
+          <ul class="composite-table-controller">
+            <a-button id="tid_alert-policy-create" type="primary" @click="onCreateClick">
+              {{ $t('Action.Create') }}
+            </a-button>
+          </ul>
+        </template>
+        <template #level="{ level }">
+          <alert-table-level :level="level" />
+        </template>
+        <template #status="{ status }">
+          <span>
+            <span :class="['status', status ? 'on' : 'off']" />
+            <span>&nbsp;{{ $t(`Status.${status ? 'ON' : 'OFF'}`) }}</span>
+          </span>
+        </template>
+
+        <template #action="{ row }">
+          <a-dropdown :trigger="['click']" placement="bottomLeft">
+            <a-button
+              >{{ $t('Action') }}
+              <DownOutlined />
+            </a-button>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item @click="onEditClick(row)">
+                  {{ $t('Action.Edit') }}
+                </a-menu-item>
+                <a-menu-item @click="onDeleteClick(row)">
+                  {{ $t('Action.Delete') }}
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </template>
       </composite-table>
       <alert-policy-dialog id="tid_alert-policy-dialog" ref="AlertPolicyDialog" />
     </div>
   </div>
 </template>
 <script>
-import CompositeTable from '../component/composite-table'
-import AlertPolicyService from '../service/alert-policy'
-import AlertPolicyDialog from './alert-policy-manage/alert-policy-dialog'
-import AlertTablelevel from '../widget/alert-policy-level-label.vue'
+import AlertPolicyService from '@/service/alert-policy'
+import CompositeTable from '@/component/composite-table.vue'
+import AlertTablelevel from '@/widget/alert-policy-level-label.vue'
+import AlertPolicyDialog from './alert-policy-manage/alert-policy-dialog.vue'
 
 export default {
   components: {
@@ -68,20 +82,20 @@ export default {
           title: this.$t('Alert.Policy.Level'),
           dataIndex: 'level',
           sorter: true,
-          scopedSlots: { customRender: 'level' },
+          customSlot: true,
           align: 'left',
         },
         {
           title: this.$t('Alert.Policy.Status'),
           dataIndex: 'status',
           sorter: true,
-          scopedSlots: { customRender: 'status' },
+          customSlot: true,
           align: 'left',
         },
         {
           title: this.$t('Action'),
-          dataIndex: 'Action',
-          scopedSlots: { customRender: 'action' },
+          key: 'action',
+          customSlot: true,
           width: 120,
         },
       ],

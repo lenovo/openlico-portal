@@ -1,11 +1,10 @@
 <template>
   <div class="relation-chart">
-    <div ref="relationChart" class="relation-inner-chart" />
+    <div ref="container" class="relation-inner-chart" />
   </div>
 </template>
 
 <script>
-import * as ECharts from 'echarts'
 export default {
   props: ['initData', 'type'],
   data() {
@@ -22,24 +21,17 @@ export default {
     },
   },
   mounted() {
-    this.innerChart = ECharts.init(this.$refs.relationChart)
-    window.removeEventListener('resize', this.resizeChart)
-    window.addEventListener('resize', this.resizeChart)
+    this.$chart.init(this.$refs.container)
+
     this.resizeChart()
     this.init()
-    window.gApp.$watch('isCollapse', (newValue, oldValue) => {
-      setTimeout(() => {
-        this.resizeChart()
-      }, 300)
-    })
   },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.resizeChart)
-    this.innerChart.clear()
+  beforeUnmount() {
+    this.$chart.getInstanceByDom(this.$refs.container).clear()
   },
   methods: {
     resizeChart() {
-      this.innerChart.resize()
+      this.$chart.getInstanceByDom(this.$refs.container).resize()
     },
     init() {
       const $this = this
@@ -326,7 +318,7 @@ export default {
           },
         ],
       }
-      this.innerChart.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.container).setOption(option)
     },
   },
 }

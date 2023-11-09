@@ -1,33 +1,30 @@
-# pycharm
-.idea
-
+# Logs
+logs
 *.log
-*.lock
-
-.vscode
-.project
-.settings
-*~
-*.diff
-*.patch
-/*.html
-.DS_Store
-.bower.json
-.sizecache.json
-yarn.lock
-*.egg-info
-/public/color.less
-
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Ignore everything in dist folder except for eslint config
-.cache/
-/dist
-/dist/*
-!/dist/.eslintrc.json
+node_modules
+.DS_Store
+dist
+dist-ssr
+coverage
+*.local
+*.development
 
-/node_modules
-/.npm
-/package-lock.json
-
-*.swp
+/cypress/videos/
+/cypress/screenshots/
+build.report_*.html
+package-lock.json
+# Editor directories and files
+.vscode/*
+# !.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

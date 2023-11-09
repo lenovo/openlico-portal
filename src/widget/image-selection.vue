@@ -3,7 +3,7 @@
     <a-input-group compact class="image-select-content">
       <a-select
         v-if="imageType == 'system'"
-        v-model="path"
+        v-model:value="path"
         :disabled="disabled"
         :placeholder="$t('ImageSelection.Select.Placeholder')"
         :show-search="false"
@@ -18,7 +18,7 @@
       </a-select>
       <a-input
         v-if="imageType == 'private'"
-        v-model="privatePath"
+        v-model:value="privatePath"
         style="width: 70%"
         :placeholder="$t('ImageSelection.Input.Placeholder')"
         @blur="changeInput"></a-input>
@@ -28,13 +28,14 @@
 </template>
 
 <script>
-import imageVersionTag from './image-version-tag'
+import imageVersionTag from './image-version-tag.vue'
 
 export default {
   components: {
     'image-version-tag': imageVersionTag,
   },
   props: ['value', 'arch', 'images', 'disabled', 'dispalayImageType'],
+  emits: ['input', 'update:value'],
   data() {
     return {
       defaultValue: this.value,
@@ -60,6 +61,7 @@ export default {
       const image = this.filterImages(path)
       this.path = image ? image.value : path
       this.$emit('input', this.path)
+      this.$emit('update:value', this.path)
     },
     filterImages(path) {
       if (path) {
@@ -75,8 +77,10 @@ export default {
     submit() {
       if (this.path === undefined) {
         this.$emit('input', '')
+        this.$emit('update:value', '')
       } else {
         this.$emit('input', this.path.trim())
+        this.$emit('update:value', this.path.trim())
       }
     },
     changeInput() {},
@@ -88,7 +92,7 @@ export default {
 .image-select-content {
   margin-right: 10px;
 }
-.image-select-content >>> .ant-select-selection {
+.image-select-content :deep(.ant-select-selection) {
   border-radius: 4px !important;
 }
 </style>

@@ -1,20 +1,19 @@
 <template>
   <a-popover
     id="node-gpu-card-popover"
-    v-model="tooltipVisible"
-    trigger="contextmenu"
+    v-model:open="tooltipVisible"
     placement="bottom"
     :destroy-tooltip-on-hide="true"
     :get-popup-container="n => n.ownerDocument.body">
-    <tooltip-chart
-      slot="content"
-      ref="tooltipChart"
-      :container="node"
-      :gpu-id="gpuId"
-      :job="job"
-      :vendor="node.vendors[gpuId]"
-      class="node-gpu-tooltip-popper"
-      :style="`height: ${tooltipHeight}px;`" />
+    <template #content>
+      <tooltip-chart
+        :container="node"
+        :gpu-id="gpuId"
+        :job="job"
+        :vendor="node.vendors[gpuId]"
+        class="node-gpu-tooltip-popper"
+        :style="`height: ${tooltipHeight}px;`"
+    /></template>
     <div class="node-gpu-card">
       <span :title="node.hostname" class="node-gpu-card-title">{{ node.hostname }}</span>
       <div
@@ -32,21 +31,19 @@
   </a-popover>
 </template>
 
-<script type="text/javascript">
-import * as ECharts from 'echarts'
-import TooltipChart from './node-gpu-card/node-gpu-tooltip-chart'
-import Access from '../service/access'
-import MonitorService from '../service/monitor-data'
+<script>
+import TooltipChart from './node-gpu-card/node-gpu-tooltip-chart.vue'
+import Access from '@/service/access'
+import MonitorService from '@/service/monitor-data'
 
 export default {
   components: {
     TooltipChart,
   },
+  inject: ['resize'],
   props: ['node', 'valueType', 'job'],
   data() {
     return {
-      innerChart: null,
-      innerChartFix: null,
       type: 'util',
       fixed_bar_width: 20,
       tooltipVisible: false,
@@ -108,48 +105,51 @@ export default {
     valueType(val, old) {
       this.type = val || this.type
     },
+    resize(val) {
+      this.onResize()
+    },
   },
   mounted() {
     this.$nextTick(() => {
-      this.initChart()
-      window.removeEventListener('resize', this.onResize)
-      window.addEventListener('resize', this.onResize)
-      if (this.innerChart && this.innerChart.on) {
-        this.innerChart.on('mouseover', params => this.mouseoverEvent(params, 1))
-        this.innerChart.on('mouseout', params => this.mouseoutEvent(params))
+      this.$chart.init(this.$refs.container, window.gApp.echartsTheme.common)
+      const chartCon = this.$chart.getInstanceByDom(this.$refs.container)
+      if (chartCon && chartCon.on) {
+        chartCon.on('mouseover', params => this.mouseoverEvent(params, 1))
+        chartCon.on('mouseout', params => this.mouseoutEvent(params))
       }
-      if (this.innerChartFix && this.innerChartFix.on) {
-        this.innerChartFix.on('mouseover', params => this.mouseoverEvent(params, 2))
-        this.innerChartFix.on('mouseout', params => this.mouseoutEvent(params))
+      if (this.isShowTwoChart) {
+        this.$chart.init(this.$refs.containerFix, window.gApp.echartsTheme.common)
+        const chartFix = this.$chart.getInstanceByDom(this.$refs.containerFix)
+        if (chartFix && chartFix.on) {
+          chartFix.on('mouseover', params => this.mouseoverEvent(params, 2))
+          chartFix.on('mouseout', params => this.mouseoutEvent(params))
+        }
       }
+      this.setChartOption()
     })
   },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.onResize)
-    if (this.innerChart.clear() && this.innerChartFix.clear()) {
-      this.innerChart.clear()
-      this.innerChartFix.clear()
+  beforeUnmount() {
+    const beforeContainer = this.$chart.getInstanceByDom(this.$refs.container)
+    if (beforeContainer.clear()) {
+      beforeContainer.clear()
+    }
+    if (this.isShowTwoChart) {
+      const beforeContainerFix = this.$chart.getInstanceByDom(this.$refs.containerFix)
+      if (beforeContainerFix.clear()) {
+        beforeContainerFix.clear()
+      }
     }
   },
   methods: {
     onResize() {
-      if (this.innerChart) {
-        this.innerChart.resize()
+      this.$chart.getInstanceByDom(this.$refs.container).resize()
+      if (this.isShowTwoChart) {
+        this.$chart.getInstanceByDom(this.$refs.containerFix).resize()
       }
-      if (this.innerChartFix) {
-        this.innerChartFix.resize()
-      }
-    },
-    initChart() {
-      this.innerChart = ECharts.init(this.$refs.container, window.gApp.echartsTheme.common)
-      if (this.$refs.containerFix.offsetWidth) {
-        this.innerChartFix = ECharts.init(this.$refs.containerFix, window.gApp.echartsTheme.common)
-      }
-      this.setChartOption()
     },
     setChartOption() {
       const node = this.node
-      this.innerChart.setOption(
+      this.$chart.getInstanceByDom(this.$refs.container).setOption(
         this.getChartOption(
           {
             id: node.id,
@@ -163,7 +163,7 @@ export default {
         ),
       )
       if (this.isShowTwoChart) {
-        this.innerChartFix.setOption(
+        this.$chart.getInstanceByDom(this.$refs.containerFix).setOption(
           this.getChartOption(
             {
               id: node.id,
@@ -308,7 +308,6 @@ export default {
 }
 .node-gpu-card-title {
   display: inline-block;
-  /* width: 50%; */
   height: 20px;
   overflow: hidden;
   white-space: nowrap;

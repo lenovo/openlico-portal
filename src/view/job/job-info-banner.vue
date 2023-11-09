@@ -3,7 +3,7 @@
     <a-row style="height: 32px; line-height: 32px">
       <a-col :span="12" class="job-info-name" style="display: flex; width: 70%">
         <a-popover placement="topLeft">
-          <template slot="content">
+          <template #content>
             <p class="job-name">
               {{ job.name }}
             </p>
@@ -35,7 +35,7 @@
       <a-col v-if="job.numberOfGpus > 0" :span="2" flex="auto" align="left">
         <span class="job-info-title">{{ $t('Job.Gpu') }}</span>
       </a-col>
-      <a-col v-if="arch == 'host'" :span="4" flex="auto" align="left">
+      <a-col :span="4" flex="auto" align="left">
         <span class="job-info-title">{{ $t('JobDetail.Queue') }} / {{ $t('Job.SchedulerId') }}</span>
       </a-col>
       <a-col :span="4" flex="auto" align="left">
@@ -60,40 +60,38 @@
         <span :title="jobDisplayType">{{ jobDisplayType || '&nbsp;' }}</span>
       </a-col>
       <a-col :span="3" flex="auto" align="left">
-        <a-popover
-          v-if="arch == 'host'"
-          placement="bottom"
-          :title="$t('JobDetail.ExecHosts.Title')"
-          width="200"
-          trigger="click">
-          <p slot="content">
-            {{ formatExecHosts(job.execHostsDisplay) }}
-          </p>
-          <a-button v-if="arch == 'host'" type="link" style="padding: 0px">
+        <a-popover placement="bottom" :title="$t('JobDetail.ExecHosts.Title')" width="200" trigger="click">
+          <template #content>
+            <p>
+              {{ formatExecHosts(job.execHostsDisplay) }}
+            </p>
+          </template>
+
+          <a-button type="link" style="padding: 0px">
             {{ job.numberOfCpuCores }} /
             {{ job.numberOfNodes }}
           </a-button>
         </a-popover>
-        <span v-else>{{ job.numberOfCpuCores }} / {{ job.numberOfNodes }}</span>
       </a-col>
       <a-col v-if="job.numberOfGpus > 0" :span="2" flex="auto" align="left">
         <a-popover
-          v-if="arch == 'host'"
           ref="gpuExecPopover"
           placement="bottom"
           :title="$t('JobDetail.ExecHosts.Title')"
           width="200"
           trigger="click">
-          <p slot="content">
-            {{ formatExecHosts(job.gpuExecHostsDisplay) }}
-          </p>
-          <a-button v-if="arch == 'host'" type="link" style="padding: 0px">
+          <template #content>
+            <p>
+              {{ formatExecHosts(job.gpuExecHostsDisplay) }}
+            </p>
+          </template>
+
+          <a-button type="link" style="padding: 0px">
             {{ job.numberOfGpus }}
           </a-button>
         </a-popover>
-        <span v-else>{{ job.numberOfGpus }}</span>
       </a-col>
-      <a-col v-if="arch == 'host'" :span="4" flex="auto" align="left">
+      <a-col :span="4" flex="auto" align="left">
         <span>{{ job.queue }} / {{ job.schedulerId }}</span>
       </a-col>
       <a-col :span="4" flex="auto" align="left">
@@ -117,10 +115,10 @@
 </template>
 
 <script>
-import JobService from '../../service/job'
-import JobStatusLabel from '../../widget/job-status-label'
-import Format from '../../common/format'
-import AccessService from './../../service/access'
+import Format from '@/common/format'
+import JobService from '@/service/job'
+import AccessService from '@/service/access'
+import JobStatusLabel from '@/widget/job-status-label.vue'
 export default {
   components: {
     'job-status-label': JobStatusLabel,
@@ -135,7 +133,8 @@ export default {
   },
   computed: {
     jobDisplayType() {
-      return String(this.innerJob.realType).replace('letrain_', '').replace('_inference', '')
+      const innerKey = isNaN(this.innerJob.type) ? 'type' : 'realType'
+      return this.innerJob[innerKey].replace('letrain_', '').replace('_inference', '')
     },
   },
   watch: {
@@ -185,8 +184,9 @@ export default {
 <style scoped>
 .job-info-banner {
   padding: 20px;
+  width: 100%;
 }
-.job-info-banner .job-info-name >>> .ant-popover-inner {
+.job-info-banner .job-info-name :deep(.ant-popover-inner) {
   max-width: 70%;
 }
 .job-name {
@@ -219,7 +219,11 @@ export default {
 .job-title-action {
   cursor: pointer;
 }
-.job-info-banner-values >>> .ant-col {
+.job-info-banner-values :deep(.ant-col) {
   line-height: 32px;
+}
+.job-info-banner :deep(.ant-popover-title) {
+  padding-bottom: 5px;
+  border-bottom: 1px solid #ddd;
 }
 </style>

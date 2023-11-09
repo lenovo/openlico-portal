@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import Request from '../request/https'
-import ErrorHandler from '../common/error-handler'
+import Request from '@/request/https'
+import ErrorHandler from '@/common/error-handler'
 
 class Room {
   constructor() {
@@ -32,89 +32,11 @@ class Room {
 
   static parseFromRestApi(obj) {
     const room = new Room()
-    room._roomName = obj.name
-    room._roomId = obj.id
-    room._location = obj.location
-    room._nodeNumber = obj.node_num
-    // room._powerConsumption = obj.power_consumption;
-    // room._busyNumber = obj.node_busy;
-    // room._usedNumber = obj.node_used;
-    // room._offNumber = obj.node_off;
-    // room._freeNumber = obj.node_free;
-
+    room.roomName = obj.name
+    room.roomId = obj.id
+    room.location = obj.location
+    room.nodeNumber = obj.node_num
     return room
-  }
-
-  get _roomName() {
-    return this.roomName
-  }
-
-  set _roomName(roomName) {
-    return (this.roomName = roomName)
-  }
-
-  get _roomId() {
-    return this.roomId
-  }
-
-  set _roomId(roomId) {
-    return (this.roomId = roomId)
-  }
-
-  get _location() {
-    return this.location
-  }
-
-  set _location(location) {
-    return (this.location = location)
-  }
-
-  get _nodeNumber() {
-    return this.nodeNumber
-  }
-
-  set _nodeNumber(nodeNumber) {
-    return (this.nodeNumber = nodeNumber)
-  }
-
-  get _powerConsumption() {
-    return this.powerConsumption
-  }
-
-  set _powerConsumption(powerConsumption) {
-    return (this.powerConsumption = powerConsumption)
-  }
-
-  get _busyNumber() {
-    return this.busyNumber
-  }
-
-  set _busyNumber(busyNumber) {
-    return (this.busyNumber = busyNumber)
-  }
-
-  get _usedNumber() {
-    return this.usedNumber
-  }
-
-  set _usedNumber(usedNumber) {
-    return (this.usedNumber = usedNumber)
-  }
-
-  get _offNumber() {
-    return this.offNumber
-  }
-
-  set _offNumber(offNumber) {
-    return (this.offNumber = offNumber)
-  }
-
-  get _freeNumber() {
-    return this.freeNumber
-  }
-
-  set _freeNumber(freeNumber) {
-    return (this.freeNumber = freeNumber)
   }
 }
 
@@ -134,97 +56,17 @@ class Rack {
 
   static parseFromRestApi(obj) {
     const rack = new Rack()
-    rack._rackName = obj.name
-    rack._rackId = obj.id
-    rack._location = obj.location
-    rack._nodeNumber = obj.node_num
-    rack._busyNumber = obj.node_busy
-    rack._usedNumber = obj.node_used
-    rack._offNumber = obj.node_off
-    rack._freeNumber = obj.node_free
-    rack._energy = obj.energy
-    rack._alarmLevel = obj.alarm_level
+    rack.rackName = obj.name
+    rack.rackId = obj.id
+    rack.location = obj.location
+    rack.nodeNumber = obj.node_num
+    rack.busyNumber = obj.node_busy
+    rack.usedNumber = obj.node_used
+    rack.offNumber = obj.node_off
+    rack.freeNumber = obj.node_free
+    rack.energy = obj.energy
+    rack.alarmLevel = obj.alarm_level
     return rack
-  }
-
-  get _rackName() {
-    return this.rackName
-  }
-
-  set _rackName(rackName) {
-    return (this.rackName = rackName)
-  }
-
-  get _rackId() {
-    return this.rackId
-  }
-
-  set _rackId(rackId) {
-    return (this.rackId = rackId)
-  }
-
-  get _location() {
-    return this.location
-  }
-
-  set _location(location) {
-    return (this.location = location)
-  }
-
-  get _nodeNumber() {
-    return this.nodeNumber
-  }
-
-  set _nodeNumber(nodeNumber) {
-    return (this.nodeNumber = nodeNumber)
-  }
-
-  get _busyNumber() {
-    return this.busyNumber
-  }
-
-  set _busyNumber(busyNumber) {
-    return (this.busyNumber = busyNumber)
-  }
-
-  get _usedNumber() {
-    return this.usedNumber
-  }
-
-  set _usedNumber(usedNumber) {
-    return (this.usedNumber = usedNumber)
-  }
-
-  get _offNumber() {
-    return this.offNumber
-  }
-
-  set _offNumber(offNumber) {
-    return (this.offNumber = offNumber)
-  }
-
-  get _freeNumber() {
-    return this.freeNumber
-  }
-
-  set _freeNumber(freeNumber) {
-    return (this.freeNumber = freeNumber)
-  }
-
-  get _energy() {
-    return this.energy
-  }
-
-  set _energy(energy) {
-    return (this.energy = energy)
-  }
-
-  get _alarmLevel() {
-    return this.alarmLevel
-  }
-
-  set _alarmLevel(alarmLevel) {
-    return (this.alarmLevel = alarmLevel)
   }
 }
 
@@ -241,70 +83,14 @@ class Row {
 
   static parseFromRestApi(obj) {
     const row = new Row()
-    row._rowName = obj.name
-    row._rowId = obj.id
-    row._index = obj.index
-    row._racks = obj.racks
-    row._totalNode = obj.total_nodes
-    row._totalRacks = obj.total_racks
-    row._totalEnergy = obj.total_energy
+    row.rowName = obj.name
+    row.rowId = obj.id
+    row.index = obj.index
+    row.racks = obj.racks
+    row.totalNode = obj.total_nodes
+    row.totalRacks = obj.total_racks
+    row.totalEnergy = obj.total_energy
     return row
-  }
-
-  get _rowName() {
-    return this.rowName
-  }
-
-  set _rowName(rowName) {
-    return (this.rowName = rowName)
-  }
-
-  get _rowId() {
-    return this.rowId
-  }
-
-  set _rowId(rowId) {
-    return (this.rowId = rowId)
-  }
-
-  get _index() {
-    return this.index
-  }
-
-  set _index(index) {
-    return (this.index = index)
-  }
-
-  get _racks() {
-    return this.racks
-  }
-
-  set _racks(racks) {
-    return (this.racks = racks)
-  }
-
-  get _totalNode() {
-    return this.totalNode
-  }
-
-  set _totalNode(totalNode) {
-    return (this.totalNode = totalNode)
-  }
-
-  get _totalRacks() {
-    return this.totalRacks
-  }
-
-  set _totalRacks(totalRacks) {
-    return (this.totalRacks = totalRacks)
-  }
-
-  get _totalEnergy() {
-    return this.totalEnergy
-  }
-
-  set _totalEnergy(totalEnergy) {
-    return (this.totalEnergy = totalEnergy)
   }
 }
 

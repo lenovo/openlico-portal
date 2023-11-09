@@ -10,26 +10,26 @@
     :success-message-formatter="successMessageFormatter"
     :error-message-formatter="errorMessageFormatter">
     <template v-if="mode == 'edit'">
-      <a-form-model-item v-if="apiKeyForm.ultimate" :label="$t('APIKey.EditDialog.OldExpireTime')">
-        <a-checkbox v-model="apiKeyForm.ultimate" disabled>
+      <a-form-item v-if="apiKeyForm.ultimate" :label="$t('APIKey.EditDialog.OldExpireTime')">
+        <a-checkbox v-model:checked="apiKeyForm.ultimate" disabled>
           {{ $t('APIKey.UnLimited') }}
         </a-checkbox>
-      </a-form-model-item>
-      <a-form-model-item v-else :label="$t('APIKey.EditDialog.OldExpireTime')">
-        <a-date-picker v-model="apiKeyForm.expireTime" format="YYYY-MM-DD" disabled />
-      </a-form-model-item>
-      <a-form-model-item :label="$t('APIKey.EditDialog.NewExpireTime')" prop="newUltimate">
-        <a-checkbox v-model="apiKeyForm.newUltimate">
+      </a-form-item>
+      <a-form-item v-else :label="$t('APIKey.EditDialog.OldExpireTime')">
+        <a-date-picker v-model:value="apiKeyForm.expireTime" format="YYYY-MM-DD" disabled />
+      </a-form-item>
+      <a-form-item :label="$t('APIKey.EditDialog.NewExpireTime')" name="newUltimate">
+        <a-checkbox v-model:checked="apiKeyForm.newUltimate">
           {{ $t('APIKey.UnLimited') }}
         </a-checkbox>
-      </a-form-model-item>
-      <a-form-model-item label=" " prop="newExpireTime">
+      </a-form-item>
+      <a-form-item label=" " name="newExpireTime">
         <a-date-picker
-          v-model="apiKeyForm.newExpireTime"
+          v-model:value="apiKeyForm.newExpireTime"
           format="YYYY-MM-DD"
           :disabled="apiKeyForm.newUltimate"
           :disabled-date="disabledDate" />
-      </a-form-model-item>
+      </a-form-item>
     </template>
     <p v-if="mode == 'delete'" style="text-indent: 1em">
       <i class="a-icon-warning" style="color: red; font-size: 19px" />
@@ -38,9 +38,9 @@
   </composite-form-dialog>
 </template>
 <script>
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import APIKeyService from '../../service/api-key'
-import moment from 'moment'
+import dayjs from '@/dayjs'
+import APIKeyService from '@/service/api-key'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
@@ -58,7 +58,7 @@ export default {
       },
       apiKeyRule: {},
       disabledDate(current) {
-        return current && current < moment().startOf('day')
+        return current && current < dayjs().startOf('day')
       },
     }
   },

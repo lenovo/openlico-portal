@@ -1,13 +1,13 @@
 <template>
   <div class="job-template-license-feature">
-    <template v-for="(val, index) in values">
-      <div :key="index" class="job-template-license-feature-item" :class="{ 'm-t-10': index > 0 }">
+    <template v-for="(val, index) in values" :key="index">
+      <div class="job-template-license-feature-item" :class="{ 'm-t-10': index > 0 }">
         <a-input
           v-if="scheduler == 'pbs'"
-          v-model="val.key"
+          v-model:value="val.key"
           class="license-feature-item-license"
           @change="onValuesChange" />
-        <a-select v-else v-model="val.key" class="license-feature-item-license" @change="onValuesChange">
+        <a-select v-else v-model:value="val.key" class="license-feature-item-license" @change="onValuesChange">
           <a-select-option
             v-for="item in innerOptions"
             :key="item.key"
@@ -19,12 +19,12 @@
           </a-select-option>
         </a-select>
         <a-input-number
-          v-model="val.value"
+          v-model:value="val.value"
           :min="0"
           :max="getCountsMax(val.key)"
           class="license-feature-item-counts m-l-10"
           @change="onValuesChange($event, index)" />
-        <span class="license-feature-item-del m-l-10" @click="onDeleteClick(index)"><a-icon type="close" /></span>
+        <span class="license-feature-item-del m-l-10" @click="onDeleteClick(index)"><CloseOutlined /></span>
       </div>
       <!-- <div :key="`license_item_err_msg_${index}`" class="license-item-err-msg" :class="{'license-item-err-msg-active': !Boolean(val.counts)}">{{"please input"}}</div> -->
     </template>
@@ -34,11 +34,12 @@
   </div>
 </template>
 <script>
-import JobTemplateService from '../../service/job-template'
-import AccessService from '../../service/access'
+import AccessService from '@/service/access'
+import JobTemplateService from '@/service/job-template'
 
 export default {
   props: ['value'],
+  emits: ['input', 'update:value'],
   data() {
     return {
       scheduler: AccessService.getScheduler(),
@@ -103,6 +104,7 @@ export default {
         value[item.key] = item.value
       })
       this.$emit('input', value)
+      this.$emit('update:value', value)
     },
     getOptipns() {
       JobTemplateService.getJobLicenseFeature().then(
@@ -160,7 +162,7 @@ export default {
   width: 80px;
   flex-shrink: 0;
 }
-.job-template-license-feature-item .license-feature-item-counts >>> .ant-input-number-handler-wrap {
+.job-template-license-feature-item .license-feature-item-counts :deep(.ant-input-number-handler-wrap) {
   display: none;
 }
 .license-feature-item-del {

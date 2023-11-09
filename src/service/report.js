@@ -58,6 +58,8 @@ function toReportUrl(type, content, name, format) {
       const logContent = name === 'log' ? 'details' : content
       return reportType[name] + '_' + logContent + '.' + format
     }
+    case 'expense':
+      return type + '_' + 'details' + '.' + format
     default:
       break
   }
@@ -102,86 +104,6 @@ class Report {
     reportForm.timezone_offset = now.getTimezoneOffset()
     reportForm.format = form.format
     return reportForm
-  }
-
-  get type() {
-    return this._type
-  }
-
-  set type(type) {
-    this._type = type
-  }
-
-  get report() {
-    return this._report
-  }
-
-  set report(report) {
-    this._report = report
-  }
-
-  get content() {
-    return this._content
-  }
-
-  set content(content) {
-    this._content = content
-  }
-
-  get format() {
-    return this._format
-  }
-
-  set format(format) {
-    this._format = format
-  }
-
-  get level() {
-    return this._level
-  }
-
-  set level(level) {
-    this._level = level
-  }
-
-  get user() {
-    return this._user
-  }
-
-  set user(user) {
-    this._user = user
-  }
-
-  get node() {
-    return this._node
-  }
-
-  set node(node) {
-    this._node = node
-  }
-
-  get billGroup() {
-    return this._billGroup
-  }
-
-  set billGroup(billGroup) {
-    this._billGroup = billGroup
-  }
-
-  get startTime() {
-    return this._startTime
-  }
-
-  set startTime(startTime) {
-    this._startTime = startTime
-  }
-
-  get endTime() {
-    return this._endTime
-  }
-
-  set endTime(endTime) {
-    this._endTime = endTime
   }
 }
 

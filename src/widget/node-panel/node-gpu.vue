@@ -2,7 +2,7 @@
   <div class="node-gpu-tab">
     <a-radio-group
       v-if="isDev"
-      v-model="viewType"
+      v-model:value="viewType"
       :disabled="loading"
       button-style="solid"
       class="m-b-20"
@@ -20,8 +20,8 @@
       :pagination="false"
       :expanded-row-keys="expandRowkeys"
       :loading="loading"
-      @expandedRowsChange="onExpandChange">
-      <template slot="expandedRowRender" slot-scope="record">
+      @expanded-rows-change="onExpandChange">
+      <template #expandedRowRender="{ record }">
         <a-row :gutter="10" style="width: 100%">
           <a-col :lg="8" :md="12" :sm="24" :xs="24" class="node-gpu-chart">
             <node-gpu-used ref="nodeGpuUsed" :gpu-data="record.util.history" />
@@ -34,20 +34,22 @@
           </a-col>
         </a-row>
       </template>
-      <template slot="used" slot-scope="text, record">
-        <node-status-label v-if="record.used != '-'" :status="record.used" />
-        <span v-else>{{ record.used }}</span>
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'used'">
+          <node-status-label v-if="record.used != '-'" :status="record.used" />
+          <span v-else>{{ record.used }}</span>
+        </template>
       </template>
     </a-table>
   </div>
 </template>
 
 <script>
-import NodeStatusLabel from '../node-status-label.vue'
-import NodeGpuUsed from './node-gpu/node-gpu-used'
-import NodeGpuMemory from './node-gpu/node-gpu-memory'
-import NodeGpuTemp from './node-gpu/node-gpu-temperature'
-import GpuService from '../../service/monitor-data'
+import NodeStatusLabel from '../nodes-table/node-status-label.vue'
+import NodeGpuUsed from './node-gpu/node-gpu-used.vue'
+import NodeGpuMemory from './node-gpu/node-gpu-memory.vue'
+import NodeGpuTemp from './node-gpu/node-gpu-temperature.vue'
+import GpuService from '@/service/monitor-data'
 export default {
   components: {
     'node-status-label': NodeStatusLabel,
@@ -75,9 +77,9 @@ export default {
         {
           title: this.$t('NodePanel.GPU.Index'),
           dataIndex: 'index',
-          customRender: (val, rows) => {
+          customRender: ({ text, record }) => {
             return `${this.$t('Monitor.Gpu')}
-              #${val}${rows.devId !== null ? ' ' + GpuService.VendorMap[rows.vendor].prefix + rows.devId : ''}`
+              #${text}${record.devId !== null ? ' ' + GpuService.VendorMap[record.vendor].prefix + record.devId : ''}`
           },
         },
         {
@@ -87,32 +89,30 @@ export default {
         {
           title: this.$t('NodePanel.GPU.Vendor'),
           dataIndex: 'vendor',
-          customRender: val => {
-            return this.$t(`NodePanel.GPU.Vendor.${GpuService.VendorMap[val].vendor}`)
+          customRender: ({ text }) => {
+            return this.$t(`NodePanel.GPU.Vendor.${GpuService.VendorMap[text].vendor}`)
           },
         },
         {
           title: this.$t('Monitor.Util'),
           dataIndex: 'util',
-          customRender: val => val.current,
+          customRender: ({ text }) => text.current,
         },
         {
           title: this.$t('NodePanel.GPU.Memory'),
           dataIndex: 'memory',
-          customRender: val => val.current,
+          customRender: ({ text }) => text.current,
         },
         {
           title: this.$t('Monitor.Temp'),
           dataIndex: 'temperature',
-          customRender: val => val.current,
+          customRender: ({ text }) => text.current,
         },
       ]
       if (!this.isDev) {
-        console.log(111)
         columns.splice(3, 0, {
           title: this.$t('NodePanel.GPU.Status'),
           dataIndex: 'used',
-          scopedSlots: { customRender: 'used' },
         })
       }
       return columns

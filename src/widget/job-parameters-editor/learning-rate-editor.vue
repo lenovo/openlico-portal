@@ -5,8 +5,8 @@
       :key="index + getLearningRateDisplayName(learningRate)"
       :closable="multi"
       :close-transition="true"
-      @close="onLearningRateRemove(learningRate)"
-      @click.native="onLearningRateSetting(learningRate)">
+      @close.prevent="onLearningRateRemove(learningRate)"
+      @click="onLearningRateSetting(learningRate)">
       {{ getLearningRateDisplayName(learningRate) }}
     </a-tag>
     <a-button v-show="multi" class="new-learning-rate-button" size="small" @click="onCreateClick"> + </a-button>
@@ -14,14 +14,15 @@
   </div>
 </template>
 <script>
-import LearningRateDialog from './learning-rate-dialog'
-import Utils from './../../common/utils'
+import Utils from '@/common/utils'
+import LearningRateDialog from './learning-rate-dialog.vue'
 
 export default {
   components: {
-    'learning-rate-dialog': LearningRateDialog,
+    LearningRateDialog,
   },
   props: ['value', 'multi'],
+  emits: ['input', 'update:value'],
   data() {
     return {
       learningRates: this.multi ? this.value : [this.value],
@@ -32,8 +33,10 @@ export default {
       handler(val, oldVal) {
         if (this.multi) {
           this.$emit('input', this.learningRates)
+          this.$emit('update:value', this.learningRates)
         } else {
           this.$emit('input', this.learningRates[0])
+          this.$emit('update:value', this.learningRates[0])
         }
       },
     },

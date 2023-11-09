@@ -3,79 +3,53 @@
     <div v-if="job != null">
       <a-row class="inner-box b-w">
         <job-info-banner :job="job" :arch="arch">
-          <a-dropdown id="Job_Action_Select" slot="controller" :trigger="['click']">
-            <a-menu slot="overlay" @click="({ key }) => onActionCommand(key)">
-              <a-menu-item v-for="i in actionOptions" :key="i.value" :disabled="i.value == 'NoAction'">
-                {{ i.label }}
-              </a-menu-item>
-            </a-menu>
-            <a-button style="margin-left: 8px">
-              {{ $t('Action') }}
-              <a-icon type="down" />
-            </a-button>
-          </a-dropdown>
+          <template #controller>
+            <a-dropdown id="Job_Action_Select" :trigger="['click']">
+              <template #overlay>
+                <a-menu @click="({ key }) => onActionCommand(key)">
+                  <a-menu-item v-for="i in actionOptions" :key="i.value" :disabled="i.value == 'NoAction'">
+                    {{ i.label }}
+                  </a-menu-item>
+                </a-menu>
+              </template>
+              <a-button style="margin-left: 8px">
+                {{ $t('Action') }}
+                <down-outlined />
+              </a-button>
+            </a-dropdown>
+          </template>
         </job-info-banner>
       </a-row>
       <a-row class="inner-box b-w">
-        <a-tabs id="Job_Detail_Tabs" v-model="defaultDisplay" :animated="false" class="job-detail-tab">
-          <a-tab-pane key="log" :tab="$t('JobDetail.Monitor')" style="padding-left: 10px; padding-right: 10px">
+        <a-tabs id="Job_Detail_Tabs" v-model:activeKey="defaultDisplay" :animated="false" class="job-detail-tab">
+          <a-tab-pane key="log" :tab="$t('JobDetail.Monitor')">
             <job-log-viewer ref="jobLogViewer" :job="job"> </job-log-viewer>
           </a-tab-pane>
-          <a-tab-pane
-            v-if="isShowVNC"
-            key="vnc"
-            :tab="$t('JobDetail.VNC')"
-            style="padding-left: 10px; padding-right: 10px">
+          <a-tab-pane v-if="isShowVNC" key="vnc" :tab="$t('JobDetail.VNC')">
             <job-vnc ref="jobVNC" :job="job" />
           </a-tab-pane>
-          <a-tab-pane
-            v-if="isShowProcessTab"
-            key="process"
-            :tab="$t('Monitor.Process')"
-            style="padding-left: 10px; padding-right: 10px">
+          <a-tab-pane v-if="isShowProcessTab" key="process" :tab="$t('Monitor.Process')">
             <job-process ref="jobProcess" :is-gpus="job.numberOfGpus" :job="job" />
           </a-tab-pane>
-          <a-tab-pane
-            v-if="isShowResourceTab"
-            key="resource"
-            :tab="$t('Monitor.Resource')"
-            style="padding-left: 10px; padding-right: 10px">
+          <a-tab-pane v-if="isShowResourceTab" key="resource" :tab="$t('Monitor.Resource')">
             <job-resource ref="jobResource" :job="job" />
           </a-tab-pane>
-          <a-tab-pane v-if="isShowCpuTab" key="cpu" :tab="$t('Job.Cpu')">
-            <job-monitor-cpu ref="monitorCpu" :job="job"> </job-monitor-cpu>
-          </a-tab-pane>
-          <a-tab-pane v-if="isShowGpuTab" key="gpu" :tab="$t('Job.Gpu')">
-            <job-monitor-gpus ref="monitorGpus" :job="job"> </job-monitor-gpus>
-          </a-tab-pane>
-          <a-tab-pane
-            v-if="job.jobFilename"
-            key="jobFile"
-            :tab="$t('JobDetail.JobFile')"
-            style="padding-left: 10px; padding-right: 10px">
+          <a-tab-pane v-if="job.jobFilename" key="jobFile" :tab="$t('JobDetail.JobFile')">
             <job-file-viewer :job="job"></job-file-viewer>
           </a-tab-pane>
-          <a-tab-pane
-            v-if="isShowTensorboard"
-            key="tensorboard"
-            :tab="$t('JobDetail.Tensorboard')"
-            style="padding-left: 10px; padding-right: 10px">
+          <a-tab-pane v-if="launchUrl" key="launch" :tab="$t('JobDetail.Launch')">
+            <job-tensorboard-launch ref="jobLaunch" :launch-url="launchUrl" />
+          </a-tab-pane>
+          <a-tab-pane v-if="isShowTensorboard" key="tensorboard" :tab="$t('JobDetail.Tensorboard')">
             <job-tensorboard :job="job" :arch="arch"> </job-tensorboard>
           </a-tab-pane>
-          <a-tab-pane
-            v-if="isIntelvTuneJob"
-            key="intel"
-            :tab="$t('JobDetail.IntelvTune')"
-            style="padding-left: 10px; padding-right: 10px">
+          <a-tab-pane v-if="isIntelvTuneJob" key="intel" :tab="$t('JobDetail.IntelvTune')">
             <job-intel-vtune ref="intelvTune" :job="job" />
           </a-tab-pane>
           <a-tab-pane v-if="isShowDebugTab" key="Debug" :tab="$t('Monitor.Remotely.Debug')">
             <job-remotely-debug ref="jobRemotelyDebug" :job="job" />
           </a-tab-pane>
-          <a-tab-pane
-            key="information"
-            :tab="$t('JobDetail.Information')"
-            style="padding-left: 10px; padding-right: 10px">
+          <a-tab-pane key="information" :tab="$t('JobDetail.Information')">
             <job-infomation :detail-information="null" :job="job" @refresh-job="refreshJob" />
           </a-tab-pane>
         </a-tabs>
@@ -88,31 +62,30 @@
 </template>
 
 <script>
-import JobService from '../service/job'
-import AccessService from '../service/access'
-import JobLogViewer from './job/job-log-viewer'
-import JobInfoBanner from './job/job-info-banner'
-import JobTensorboard from './job/job-tensorboard'
-import JobFileViewer from './job/job-file-viewer'
-import JobInfomation from './job/job-infomation'
-import JobMonitorCpu from './job/job-monitor-cpu'
-import JobMonitorGpus from './job/job-monitor-gpus'
-import JobProcess from './job/job-process'
-import JobRemotelyDebug from './job/job-remotely-debug'
-import JobResource from './job/job-resource'
-import JobActionDialog from '../widget/job-action-dialog'
-import FileManagerDialog from '../component/file-manager-dialog'
-import ErrorMessageDialog from './job-manage/job-error-message-dialog'
-import JobIntelVtune from './job/job-intel-vtune.vue'
+import JobService from '@/service/job'
+import AccessService from '@/service/access'
+import JobActionDialog from '@/widget/job-action-dialog.vue'
+import FileManagerDialog from '@/component/file-manager-dialog.vue'
 import JobVnc from './job/job-vnc.vue'
+import JobProcess from './job/job-process.vue'
+import JobResource from './job/job-resource.vue'
+import JobIntelVtune from './job/job-intel-vtune.vue'
+import JobLogViewer from './job/job-log-viewer.vue'
+import JobInfoBanner from './job/job-info-banner.vue'
+import JobFileViewer from './job/job-file-viewer.vue'
+import JobInfomation from './job/job-infomation.vue'
+import JobTensorboard from './job/job-tensorboard.vue'
+import JobRemotelyDebug from './job/job-remotely-debug.vue'
+import ErrorMessageDialog from './job-manage/job-error-message-dialog.vue'
+import JobTensorboardLaunch from './job/job-tensorboard-launch.vue'
+
 export default {
   components: {
     'job-info-banner': JobInfoBanner,
     'job-log-viewer': JobLogViewer,
+    'job-tensorboard-launch': JobTensorboardLaunch,
     'job-tensorboard': JobTensorboard,
     'job-file-viewer': JobFileViewer,
-    'job-monitor-gpus': JobMonitorGpus,
-    'job-monitor-cpu': JobMonitorCpu,
     'job-action-dialog': JobActionDialog,
     'file-manager-dialog': FileManagerDialog,
     'job-error-message-dialog': ErrorMessageDialog,
@@ -138,14 +111,15 @@ export default {
       availableMetrics: this.$store.state.auth.availableMetrics.split(',') || [],
       jobStatusMap: JobService.JobWebStatusEnums,
       refresh: true,
+      launchUrl: '',
     }
   },
   computed: {
     isShowTensorboard() {
-      if (typeof this.job.realType === 'string') {
+      if (isNaN(this.job.type)) {
         if (
-          (!this.job.realType.includes('modelzoo') && this.job.realType.includes('tensorflow')) ||
-          (this.job.realType.indexOf('letrain_') === 0 && !this.job.type.split('_').includes('export'))
+          (!this.job.type.includes('modelzoo') && this.job.type.includes('tensorflow')) ||
+          (this.job.type.indexOf('letrain_') === 0 && !this.job.type.split('_').includes('export'))
         ) {
           return true
         }
@@ -210,16 +184,10 @@ export default {
   watch: {
     '$route.params.id'(val, oldVal) {
       this.jobId = parseInt(val)
-      this.refreshJob()
+      if (this.jobId) this.refreshJob()
     },
     defaultDisplay(val, oldVal) {
       this.$nextTick(() => {
-        if (val === 'gpu' && this.$refs.monitorGpus) {
-          this.$refs.monitorGpus.autoResize()
-        }
-        if (val === 'cpu' && this.$refs.monitorCpu) {
-          this.$refs.monitorCpu.autoResize()
-        }
         if (val === 'log') {
           this.$refs.jobLogViewer.initJobLog()
         }
@@ -236,7 +204,7 @@ export default {
     this.jobId = parseInt(this.$route.params.id)
     this.refreshJob()
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.autoRefreshTimerId > 0) {
       clearTimeout(this.autoRefreshTimerId)
     }
@@ -252,10 +220,8 @@ export default {
       JobService.getJobById(jobid).then(
         res => {
           this.job = res
-          if (
-            (this.defaultDisplay === 'gpu' || this.defaultDisplay === 'cpu' || this.defaultDisplay === 'resource') &&
-            this.job.status !== 'running'
-          ) {
+          const tempDisplay = ['process', 'resource', 'launch']
+          if (tempDisplay.includes(this.defaultDisplay) && this.job.status !== 'running') {
             this.defaultDisplay = defaultDisplay
           }
           this.initJobAction()
@@ -263,20 +229,29 @@ export default {
             const self = this
             this.autoRefreshTimerId = setTimeout(self.refreshJob, this.autoRefreshInterval)
           }
+          this.initLaunchUrl()
         },
         err => {
           this.$message.error(err)
         },
       )
     },
+    initLaunchUrl() {
+      if (!this.launchUrl && this.job.status === 'running' && this.job.template.entrance === 'true') {
+        JobService.getEntranceUrl(this.job.id).then(res => {
+          if (res.entrance_uri) {
+            this.launchUrl = res.entrance_uri
+          } else {
+            this.launchUrl = ''
+          }
+        })
+      }
+      if (this.job.status !== 'running') {
+        this.launchUrl = ''
+      }
+    },
     async initJobAction() {
-      const actions = await JobService.getJobActions(
-        this.access,
-        this.job.operateStatus,
-        this.job.status,
-        this.job.type,
-        this.job.errmsg,
-      )
+      const actions = await JobService.getJobActions(this.access, this.job)
       const deleteIndex = actions.indexOf('Delete')
       if (deleteIndex !== -1) {
         // remove delete action
@@ -299,8 +274,17 @@ export default {
       if (command === 'Browse') {
         this.onBrowseClick()
       }
+      if (command === 'Requeue') {
+        this.onRequeueClick()
+      }
       if (command === 'Cancel') {
         this.onCancelClick()
+      }
+      if (command === 'Hold') {
+        this.onHoldClick()
+      }
+      if (command === 'Release') {
+        this.onReleaseClick()
       }
       if (command === 'Rerun') {
         this.onRerunClick()
@@ -318,8 +302,41 @@ export default {
       event.visible = true
       window.dispatchEvent(event)
     },
+    onRequeueClick() {
+      this.$refs.jobActionDialog.doRequeue(this.job).then(
+        res => {
+          this.refreshJob()
+          window.gApp.updateImmediate = true
+        },
+        _ => {
+          this.refreshJob()
+        },
+      )
+    },
     onCancelClick() {
       this.$refs.jobActionDialog.doCancel(this.job).then(
+        res => {
+          this.refreshJob()
+          window.gApp.updateImmediate = true
+        },
+        _ => {
+          this.refreshJob()
+        },
+      )
+    },
+    onHoldClick() {
+      this.$refs.jobActionDialog.doHold(this.job).then(
+        res => {
+          this.refreshJob()
+          window.gApp.updateImmediate = true
+        },
+        _ => {
+          this.refreshJob()
+        },
+      )
+    },
+    onReleaseClick() {
+      this.$refs.jobActionDialog.doRelease(this.job).then(
         res => {
           this.refreshJob()
           window.gApp.updateImmediate = true
@@ -352,14 +369,17 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .inner-box {
   border-radius: 2px;
   margin-bottom: 20px;
 }
-
+.inner-box :deep(.p-20) {
+  padding: 0px;
+}
 .job-detail-tab {
   padding: 5px 20px;
   overflow: inherit !important;
+  width: 100%;
 }
 </style>

@@ -1,8 +1,8 @@
 <template>
-  <div class="height--100 p-20 dashboard-backgroud-color">
+  <div class="p-20 dashboard-backgroud-color">
     <div v-if="nodeStatus" class="dashboard-card-title" style="float: left">
       {{
-        $t('Dashboard.NodeStatus.Chart.Title', {
+        $T('Dashboard.NodeStatus.Chart.Title', {
           count: nodeStatus.on + nodeStatus.off,
         })
       }}
@@ -11,67 +11,61 @@
   </div>
 </template>
 <script>
-import * as ECharts from 'echarts'
 export default {
+  inject: ['resize'],
   props: ['node'],
   data() {
     return {
       innerChart: null,
-      nodeStatus: null,
+      // nodeStatus: null,
     }
+  },
+  computed: {
+    nodeStatus() {
+      if (this.node) {
+        return this.node.nodeStatus
+      }
+      return { on: 0, off: 0 }
+    },
   },
   watch: {
     node(val, oldVal) {
-      if (val) {
-        this.init()
-      }
+      this.init()
+    },
+    resize(val) {
+      this.onResize()
     },
   },
   mounted() {
     this.$nextTick(() => {
-      this.innerChart = ECharts.init(this.$refs.container, window.gApp.echartsTheme.nodeStatus)
-      window.removeEventListener('resize', this.onResize)
-      window.addEventListener('resize', this.onResize)
-      this.onResize()
-      if (this.node) {
-        this.init()
-      }
-      window.gApp.$watch('isCollapse', (newValue, oldValue) => {
-        setTimeout(() => {
-          this.onResize()
-        }, 300)
-      })
+      this.$chart.init(this.$refs.container, window.gApp.echartsTheme.nodeStatus)
+      this.init()
     })
-  },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.onResize)
   },
   methods: {
     onResize() {
-      this.innerChart.resize()
+      this.$chart.getInstanceByDom(this.$refs.container).resize()
     },
 
     init() {
-      const $this = this
-      this.nodeStatus = this.node.nodeStatus
       const option = {
         tooltip: {
           trigger: 'item',
-          formatter: function (name) {
+          formatter: name => {
             return (
-              $this.$t('Dashboard.NodeStatus.On') +
+              this.$t('Dashboard.NodeStatus.On') +
               ': ' +
-              $this.nodeStatus.on +
+              this.nodeStatus.on +
               '(' +
-              (($this.nodeStatus.on / ($this.nodeStatus.on + $this.nodeStatus.off)) * 100).toFixed(0) +
+              ((this.nodeStatus.on / (this.nodeStatus.on + this.nodeStatus.off)) * 100).toFixed(0) +
               '%' +
               ')' +
               '</br>' +
-              $this.$t('Dashboard.NodeStatus.Off') +
+              this.$t('Dashboard.NodeStatus.Off') +
               ': ' +
-              $this.nodeStatus.off +
+              this.nodeStatus.off +
               '(' +
-              (($this.nodeStatus.off / ($this.nodeStatus.on + $this.nodeStatus.off)) * 100).toFixed(0) +
+              ((this.nodeStatus.off / (this.nodeStatus.on + this.nodeStatus.off)) * 100).toFixed(0) +
               '%' +
               ')'
             )
@@ -110,7 +104,7 @@ export default {
                   label: {
                     show: false,
                     formatter: function () {
-                      return $this.nodeStatus.on + $this.nodeStatus.off
+                      return this.nodeStatus.on + this.nodeStatus.off
                     },
                     position: 'center',
                   },
@@ -129,7 +123,7 @@ export default {
                   label: {
                     show: false,
                     formatter: function () {
-                      return $this.nodeStatus.on + $this.nodeStatus.off
+                      return this.nodeStatus.on + this.nodeStatus.off
                     },
                     position: 'center',
                   },
@@ -142,13 +136,13 @@ export default {
           },
         ],
       }
-      this.innerChart.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.container).setOption(option)
     },
   },
 }
 </script>
 
-<style lang="css">
+<style scoped>
 .node-satus-chart {
   height: 100%;
 }

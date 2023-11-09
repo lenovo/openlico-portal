@@ -63,10 +63,10 @@ class RemotePagingTableDataFetcher {
       }
       const args = JSON.stringify(req)
       Request.get(this.restApiPath, { params: { args } }).then(
-        res => {
+        async res => {
           let result = null
           if (this.dataParser) {
-            result = this.dataParser(res.body)
+            result = await this.dataParser(res.body)
           } else {
             result = res
           }

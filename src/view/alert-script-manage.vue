@@ -13,9 +13,9 @@
   </div>
 </template>
 <script>
-import CompositeTable from '../component/composite-table'
-import AlertScriptService from '../service/alert-script'
-import Format from '../common/format'
+import CompositeTable from '@/component/composite-table.vue'
+import AlertScriptService from '@/service/alert-script'
+import Format from '@/common/format'
 
 export default {
   components: {
@@ -35,13 +35,13 @@ export default {
           title: this.$t('Alert.Script.Size'),
           dataIndex: 'fileSize',
           sorter: true,
-          customRender: val => Format.formatByteSize(val),
+          customRender: ({ text }) => Format.formatByteSize(text),
         },
         {
           title: this.$t('Alert.Script.Time'),
           dataIndex: 'createTime',
           sorter: true,
-          customRender: val => Format.formatDateTime(val),
+          customRender: ({ text }) => Format.formatDateTime(text),
         },
       ],
     }

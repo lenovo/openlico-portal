@@ -3,7 +3,7 @@
     <div class="MonitorGroupAction p-20">
       <a-select
         id="tid_monitor-groups-group"
-        v-model="nodeGroupId"
+        v-model:value="nodeGroupId"
         style="min-width: 100px"
         :disabled="loading"
         @change="onNodeGroupChange">
@@ -13,7 +13,7 @@
       </a-select>
       <a-radio-group
         id="tid_monitor-gpus-type"
-        v-model="selected"
+        v-model:value="selected"
         style="margin-left: 35px"
         button-style="solid"
         :disabled="loading"
@@ -50,9 +50,9 @@
   </div>
 </template>
 <script>
-import MonitorNdoeGpus from '../widget/monitor-node-gpus'
-import NodeGroupService from '../service/node-group'
-import MonitorService from '../service/monitor-data'
+import MonitorNdoeGpus from '@/widget/monitor-node-gpus.vue'
+import NodeGroupService from '@/service/node-group'
+import MonitorService from '@/service/monitor-data'
 
 export default {
   components: {
@@ -75,7 +75,7 @@ export default {
       loading: false,
     }
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.refreshTimeout)
   },
   mounted() {

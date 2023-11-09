@@ -29,22 +29,6 @@ class NodeGroup {
     group.name = jsonObj.name
     return group
   }
-
-  get name() {
-    return this._name
-  }
-
-  set name(name) {
-    this._name = name
-  }
-
-  get id() {
-    return this._id
-  }
-
-  set id(id) {
-    this._id = id
-  }
 }
 
 function getAllNodeGroups() {

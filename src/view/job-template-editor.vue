@@ -1,58 +1,64 @@
 <template>
   <div class="height--100 p-10">
     <div class="job-template-editor-container file-icon-select table-style b-w p-20">
-      <a-form-model ref="innerForm" :model="formModel" :rules="formRules" label-width="200px" :colon="false">
-        <a-row>
-          <a-collapse v-model="activeNames" :bordered="false">
+      <a-form
+        ref="innerForm"
+        :model="formModel"
+        :rules="formRules"
+        label-width="200px"
+        :colon="false"
+        layout="vertical">
+        <a-row style="width: 100%">
+          <a-collapse :active-key="activeNames" :bordered="false" style="width: 100%">
             <a-collapse-panel key="base" :header="$t('JobTemplate.BaseInformation')">
-              <a-form-model-item :label="$t('JobTemplate.Name')" prop="name">
-                <a-input v-model="formModel.name" style="width: 300px" />
-              </a-form-model-item>
-              <a-form-model-item :label="$t('JobTemplate.Logo')" prop="logo">
-                <file-icon-select ref="fileAlertSelect" v-model="formModel.logo" :restore-icon="restoreIcon" />
+              <a-form-item :label="$t('JobTemplate.Name')" name="name">
+                <a-input v-model:value="formModel.name" style="width: 300px" />
+              </a-form-item>
+              <a-form-item :label="$t('JobTemplate.Logo')" name="logo">
+                <file-icon-select ref="fileAlertSelect" v-model:value="formModel.logo" :restore-icon="restoreIcon" />
                 <span>{{ $t('JobTemplate.Logo.size') }}</span>
-              </a-form-model-item>
-              <a-form-model-item :label="$t('JobTemplate.Category')" prop="category">
-                <a-select v-model="formModel.category" style="width: 300px">
-                  <template v-for="item in categories">
-                    <a-select-option :key="item.key">
-                      {{ item.label || item.key }}
-                    </a-select-option>
-                  </template>
+              </a-form-item>
+              <a-form-item :label="$t('JobTemplate.Category')" name="category">
+                <a-select v-model:value="formModel.category" style="width: 300px">
+                  <a-select-option v-for="item in categories" :key="item.key">
+                    {{ item.label || item.key }}
+                  </a-select-option>
                 </a-select>
-              </a-form-model-item>
-              <a-form-model-item
+              </a-form-item>
+              <a-form-item
                 v-if="formModel.category == 'custom'"
                 :label="$t('JobTemplateStore.Category.CustomCategory')"
-                prop="customCategory">
-                <a-input v-model="formModel.customCategory" style="width: 300px" @blur="onCustomCategoryBlur" />
-              </a-form-model-item>
-              <a-form-model-item :label="$t('JobTemplate.Description')" prop="description">
-                <a-input v-model="formModel.description" style="width: 300px" />
-              </a-form-model-item>
-              <a-form-model-item prop="index" class="job-template-editor-form-item">
-                <span slot="label">
+                name="customCategory">
+                <a-input v-model:value="formModel.customCategory" style="width: 300px" @blur="onCustomCategoryBlur" />
+              </a-form-item>
+              <a-form-item :label="$t('JobTemplate.Description')" name="description">
+                <a-input v-model:value="formModel.description" style="width: 300px" />
+              </a-form-item>
+              <a-form-item name="index" class="job-template-editor-form-item">
+                <template #label>
                   {{ $t('JobTemplate.Index') }}&nbsp;
                   <a-tooltip placement="rightBottom">
-                    <div slot="title" style="min-width: 200px; white-space: break-spaces">
-                      {{ $t('JobTemplate.Index.Tips') }}
-                    </div>
-                    <a-icon type="question-circle-o" />
+                    <template #title>
+                      <div style="min-width: 200px; white-space: break-spaces">
+                        {{ $t('JobTemplate.Index.Tips') }}
+                      </div>
+                    </template>
+                    <question-circle-outlined />
                   </a-tooltip>
-                </span>
-                <a-input v-model="formModel.index" style="width: 300px" />
-              </a-form-model-item>
+                </template>
+                <a-input v-model:value="formModel.index" style="width: 300px" />
+              </a-form-item>
             </a-collapse-panel>
 
             <a-collapse-panel key="param" :header="$t('JobTemplate.Parameters')">
-              <parameters-editor :parameters="formModel.parameters" />
+              <parameters-editor :parameters="formModel.parameters" style="width: 1200px" />
             </a-collapse-panel>
             <a-collapse-panel key="file" :header="$t('JobTemplate.TemplateFile')">
               <template-file-editor ref="templateFileEditor" :content="formModel.fileTemplate" />
             </a-collapse-panel>
           </a-collapse>
         </a-row>
-        <a-row style="margin-top: 20px">
+        <a-row class="job-template-editor-action p-t-20">
           <a-button
             id="Job_Template_Submit"
             style="margin-right: 10px"
@@ -65,23 +71,23 @@
             {{ $t('JobTemplate.Cancel') }}
           </a-button>
         </a-row>
-      </a-form-model>
+      </a-form>
     </div>
   </div>
 </template>
 <script>
-import JobTemplateService from '../service/job-template'
-import ValidRoleFactory from '../common/valid-role-factory'
-import ParametersEditor from './job-template-editor/parameters-editor'
-import TemplateFileEditor from './job-template-editor/template-file-editor'
-import FileIconSelect from '../component/file-icon-select'
-import AccessService from '../service/access'
+import AccessService from '@/service/access'
+import JobTemplateService from '@/service/job-template'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import FileIconSelect from '@/component/file-icon-select.vue'
+import ParametersEditor from './job-template-editor/parameters-editor.vue'
+import TemplateFileEditor from './job-template-editor/template-file-editor.vue'
 
 export default {
   components: {
+    'file-icon-select': FileIconSelect,
     'parameters-editor': ParametersEditor,
     'template-file-editor': TemplateFileEditor,
-    'file-icon-select': FileIconSelect,
   },
   data() {
     const fileTemplateExamples = {
@@ -118,12 +124,12 @@ export default {
           ValidRoleFactory.getValidTemplateFileName(this.$t('JobTemplateStore.Category.CustomCategory')),
           ValidRoleFactory.getLengthRoleForText(this.$t('JobTemplateStore.Category.CustomCategory'), 3, 20),
           {
-            validator: (rule, value, callback) => {
+            validator: (rule, value) => {
               const val = value.toLowerCase()
               if (val === 'custom' || val === 'all') {
-                callback(new Error(this.$t('JobTemplateStore.Category.CustomCategory.Error')))
+                return Promise.reject(new Error(window.gApp.$t('JobTemplateStore.Category.CustomCategory.Error')))
               } else {
-                callback()
+                return Promise.resolve()
               }
             },
             trigger: 'change',
@@ -140,7 +146,14 @@ export default {
       submitting: false,
       categories: [],
       defaultParams: [],
+      defaultRunTime: '24h', // updated on mounted
     }
+  },
+  computed: {
+    isInCreateMode() {
+      const action = this.$route.params.action
+      return action !== 'edit'
+    },
   },
   watch: {
     'formModel.logo': function (val, oldVal) {
@@ -153,14 +166,17 @@ export default {
         ]
       }
       if (val) {
-        this.$refs.innerForm.validateField(['logo'])
+        this.$refs.innerForm.validate(['logo'])
       }
     },
   },
-  mounted() {
+  async mounted() {
+    const { data } = await this.$axios.get('/api/template/default-run-time/')
+    this.defaultRunTime = data
+
     this.initDefaultParams()
     this.getTemplateCategories()
-    if (this.$route.params.code) {
+    if (this.$route.params.action) {
       this.code = this.$route.params.code
       this.jobTemplate = null
       this.init()
@@ -172,11 +188,11 @@ export default {
     init() {
       JobTemplateService.getJobTemplate(this.code).then(
         res => {
-          const defaurtParamsKeys = this.defaultParams.map(p => p.name)
-          const customParams = res.params.filter(p => !defaurtParamsKeys.includes(p.name))
-
-          if (this.$route.path.includes('job-template-editor/copy')) {
-            this.formModel.name = res.name + '_' + 'copy'
+          const defaultParamsKeys = this.defaultParams.map(p => p.id)
+          const systemParams = res.params.filter(p => defaultParamsKeys.includes(p.id))
+          const customParams = res.params.filter(p => !defaultParamsKeys.includes(p.id))
+          if (this.$route.params.action === 'copy') {
+            this.formModel.name = res.name + '_copy'
           } else {
             this.formModel.name = res.name
           }
@@ -184,7 +200,7 @@ export default {
           this.formModel.category = res.category[0] || this.formModel.category
           this.formModel.description = res.description
           this.formModel.index = res.index
-          this.formModel.parameters = this.defaultParams.concat(customParams)
+          this.formModel.parameters = systemParams.concat(customParams)
           this.formModel.fileTemplate = res.templateFileContent
           this.restoreIcon = res.logo
         },
@@ -208,28 +224,45 @@ export default {
         {
           id: 'job_workspace',
           name: this.$t('Job.Workspace'),
-          class: 'param',
+          class: 'base',
           dataType: 'folder',
           must: true,
           type: 'system',
         },
-      ]
-      if (AccessService.getSchedulerArch() === 'host') {
-        parameters.push({
+        {
           id: 'job_queue',
           name: this.$t('Job.Queue'),
           class: 'resource',
           dataType: 'queue',
           must: true,
           type: 'system',
-        })
-        parameters.push({
+        },
+        {
+          id: 'job_notify',
+          name: this.$t('Job.Notify'),
+          class: 'notify',
+          dataType: 'string',
+          must: false,
+          type: 'system',
+          input: 'select',
+          selectOption: [
+            {
+              label: this.$t('Job.Notify.None'),
+              value: '',
+            },
+            {
+              label: this.$t('Job.Notify.Email'),
+              value: 'email',
+            },
+          ],
+        },
+        {
           id: 'run_time',
           name: this.$t('Job.RunTime'),
           class: 'resource',
           dataType: 'string',
           input: 'input',
-          defaultValue: '24h',
+          defaultValue: this.defaultRunTime,
           must: false,
           type: 'system',
           tips: {
@@ -237,35 +270,17 @@ export default {
             content: 'eg.3d 4h 12m',
           },
           help: this.$t('Job.RunTime.Help'),
-        })
-      }
-      parameters.push({
-        id: 'job_notify',
-        name: this.$t('Job.Notify'),
-        class: 'notify',
-        dataType: 'string',
-        must: false,
-        type: 'system',
-        input: 'select',
-        selectOption: [
-          {
-            label: this.$t('Job.Notify.None'),
-            value: '',
-          },
-          {
-            label: this.$t('Job.Notify.Email'),
-            value: 'email',
-          },
-        ],
-      })
+        },
+      ]
+
       this.defaultParams = parameters
     },
     onSubmitClick() {
-      this.$refs.innerForm.validate(valid => {
-        if (valid) {
+      this.$refs.innerForm.validate().then(
+        _ => {
           if (this.formModel.parameters.length <= 0) {
             this.$message.error(
-              this.$t('Valid.Require', {
+              this.$T('Valid.Require', {
                 name: this.$t('JobTemplate.Parameters'),
               }),
             )
@@ -274,7 +289,7 @@ export default {
           const fileTemplateContent = this.$refs.templateFileEditor.getContent()
           if (fileTemplateContent.length <= 0) {
             this.$message.error(
-              this.$t('Valid.Require', {
+              this.$T('Valid.Require', {
                 name: this.$t('JobTemplate.TemplateFile'),
               }),
             )
@@ -289,7 +304,7 @@ export default {
             parameters.push(runTime)
           }
 
-          if (this.code === '' || this.$route.path.includes('job-template-editor/copy')) {
+          if (this.isInCreateMode) {
             mode = 'Create'
             submitPromise = JobTemplateService.createJobTemplate(this.formModel, parameters, fileTemplateContent)
           } else {
@@ -305,30 +320,27 @@ export default {
             res => {
               this.submitting = false
               const jobTemplate = res
-              const message = this.$t(`JobTemplate.Submit.${mode}.Success`, {
+              const message = this.$T(`JobTemplate.Submit.${mode}.Success`, {
                 id: jobTemplate.id,
                 name: jobTemplate.name,
               })
               this.$message.success(message)
-              if (this.$route.path.includes('job-template-editor/copy')) {
-                this.$router.push({
-                  path: '../../job-template-store/mytemplates',
-                })
-              } else {
-                this.$router.push({
-                  path: '../job-template-store/mytemplates',
-                })
-              }
+              this.$router.push({
+                path: '/main/job-template-store/my_templates',
+              })
             },
-            res => {
+            err => {
               this.submitting = false
-              this.$message.error(res)
+              this.$message.error(err)
             },
           )
-        } else {
-          return false
-        }
-      })
+        },
+        err => {
+          for (let i = 0; i < err.errorFields.length; i++) {
+            this.$message.error(err.errorFields[i].errors)
+          }
+        },
+      )
     },
     onBackClick() {
       this.$confirm({
@@ -372,11 +384,14 @@ export default {
 .file-icon-select .el-dialog__body {
   padding: 0 20px;
 }
-.job-template-editor-container >>> .table-but-icon {
+.job-template-editor-container :deep(.table-but-icon) {
   margin-right: 3px;
   font-size: 16px;
 }
-.job-template-editor-container >>> .job-template-editor-form-item .ant-form-item-label {
+.job-template-editor-container :deep(.job-template-editor-form-item .ant-form-item-label) {
   overflow: unset;
+}
+.job-template-editor-action {
+  border-top: 1px solid #d9d9d9;
 }
 </style>

@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import AboutService from '../../service/about'
+import AboutService from '@/service/about'
 export default {
   data() {
     return {
@@ -25,7 +25,7 @@ export default {
   created() {
     AboutService.getAbout().then(
       res => {
-        AboutService.getVersion(res.versionFile).then(
+        AboutService.getVersion().then(
           resp => {
             this.about = [
               {
@@ -55,39 +55,37 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-.source {
-  .info-box {
-    height: 75px;
-    border-bottom: 1px solid #eeeeee;
-    .box-top {
-      display: flex;
-      padding-top: 10px;
-      margin-bottom: 8px;
-      .top-title {
-        flex: 1;
-        font-size: 16px;
-        color: #333333;
-      }
-      .top-github {
-        margin-right: 20px;
-      }
-    }
-    .box-bom {
-      display: flex;
-      font-size: 14px;
-      .bom-version {
-        flex: 1;
-        color: #999999;
-      }
-      .bom-num {
-        color: #333333;
-      }
-    }
-  }
-  .info-box:first-child {
-    margin-top: 32px;
-    border-top: 1px solid #eeeeee;
-  }
+<style scoped>
+.source .info-box {
+  height: 75px;
+  border-bottom: 1px solid #eeeeee;
+}
+.source .box-top {
+  display: flex;
+  padding-top: 10px;
+  margin-bottom: 8px;
+}
+.source .top-title {
+  flex: 1;
+  font-size: 16px;
+  color: #333333;
+}
+.source .top-github {
+  margin-right: 20px;
+}
+.source .box-bom {
+  display: flex;
+  font-size: 14px;
+}
+.source .bom-version {
+  flex: 1;
+  color: #999999;
+}
+.source .bom-num {
+  color: #333333;
+}
+.source .info-box:first-child {
+  margin-top: 32px;
+  border-top: 1px solid #eeeeee;
 }
 </style>

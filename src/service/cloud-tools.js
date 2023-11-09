@@ -30,11 +30,11 @@ class CloudTools {
 
   static parseFromRestApi(jsonObj) {
     const cloudtools = new CloudTools()
-    cloudtools._id = jsonObj.id
-    cloudtools._name = jsonObj.name
-    cloudtools._code = jsonObj.code
-    cloudtools._instance = jsonObj.instance
-    cloudtools._job_template = jsonObj.job_template
+    cloudtools.id = jsonObj.id
+    cloudtools.name = jsonObj.name
+    cloudtools.code = jsonObj.code
+    cloudtools.instance = jsonObj.instance
+    cloudtools.job_template = jsonObj.job_template
     const params = jsonObj.setting_params.split(',')
     if (params.includes('gpu_per_node')) {
       for (let i = 0; i < params.length; i++) {
@@ -44,66 +44,9 @@ class CloudTools {
         }
       }
     }
-    cloudtools._setting_params = params.join(',')
-    // cloudtools._setting_params = jsonObj.setting_params;
-    cloudtools._settings = jsonObj.settings
+    cloudtools.setting_params = params.join(',')
+    cloudtools.settings = jsonObj.settings
     return cloudtools
-  }
-
-  get _id() {
-    return this.id
-  }
-
-  set _id(id) {
-    this.id = id
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    this.name = name
-  }
-
-  get _code() {
-    return this.code
-  }
-
-  set _code(code) {
-    this.code = code
-  }
-
-  get _instance() {
-    return this.instance
-  }
-
-  set _instance(instance) {
-    this.instance = instance
-  }
-
-  get _job_template() {
-    return this.job_template
-  }
-
-  set _job_template(jobTemplate) {
-    this.job_template = jobTemplate
-  }
-
-  get _setting_params() {
-    return this.setting_params
-  }
-
-  set _setting_params(settingParams) {
-    this.setting_params = settingParams
-  }
-
-  get _settings() {
-    return this.settings
-  }
-
-  set _settings(settings) {
-    this.settings = settings
   }
 }
 

@@ -1,11 +1,11 @@
 <template>
   <span>
-    <span class="degree-label" :style="{ backgroundColor: bgColor }" />
-    <slot />
+    <span class="degree-status" :style="{ backgroundColor: bgColor }" />
+    <span style="margin-left: 5px; font-size: 14px; line-height: 16px"><slot></slot></span>
   </span>
 </template>
 <script>
-import GradientColor from '../common/gradient-color'
+import GradientColor from '@/common/gradient-color'
 
 export default {
   props: {
@@ -39,13 +39,13 @@ export default {
 }
 </script>
 <style scoped>
-.degree-label {
+.degree-status {
   border-radius: 4px;
   /* color: #fff; */
   display: inline-block;
   width: 16px;
   height: 16px;
-  vertical-align: middle;
+  vertical-align: text-bottom;
   font-size: 12px;
 }
 </style>

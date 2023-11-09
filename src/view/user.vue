@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
   <div v-if="user" class="user-detail m-10 b-w p-20">
     <h3 class="m-b-20">
       {{ user.username }}
@@ -60,6 +60,14 @@
       <div class="user-detail-params-content">
         <div class="user-detail-params-item">
           <div class="user-detail-params-label">
+            {{ $t('User.Fullname') }}
+          </div>
+          <div class="user-detail-params-value">
+            {{ user.fullName || '-' }}
+          </div>
+        </div>
+        <div class="user-detail-params-item">
+          <div class="user-detail-params-label">
             {{ $t('User.Detail.CreateTime') }}
           </div>
           <div class="user-detail-params-value">
@@ -107,9 +115,9 @@
   </div>
 </template>
 <script>
-import AccessService from '../service/access'
-import UserService from '../service/user'
-import Format from '../common/format'
+import AccessService from '@/service/access'
+import UserService from '@/service/user'
+import Format from '@/common/format'
 export default {
   data() {
     return {
@@ -143,6 +151,9 @@ export default {
   border: 1px solid #eee;
   border-radius: 4px;
   padding: 20px;
+}
+.user-detail-params {
+  display: inherit;
 }
 .user-detail .cell span {
   display: block;

@@ -1,6 +1,6 @@
 {
-    "mail.title": "This is a Test email",
-    "mail.message": "LiCO test",
-    "sms.message": "LiCO test sms, your sms modem config success",
-    "wechat.message": "LiCO test wechat.\nYour wechat config success.\n{time}"
+  "mail.title": "This is a Test email",
+  "mail.message": "LiCO test",
+  "sms.message": "LiCO test sms, your sms modem config success",
+  "wechat.message": "LiCO test wechat.\nYour wechat config success.\n{time}"
 }

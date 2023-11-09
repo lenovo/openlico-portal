@@ -15,8 +15,8 @@
  */
 
 // Define all utils functions
+import dayjs from '../dayjs'
 import menu from '../menu/menu'
-import moment from 'moment'
 
 function isEmptyObject(obj) {
   return Object.keys(obj).length === 0
@@ -143,7 +143,7 @@ const getDaysOfWeek = () => {
   const data = []
   let counter = 0
   while (counter <= 6) {
-    const day = moment().startOf('week').add(counter, 'days')
+    const day = dayjs().startOf('week').add(counter, 'days')
     data.push(day)
     counter++
   }
@@ -156,15 +156,75 @@ const getDaysOfWeekMondayFirst = () => {
 }
 
 const getDaysOfMonth = () => {
-  const last = parseInt(moment('2022-1').endOf('month').format('D'))
+  const last = parseInt(dayjs('2022-01').endOf('month').format('D'))
   const data = []
   let counter = 0
   while (counter <= last - 1) {
-    const day = moment('2022-1').startOf('month').add(counter, 'days')
+    const day = dayjs('2022-01').startOf('month').add(counter, 'days')
     data.push(day)
     counter++
   }
   return data
+}
+
+const getExecResult = async (str, params = {}) => {
+  let constStr = ''
+  for (const key in params) {
+    constStr += `const ${key} = ${JSON.stringify(params[key])};`
+  }
+  const encodedJs = esm`${constStr} export const display = ${str}`
+  const { display } = await import(/* @vite-ignore */ encodedJs)
+  return display
+}
+
+function esm(templateStrings, ...substitutions) {
+  let js = templateStrings.raw[0]
+  for (let i = 0; i < substitutions.length; i++) {
+    js += substitutions[i] + templateStrings.raw[i + 1]
+  }
+  return 'data:text/javascript;base64,' + btoa(js)
+}
+
+function getBase64ByImgUrl(url, callback, ext = 'jpeg') {
+  let canvas = document.createElement('CANVAS')
+  const ctx = canvas.getContext('2d')
+  const img = new Image()
+  img.crossOrigin = 'Anonymous'
+  img.onload = function () {
+    canvas.height = img.height
+    canvas.width = img.width
+    ctx.drawImage(img, 0, 0)
+    const dataURL = canvas.toDataURL('image/' + ext)
+    callback.call(this, dataURL)
+    canvas = null
+  }
+  img.src = url
+}
+
+function getBase64ByFile(file, callback) {
+  const fileRender = new FileReader()
+  fileRender.onload = e => {
+    callback(e.target.result)
+  }
+  fileRender.readAsDataURL(file)
+}
+
+function getLabelByLocale(label, locale) {
+  if (!label) return ''
+  if (typeof label === 'string') return label
+  return label[locale]
+}
+
+function getTimezoneShortByLang(tz, lang = 'en') {
+  const timezone = new Intl.DateTimeFormat(lang, {
+    dateStyle: 'full',
+    timeStyle: 'full',
+    timeZone: tz,
+  })
+    .format(new Date())
+    .replace(/^.*(A|P)M\s/, '')
+  const arr = timezone.match(new RegExp('[A-Z](?!.*[(])', 'g'))
+  return arr ? arr.join('') : tz
 }
 
 export default {
@@ -177,4 +237,9 @@ export default {
   getDaysOfWeek,
   getDaysOfWeekMondayFirst,
   getDaysOfMonth,
+  getExecResult,
+  getBase64ByImgUrl,
+  getBase64ByFile,
+  getLabelByLocale,
+  getTimezoneShortByLang,
 }

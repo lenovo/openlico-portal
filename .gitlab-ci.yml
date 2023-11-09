@@ -9,13 +9,15 @@ include:
 
 obs.trigger:
   variables:
-    OBS_PACKAGE: openlico-portal
+    OBS_PACKAGE: lico-portal
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_TAG =~ /^\d+(\.\d+)+(\..+)?$/
     - if: $CI_PIPELINE_SOURCE == "web" && $LICO_RUN_OBS
+      variables:
+        OBS_PACKAGE: lico-portal-node-modules lico-portal
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - package.json
       variables:
-        OBS_PACKAGE: openlico-portal-node-modules openlico-portal
+        OBS_PACKAGE: lico-portal-node-modules lico-portal
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

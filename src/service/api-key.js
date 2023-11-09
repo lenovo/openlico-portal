@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import Request from '../request/https'
+import dayjs from '../dayjs'
 import Parser from '../common/parser'
 import ErrorHandler from '../common/error-handler'
-import moment from 'moment'
+import Request from '../request/https'
 
 class APIKey {
   constructor() {
@@ -34,58 +34,10 @@ class APIKey {
     apiKey.id = jsonObj.id ? jsonObj.id : 0
     apiKey.value = jsonObj.api_key ? jsonObj.api_key : ''
     apiKey.createTime = jsonObj.create_time ? Parser.parseTimeFromRestApi(jsonObj.create_time) : ''
-    apiKey.expireTime = jsonObj.expire_time ? moment(jsonObj.expire_time * 1000) : ''
+    apiKey.expireTime = jsonObj.expire_time ? dayjs(jsonObj.expire_time * 1000) : ''
     apiKey.ultimate = !jsonObj.expire_time
     apiKey.status = !!jsonObj.status
     return apiKey
-  }
-
-  get id() {
-    return this._id
-  }
-
-  set id(value) {
-    this._id = value
-  }
-
-  get value() {
-    return this._value
-  }
-
-  set value(value) {
-    this._value = value
-  }
-
-  get createTime() {
-    return this._createTime
-  }
-
-  set createTime(value) {
-    this._createTime = value
-  }
-
-  get expireTime() {
-    return this._expireTime
-  }
-
-  set expireTime(value) {
-    this._expireTime = value
-  }
-
-  get ultimate() {
-    return this._ultimate
-  }
-
-  set ultimate(value) {
-    this._ultimate = value
-  }
-
-  get status() {
-    return this._status
-  }
-
-  set status(value) {
-    this._status = value
   }
 }
 
@@ -108,7 +60,7 @@ function createAPIKey(apiKey) {
   return new Promise((resolve, reject) => {
     const req = {
       api_key: apiKey.value,
-      expire_time: apiKey.ultimate ? null : moment(apiKey.expireTime).endOf('day').valueOf(),
+      expire_time: apiKey.ultimate ? null : dayjs(apiKey.expireTime).endOf('day').valueOf(),
     }
     Request.post('/api/user/apikey/', req).then(
       res => {
@@ -141,7 +93,7 @@ function deleteAPIKey(id) {
 function updateAPIKey(apiKey) {
   return new Promise((resolve, reject) => {
     const req = {
-      expire_time: apiKey.newUltimate ? null : moment(apiKey.newExpireTime).endOf('day').valueOf(),
+      expire_time: apiKey.newUltimate ? null : dayjs(apiKey.newExpireTime.$d).endOf('day').valueOf(),
     }
     Request.patch('/api/user/apikey/', req).then(
       res => {

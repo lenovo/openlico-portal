@@ -1,30 +1,31 @@
 <template>
   <a-modal
+    v-model:open="dialogVisible"
     :title="title"
-    :visible.sync="dialogVisible"
     :width="mode == 'browse' ? '40%' : '30%'"
-    custom-class="image-message"
     closable
     @cancel="dialogVisible = false">
-    <a-row v-if="mode == 'browse'" class="message-row">
+    <div v-if="mode == 'browse'" class="message-row">
       <p class="image-title">
         {{ $t('Image.Path') }}
       </p>
       <p class="image-info">
         {{ image.imagePath }}
       </p>
-    </a-row>
-    <a-row v-if="mode == 'browse' && image.description" class="message-row">
+    </div>
+    <div v-if="mode == 'browse' && image.description" class="message-row">
       <p class="image-title">
         {{ $t('Image.Description') }}
       </p>
       <p class="image-info">
         {{ image.description }}
       </p>
-    </a-row>
-    <span slot="footer" class="dialog-footer">
-      <a-button type="primary" @click="dialogVisible = false">{{ $t('Operation.Module.confirm') }}</a-button>
-    </span>
+    </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <a-button type="primary" @click="dialogVisible = false">{{ $t('Operation.Module.confirm') }}</a-button>
+      </span>
+    </template>
   </a-modal>
 </template>
 <script>
@@ -48,8 +49,8 @@ export default {
 }
 </script>
 
-<style>
-.image-message .message-row {
+<style scoped>
+.message-row {
   margin: 10px 0 10px 20px;
 }
 .image-title {

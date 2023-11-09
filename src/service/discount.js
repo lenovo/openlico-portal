@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import Request from '../request/https'
-import TableDataFetcherFactory from '../common/table-data-fetcher-factory'
-import ErrorHandler from '../common/error-handler'
+import Request from '@/request/https'
+import TableDataFetcherFactory from '@/common/table-data-fetcher-factory'
+import ErrorHandler from '@/common/error-handler'
 
 class Discount {
   constructor() {
@@ -33,38 +33,6 @@ class Discount {
     discount.type = jsonObj.type
     discount.discount = Number(jsonObj.discount).toFixed(2)
     return discount
-  }
-
-  get id() {
-    return this._id
-  }
-
-  set id(id) {
-    this._id = id
-  }
-
-  get name() {
-    return this._name
-  }
-
-  set name(name) {
-    this._name = name
-  }
-
-  get type() {
-    return this._type
-  }
-
-  set type(type) {
-    this._type = type
-  }
-
-  get discount() {
-    return this._discount
-  }
-
-  set discount(discount) {
-    this._discount = discount
   }
 }
 

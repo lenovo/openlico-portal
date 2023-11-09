@@ -1,25 +1,24 @@
 <template>
   <composite-form-dialog
     ref="innerDialog"
-    :title="title"
     size="500px"
+    form-label-width="140px"
+    :title="title"
     :form-model="mail"
     :form-rules="mailRules"
-    form-label-width="140px"
-    :success-message-formatter="successMessageFormatter"
-    :error-message-formatter="errorMessageFormatter">
-    <a-form-model-item v-if="show" :label="$t('AlertSetting.Mail.Mailbox.Sender')" :prop="show ? 'address' : ''">
-      <a-input id="tid_notify-adapter-email-sender" v-model="mail.address" />
-    </a-form-model-item>
+    :success-message-formatter="successMessageFormatter">
+    <a-form-item v-if="show" :label="$t('AlertSetting.Mail.Mailbox.Sender')" :name="show ? 'address' : ''">
+      <a-input id="tid_notify-adapter-email-sender" v-model:value="mail.address" />
+    </a-form-item>
     <p v-if="!show">
       {{ $t('AlertSetting.Confirm.Message') }}
     </p>
   </composite-form-dialog>
 </template>
 <script>
-import ValidRoleFactory from '../../common/valid-role-factory'
-import EmailService from '../../service/notify-email'
-import CompositeFormDialog from '../../component/composite-form-dialog'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import EmailService from '@/service/notify-email'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
@@ -51,16 +50,12 @@ export default {
     },
     successMessageFormatter(res) {
       if (this.show) {
-        return this.$t('AlertSetting.Mail.Test.Success', {
+        return this.$T('AlertSetting.Mail.Test.Success', {
           number: this.mail.address,
         })
       } else {
         return this.$t('AlertSetting.Mail.Success')
       }
-    },
-    errorMessageFormatter(res) {
-      const errMsg = res
-      return this.$t(errMsg)
     },
     confirmSetting(config) {
       this.show = false

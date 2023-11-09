@@ -11,14 +11,16 @@
         <a-col :span="5" align="right">
           <a-input
             v-if="searchEnable"
-            v-model="searchKeyword"
+            v-model:value="searchKeyword"
             class="composite-table-search-input"
-            style="max-width: 260px"
+            style="max-width: 260px; color: rgba(0, 0, 0, 0.65)"
             :placeholder="searchPlaceholder"
             :title="searchPlaceholder"
-            @keyup.enter.native="onSearchEnter"
+            @keyup.enter="onSearchEnter"
             @blur="onSearchBlur">
-            <a-icon slot="prefix" type="search" />
+            <template #prefix>
+              <SearchOutlined style="color: rgba(0, 0, 0, 0.65)" />
+            </template>
           </a-input>
         </a-col>
       </a-row>
@@ -27,6 +29,7 @@
           ref="innerTable"
           :columns="innerColumns"
           :data-source="innerTableData"
+          :show-sorter-tooltip="false"
           :pagination="false"
           :row-key="rowKey"
           :row-selection="
@@ -35,36 +38,35 @@
                   type: selectTypeValue,
                   selectedRowKeys: selectionIndex,
                   onChange: onSelectionChange,
-                  onSelect,
-                  onSelectAll,
+                  // onSelect,
+                  // onSelectAll,
                 }
               : null
           "
           @change="handleTableChange">
-          <template v-for="colCustom in columnsCustom" :slot="colCustom.customRender" slot-scope="text, record">
-            <slot
-              :name="colCustom.customRender"
-              :[colCustom.customRender]="text"
-              :row="record"
-              :col="colCustom.customRender" />
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.customSlot">
+              <slot :name="column.key" :[column.key]="record[column.key]" :row="record" :col="column"></slot>
+            </template>
           </template>
         </a-table>
       </div>
       <div v-show="paginationEnable !== false && innerTotal > 0" class="composite-table-footer">
         <div class="table-footer-pagination">
           <a-pagination
-            v-model="innerCurrentPage"
+            v-model:current="innerCurrentPage"
+            v-model:page-size="innerPageSize"
             size="small"
             show-size-changer
-            :page-size.sync="innerPageSize"
             :page-size-options="innerPageSizes"
-            :show-total="total => $t('CompositeTable.Footer.Total', { total: innerTotal })"
-            @showSizeChange="onPageSizeChange" />
+            :show-total="total => $T('CompositeTable.Footer.Total', { total: innerTotal })"
+            @show-size-change="onPageSizeChange" />
         </div>
         <div class="table-footer-pagination" style="text-align: right">
           <a-pagination
-            v-model="innerCurrentPage"
+            v-model:current="innerCurrentPage"
             size="small"
+            :show-size-changer="false"
             show-quick-jumper
             :total="innerTotal"
             :page-size="innerPageSize"
@@ -119,6 +121,15 @@ export default {
     // eslint-disable-next-line vue/require-prop-types
     'selectType',
   ],
+  emits: [
+    'loading-change',
+    'sort-change',
+    'search-change',
+    'page-change',
+    'selection-change',
+    'data-refreshed',
+    'table-data-fetch-error',
+  ],
   data() {
     return {
       requestId: 0,
@@ -139,17 +150,13 @@ export default {
     }
   },
   computed: {
-    columnsCustom() {
-      return this.columns
-        .filter(item => {
-          return item.scopedSlots
-        })
-        .map(item => item.scopedSlots)
-    },
     innerColumns() {
       return this.columns.map(item => {
         if (!item.align) {
           item.align = 'center'
+        }
+        if (item.key === undefined) {
+          item.key = item.dataIndex
         }
         return item
       })
@@ -203,7 +210,7 @@ export default {
     this.loading = this.tableLoading
     this.fetchTableData(true)
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.autoRefreshTimerId)
     this.pauseAutoRefresh()
   },
@@ -273,14 +280,15 @@ export default {
       this.clearSelection()
     },
     onSelectionChange(selectedRowKeys, selectedRows) {
+      this.selectionIndex = selectedRowKeys
       this.$emit('selection-change', selectedRows)
     },
-    onSelect(record, selected, selectedRows) {
-      this.selectionIndex = this.getIndexBySelection(selectedRows)
-    },
-    onSelectAll(selected, selectedRows, changeRows) {
-      this.selectionIndex = this.getIndexBySelection(selectedRows)
-    },
+    // onSelect(record, selected, selectedRows) {
+    //   this.selectionIndex = this.getIndexBySelection(selectedRows)
+    // },
+    // onSelectAll(selected, selectedRows, changeRows) {
+    //   this.selectionIndex = this.getIndexBySelection(selectedRows)
+    // },
     fetchTableData(gotoStartPage, isAutoRefresh) {
       if (this._isDestroyed) return
       let tableDataFetcher = this.tableDataFetcher
@@ -408,9 +416,9 @@ export default {
     },
     getRowDataBySelection() {
       const selectResult = this.innerTableData.filter(item => {
-        return this.selectionIndex.includes(item[this.$refs.innerTable.rowKey])
+        return this.selectionIndex.includes(item[this.rowKey])
       })
-      this.selectionIndex = selectResult.map(item => item[this.$refs.innerTable.rowKey])
+      this.selectionIndex = selectResult.map(item => item[this.rowKey])
       this.$emit('selection-change', selectResult)
     },
     clearSelection() {
@@ -420,7 +428,7 @@ export default {
   },
 }
 </script>
-<style>
+<style scoped>
 .composite-table-header {
   margin-bottom: 20px;
   border: 0;
@@ -444,12 +452,16 @@ export default {
   margin-top: 20px;
   display: flex;
 }
-.composite-table-footer div:first-child .ant-pagination-prev,
-.composite-table-footer div:first-child .ant-pagination-item,
-.composite-table-footer div:first-child .ant-pagination-next {
+.composite-table-footer div:first-child :deep(.ant-pagination-prev),
+.composite-table-footer div:first-child :deep(.ant-pagination-item),
+.composite-table-footer div:first-child :deep(.ant-pagination-next) {
   display: none;
 }
 .composite-table-footer .table-footer-pagination {
   width: 50%;
+}
+.composite-table-body :deep(.ant-table-column-sorter.ant-table-column-sorter-full) {
+  position: inherit;
+  top: -2.5px;
 }
 </style>

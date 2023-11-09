@@ -2,7 +2,7 @@
   <div v-if="requestStatus" id="API_Key_Container" class="height--100 p-10">
     <div v-if="apiKeys.length <= 0 && !createDialogVisable" class="table-style p-20 b-w" style="text-align: center">
       <div style="margin-top: 100px; margin-bottom: 35px">
-        <img src="static/img/system/main/api-key.svg" class="placeholder-img" />
+        <img src="/static/img/system/main/api-key.svg" class="placeholder-img" />
       </div>
       <a-button id="API_Key_Create_Button" type="primary" @click="onCreate">
         {{ $t('APIKey.Create') }}
@@ -13,7 +13,7 @@
         {{ $t('APIKey') }}
       </p>
       <div v-for="item in apiKeys" :key="item.id">
-        <a-form-model
+        <a-form
           id="API_Key_Edit_Form"
           ref="listForm"
           :model="item"
@@ -22,26 +22,25 @@
           :label-col="{ span: 4 }"
           class="m-t-20 m-b-20"
           style="border-bottom: 1px solid #eee">
-          <a-form-model-item :label="$t('APIKey.Value')" class="input_align">
-            <a-input
-              v-model="item.value"
-              type="textarea"
+          <a-form-item :label="$t('APIKey.Value')" class="input_align">
+            <a-textarea
+              v-model:value="item.value"
               class="input_width"
               read-only
               :auto-size="{ minRows: 2, maxRows: 4 }"
               style="resize: none" />
-          </a-form-model-item>
-          <a-form-model-item v-if="item.ultimate" :label="$t('APIKey.ExpireTime')" class="input_align">
-            <a-checkbox v-model="item.ultimate" disabled>
+          </a-form-item>
+          <a-form-item v-if="item.ultimate" :label="$t('APIKey.ExpireTime')" class="input_align">
+            <a-checkbox v-model:checked="item.ultimate" disabled>
               <span style="color: rgba(51, 51, 51, 1)">{{ $t('APIKey.UnLimited') }} </span>
             </a-checkbox>
             <a-button type="primary" :disabled="!item.ultimate" class="m-l-20" @click="onChange(item)">
               {{ $t('APIKey.Change') }}
             </a-button>
-          </a-form-model-item>
-          <a-form-model-item v-if="!item.ultimate" :label="$t('APIKey.ExpireTime')" class="input_align">
+          </a-form-item>
+          <a-form-item v-if="!item.ultimate" :label="$t('APIKey.ExpireTime')" class="input_align">
             <a-date-picker
-              v-model="item.expireTime"
+              v-model:value="item.expireTime"
               type="date"
               placeholder="Please choose a date"
               class="input_width"
@@ -49,11 +48,11 @@
             <a-button type="primary" :disabled="item.ultimate" style="margin-left: 5px" @click="onChange(item)">
               {{ $t('APIKey.Change') }}
             </a-button>
-          </a-form-model-item>
-          <a-form-model-item :label="$t('APIKey.Status')" class="input_align">
+          </a-form-item>
+          <a-form-item :label="$t('APIKey.Status')" class="input_align">
             <apikey-status-label :api-key-status="item.status ? 'valid' : 'invalid'" />
-          </a-form-model-item>
-        </a-form-model>
+          </a-form-item>
+        </a-form>
         <div class="input_align m-t-20">
           <a-button id="API_Key_Delete_Button" @click="onDelete(item)">
             {{ $t('APIKey.Delete') }}
@@ -65,7 +64,7 @@
       <p class="title p-b-20">
         {{ $t('APIKey') }}
       </p>
-      <a-form-model
+      <a-form
         id="API_Key_Create_Form"
         ref="createForm"
         :model="apiKeyForm"
@@ -75,32 +74,31 @@
         :label-col="{ span: 4 }"
         class="m-t-20 m-b-20"
         style="border-bottom: 1px solid #eee">
-        <a-form-model-item :label="$t('APIKey.Value')" class="input_align">
-          <a-input
-            v-model="apiKeyForm.value"
-            type="textarea"
+        <a-form-item :label="$t('APIKey.Value')" class="input_align">
+          <a-textarea
+            v-model:value="apiKeyForm.value"
             class="input_width"
             read-only
             :auto-size="{ minRows: 2, maxRows: 4 }"
             style="resize: none" />
-        </a-form-model-item>
-        <a-form-model-item :label="$t('APIKey.ExpireTime')" class="input_align" prop="ultimate">
-          <a-checkbox v-model="apiKeyForm.ultimate">
+        </a-form-item>
+        <a-form-item :label="$t('APIKey.ExpireTime')" class="input_align" name="ultimate">
+          <a-checkbox v-model:checked="apiKeyForm.ultimate">
             <span style="color: rgba(51, 51, 51, 1)">{{ $t('APIKey.UnLimited') }} </span>
           </a-checkbox>
-        </a-form-model-item>
-        <a-form-model-item label=" " class="input_align" prop="expireTime">
+        </a-form-item>
+        <a-form-item label=" " class="input_align" name="expireTime">
           <a-date-picker
             id="API_Key_Create_Expire_Date_Picker"
-            v-model="apiKeyForm.expireTime"
+            v-model:value="apiKeyForm.expireTime"
             value-format="YYYY-MM-DD"
             format="YYYY-MM-DD"
             placeholder="Please choose a date"
             :disabled="apiKeyForm.ultimate"
             :disabled-date="disabledDate"
             class="input_width" />
-        </a-form-model-item>
-      </a-form-model>
+        </a-form-item>
+      </a-form>
       <div class="input_align m-t-20">
         <a-button id="API_Key_Save_Button" type="primary" @click="doCreate">
           {{ $t('APIKey.Save') }}
@@ -115,10 +113,10 @@
 </template>
 
 <script>
-import ApiKeyService from '../service/api-key'
-import ApiKeyStatusLabel from './api-key-manage/status-label'
-import ApiKeyDialog from './api-key-manage/api-key-dialog'
-import moment from 'moment'
+import dayjs from '@/dayjs'
+import ApiKeyService from '@/service/api-key'
+import ApiKeyStatusLabel from './api-key-manage/status-label.vue'
+import ApiKeyDialog from './api-key-manage/api-key-dialog.vue'
 
 export default {
   components: {
@@ -137,7 +135,7 @@ export default {
       },
       apiKeyRules: {},
       disabledDate(current) {
-        return current && current < moment().startOf('day')
+        return current && current < dayjs().startOf('day')
       },
     }
   },

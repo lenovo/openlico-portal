@@ -1,14 +1,16 @@
 <template>
   <div class="p-b-20">
-    <a-row class="m-t-10">
+    <div class="m-t-10">
       <div :class="tags.length ? 'tag-comment-container' : 'no-comment'">
         <p class="job-info-label">
           {{ $t('Job.Tags') }}
         </p>
         <p v-if="tags.length" class="tag">
-          <a-tag v-for="tag in tags" :key="tag.id" v-model="tag.show" closable @close="onDeleteTag([tag])">
-            {{ tag.name }}
-          </a-tag>
+          <template v-for="tag in tags" :key="tag.id">
+            <a-tag v-if="tag.show" closable @close.prevent="onDeleteTag([tag])">
+              {{ tag.name }}
+            </a-tag>
+          </template>
         </p>
       </div>
       <div class="m-t-10" :class="tags.length ? 'tag-comment-button' : 'no-comment'">
@@ -19,7 +21,7 @@
           {{ $t('JobManager.Clear.Tags') }}
         </a-button>
       </div>
-    </a-row>
+    </div>
     <div class="m-t-10">
       <div :class="comment.length ? 'tag-comment-container' : 'no-comment'">
         <p class="job-info-label">
@@ -40,9 +42,12 @@
   </div>
 </template>
 <script>
-import JobService from '../../service/job'
-import JobTagsActionDialog from '../../widget/job-tag-action-dialog'
-import JobCommentDialog from './job-comment-dialog'
+import JobService from '@/service/job'
+import JobTagsActionDialog from '@/widget/job-tag-action-dialog.vue'
+import JobCommentDialog from './job-comment-dialog.vue'
+import { QuestionCircleOutlined } from '@ant-design/icons-vue'
+import { createVNode } from 'vue'
+import { h } from 'vue'
 
 export default {
   components: {
@@ -50,6 +55,7 @@ export default {
     'job-comment-dialog': JobCommentDialog,
   },
   props: ['job', 'detailInformation'],
+  emits: ['refresh-job'],
   data() {
     return {
       tags: [],
@@ -78,11 +84,17 @@ export default {
     },
     onDeleteTag(tags, message) {
       this.$confirm({
-        content:
+        icon: createVNode(QuestionCircleOutlined),
+        title: h(
+          'div',
+          {
+            style: 'color: rgba(0,0,0,.65);font-size: 14px;font-weight: 400;',
+          },
           message ||
-          this.$t('JobManager.Tags.Delete.Confirm', {
-            tag: tags[0].name,
-          }),
+            this.$T('JobManager.Tags.Delete.Confirm', {
+              tag: tags[0].name,
+            }),
+        ),
         centered: true,
         okText: this.$t('Action.Confirm'),
         cancelText: this.$t('Action.Cancel'),

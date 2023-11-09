@@ -1,45 +1,50 @@
 <template>
   <a-modal
     ref="innerDialog"
+    v-model:open="isRender"
     :title="title"
-    :visible="isRender"
     class="build-authentication"
     :append-to-body="true"
     width="500px"
     @cancel="isRender = false"
     @ok="onSubmit">
-    <a-form-model ref="innerForm" layout="vertical" :model="innerForm" :colon="false">
-      <a-form-model-item prop="username">
-        <span slot="label">
-          {{ $t('Image.Build.Authentication.Username') }}
-          <a-tooltip
-            overlay-class-name="helpTooltip"
-            placement="topLeft"
-            :title="$t('Image.Build.Cert.Authentication.Username.Help')">
-            <a-icon type="question-circle" theme="filled" class="help-icon" />
-          </a-tooltip>
-        </span>
-        <a-input v-model="innerForm.username" :disabled="disabled" />
-      </a-form-model-item>
-      <a-form-model-item prop="password">
-        <span slot="label">
-          {{ $t('Image.Build.Authentication.Password') }}
-          <a-tooltip
-            overlay-class-name="helpTooltip"
-            placement="topLeft"
-            :title="$t('Image.Build.Cert.Authentication.Password.Help')">
-            <a-icon type="question-circle" theme="filled" class="help-icon" />
-          </a-tooltip>
-        </span>
-        <a-input v-model="innerForm.password" :type="isPasswordShow ? 'text' : 'password'" :disabled="disabled">
-          <i
-            slot="suffix"
-            class="el-input__icon"
-            :class="isPasswordShow ? 'el-erp-display' : 'el-erp-hide'"
-            @click="isPasswordShow = !isPasswordShow" />
+    <a-form ref="innerForm" layout="vertical" :model="innerForm" :colon="false">
+      <a-form-item name="username">
+        <template #label>
+          <span>
+            {{ $t('Image.Build.Authentication.Username') }}
+            <a-tooltip
+              overlay-class-name="helpTooltip"
+              placement="topLeft"
+              :title="$t('Image.Build.Cert.Authentication.Username.Help')">
+              <QuestionCircleFilled class="help-icon" />
+            </a-tooltip>
+          </span>
+        </template>
+        <a-input v-model:value="innerForm.username" :disabled="disabled" />
+      </a-form-item>
+      <a-form-item name="password">
+        <template #label>
+          <span>
+            {{ $t('Image.Build.Authentication.Password') }}
+            <a-tooltip
+              overlay-class-name="helpTooltip"
+              placement="topLeft"
+              :title="$t('Image.Build.Cert.Authentication.Password.Help')">
+              <QuestionCircleFilled class="help-icon" />
+            </a-tooltip>
+          </span>
+        </template>
+        <a-input v-model:value="innerForm.password" :type="isPasswordShow ? 'text' : 'password'" :disabled="disabled">
+          <template #suffix>
+            <i
+              class="el-input__icon"
+              :class="isPasswordShow ? 'el-erp-display' : 'el-erp-hide'"
+              @click="isPasswordShow = !isPasswordShow" />
+          </template>
         </a-input>
-      </a-form-model-item>
-    </a-form-model>
+      </a-form-item>
+    </a-form>
   </a-modal>
 </template>
 <script>
@@ -83,14 +88,13 @@ export default {
       })
     },
     onSubmit() {
-      this.$refs.innerForm.validate(valid => {
-        if (valid) {
+      this.$refs.innerForm.validate().then(
+        _ => {
           this.isRender = false
           this.innerResolve(this.innerForm)
-        } else {
-          // Do nothing
-        }
-      })
+        },
+        _ => {},
+      )
     },
   },
 }
@@ -99,7 +103,7 @@ export default {
 .help-icon {
   color: #449fff;
 }
-.build-authentication >>> .ant-form-item-label {
+.build-authentication :deep(.ant-form-item-label) {
   overflow: inherit !important;
 }
 </style>

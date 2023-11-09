@@ -2,89 +2,88 @@
   <composite-form-dialog
     ref="innerDialog"
     class="job-parameters-affinity-dialog"
-    :title="$t('JobTemplate.Affinity.Dialog.Title', { action: $t(`Action.${mode}`) })"
+    :title="$T('JobTemplate.Affinity.Dialog.Title', { action: $t(`Action.${mode}`) })"
     size="800px"
-    :composite-height="500"
     :form-model="innerForm"
     :form-rules="innerRules"
     :external-validate="externalValidate"
     :success-message-formatter="successMessageFormatter"
     :error-message-formatter="errorMessageFormatter">
-    <a-form-model-item prop="name" label-width="180px" :label="$t('JobTemplate.Affinity.Name')">
-      <a-input v-model="innerForm.name" />
-    </a-form-model-item>
-    <a-tabs v-model="innerForm.mode">
+    <a-form-item name="name" label-width="180px" :label="$t('JobTemplate.Affinity.Name')">
+      <a-input v-model:value="innerForm.name" />
+    </a-form-item>
+    <a-tabs v-model:activeKey="innerForm.mode">
       <a-tab-pane key="quick" :tab="$t('JobTemplate.Affinity.Quick')">
         <a-row :gutter="16">
           <a-col class="gutter-row" :span="6">
-            <a-form-model-item prop="run_mode" label-width="180px" :label="$t('JobTemplate.Affinity.Run_mode')">
-              <a-select v-model="innerForm.run_mode">
+            <a-form-item name="run_mode" label-width="180px" :label="$t('JobTemplate.Affinity.Run_mode')">
+              <a-select v-model:value="innerForm.run_mode">
                 <a-select-option v-for="item in runModeOptions" :key="item">
                   {{ $t(`JobTemplate.Affinity.Run_mode.${item}`) }}
                 </a-select-option>
               </a-select>
-            </a-form-model-item>
+            </a-form-item>
           </a-col>
           <a-col v-if="innerForm.run_mode == 'mpi'" class="gutter-row" :span="6">
-            <a-form-model-item prop="procset" label-width="180px" :label="$t('JobTemplate.Affinity.Procset')">
-              <a-select v-model="innerForm.procset">
+            <a-form-item name="procset" label-width="180px" :label="$t('JobTemplate.Affinity.Procset')">
+              <a-select v-model:value="innerForm.procset">
                 <a-select-option v-for="item in procsetOptions" :key="item">
                   {{ $t(`JobTemplate.Affinity.Procset.${item}`) }}
                 </a-select-option>
               </a-select>
-            </a-form-model-item>
+            </a-form-item>
           </a-col>
           <a-col v-if="innerForm.run_mode == 'mpi'" class="gutter-row" :span="6">
-            <a-form-model-item
-              prop="type"
+            <a-form-item
+              name="type"
               label-width="180px"
               :label="$t('JobTemplate.Affinity.BindType')"
               class="mpi-bind-type-item">
-              <a-select v-model="innerForm.type">
+              <a-select v-model:value="innerForm.type">
                 <a-select-option v-for="item in mpiOnlyTypeOptions" :key="item" class="mpi-bind-type-option">
                   {{ item }}
                 </a-select-option>
               </a-select>
-            </a-form-model-item>
+            </a-form-item>
           </a-col>
           <a-col v-if="innerForm.run_mode == 'mpi' && innerForm.type == 'customize'" class="gutter-row" :span="6">
-            <a-form-model-item prop="grain" label-width="180px" :label="$t('JobTemplate.Affinity.Grain')">
-              <a-input v-model="innerForm.grain" />
-            </a-form-model-item>
+            <a-form-item name="grain" label-width="180px" :label="$t('JobTemplate.Affinity.Grain')">
+              <a-input v-model:value="innerForm.grain" />
+            </a-form-item>
           </a-col>
           <a-col v-if="innerForm.run_mode == 'mpi+openmp'" class="gutter-row" :span="6">
-            <a-form-model-item prop="size" label-width="180px" :label="$t('JobTemplate.Affinity.Size')">
-              <a-input v-model="innerForm.size" />
-            </a-form-model-item>
+            <a-form-item name="size" label-width="180px" :label="$t('JobTemplate.Affinity.Size')">
+              <a-input v-model:value="innerForm.size" />
+            </a-form-item>
           </a-col>
           <a-col v-if="innerForm.run_mode == 'mpi+openmp'" class="gutter-row" :span="6">
-            <a-form-model-item prop="layout" label-width="180px" :label="$t('JobTemplate.Affinity.BindType')">
-              <a-select v-model="innerForm.layout">
+            <a-form-item name="layout" label-width="180px" :label="$t('JobTemplate.Affinity.BindType')">
+              <a-select v-model:value="innerForm.layout">
                 <a-select-option v-for="item in bindTypeOptions" :key="item">
                   {{ item }}
                 </a-select-option>
               </a-select>
-            </a-form-model-item>
+            </a-form-item>
           </a-col>
         </a-row>
         <a-row :gutter="16">
           <a-col v-if="innerForm.run_mode == 'mpi' && innerForm.type == 'customize'" class="gutter-row" :span="6">
-            <a-form-model-item prop="shift" label-width="180px" :label="$t('JobTemplate.Affinity.Shift')">
-              <a-input v-model="innerForm.shift" />
-            </a-form-model-item>
+            <a-form-item name="shift" label-width="180px" :label="$t('JobTemplate.Affinity.Shift')">
+              <a-input v-model:value="innerForm.shift" />
+            </a-form-item>
           </a-col>
           <a-col v-if="innerForm.run_mode == 'mpi' && innerForm.type == 'customize'" class="gutter-row" :span="6">
-            <a-form-model-item prop="preoffset" label-width="180px" :label="$t('JobTemplate.Affinity.Preoffset')">
-              <a-input v-model="innerForm.preoffset" :disabled="innerForm.postoffset > 0" />
-            </a-form-model-item>
+            <a-form-item name="preoffset" label-width="180px" :label="$t('JobTemplate.Affinity.Preoffset')">
+              <a-input v-model:value="innerForm.preoffset" :disabled="innerForm.postoffset > 0" />
+            </a-form-item>
           </a-col>
           <a-col
             v-if="innerForm.run_mode == 'mpi' && innerForm.type == 'customize' && innerForm.procset != 'allsocks'"
             class="gutter-row"
             :span="6">
-            <a-form-model-item prop="postoffset" label-width="180px" :label="$t('JobTemplate.Affinity.Postoffset')">
-              <a-input v-model="innerForm.postoffset" :disabled="innerForm.preoffset > 0" />
-            </a-form-model-item>
+            <a-form-item name="postoffset" label-width="180px" :label="$t('JobTemplate.Affinity.Postoffset')">
+              <a-input v-model:value="innerForm.postoffset" :disabled="innerForm.preoffset > 0" />
+            </a-form-item>
           </a-col>
         </a-row>
         <div class="job-parameters-affinity-environment">
@@ -96,20 +95,20 @@
           <p class="m-b-10" style="display: flex">
             <span>{{ $t('JobTemplate.Affinity.Layout') }}</span>
             <a-tooltip placement="topLeft">
-              <template slot="title">
+              <template #title>
                 {{ $t('JobTemplate.Affinity.Layout.Help') }}
               </template>
-              <a-icon style="margin: 4px 0 0 5px" type="question-circle" />
+              <question-circle-outlined style="margin: 4px 0 0 5px" />
             </a-tooltip>
           </p>
           <affinity-layout ref="affinityLayout" :form="innerForm" :type="type" />
         </div>
       </a-tab-pane>
       <a-tab-pane key="advanced" :tab="$t('JobTemplate.Affinity.Advanced')">
-        <affinity-advanced v-model="innerForm.envs" :type="type" @submitStatus="onSubmitStatus" />
+        <affinity-advanced v-model:value="innerForm.envs" :type="type" @submit-status="onSubmitStatus" />
       </a-tab-pane>
     </a-tabs>
-    <template v-if="mode == 'Edit'" slot="footer">
+    <template v-if="mode == 'Edit'" #footer>
       <a-button @click="onDeleteSettings()">
         {{ $t('Action.Delete') }}
       </a-button>
@@ -118,19 +117,20 @@
   </composite-form-dialog>
 </template>
 <script>
-import AffinityService from './../../../service/job-template-affiity'
-import CompositeFormDialog from './../../../component/composite-form-dialog'
-import ValidRoleFactory from './../../../common/valid-role-factory'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import AffinityService from '@/service/job-template-affiity'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 import AffinityEnvDialog from './affinity-env-dialog.vue'
 import AffinityAdvanced from './affinity-advanced.vue'
 import AffinityLayout from './affinity-layout.vue'
 export default {
   components: {
-    'composite-form-dialog': CompositeFormDialog,
+    CompositeFormDialog,
     AffinityEnvDialog,
     AffinityAdvanced,
     AffinityLayout,
   },
+  emits: ['delete'],
   data() {
     return {
       type: 'intelmpi',

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import Request from '../request/https'
+import { v1 as uuidv1 } from 'uuid'
 import Parser from '../common/parser'
 import Format from '../common/format'
-import { v1 as uuidv1 } from 'uuid'
-import TableDataFetcherFactory from '../common/table-data-fetcher-factory'
 import ErrorHandler from '../common/error-handler'
+import Request from '../request/https'
 import AfffinityService from './job-template-affiity'
+import TableDataFetcherFactory from '../common/table-data-fetcher-factory'
 const nameSpace = '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0'
 
 const oneapiIconPath = '/static/img/system/runtime/oneapi_1.png'
@@ -41,93 +41,21 @@ class Runtime {
 
   static parseFromRestApi(jsonObj) {
     const runtime = new Runtime()
-    runtime._id = jsonObj.pk
-    runtime._name = jsonObj.name
-    runtime._tag = jsonObj.tag || ''
-    runtime._createTime = jsonObj.ctime ? Format.formatDateTime(Parser.parseTimeFromRestApi(jsonObj.ctime)) : null
-    runtime._items = jsonObj.modules ? jsonObj.modules : null
-    runtime._count = jsonObj.modules ? jsonObj.modules.length : 0
-    runtime._envs = jsonObj.envs ? jsonObj.envs : null
-    runtime._scripts =
+    runtime.id = jsonObj.pk
+    runtime.name = jsonObj.name
+    runtime.tag = jsonObj.tag || ''
+    runtime.createTime = jsonObj.ctime ? Format.formatDateTime(Parser.parseTimeFromRestApi(jsonObj.ctime)) : null
+    runtime.items = jsonObj.modules ? jsonObj.modules : null
+    runtime.count = jsonObj.modules ? jsonObj.modules.length : 0
+    runtime.envs = jsonObj.envs ? jsonObj.envs : null
+    runtime.scripts =
       jsonObj.scripts && jsonObj.scripts.length
         ? jsonObj.scripts.map(i => {
             return { path: Format.formatMyFolder(i) }
           })
         : []
-    runtime._type = jsonObj.username ? 'Private' : 'System'
+    runtime.type = jsonObj.username ? 'Private' : 'System'
     return runtime
-  }
-
-  get _id() {
-    return this.id
-  }
-
-  set _id(id) {
-    return (this.id = id)
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    return (this.name = name)
-  }
-
-  get _tag() {
-    return this.tag
-  }
-
-  set _tag(tag) {
-    return (this.tag = tag)
-  }
-
-  get _createTime() {
-    return this.createTime
-  }
-
-  set _createTime(createTime) {
-    return (this.createTime = createTime)
-  }
-
-  get _items() {
-    return this.items
-  }
-
-  set _items(items) {
-    return (this.items = items)
-  }
-
-  get _count() {
-    return this.count
-  }
-
-  set _count(count) {
-    return (this.count = count)
-  }
-
-  get _envs() {
-    return this.envs
-  }
-
-  set _envs(envs) {
-    return (this.envs = envs)
-  }
-
-  get _scripts() {
-    return this.scripts
-  }
-
-  set _scripts(scripts) {
-    return (this.scripts = scripts)
-  }
-
-  get _type() {
-    return this.type
-  }
-
-  set _type(type) {
-    return (this.type = type)
   }
 }
 
@@ -139,55 +67,16 @@ class Module {
     this.code = uuidv1()
     this.iconPath = ''
     this.show = true
+    // this.checkable = false
   }
 
   static parseFromRestApi(jsonObj) {
     const module = new Module()
-    module._name = jsonObj.name
-    module._items = jsonObj.items ? jsonObj.items : null
-    module._displayName = jsonObj.name
-    module._iconPath = jsonObj.iconPath ? jsonObj.iconPath : ''
+    module.name = jsonObj.name
+    module.items = jsonObj.items ? jsonObj.items : null
+    module.displayName = jsonObj.name
+    module.iconPath = jsonObj.iconPath ? jsonObj.iconPath : ''
     return module
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    return (this.name = name)
-  }
-
-  get _items() {
-    return this.items
-  }
-
-  set _items(items) {
-    return (this.items = items)
-  }
-
-  get _displayName() {
-    return this.displayName
-  }
-
-  set _displayName(displayName) {
-    return (this.displayName = displayName)
-  }
-
-  get _code() {
-    return this.code
-  }
-
-  set _code(code) {
-    return (this.code = code)
-  }
-
-  get _iconPath() {
-    return this.iconPath
-  }
-
-  set _iconPath(iconPath) {
-    return (this.iconPath = iconPath)
   }
 }
 
@@ -203,104 +92,25 @@ class ModuleItem {
     this.code = uuidv1()
     this.moduleTag = ''
     this.parentName = ''
+    this.checked = false
   }
 
   static parseFromRestApi(jsonObj) {
     const moduleItem = new ModuleItem()
-    moduleItem._name = jsonObj.name
-    moduleItem._parentName = jsonObj.parentName
-    moduleItem._version = jsonObj.version ? jsonObj.version : ''
-    moduleItem._path = jsonObj.path ? jsonObj.path : ''
-    moduleItem._category = jsonObj.category ? jsonObj.category : ''
-    moduleItem._description = jsonObj.description ? jsonObj.description : ''
-    moduleItem._parents = jsonObj.parents
-    moduleItem._displayName =
+    moduleItem.name = jsonObj.name
+    moduleItem.parentName = jsonObj.parentName
+    moduleItem.version = jsonObj.version ? jsonObj.version : ''
+    moduleItem.path = jsonObj.path ? jsonObj.path : ''
+    moduleItem.category = jsonObj.category ? jsonObj.category : ''
+    moduleItem.description = jsonObj.description ? jsonObj.description : ''
+    moduleItem.parents = jsonObj.parents
+    moduleItem.displayName =
       jsonObj.parents && jsonObj.parents.length > 0
         ? jsonObj.name + nameSpace + jsonObj.parents.join(',')
         : jsonObj.name
-    moduleItem._moduleTag = jsonObj.moduleTag ? jsonObj.moduleTag : ''
+    moduleItem.moduleTag = jsonObj.moduleTag ? jsonObj.moduleTag : ''
 
     return moduleItem
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    return (this.name = name)
-  }
-
-  get _version() {
-    return this.version
-  }
-
-  set _version(version) {
-    return (this.version = version)
-  }
-
-  get _path() {
-    return this.path
-  }
-
-  set _path(path) {
-    return (this.path = path)
-  }
-
-  get _category() {
-    return this.category
-  }
-
-  set _category(category) {
-    return (this.category = category)
-  }
-
-  get _description() {
-    return this.description
-  }
-
-  set _description(description) {
-    return (this.description = description)
-  }
-
-  get _parents() {
-    return this.parents
-  }
-
-  set _parents(parents) {
-    return (this.parents = parents)
-  }
-
-  get _displayName() {
-    return this.displayName
-  }
-
-  set _displayName(displayName) {
-    return (this.displayName = displayName)
-  }
-
-  get _code() {
-    return this.code
-  }
-
-  set _code(code) {
-    return (this.code = code)
-  }
-
-  get _moduleTag() {
-    return this.moduleTag
-  }
-
-  set _moduleTag(moduleTag) {
-    return (this.moduleTag = moduleTag)
-  }
-
-  get _parentName() {
-    return this.parentName
-  }
-
-  set _parentName(parentName) {
-    return (this.parentName = parentName)
   }
 }
 
@@ -326,11 +136,22 @@ function getRuntimesTableDataFetcher() {
 function listModules() {
   return new Promise((resolve, reject) => {
     Request.get('/api/template/modules/').then(
-      res => {
+      async res => {
+        const modulesList = res.body
+        const access = window.gApp.$store.state.auth.access
+        if (access === 'staff') {
+          const resp = await Request.get('/api/usermodule/?type=private')
+          if (resp.status === 200) {
+            modulesList.push(...resp.data)
+          } else {
+            const message = resp.data.errid ? window.gApp.$t(`Error.${resp.data.errid}`) : resp.data.msg
+            window.gApp.$message.error(message)
+          }
+        }
         getIntelModuleName().then(response => {
           const intelModuleNames = response
           const modules = []
-          res.body.forEach(obj => {
+          modulesList.forEach(obj => {
             const tempItems = []
             obj.items.forEach(item => {
               item.parentName = obj.name
@@ -369,13 +190,13 @@ function listModules() {
   })
 }
 
-function verifyModule(modules) {
+function verifyModule(modules, access) {
   return new Promise((resolve, reject) => {
     const result = []
     modules.forEach(item => {
       result.push(item.name)
     })
-    Request.post('/api/template/modules/verify/', { modules: result }).then(
+    Request.post(`/api/template/modules/verify/${access !== 'staff' ? '?role=admin' : ''}`, { modules: result }).then(
       res => {
         resolve(res)
       },
@@ -394,7 +215,7 @@ function getIntelModuleName() {
     }
     Request.get('/api/oneapi/intel/modules/').then(
       res => {
-        resolve(eval(res.body)) // eslint-disable-line no-eval
+        resolve(res.body)
       },
       res => {
         ErrorHandler.restApiErrorHandler(res, reject)
@@ -422,9 +243,9 @@ function listRuntime() {
   })
 }
 
-function verifyRuntime(id) {
+function verifyRuntime(id, access) {
   return new Promise((resolve, reject) => {
-    Request.post(`/api/template/runtime/verify/${id}/`).then(
+    Request.post(`/api/template/runtime/verify/${id}/${access !== 'staff' ? '?role=admin' : ''}`).then(
       res => {
         resolve(res)
       },

@@ -4,7 +4,7 @@
   </state-label>
 </template>
 <script>
-import StateLabel from '../component/state-label'
+import StateLabel from '@/component/state-label.vue'
 
 export default {
   components: {

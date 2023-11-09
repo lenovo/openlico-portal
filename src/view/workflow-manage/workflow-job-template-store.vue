@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import WorkflowModal from './workflow-modal-component'
-import JobTemplateStore from '../job-template-store'
+import WorkflowModal from './workflow-modal-component.vue'
+import JobTemplateStore from '../job-template-store.vue'
 export default {
   components: {
     'workflow-modal-component': WorkflowModal,

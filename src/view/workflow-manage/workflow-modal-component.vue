@@ -1,7 +1,7 @@
 <template>
   <div ref="rootContainer" class="workflow-job-template-store">
     <a-modal
-      :visible="true"
+      :open="true"
       class="workflow-job-template-store-modal"
       :footer="null"
       :closable="false"
@@ -17,7 +17,7 @@
         </a-button>
         <a-button class="back-to-workflow" type="primary" @click="onBackClick">
           {{ $t('Workflow.BackToWorkflow') }}
-          <a-icon type="rollback" />
+          <rollback-outlined />
         </a-button>
       </div>
       <div id="Workflow-Scroll-Modal-Container" class="right-content" style="background: #eee">
@@ -54,22 +54,22 @@ export default {
 }
 </script>
 
-<style>
-.workflow-job-template-store-modal .ant-modal-content,
-.workflow-job-template-store-modal .ant-modal-body {
+<style scoped>
+.workflow-job-template-store :deep(.ant-modal) {
+  width: 100% !important;
+  height: calc(100% - 64px);
+}
+.workflow-job-template-store :deep(.ant-modal-content),
+.workflow-job-template-store :deep(.ant-modal-body) {
   height: 100%;
   padding: 0;
   border-radius: 0;
   background-color: rgba(0, 0, 0, 0);
 }
-.workflow-job-template-store-modal .ant-modal-content {
+.workflow-job-template-store :deep(.ant-modal-content) {
   padding-right: 20px;
 }
-.workflow-job-template-store-modal .ant-modal {
-  width: 100% !important;
-  height: calc(100% - 64px);
-}
-.workflow-job-template-store-modal .ant-modal-wrap {
+.workflow-job-template-store :deep(.ant-modal-wrap) {
   overflow: hidden;
 }
 .workflow-job-template-store-modal .left-content,
@@ -78,8 +78,9 @@ export default {
   height: 100%;
   position: relative;
   width: calc(100% - 256px);
-  padding: 20px 0;
+  /* padding: 20px 0; */
   overflow: auto;
+  left: -16px;
   top: -40px;
 }
 .workflow-job-template-store-modal .left-content {
@@ -100,10 +101,11 @@ export default {
 .workflow-job-template-store-modal .left-content .back {
   top: 45%;
 }
-.workflow-job-template-store .ant-modal-mask {
+.workflow-job-template-store :deep(.ant-modal-mask) {
   background-color: rgba(0, 0, 0, 0.8);
 }
-#Workflow-Scroll-Modal-Container .job-template-container {
+#Workflow-Scroll-Modal-Container :deep(.job-template-container) {
   height: auto;
+  width: 100%;
 }
 </style>

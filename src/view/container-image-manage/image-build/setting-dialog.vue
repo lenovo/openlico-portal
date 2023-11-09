@@ -1,43 +1,48 @@
 <template>
   <a-modal
     ref="innerDialog"
+    v-model:open="isRender"
     :title="title"
-    :visible="isRender"
     :append-to-body="true"
     width="500px"
     class="build-settings"
+    destroy-on-close
     @cancel="isRender = false"
     @ok="onSubmit">
-    <a-form-model ref="innerForm" label-width="120px" :model="innerForm" :rules="innerRole" :colon="false">
-      <a-form-model-item prop="pythonLibs">
-        <span slot="label">
-          {{ $t('Image.Build.AdvancedSettings.Pythonlibs') }}
-          <a-tooltip
-            overlay-class-name="helpTooltip"
-            placement="topLeft"
-            :title="$t('Image.Build.Cert.Settings.Pythonlibs.Help')">
-            <a-icon type="question-circle" theme="filled" class="help-icon" />
-          </a-tooltip>
-        </span>
-        <a-textarea v-model="innerForm.pythonLibs" :disabled="disabled" />
-      </a-form-model-item>
-      <a-form-model-item prop="pipCommand">
-        <span slot="label">
-          {{ $t('Image.Build.AdvancedSettings.PipCommand') }}
-          <a-tooltip
-            overlay-class-name="helpTooltip"
-            placement="topLeft"
-            :title="$t('Image.Build.Cert.Settings.PipCommand.Help')">
-            <a-icon type="question-circle" theme="filled" class="help-icon" />
-          </a-tooltip>
-        </span>
-        <a-input v-model="innerForm.pipCommand" :disabled="disabled" />
-      </a-form-model-item>
-    </a-form-model>
+    <a-form ref="innerForm" layout="vertical" label-width="120px" :model="innerForm" :rules="innerRole" :colon="false">
+      <a-form-item name="pythonLibs">
+        <template #label>
+          <span>
+            {{ $t('Image.Build.AdvancedSettings.Pythonlibs') }}
+            <a-tooltip
+              root-class-name="helpTooltip"
+              placement="topLeft"
+              :title="$t('Image.Build.Cert.Settings.Pythonlibs.Help')">
+              <QuestionCircleFilled class="help-icon" />
+            </a-tooltip>
+          </span>
+        </template>
+        <a-textarea v-model:value="innerForm.pythonLibs" :disabled="disabled" />
+      </a-form-item>
+      <a-form-item name="pipCommand">
+        <template #label>
+          <span>
+            {{ $t('Image.Build.AdvancedSettings.PipCommand') }}
+            <a-tooltip
+              root-class-name="helpTooltip"
+              placement="topLeft"
+              :title="$t('Image.Build.Cert.Settings.PipCommand.Help')">
+              <QuestionCircleFilled class="help-icon" />
+            </a-tooltip>
+          </span>
+        </template>
+        <a-input v-model:value="innerForm.pipCommand" :disabled="disabled" />
+      </a-form-item>
+    </a-form>
   </a-modal>
 </template>
 <script>
-import ValidRoleFactory from '../../../common/valid-role-factory'
+import ValidRoleFactory from '@/common/valid-role-factory'
 export default {
   props: ['disabled'],
   data() {
@@ -81,14 +86,13 @@ export default {
       if (!this.innerForm.pipCommand) {
         this.innerForm.pipCommand = 'pip'
       }
-      this.$refs.innerForm.validate(valid => {
-        if (valid) {
+      this.$refs.innerForm.validate().then(
+        _ => {
           this.isRender = false
           this.innerResolve(this.innerForm)
-        } else {
-          // Do nothing
-        }
-      })
+        },
+        _ => {},
+      )
     },
   },
 }
@@ -97,10 +101,11 @@ export default {
 .help-icon {
   color: #449fff;
 }
-.build-settings >>> .ant-form-item-label {
-  overflow: inherit !important;
-}
-.build-settings >>> .helpTooltip {
+/* .build-settings :deep(.ant-form-item-label),
+.build-settings-dialog .ant-form-item-label {
+  overflow: unset !important;
+} */
+.build-settings :deep(.helpTooltip) {
   white-space: initial;
 }
 </style>

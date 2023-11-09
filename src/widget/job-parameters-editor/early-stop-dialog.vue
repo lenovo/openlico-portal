@@ -4,36 +4,35 @@
     class="early-stop-dialog"
     :title="$t('JobTemplate.EarlyStop.Settings')"
     size="380px"
-    :composite-height="500"
     :form-model="innerForm"
     :form-rules="innerRules">
-    <a-form-model-item
+    <a-form-item
       v-if="settings.monitorOptions"
-      prop="monitor"
+      name="monitor"
       label-width="180px"
       :label="$t('JobTemplate.EarlyStop.Settings.Monitor')">
-      <a-select v-model="innerForm.monitor">
+      <a-select v-model:value="innerForm.monitor">
         <a-select-option v-for="option in settings.monitorOptions" :key="option.value">
           {{ option.label }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item prop="minDelta" label-width="180px" :label="$t('JobTemplate.EarlyStop.Settings.MinDelta')">
-      <a-input v-model="innerForm.minDelta" />
-    </a-form-model-item>
-    <a-form-model-item prop="patience" label-width="180px" :label="$t('JobTemplate.EarlyStop.Settings.Patience')">
-      <a-input v-model="innerForm.patience" />
-    </a-form-model-item>
+    </a-form-item>
+    <a-form-item name="minDelta" label-width="180px" :label="$t('JobTemplate.EarlyStop.Settings.MinDelta')">
+      <a-input v-model:value="innerForm.minDelta" />
+    </a-form-item>
+    <a-form-item name="patience" label-width="180px" :label="$t('JobTemplate.EarlyStop.Settings.Patience')">
+      <a-input v-model:value="innerForm.patience" />
+    </a-form-item>
   </composite-form-dialog>
 </template>
 
 <script>
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
-    'composite-form-dialog': CompositeFormDialog,
+    CompositeFormDialog,
   },
   props: ['settings'],
   data() {

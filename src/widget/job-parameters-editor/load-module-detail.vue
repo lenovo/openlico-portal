@@ -5,23 +5,24 @@
       centered
       :title="title"
       width="580px"
-      :visible="isRender"
+      :open="isRender"
       :footer="false"
+      destroy-on-close
       @cancel="isRender = false">
-      <a-tabs v-model="defaultKey" :animated="false">
+      <a-tabs v-model:activeKey="defaultKey" :animated="false">
         <a-tab-pane
           v-for="option in tabsOptions"
           :key="option.key"
           :tab="$t(`Admin.Runtime.${option.title}`)"
           force-render>
-          <a-form-model-item label="" :label-positon="labelPosition">
+          <a-form-item label="" :label-positon="labelPosition">
             <a-row class="list-item" style="background: #fafafa">
               <span v-for="(item, index) in option.labels" :key="item + index">{{
                 $t(`Admin.Runtime.${option.title}.${item}`)
               }}</span>
             </a-row>
-          </a-form-model-item>
-          <a-form-model-item>
+          </a-form-item>
+          <a-form-item>
             <a-row v-for="(item, index) in runtimeForm[option.key]" :key="index" class="list-item">
               <template v-for="(key, idx) in option.dataIndex">
                 <span v-if="option.key == 'modules' && key == 'name'" :key="key + idx">
@@ -33,7 +34,7 @@
                 </span>
               </template>
             </a-row>
-          </a-form-model-item>
+          </a-form-item>
         </a-tab-pane>
       </a-tabs>
     </a-modal>
@@ -41,7 +42,7 @@
 </template>
 
 <script>
-import RuntimeService from '../../service/runtime-manage'
+import RuntimeService from '@/service/runtime-manage'
 
 export default {
   data() {

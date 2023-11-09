@@ -84,7 +84,7 @@
               <rack-thumbnail
                 height="240px"
                 width="96px"
-                notify_num=""
+                notify-num=""
                 :nodes="rack.nodeNumber"
                 :energy="rack.energy"
                 :used-number="rack.usedNumber"
@@ -100,9 +100,9 @@
   </div>
 </template>
 <script>
-import RackThumbnail from './monitor-racks/rack-thumbnail'
-import RoomService from '../service/room'
-import Format from './../common/format'
+import RackThumbnail from './monitor-racks/rack-thumbnail.vue'
+import RoomService from '@/service/room'
+import Format from '@/common/format'
 export default {
   components: {
     'rack-thumbnail': RackThumbnail,
@@ -133,7 +133,7 @@ export default {
     this.getRooms()
     this.getRows()
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.refreshTimeout)
   },
   methods: {

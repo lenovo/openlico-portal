@@ -2,7 +2,7 @@
   <div class="container jobtemplate-queue-selector">
     <a-select
       v-if="itemsList.includes('select')"
-      v-model="innerValue"
+      v-model:value="innerValue"
       class="queue-selector m-r-10"
       :style="selectStyle"
       @change="onSelectChange">
@@ -14,25 +14,25 @@
       <ul class="maxresourse">
         <li v-show="resourceShow('state')" class="state"><i class="el-erp-state"></i>&nbsp;{{ state }}</li>
         <a-tooltip>
-          <template slot="title">
-            <p>{{ $t('Queue.Resource.Total', { value: nodes }) }}</p>
+          <template #title>
+            <p>{{ $T('Queue.Resource.Total', { value: nodes }) }}</p>
           </template>
           <li v-show="resourceShow('nodes')" class="nodes"><i class="el-erp-monitor_node"></i>&nbsp;{{ nodes }}</li>
         </a-tooltip>
         <a-tooltip>
-          <template slot="title">
-            <p>{{ $t('Queue.Resource.Free', { value: cores.free }) }}</p>
-            <p>{{ $t('Queue.Resource.Total', { value: cores.total }) }}</p>
+          <template #title>
+            <p>{{ $T('Queue.Resource.Free', { value: cores.free }) }}</p>
+            <p>{{ $T('Queue.Resource.Total', { value: cores.total }) }}</p>
           </template>
           <li v-show="resourceShow('cores')" class="cores">
             <i class="el-erp-cpu"></i>&nbsp;{{ scheduler == 'slurm' ? cores.free : cores.total }}
           </li>
         </a-tooltip>
         <a-tooltip>
-          <template slot="title">
+          <template #title>
             <div class="gpu-type-item">
-              <span>{{ $t('Queue.Resource.GPU.Type') }}</span>
-              <span>{{ $t('Queue.Resource.GPU.Free') + '/' + $t('Queue.Resource.GPU.Total') }}</span>
+              <span>{{ $T('Queue.Resource.GPU.Type') }}</span>
+              <span>{{ $T('Queue.Resource.GPU.Free') + '/' + $T('Queue.Resource.GPU.Total') }}</span>
             </div>
             <div v-for="item in gpu.options" :key="item.type" class="gpu-type-item">
               <span>{{ item.type }}</span>
@@ -50,8 +50,8 @@
   </div>
 </template>
 <script>
-import QueueService from '../service/queue'
-import AccessService from '../service/access'
+import QueueService from '@/service/queue'
+import AccessService from '@/service/access'
 
 export default {
   props: {
@@ -78,6 +78,7 @@ export default {
       },
     },
   },
+  emits: ['input', 'update:value'],
   data() {
     return {
       innerValue: this.value,
@@ -165,7 +166,7 @@ export default {
   mounted() {
     this.getQueueOptions()
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.refreshId)
   },
   methods: {
@@ -193,6 +194,7 @@ export default {
         if (this.queueOptions.length > 0 && !this.value) {
           this.innerValue = this.queueOptions[0].value
           this.$emit('input', this.queueOptions[0].value)
+          this.$emit('update:value', this.queueOptions[0].value)
         }
         this.refreshId = setTimeout(this.getQueueOptions.bind(this), 300000)
       })
@@ -213,6 +215,7 @@ export default {
     },
     onSelectChange(val) {
       this.$emit('input', val)
+      this.$emit('update:value', val)
     },
   },
 }
@@ -241,18 +244,18 @@ export default {
 .queue-resource-popover {
   border: 1px solid #dcdfe6;
 }
-.jobtemplate-queue-selector >>> .gpu-type-item {
+.jobtemplate-queue-selector :deep(.gpu-type-item) {
   display: flex;
 }
-.jobtemplate-queue-selector >>> .gpu-type-item span {
+.jobtemplate-queue-selector :deep(.gpu-type-item span) {
   display: inline-block;
   white-space: nowrap;
 }
-.jobtemplate-queue-selector >>> .gpu-type-item span:first-child {
+.jobtemplate-queue-selector :deep(.gpu-type-item span:first-child) {
   min-width: 70px;
   width: 100%;
 }
-.jobtemplate-queue-selector >>> .gpu-type-item span:last-child {
+.jobtemplate-queue-selector :deep(.gpu-type-item span:last-child) {
   text-align: end;
   width: 100%;
   padding-left: 10px;

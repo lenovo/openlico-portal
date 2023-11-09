@@ -8,38 +8,42 @@
             <workflow-status-label :status="workflow.status" />
           </div>
         </a-col>
-        <a-col :span="12" align="right">
+        <a-col :span="12" style="text-align: right">
           <a-dropdown :trigger="['click']">
             <a-button class="workflow-detail-action-button">
               {{ $t('Action') }}
-              <a-icon type="down" />
+              <down-outlined />
             </a-button>
-            <a-menu slot="overlay">
-              <a-menu-item v-if="workflow.status == 'created'" key="run" @click="onRunClick(workflow)">
-                {{ $t('Action.Run') }}
-              </a-menu-item>
-              <a-menu-item
-                v-if="workflow.status == 'completed' || workflow.status == 'cancelled' || workflow.status == 'failed'"
-                key="Rerun"
-                @click="onRerunClick(workflow)">
-                {{ $t('Action.Rerun') }}
-              </a-menu-item>
-              <a-menu-item
-                v-if="workflow.status != 'running' && workflow.status != 'cancelling' && workflow.status != 'starting'"
-                key="edit"
-                @click="onEditClick(workflow)">
-                {{ $t('Action.Edit') }}
-              </a-menu-item>
-              <a-menu-item key="copy" @click="onCopyClick(workflow)">
-                {{ $t('Action.Copy') }}
-              </a-menu-item>
-              <a-menu-item
-                v-if="workflow.status == 'running' || workflow.status == 'starting'"
-                key="cancel"
-                @click="onCancelClick(workflow)">
-                {{ $t('Action.Cancel') }}
-              </a-menu-item>
-            </a-menu>
+            <template #overlay>
+              <a-menu style="text-align: left; width: max-content">
+                <a-menu-item v-if="workflow.status == 'created'" key="run" @click="onRunClick(workflow)">
+                  {{ $t('Action.Run') }}
+                </a-menu-item>
+                <a-menu-item
+                  v-if="workflow.status == 'completed' || workflow.status == 'cancelled' || workflow.status == 'failed'"
+                  key="Rerun"
+                  @click="onRerunClick(workflow)">
+                  {{ $t('Action.Rerun') }}
+                </a-menu-item>
+                <a-menu-item
+                  v-if="
+                    workflow.status != 'running' && workflow.status != 'cancelling' && workflow.status != 'starting'
+                  "
+                  key="edit"
+                  @click="onEditClick(workflow)">
+                  {{ $t('Action.Edit') }}
+                </a-menu-item>
+                <a-menu-item key="copy" @click="onCopyClick(workflow)">
+                  {{ $t('Action.Copy') }}
+                </a-menu-item>
+                <a-menu-item
+                  v-if="workflow.status == 'running' || workflow.status == 'starting'"
+                  key="cancel"
+                  @click="onCancelClick(workflow)">
+                  {{ $t('Action.Cancel') }}
+                </a-menu-item>
+              </a-menu>
+            </template>
           </a-dropdown>
         </a-col>
       </a-row>
@@ -91,63 +95,9 @@
       </div>
       <div v-else class="workflow-steps-editor">
         <ul class="workflow-step-container" :style="styleObject">
-          <li v-for="stepItem in workflow.step" :key="stepItem.id" class="step-item">
-            <div class="step-name-container">
-              <h3 class="step-name">
-                {{ stepItem.name }}
-              </h3>
-            </div>
-            <div class="step-container">
-              <div v-for="item in stepItem.stepJob" :key="item.id" class="step-job-container">
-                <div class="job-name">
-                  {{ item.jobName }}
-                  <a-dropdown v-if="item.jobExist" class="job-action-button" :trigger="['hover']">
-                    <i class="el-erp-more2" />
-                    <a-menu slot="overlay">
-                      <a-menu-item key="detail" @click="jobDetail(item.jobId)">
-                        {{ $t('Action.Info') }}
-                      </a-menu-item>
-                    </a-menu>
-                  </a-dropdown>
-                </div>
-                <div class="job-status">
-                  <job-status-label
-                    v-if="item.jobExist || item.jobId == -1"
-                    :arch="arch"
-                    :status="item.status"
-                    :operate-status="item.operateStatus"
-                    :ai-operate-status="item.aiOperateStatus" />
-                </div>
-                <div class="job-type">
-                  <span v-if="item.template === null" class="template-warning-message">
-                    <a-icon class="template-warning" type="exclamation-circle" />
-                    {{ $t('Workflow.Template.Tips') }}</span
-                  >
-                  <span v-else>{{ item.template }}</span>
-                </div>
-                <a-row class="icon-area">
-                  <a-col
-                    v-if="computedNodes(item) !== false"
-                    :span="8"
-                    :title="$t('Workflow.Nodes') + ': ' + computedNodes(item)">
-                    <i class="el-erp-monitor_node" />{{ computedNodes(item) }}
-                  </a-col>
-                  <a-col
-                    v-if="computedCores(item) !== false"
-                    :span="8"
-                    :title="$t('Workflow.Cores') + ': ' + computedCores(item)">
-                    <i class="el-erp-cpu" />{{ computedCores(item) }}
-                  </a-col>
-                  <a-col
-                    v-if="computedGpus(item) !== false"
-                    :span="8"
-                    :title="$t('Workflow.GPU') + ': ' + computedGpus(item)">
-                    <i class="el-erp-GPU" />{{ computedGpus(item) }}
-                  </a-col>
-                </a-row>
-              </div>
-            </div>
-          </li>
+          <template v-for="stepItem in workflow.step" :key="stepItem.id">
+            <workflow-detail-step :step="stepItem" />
+          </template>
         </ul>
       </div>
     </div>
@@ -156,18 +106,19 @@
 </template>
 
 <script>
-import WorkflowService from '../../service/workflow'
-import moment from 'moment'
-import WorkflowStatusLabel from '../workflow-manage/workflow-status-label'
-import JobStatusLabel from '../../widget/job-status-label'
-import AccessService from '../../service/access'
-import WorkflowCreateDialog from './workflow-create-dialog'
+import dayjs from '@/dayjs'
+import Utils from '@/common/utils'
+import AccessService from '@/service/access'
+import WorkflowService from '@/service/workflow'
+import WorkflowStatusLabel from './workflow-status-label.vue'
+import WorkflowCreateDialog from './workflow-create-dialog.vue'
+import WorkflowDetailStep from './workflow-detail/workflow-detail-step.vue'
 
 export default {
   components: {
     WorkflowStatusLabel,
-    JobStatusLabel,
     WorkflowCreateDialog,
+    WorkflowDetailStep,
   },
   props: ['id'],
   data() {
@@ -175,6 +126,7 @@ export default {
       workflow: null,
       refreshTimer: null,
       arch: AccessService.getSchedulerArch(),
+      localTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     }
   },
   computed: {
@@ -202,50 +154,24 @@ export default {
   mounted() {
     this.getWorkflow()
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.refreshTimer)
   },
   methods: {
-    jobDetail(id) {
-      this.$router.push({ path: '/main/job/' + id })
-    },
     formatDateTime(val) {
-      return moment.tz(val * 1000, Intl.DateTimeFormat().resolvedOptions().timeZone).format('YYYY-MM-DD HH:mm z')
-    },
-    computedNodes(item) {
-      if (Object.prototype.hasOwnProperty.call(item.jsonBody, 'nodes')) {
-        return item.jsonBody.nodes
-      } else {
-        return false
-      }
-    },
-    computedCores(item) {
-      if (Object.prototype.hasOwnProperty.call(item.jsonBody, 'cores_per_node')) {
-        if (Object.prototype.hasOwnProperty.call(item.jsonBody, 'exclusive') && item.jsonBody.exclusive) {
-          return false
-        }
-        return item.jsonBody.nodes * item.jsonBody.cores_per_node
-      } else {
-        return false
-      }
-    },
-    computedGpus(item) {
-      if (Object.prototype.hasOwnProperty.call(item.jsonBody, 'gpu_per_node')) {
-        const gpuNumber = item.jsonBody.nodes * item.jsonBody.gpu_per_node
-        if (gpuNumber <= 0) {
-          return false
-        }
-        return gpuNumber
-      } else {
-        return false
-      }
+      return (
+        dayjs(val * 1000)
+          .tz(this.localTimezone)
+          .format('YYYY-MM-DD HH:mm') +
+        ' ' +
+        Utils.getTimezoneShortByLang(this.localTimezone)
+      )
     },
     getWorkflow() {
       clearTimeout(this.refreshTimer)
       WorkflowService.getWorkflowById(this.id).then(
         res => {
           this.workflow = res
-          clearTimeout(this.refreshTimer)
           this.refreshTimer = setTimeout(this.getWorkflow, 15000)
         },
         err => {
@@ -278,7 +204,7 @@ export default {
     onCancelClick(row) {
       this.$confirm({
         title: this.$t('Workflow.Cancel.Title'),
-        content: this.$t('Workflow.Cancel.Tips', { name: row.name }),
+        content: this.$T('Workflow.Cancel.Tips', { name: row.name }),
         okText: this.$t('Action.Confirm'),
         cancelText: this.$t('Action.Cancel'),
         onOk: () => {
@@ -310,7 +236,7 @@ export default {
 .workflow-infor-bar {
   color: #fff;
   padding: 20px;
-  background: url('static/img/system/workflow/workflow-detail-back.png') center center no-repeat;
+  background: url('/static/img/system/workflow/workflow-detail-back.png') center center no-repeat;
   background-size: cover;
   border-radius: 4px;
 }
@@ -351,79 +277,5 @@ export default {
   width: 280px;
   height: 100%;
   vertical-align: top;
-}
-.step-name {
-  font-weight: bolder;
-}
-.step-item {
-  padding: 10px;
-}
-.step-container {
-  margin-top: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 10px;
-  height: 500px;
-  overflow: auto;
-}
-.step-job-container {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  position: relative;
-}
-.job-name {
-  font-size: 14px;
-  color: #000;
-  position: relative;
-  padding-right: 30px;
-  word-break: break-all;
-}
-.link-to-detail {
-  cursor: pointer;
-  font-size: 14px;
-  color: #aaa;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-.job-status {
-  margin: 10px 0 0;
-  display: inline-block;
-  height: 15px;
-  width: 100%;
-}
-.icon-area i {
-  font-size: 14px;
-}
-.icon-area {
-  color: #666;
-}
-.job-action-button {
-  position: absolute;
-  right: 0;
-  top: 0;
-  font-size: 16px;
-  color: #999;
-}
-.template-warning {
-  margin-right: 4px;
-}
-.el-erp-more2 {
-  cursor: pointer;
-}
-.job-type {
-  font-size: 12px;
-  color: #999;
-  margin: 8px 0 4px;
-  word-break: break-all;
-}
-.workflow-steps-editor >>> .state-label {
-  width: 14px;
-  height: 14px;
-}
-.template-warning-message {
-  color: #ff5454;
 }
 </style>

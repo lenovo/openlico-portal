@@ -1,60 +1,57 @@
 <template>
-  <div>
-    <div class="rackthumbnail">
-      <a-popover>
-        <template slot="content">
-          <p>{{ rackName }}</p>
-        </template>
-        <a-badge :count="alarmCont" :overflow-count="99" class="alarmstatus-item">
-          <div class="rackthumbnail-icon" :style="rackContainerStyle">
-            <div :style="getInnerboxStyle()">
-              <div :style="getTittleboxStyle()">
-                <div class="box-text">
-                  <div>
-                    <p class="node-info-style">
-                      {{ nodes }}
-                    </p>
-                    <p class="energy-info-style">
-                      {{ $t('Rack.TotalNodes') }}
-                    </p>
-                  </div>
+  <div class="rackthumbnail">
+    <a-popover>
+      <template #content>
+        <p>{{ rackName }}</p>
+      </template>
+      <a-badge :count="alarmCont" :overflow-count="99" class="alarmstatus-item">
+        <div class="rackthumbnail-icon" :style="rackContainerStyle">
+          <div :style="getInnerboxStyle()">
+            <div :style="getTittleboxStyle()">
+              <div class="box-text">
+                <div>
+                  <p class="node-info-style">
+                    {{ nodes }}
+                  </p>
+                  <p class="energy-info-style">
+                    {{ $t('Rack.TotalNodes') }}
+                  </p>
                 </div>
-              </div>
-              <div :style="getTittleboxStyle()">
-                <div class="box-text">
-                  <div>
-                    <p class="node-info-style">
-                      {{ formatEnergy(energy) }}
-                      {{ $t('Monitor.Group.Ene.Unit') }}
-                    </p>
-                    <p class="energy-info-style">
-                      {{ $t('Physical.RowList.Energy') }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div :style="getTittleboxStyle()">
-                <div ref="container" :style="getChartStyle()" />
-              </div>
-              <div class="rack-name-style">
-                {{ rackName }}
               </div>
             </div>
+            <div :style="getTittleboxStyle()">
+              <div class="box-text">
+                <div>
+                  <p class="node-info-style">
+                    {{ formatEnergy(energy) }}
+                    {{ $t('Monitor.Group.Ene.Unit') }}
+                  </p>
+                  <p class="energy-info-style">
+                    {{ $t('Physical.RowList.Energy') }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div :style="getTittleboxStyle()">
+              <div ref="container" :style="getChartStyle()" />
+            </div>
+            <div class="rack-name-style">
+              {{ rackName }}
+            </div>
           </div>
-        </a-badge>
-      </a-popover>
-    </div>
+        </div>
+      </a-badge>
+    </a-popover>
   </div>
 </template>
 
 <script type="text/javascript">
-import * as ECharts from 'echarts'
-import Format from './../../common/format'
+import Format from '@/common/format'
 export default {
   props: [
     'height',
     'width',
-    'notify_num',
+    'notifyNum',
     'nodes',
     'energy',
     'usedNumber',
@@ -65,7 +62,7 @@ export default {
   ],
   data() {
     return {
-      alarmCont: this.notify_num,
+      alarmCont: this.notifyNum,
       rackContainerStyle: {
         display: 'block',
         height: '0px',
@@ -86,16 +83,13 @@ export default {
     )
   },
   methods: {
-    getRackBackgroundImg(imageName) {
-      return './../asset/image/rack/' + imageName
-    },
     init() {
       this.rackContainerStyle = {
         display: 'block',
         height: this.height,
         width: this.width,
       }
-      this.innerChart = ECharts.init(this.$refs.container, window.gApp.echartsTheme.nodegroupStatus)
+      this.innerChart = this.$chart.init(this.$refs.container, window.gApp.echartsTheme.nodegroupStatus)
       this.initChart()
     },
     getInnerboxStyle() {
@@ -168,7 +162,7 @@ export default {
           },
         ],
       }
-      this.innerChart.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.container).setOption(option)
     },
     formatEnergy(energy) {
       return Format.formatEnergy(energy, 1000) // 1000W = 1kW
@@ -179,7 +173,7 @@ export default {
 
 <style media="screen">
 .rackthumbnail-icon {
-  background-image: url('static/img/rack/rack-thumbnail.png');
+  background-image: url('/static/img/rack/rack-thumbnail.png');
   background-repeat: no-repeat;
   background-size: 100% 100%;
   cursor: pointer;

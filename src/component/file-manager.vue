@@ -4,14 +4,14 @@
   </a-spin>
 </template>
 <script>
-import Format from '../common/format'
-import AccessService from '../service/access'
-import ErrorHandler from '../common/error-handler'
-import { themes, defaultTheme } from 'static/js-extern/elfinder-custom/themes'
-import ace from 'static/js-extern/elfinder-custom/js/custom-ace.js'
+import Format from '@/common/format'
+import AccessService from '@/service/access'
+import ErrorHandler from '@/common/error-handler'
+// import ace from '/static/js-extern/elfinder-custom/js/custom-ace.js'
 
 export default {
   props: ['initPath', 'mode', 'width', 'height', 'autoFocus'],
+  emits: ['selected'],
   data() {
     return {
       defaultFilePath: this.initPath || '',
@@ -36,34 +36,37 @@ export default {
   mounted() {
     this.getDataHash()
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.refreshId)
-    $jq('.elfinder-quicklook').trigger('close')
+    $('.elfinder-quicklook').trigger('close')
   },
   activated() {
     this.refreshToken()
   },
   methods: {
     reloadPath(path) {
-      const elfinder = $jq('.lico-fileManager').elfinder('instance')
+      const elfinder = $('.lico-fileManager').elfinder('instance')
       elfinder.destroy()
       this.defaultFilePath = path
       this.getDataHash()
     },
     resize() {
       this.$nextTick(() => {
-        $jq('.lico-fileManager').elfinder('instance').resize()
+        $('.lico-fileManager').elfinder('instance').resize()
       })
     },
     refreshToken() {
       clearTimeout(this.refreshId)
-      const elfinder = $jq('.lico-fileManager').elfinder('instance')
+      const elfinder = $('.lico-fileManager').elfinder('instance')
       if (elfinder) {
         elfinder.options.customHeaders.authorization = 'Jwt ' + this.$store.state.auth.token
       }
-      this.refreshId = setTimeout(() => {
-        this.refreshToken()
-      }, 1000 * 60 * 5)
+      this.refreshId = setTimeout(
+        () => {
+          this.refreshToken()
+        },
+        1000 * 60 * 5,
+      )
     },
     getDefaultPath() {
       let path = this.defaultFilePath || 'MyFolder'
@@ -93,20 +96,23 @@ export default {
     getDataHash() {
       const self = this
       self.defaultFilePath = self.getDefaultPath()
-      $jq
-        .ajax({
-          url: '/api/external/file/',
-          type: 'GET',
-          dataType: 'json',
-          headers: self.customHeaders,
-          data: { cmd: 'hash', target: self.defaultFilePath },
-        })
+      $.ajax({
+        url: '/api/file/',
+        type: 'GET',
+        dataType: 'json',
+        headers: self.customHeaders,
+        data: { cmd: 'hash', target: self.defaultFilePath },
+      })
         .done(res => {
           if (res.exists) {
             // self.$store.dispatch("elfinder/setStorage", res.hash);
             self.showManager(res.hash)
           } else {
-            self.$message.warning(self.$t('FileSelect.Path.InValid', { path: self.defaultFilePath }))
+            self.$message.warning(
+              self.$T('FileSelect.Path.InValid', {
+                path: self.defaultFilePath,
+              }),
+            )
             if (!this.matchWorkspace) {
               self.defaultFilePath = Format.formatWorkspace('MyFolder', this.arch)
               self.getDataHash()
@@ -124,7 +130,7 @@ export default {
     showManager(hash) {
       const self = this
       const options = {
-        url: '/api/external/file/',
+        url: '/api/file/',
         customHeaders: self.customHeaders,
         customParams: {
           params: {},
@@ -142,6 +148,7 @@ export default {
         resizable: false,
         width: self.width || '',
         height: self.height || '',
+        theme: 'custom',
         ui: ['toolbar', 'tree', 'path'],
         commands: ['choosefolder', 'choosefile', '*'],
         uiOptions: {
@@ -193,8 +200,6 @@ export default {
           ],
         },
         cssAutoLoad: true,
-        theme: defaultTheme,
-        themes,
         commandsOptions: {
           info: {
             nullUrlDirLinkSelf: false,
@@ -221,9 +226,9 @@ export default {
                   url += '&token=' + self.$store.state.auth.token
                   // var url = "/api/file/static" + file.path;
                   if (file.mime === 'directory') {
-                    $jq(dialog.find('a').closest('tr')).remove()
-                  } else $jq(dialog.find('a').attr('href', url))
-                  $jq(dialog.find('div.elfinder-info-custom').closest('tr')).remove()
+                    $(dialog.find('a').closest('tr')).remove()
+                  } else $(dialog.find('a').attr('href', url))
+                  $(dialog.find('div.elfinder-info-custom').closest('tr')).remove()
                 },
               },
             },
@@ -231,9 +236,6 @@ export default {
           quicklook: {
             autoplay: false,
             pdfToolbar: false,
-          },
-          edit: {
-            editors: [ace],
           },
           upload: {
             ui: 'uploadbutton',
@@ -246,14 +248,14 @@ export default {
           self.$emit('selected', Format.formatMyFolder(folder.path, self.arch))
         },
       }
-      $jq('.lico-fileManager').elfinder(
+      $('.lico-fileManager').elfinder(
         options,
         // 2nd Arg - before boot up function
         function (fm, extraObj) {
           // `init` event callback function
           fm.bind('load', function () {
             if (self.mode) {
-              $jq('.elfinder-button-icon-' + self.defaultSelectType)
+              $('.elfinder-button-icon-' + self.defaultSelectType)
                 .addClass('elfinder-button-icon-custom')
                 .text(self.$t(`Elfinder.Select.${self.mode}`))
                 .next('.elfinder-button-text')

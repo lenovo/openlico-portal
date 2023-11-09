@@ -33,30 +33,6 @@ class AlertScript {
     alertScript.createTime = Parser.parseTimeFromRestApi(jsonObj.modify_time)
     return alertScript
   }
-
-  get name() {
-    return this._name
-  }
-
-  set name(name) {
-    this._name = name
-  }
-
-  get fileSize() {
-    return this._fileSize
-  }
-
-  set fileSize(fileSize) {
-    this._fileSize = fileSize
-  }
-
-  get createTime() {
-    return this._createTime
-  }
-
-  set createTime(createTime) {
-    this._createTime = createTime
-  }
 }
 
 function alertScriptsTableDataParser(res) {

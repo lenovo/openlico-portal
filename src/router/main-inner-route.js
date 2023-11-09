@@ -22,9 +22,9 @@ export default [
       auth: true,
       access: ['admin'],
       ldap: 'optional',
-      keepAlive: true,
+      // keepAlive: true,
     },
-    component: resolve => require(['../view/user-manage'], resolve),
+    component: _ => import('@/view/user-manage.vue'),
   },
   {
     path: 'user/:id',
@@ -33,7 +33,7 @@ export default [
       auth: true,
       access: ['admin'],
     },
-    component: resolve => require(['../view/user'], resolve),
+    component: _ => import('@/view/user.vue'),
   },
   {
     path: 'bill-group-manage',
@@ -41,9 +41,9 @@ export default [
     meta: {
       auth: true,
       access: ['admin'],
-      keepAlive: true,
+      // keepAlive: true,
     },
-    component: resolve => require(['../view/bill-group-manage'], resolve),
+    component: _ => import('@/view/bill-group-manage.vue'),
   },
   {
     path: 'bill-group/:id',
@@ -52,7 +52,7 @@ export default [
       auth: true,
       access: ['admin'],
     },
-    component: resolve => require(['../view/bill-group-detail'], resolve),
+    component: _ => import('@/view/bill-group-detail.vue'),
   },
   {
     path: 'api-key',
@@ -61,7 +61,7 @@ export default [
       auth: true,
       access: ['staff'],
     },
-    component: resolve => require(['../view/api-key'], resolve),
+    component: _ => import('@/view/api-key.vue'),
   },
   {
     path: 'operation-manage',
@@ -70,7 +70,7 @@ export default [
       auth: true,
       access: ['admin', 'operator'],
     },
-    component: resolve => require(['../view/operation-manage'], resolve),
+    component: _ => import('@/view/operation-manage.vue'),
   },
   {
     path: 'operation-log-manage',
@@ -79,7 +79,7 @@ export default [
       auth: true,
       access: ['admin'],
     },
-    component: resolve => require(['../view/operation-log-manage'], resolve),
+    component: _ => import('@/view/operation-log-manage.vue'),
   },
   {
     path: 'discount-manage',
@@ -88,17 +88,7 @@ export default [
       auth: true,
       access: ['admin'],
     },
-    component: resolve => require(['../view/discount-manage'], resolve),
-  },
-  {
-    path: 'file-manage',
-    name: 'file-manage',
-    meta: {
-      auth: true,
-      access: ['staff'],
-      keepAlive: true,
-    },
-    component: resolve => require(['../view/file-manage'], resolve),
+    component: _ => import('@/view/discount-manage.vue'),
   },
   {
     path: 'notify-adapter-manage',
@@ -107,7 +97,7 @@ export default [
       auth: true,
       access: ['admin'],
     },
-    component: resolve => require(['../view/notify-adapter-manage'], resolve),
+    component: _ => import('@/view/notify-adapter-manage.vue'),
   },
   {
     path: 'alert-policy-manage',
@@ -116,7 +106,7 @@ export default [
       auth: true,
       access: ['admin'],
     },
-    component: resolve => require(['../view/alert-policy-manage'], resolve),
+    component: _ => import('@/view/alert-policy-manage.vue'),
   },
   {
     path: 'alert-script-manage',
@@ -125,7 +115,7 @@ export default [
       auth: true,
       access: ['admin'],
     },
-    component: resolve => require(['../view/alert-script-manage'], resolve),
+    component: _ => import('@/view/alert-script-manage.vue'),
   },
   {
     path: 'notify-group-manage',
@@ -134,7 +124,7 @@ export default [
       auth: true,
       access: ['admin'],
     },
-    component: resolve => require(['../view/notify-group-manage'], resolve),
+    component: _ => import('@/view/notify-group-manage.vue'),
   },
   {
     path: 'user-group-manage',
@@ -143,7 +133,7 @@ export default [
       auth: true,
       access: ['admin'],
     },
-    component: resolve => require(['../view/user-group-manage'], resolve),
+    component: _ => import('@/view/user-group-manage.vue'),
   },
   {
     path: 'container-image-store',
@@ -152,16 +142,16 @@ export default [
       auth: true,
       access: ['admin', 'staff'],
     },
-    component: resolve => require(['../view/container-image-store'], resolve),
+    component: _ => import('@/view/container-image-store.vue'),
   },
   {
-    path: 'job-template-store/:code?',
+    path: 'job-template-store/:category?',
     name: 'job-template-store',
     meta: {
       auth: true,
       access: ['staff'],
     },
-    component: resolve => require(['../view/job-template-store'], resolve),
+    component: _ => import('@/view/job-template-store.vue'),
   },
   {
     path: 'job-template-ex/:code',
@@ -170,7 +160,7 @@ export default [
       auth: true,
       access: ['staff'],
     },
-    component: resolve => require(['../view/job-template-ex'], resolve),
+    component: _ => import('@/view/job-template-ex.vue'),
   },
   {
     path: 'job-template-ex/copy/:jobId',
@@ -179,34 +169,16 @@ export default [
       auth: true,
       access: ['staff'],
     },
-    component: resolve => require(['../view/job-template-ex'], resolve),
+    component: _ => import('@/view/job-template-ex.vue'),
   },
   {
-    path: 'job-template-editor',
+    path: 'job-template-editor/:action?/:code?',
     name: 'job-template-editor',
     meta: {
       auth: true,
       access: ['staff'],
     },
-    component: resolve => require(['../view/job-template-editor'], resolve),
-  },
-  {
-    path: 'job-template-editor/copy/:code',
-    name: 'job-template-editor-copy/',
-    meta: {
-      auth: true,
-      access: ['staff'],
-    },
-    component: resolve => require(['../view/job-template-editor'], resolve),
-  },
-  {
-    path: 'job-template-editor/:code',
-    name: 'job-template-editor-info',
-    meta: {
-      auth: true,
-      access: ['staff'],
-    },
-    component: resolve => require(['../view/job-template-editor'], resolve),
+    component: _ => import('@/view/job-template-editor.vue'),
   },
   {
     path: 'workflow-manage',
@@ -215,7 +187,7 @@ export default [
       auth: true,
       access: ['staff'],
     },
-    component: resolve => require(['../view/workflow-manage'], resolve),
+    component: _ => import('@/view/workflow-manage.vue'),
   },
   {
     path: 'workflow-detail/:id',
@@ -225,7 +197,7 @@ export default [
       access: ['staff'],
     },
     props: true,
-    component: resolve => require(['../view/workflow-manage/workflow-detail'], resolve),
+    component: _ => import('@/view/workflow-manage/workflow-detail.vue'),
   },
   {
     path: 'workflow-editor/:id',
@@ -235,7 +207,25 @@ export default [
       access: ['staff'],
     },
     props: true,
-    component: resolve => require(['../view/workflow-manage/workflow-editor'], resolve),
+    component: _ => import('@/view/workflow-manage/workflow-editor.vue'),
+  },
+  {
+    path: 'workflow-job-template-store/:workflowId/:stepId/:category?',
+    name: 'workflow-template-store',
+    meta: {
+      auth: true,
+      access: ['staff'],
+    },
+    component: _ => import('@/view/workflow-manage/workflow-job-template-store.vue'),
+  },
+  {
+    path: 'workflow-job-template-ex/:workflowId/:stepId/:code/:action?/:stepJobId?',
+    name: 'workflow-template-ex',
+    meta: {
+      auth: true,
+      access: ['staff'],
+    },
+    component: _ => import('@/view/workflow-manage/workflow-job-template-ex.vue'),
   },
   {
     path: 'vnc-manage',
@@ -244,7 +234,7 @@ export default [
       auth: true,
       access: ['admin', 'staff'],
     },
-    component: resolve => require(['../view/vnc-manage'], resolve),
+    component: _ => import('@/view/vnc-manage.vue'),
   },
   {
     path: 'report-operation',
@@ -253,7 +243,7 @@ export default [
       auth: true,
       access: ['admin', 'operator'],
     },
-    component: resolve => require(['../view/report-operation'], resolve),
+    component: _ => import('@/view/report-operation.vue'),
   },
   {
     path: 'report-alert',
@@ -262,7 +252,7 @@ export default [
       auth: true,
       access: ['admin', 'operator'],
     },
-    component: resolve => require(['../view/report-alert'], resolve),
+    component: _ => import('@/view/report-alert.vue'),
   },
   {
     path: 'runtime-manage',
@@ -271,7 +261,7 @@ export default [
       auth: true,
       access: ['admin', 'staff'],
     },
-    component: resolve => require(['../view/runtime-manage'], resolve),
+    component: _ => import('@/view/runtime-manage.vue'),
   },
   {
     path: 'alert-manage',
@@ -280,7 +270,7 @@ export default [
       auth: true,
       access: ['admin', 'operator'],
     },
-    component: resolve => require(['../view/alert-manage'], resolve),
+    component: _ => import('@/view/alert-manage.vue'),
   },
   {
     path: 'monitor-nodes',
@@ -289,34 +279,7 @@ export default [
       auth: true,
       access: ['admin', 'operator'],
     },
-    component: resolve => require(['../view/monitor-nodes'], resolve),
-  },
-  {
-    path: 'workflow-job-template-store/:workflowId/:stepId/:code',
-    name: 'workflow-template-store',
-    meta: {
-      auth: true,
-      access: ['staff'],
-    },
-    component: resolve => require(['../view/workflow-manage/workflow-job-template-store'], resolve),
-  },
-  {
-    path: 'workflow-job-template-ex/:workflowId/:stepId/:code',
-    name: 'workflow-template-ex',
-    meta: {
-      auth: true,
-      access: ['staff'],
-    },
-    component: resolve => require(['../view/workflow-manage/workflow-job-template-ex'], resolve),
-  },
-  {
-    path: 'workflow-job-template-ex/edit/',
-    name: 'workflow-job-edit',
-    meta: {
-      auth: true,
-      access: ['staff'],
-    },
-    component: resolve => require(['../view/workflow-manage/workflow-job-template-ex'], resolve),
+    component: _ => import('@/view/monitor-nodes.vue'),
   },
   {
     path: 'monitor-groups',
@@ -325,7 +288,7 @@ export default [
       auth: true,
       access: ['admin', 'operator'],
     },
-    component: resolve => require(['../view/monitor-groups'], resolve),
+    component: _ => import('@/view/monitor-groups.vue'),
   },
   {
     path: 'monitor-gpus',
@@ -334,17 +297,17 @@ export default [
       auth: true,
       access: ['admin', 'operator'],
     },
-    component: resolve => require(['../view/monitor-gpus'], resolve),
+    component: _ => import('@/view/monitor-gpus.vue'),
   },
   {
     path: 'job-manage/:status?',
     name: 'job-manage',
     meta: {
       auth: true,
-      keepAlive: true,
+      // keepAlive: true,
       access: ['admin', 'operator', 'staff'],
     },
-    component: resolve => require(['../view/job-manage'], resolve),
+    component: _ => import('@/view/job-manage.vue'),
   },
   {
     path: 'monitor-racks',
@@ -354,7 +317,7 @@ export default [
       access: ['admin', 'operator'],
     },
 
-    component: resolve => require(['../view/monitor-racks'], resolve),
+    component: _ => import('@/view/monitor-racks.vue'),
   },
   {
     path: 'rack/:id',
@@ -363,7 +326,7 @@ export default [
       auth: true,
       access: ['admin', 'operator'],
     },
-    component: resolve => require(['../view/rack'], resolve),
+    component: _ => import('@/view/rack.vue'),
   },
   {
     path: 'dashboard-monitor',
@@ -372,7 +335,7 @@ export default [
       auth: true,
       access: ['admin', 'operator', 'staff'],
     },
-    component: resolve => require(['../view/dashboard-monitor'], resolve),
+    component: _ => import('@/view/dashboard-monitor.vue'),
   },
   {
     path: 'cloud-tools',
@@ -380,9 +343,9 @@ export default [
     meta: {
       auth: true,
       access: ['staff'],
-      keepAlive: true,
+      // keepAlive: true,
     },
-    component: resolve => require(['../view/cloud-tools'], resolve),
+    component: _ => import('@/view/cloud-tools.vue'),
   },
   {
     path: 'report-billing',
@@ -392,7 +355,7 @@ export default [
       access: ['admin', 'staff'],
     },
 
-    component: resolve => require(['../view/report-billing'], resolve),
+    component: _ => import('@/view/report-billing.vue'),
   },
   {
     path: 'report-consume',
@@ -401,7 +364,7 @@ export default [
       auth: true,
       access: ['admin', 'operator', 'staff'],
     },
-    component: resolve => require(['../view/report-consume'], resolve),
+    component: _ => import('@/view/report-consume.vue'),
   },
   {
     path: 'report-cluster',
@@ -410,7 +373,7 @@ export default [
       auth: true,
       access: ['admin', 'operator'],
     },
-    component: resolve => require(['../view/report-cluster'], resolve),
+    component: _ => import('@/view/report-cluster.vue'),
   },
   {
     path: 'job/:id',
@@ -419,7 +382,7 @@ export default [
       auth: true,
       access: ['staff'],
     },
-    component: resolve => require(['../view/job'], resolve),
+    component: _ => import('@/view/job.vue'),
   },
   {
     path: 'report-job',
@@ -428,7 +391,7 @@ export default [
       auth: true,
       access: ['admin', 'operator'],
     },
-    component: resolve => require(['../view/report-job'], resolve),
+    component: _ => import('@/view/report-job.vue'),
   },
   {
     path: 'monitor-cluster',
@@ -437,6 +400,15 @@ export default [
       auth: true,
       access: ['admin', 'operator'],
     },
-    component: resolve => require(['../view/monitor-cluster'], resolve),
+    component: _ => import('@/view/monitor-cluster.vue'),
+  },
+  {
+    path: 'softwares',
+    name: 'softwares-manage',
+    meta: {
+      auth: true,
+      access: ['staff'],
+    },
+    component: _ => import('@/view/softwares.vue'),
   },
 ]

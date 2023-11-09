@@ -21,7 +21,7 @@
         type="link"
         size="small"
         @click="onBackClick">
-        {{ $t('Breadcrumb.Back') }}
+        {{ $T('Breadcrumb.Back') }}
       </a-button>
     </a-col>
   </a-row>
@@ -109,7 +109,7 @@ export default {
     },
     getPathByMenu(menu) {
       return {
-        name: this.$t('Menu.' + menu.label),
+        name: this.$T('Menu.' + menu.label),
         path: menu.path,
       }
     },
@@ -135,7 +135,7 @@ export default {
         )
       }
       if (type === 'job') {
-        JobService.getJobById(id).then(
+        JobService.getJobById(id, { jobtemplateSync: false }).then(
           res => {
             this.addDetailPath(id, res.name)
           },
@@ -157,15 +157,7 @@ export default {
       if (type === 'job-template-ex-copy') {
         JobService.getJobById(id).then(
           res => {
-            const job = res
-            JobTemplateService.getJobTemplate(job.realType).then(
-              res => {
-                this.addDetailPath(id, res.name)
-              },
-              res => {
-                this.$message.error(res)
-              },
-            )
+            this.addDetailPath(id, res.realType || res.type)
           },
           res => {
             this.$message.error(res)
@@ -183,14 +175,16 @@ export default {
         )
       }
       if (type === 'job-template-editor') {
-        if (id === undefined) {
+        if (!id) {
           setTimeout(() => {
-            this.addDetailPath(id, this.$t('JobTemplate.Create'))
+            this.addDetailPath(id, this.$T('JobTemplate.Create'))
           }, 300)
         } else {
           JobTemplateService.getJobTemplate(id).then(
             res => {
-              this.addDetailPath(id, this.$t('JobTemplate.Edit', { name: res.name }))
+              let action = this.$route.params.action
+              action = action === 'edit' ? 'Edit' : action === 'copy' ? 'Copy' : ''
+              this.addDetailPath(id, this.$T(`JobTemplate.${action}`, { name: res.name }))
             },
             res => {
               this.$message.error(res)
@@ -198,25 +192,15 @@ export default {
           )
         }
       }
-      if (type === 'job-template-editor-copy') {
-        JobTemplateService.getJobTemplate(id).then(
-          res => {
-            this.addDetailPath(id, this.$t('JobTemplate.Copy', { name: res.name }))
-          },
-          res => {
-            this.$message.error(res)
-          },
-        )
-      }
       if (type === 'workflow-detail' || type === 'workflow-editor') {
         WorkflowServices.getWorkflowById(id).then(
           res => {
             const pathName =
               type === 'workflow-detail'
-                ? this.$t('Workflow.Bread.Detail', {
+                ? this.$T('Workflow.Bread.Detail', {
                     name: res.name,
                   })
-                : this.$t('Workflow.Bread.Edit', {
+                : this.$T('Workflow.Bread.Edit', {
                     name: res.name,
                   })
             this.addDetailPath(id, pathName)

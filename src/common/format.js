@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import moment from 'moment'
+import dayjs from '../dayjs'
 
 function baseFormatMoney(
   number,
@@ -263,7 +262,7 @@ function getDistributionRangeByStep(maxVal, minVal, step, minGap = 1) {
 }
 
 function generateRandomName(prefill) {
-  const timeStr = moment().format('MMDDHHmm')
+  const timeStr = dayjs().format('MMDDHHmm')
   return prefill + timeStr
 }
 

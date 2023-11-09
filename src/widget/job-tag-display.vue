@@ -1,7 +1,7 @@
 <template>
   <div class="job-tag-popover">
     <a-popover placement="right">
-      <template slot="content">
+      <template #content>
         <div style="max-width: 350px">
           <a-tag v-for="tag in tags" :key="tag.id" style="margin: 5px">
             {{ tag.name }}
@@ -45,7 +45,7 @@ export default {
 }
 </script>
 <style scoped>
-.job-tag-popover >>> .ant-popover-inner-content {
+.job-tag-popover :deep(.ant-popover-inner-content) {
   padding: 5px;
 }
 </style>

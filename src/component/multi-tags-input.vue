@@ -1,22 +1,26 @@
 <template>
   <div class="multi-tags-input multi-tags">
-    <a-tag v-for="tag in value" :key="tag" :closable="!disabled" :close-transition="true" @close="onTagClose(tag)">
+    <a-tag
+      v-for="tag in value"
+      :key="tag"
+      :closable="!disabled"
+      :close-transition="true"
+      @close.prevent="onTagClose(tag)">
       {{ tag }}
     </a-tag>
     <a-input-group v-show="inputVisible && !disabled" compact :size="size || null">
       <a-input
         id="tid_multi-tags-input"
         ref="newTagInput"
-        v-model="inputValue"
+        v-model:value="inputValue"
         class="new-tag-input"
         style="width: 80%"
         @change="onNewTagInputConfirm"
-        @keyup.enter.native="onNewTagInputConfirm" />
+        @keyup.enter="onNewTagInputConfirm" />
       <a-button :size="size" style="width: 20%" type="primary" @click="onNewTagInputConfirm">
         {{ $t('Action.Ok') }}
       </a-button>
     </a-input-group>
-
     <a-button
       v-show="!inputVisible && !disabled"
       id="tid_multi-tags-new"
@@ -30,7 +34,8 @@
       id="tid_multi-tags-clean"
       class="new-tag-button"
       :size="size || 'small'"
-      type="danger"
+      type="primary"
+      danger
       @click="cleanTags">
       {{ $t('Action.Clear') }}
     </a-button>
@@ -39,7 +44,6 @@
 </template>
 <script>
 import Schema from 'async-validator'
-
 export default {
   props: {
     value: Array,
@@ -61,6 +65,7 @@ export default {
       default: null,
     },
   },
+  emits: ['input', 'change', 'tag-change', 'update:value'],
   data() {
     return {
       // tags: [],
@@ -84,11 +89,12 @@ export default {
       this.$emit('input', newValue)
       this.$emit('change', newValue)
       this.$emit('tag-change')
+      this.$emit('update:value', newValue)
     },
     showInput() {
       this.inputVisible = true
       this.$nextTick(() => {
-        this.$refs.newTagInput.$refs.input.focus()
+        this.$refs.newTagInput.focus()
       })
     },
     cleanTags() {
@@ -96,6 +102,7 @@ export default {
       this.$emit('input', [])
       this.$emit('change', [])
       this.$emit('tag-change')
+      this.$emit('update:value', [])
     },
     onNewTagInputConfirm(e) {
       const inputValue = this.inputValue
@@ -130,6 +137,7 @@ export default {
         this.$emit('input', newValue)
         this.$emit('change', newValue)
         this.$emit('tag-change')
+        this.$emit('update:value', newValue)
       }
       this.inputVisible = false
       this.inputValue = ''
@@ -150,4 +158,3 @@ export default {
   },
 }
 </script>
-<style></style>

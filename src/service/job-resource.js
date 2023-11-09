@@ -15,8 +15,8 @@
  */
 
 import Request from '../request/https'
-import ErrorHandler from '../common/error-handler'
 import Format from '../common/format'
+import ErrorHandler from '../common/error-handler'
 
 class TimeSeriesItem {
   constructor() {
@@ -26,46 +26,30 @@ class TimeSeriesItem {
 
   static parseFromRestApi(jsonObj, category) {
     const item = new TimeSeriesItem()
-    item._time = new Date(jsonObj.time * 1000)
+    item.time = new Date(jsonObj.time * 1000)
     if (['gpu', 'gmemory'].includes(category)) {
       if (typeof jsonObj.value === 'number') {
-        item._values.push(Format.formatNumber(jsonObj.value, 1))
+        item.values.push(Format.formatNumber(jsonObj.value, 1))
       } else {
-        item._values.push('-')
+        item.values.push('-')
       }
     } else {
       if (typeof jsonObj.job_util === 'number') {
-        item._values.push(Format.formatNumber(jsonObj.job_util, 1))
+        item.values.push(Format.formatNumber(jsonObj.job_util, 1))
       } else {
-        item._values.push('-')
+        item.values.push('-')
       }
       if (
         typeof (jsonObj.system_util - jsonObj.job_util) === 'number' &&
         !Number.isNaN(jsonObj.system_util - jsonObj.job_util)
       ) {
         const otherUtil = jsonObj.system_util - jsonObj.job_util
-        item._values.push(Format.formatNumber(otherUtil < 0 ? 0 : otherUtil, 1))
+        item.values.push(Format.formatNumber(otherUtil < 0 ? 0 : otherUtil, 1))
       } else {
-        item._values.push('-')
+        item.values.push('-')
       }
     }
     return item
-  }
-
-  get _time() {
-    return this.time
-  }
-
-  set _time(time) {
-    return (this.time = time)
-  }
-
-  get _values() {
-    return this.values
-  }
-
-  set _values(values) {
-    return (this.values = values)
   }
 }
 

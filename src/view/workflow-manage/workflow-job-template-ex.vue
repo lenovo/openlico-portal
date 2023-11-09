@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import WorkflowModal from './workflow-modal-component'
-import JobTemplateEx from '../job-template-ex'
+import WorkflowModal from './workflow-modal-component.vue'
+import JobTemplateEx from '../job-template-ex.vue'
 export default {
   components: {
     'workflow-modal-component': WorkflowModal,
@@ -18,7 +18,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .workflow-job-template-store-modal .submit-job-bottom-button {
   margin-bottom: 20px;
 }

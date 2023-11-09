@@ -1,7 +1,7 @@
 <template>
   <div id="tid_dashboard-job-template" class="dashboard-template">
     <a-row class="dashboard-template-title m-b-20">
-      <span class="dashboard-template-left">{{ $t('Dashboard.Job.Template.Title') }}</span>
+      <span class="dashboard-template-left dashboard-card-title">{{ $t('Dashboard.Job.Template.Title') }}</span>
       <a href="#/main/job-template-store" class="dashboard-template-right dashboard-more">{{ $t('More') }}</a>
     </a-row>
     <div v-if="templateData" class="dashboard-template-contenter">
@@ -17,7 +17,7 @@
   </div>
 </template>
 <script>
-import DashboardService from './../../service/dashboard-monitor'
+import DashboardService from '@/service/dashboard-monitor'
 export default {
   props: ['initData'],
   data() {
@@ -73,15 +73,13 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 .dashboard-template {
   overflow: hidden;
 }
-.dashboard-template-left {
-  float: left;
-}
-.dashboard-template-right {
-  float: right;
+.dashboard-template-title {
+  display: flex;
+  justify-content: space-between;
 }
 .dashboard-template-card {
   padding: 15px 20px;

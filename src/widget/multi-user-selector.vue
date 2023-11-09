@@ -1,18 +1,25 @@
 <template>
   <div class="multi-user-selector">
     <a-input-group compact>
+      <!-- eslint-disable -->
       <a-input
         ref="input"
         :addon-before="addonBeforeText"
         style="width: 70%"
-        read-only
+        readOnly
         :placeholder="$t(allable ? 'Multi.User.All' : 'Multi.User.PleaseSelect')"
         :value="result"
         @change="inputValueChange" />
+      <!-- eslint-enable -->
       <a-button type="primary" @click="Select">
         {{ $t('Multi.User.select') }}
       </a-button>
-      <a-button v-if="formValue.values.length > 0 && clearable" class="clear-button" type="danger" @click="onClear">
+      <a-button
+        v-if="formValue.values.length > 0 && clearable"
+        class="clear-button"
+        type="primary"
+        danger
+        @click="onClear">
         {{ $t('Action.Clear') }}
       </a-button>
     </a-input-group>
@@ -27,8 +34,8 @@
 </template>
 
 <script>
-import UserSelectorDialog from './multi-user-selector/users-selector-dialog'
-import BillGroupService from '../service/bill-group'
+import UserSelectorDialog from './multi-user-selector/users-selector-dialog.vue'
+import BillGroupService from '@/service/bill-group'
 
 export default {
   components: {
@@ -44,6 +51,7 @@ export default {
     'allable',
     'clearable',
   ],
+  emits: ['change'],
   data() {
     return {
       formValue: {

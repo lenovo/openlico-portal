@@ -2,7 +2,7 @@
   <div style="display: flex; width: 100%; position: relative">
     <a-date-picker
       v-if="enableDate"
-      v-model="date"
+      v-model:value="date"
       :disabled-date="disabledDate"
       :disabled="disabled"
       :format="formatDate"
@@ -11,16 +11,17 @@
     <span v-if="enableDate && enableTime" style="display: inline-block; width: 10px" />
     <a-time-picker
       v-if="enableTime"
-      v-model="time"
+      v-model:value="time"
       :disabled="disabled"
       :get-popup-container="n => n.parentNode"
       :format="formatTime"
-      :use12-hours="false"
+      :show-now="false"
       @change="onTimeChange" />
   </div>
 </template>
 <script>
-import moment from 'moment'
+import dayjs from '@/dayjs'
+import { Form } from 'ant-design-vue'
 
 export default {
   props: {
@@ -45,30 +46,24 @@ export default {
     // eslint-disable-next-line vue/require-prop-types, vue/require-default-prop
     disableDateSelection: Function,
   },
+  emits: ['input', 'change', 'update:value'],
   data() {
     return {
-      moment,
       date: null,
       time: null,
       result: [],
       formatDate: 'YYYY-MM-DD',
       formatTime: this.disableSecond ? 'HH:mm' : 'HH:mm:ss',
+      formItemContext: Form.useInjectFormItemContext(),
     }
-  },
-  watch: {
-    value(val, old) {
-      if (val || old) {
-        this.init()
-      }
-    },
   },
   mounted() {
     this.init()
   },
   methods: {
     init() {
-      this.date = this.value ? moment(this.value, this.formatDate) : null
-      this.time = this.value ? moment(this.value, this.formatTime) : null
+      this.date = this.value ? dayjs(this.value, this.formatDate) : null
+      this.time = this.value ? dayjs(this.value, this.formatTime) : null
     },
     setResult() {
       this.result = []
@@ -79,6 +74,7 @@ export default {
       ) {
         this.$emit('input', null)
         this.$emit('change', null)
+        this.$emit('update:value', null)
         return
       }
       if (this.date && this.enableDate) {
@@ -90,8 +86,9 @@ export default {
 
       const result = this.result.length >= 1 ? this.result.join(' ') : null
 
-      this.$emit('input', moment(result).toDate())
-      this.$emit('change', moment(result).toDate())
+      this.$emit('input', dayjs(result).toDate())
+      this.$emit('change', dayjs(result).toDate())
+      this.$emit('update:value', dayjs(result).toDate())
     },
     onDateChange(val) {
       this.setResult()
@@ -104,10 +101,10 @@ export default {
         return true
       }
       if (this.disableHistoryDate) {
-        return current && current <= moment().startOf('day')
+        return current && current <= dayjs().startOf('day')
       }
       if (this.disableFutureDate) {
-        return current && current >= moment().startOf('day')
+        return current && current >= dayjs().startOf('day')
       }
       if (this.disableDateSelection) {
         return this.disabledDateSelection(current)

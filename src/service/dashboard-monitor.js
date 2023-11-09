@@ -39,12 +39,12 @@ class Cluster {
   static parseFromRestApi(jsonObj) {
     const cluster = new Cluster()
     if (jsonObj.name) {
-      cluster._name = jsonObj.name
+      cluster.name = jsonObj.name
       if (window.gApp.$store.state.auth.featureCodes.includes('monitor.cluster')) {
-        cluster._jobStatus = jsonObj.jobs
-        cluster._nodeGroupStatus = NodeGroupStatus.parseFromRestApi(jsonObj.nodes)
+        cluster.jobStatus = jsonObj.jobs
+        cluster.nodeGroupStatus = NodeGroupStatus.parseFromRestApi(jsonObj.nodes)
         const state = jsonObj.nodes.state
-        cluster._nodeStatus = {
+        cluster.nodeStatus = {
           on: state.busy.concat(state.idle, state.occupied).reduce(function (a, b) {
             return a + b
           }),
@@ -56,38 +56,6 @@ class Cluster {
     }
     cluster.hardware = parseHardwareData(jsonObj)
     return cluster
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    return (this.name = name)
-  }
-
-  get _jobStatus() {
-    return this.jobStatus
-  }
-
-  set _jobStatus(jobStatus) {
-    return (this.jobStatus = jobStatus)
-  }
-
-  get _nodeGroupStatus() {
-    return this.nodeGroupStatus
-  }
-
-  set _nodeGroupStatus(nodeGroupStatus) {
-    return (this.nodeGroupStatus = nodeGroupStatus)
-  }
-
-  get _nodeStatus() {
-    return this.nodeStatus
-  }
-
-  set _nodeStatus(nodeStatus) {
-    return (this.nodeStatus = nodeStatus)
   }
 }
 
@@ -102,44 +70,14 @@ class Status {
   static parseFromRestApi(jsonObj, groups) {
     const status = new Status()
     let running = []
-    status._busy = processStatus(jsonObj.busy, groups)
+    status.busy = processStatus(jsonObj.busy, groups)
     running = processStatus(jsonObj.occupied, groups)
-    status._free = processStatus(jsonObj.idle, groups)
-    status._off = processStatus(jsonObj.off, groups)
+    status.free = processStatus(jsonObj.idle, groups)
+    status.off = processStatus(jsonObj.off, groups)
     for (let i = 0; i < status.busy.length; i++) {
       status.busy[i] = status.busy[i] + running[i]
     }
     return status
-  }
-
-  get _busy() {
-    return this.busy
-  }
-
-  set _busy(busy) {
-    return (this.busy = busy)
-  }
-
-  // get _running() {
-  //     return this.running;
-  // }
-  // set _running(running) {
-  //     return (this.running = running);
-  // }
-  get _free() {
-    return this.free
-  }
-
-  set _free(free) {
-    return (this.free = free)
-  }
-
-  get _off() {
-    return this.off
-  }
-
-  set _off(off) {
-    return (this.off = off)
   }
 }
 class NodeGroupStatus {
@@ -158,25 +96,9 @@ class NodeGroupStatus {
       }
     })
 
-    nodeGroupStatus._status = Status.parseFromRestApi(jsonObj.state, groups)
-    nodeGroupStatus._group = jsonObj.types.length > 4 ? nodeGroups.slice(0, 4) : jsonObj.types
+    nodeGroupStatus.status = Status.parseFromRestApi(jsonObj.state, groups)
+    nodeGroupStatus.group = jsonObj.types.length > 4 ? nodeGroups.slice(0, 4) : jsonObj.types
     return nodeGroupStatus
-  }
-
-  get _status() {
-    return this.status
-  }
-
-  set _status(status) {
-    return (this.status = status)
-  }
-
-  get _group() {
-    return this.group
-  }
-
-  set _group(group) {
-    return (this.group = group)
   }
 }
 
@@ -190,43 +112,11 @@ class JobChart {
 
   static parseFromRestApi(jsonObj) {
     const jobChart = new JobChart()
-    jobChart._running = jsonObj.running
-    jobChart._waiting = jsonObj.waiting
-    jobChart._time = new Date(jsonObj.time * 1000)
-    jobChart._timezone = jsonObj.timezone
+    jobChart.running = jsonObj.running
+    jobChart.waiting = jsonObj.waiting
+    jobChart.time = new Date(jsonObj.time * 1000)
+    jobChart.timezone = jsonObj.timezone
     return jobChart
-  }
-
-  get _running() {
-    return this.running
-  }
-
-  set _running(running) {
-    return (this.running = running)
-  }
-
-  get _waiting() {
-    return this.waiting
-  }
-
-  set _waiting(waiting) {
-    return (this.waiting = waiting)
-  }
-
-  get _time() {
-    return this.time
-  }
-
-  set _time(time) {
-    return (this.time = time)
-  }
-
-  get _timezone() {
-    return this.timezone
-  }
-
-  set _timezone(timezone) {
-    return (this.timezone = timezone)
   }
 }
 
@@ -238,25 +128,9 @@ class Template {
 
   static parseFromRestApi(jsonObj) {
     const template = new Template()
-    template._type = jsonObj.template_code
-    template._counts = jsonObj.count
+    template.type = jsonObj.template_code
+    template.counts = jsonObj.count
     return template
-  }
-
-  get _type() {
-    return this.type
-  }
-
-  set _type(type) {
-    return (this.type = type)
-  }
-
-  get _counts() {
-    return this.counts
-  }
-
-  set _counts(counts) {
-    return (this.counts = counts)
   }
 }
 function processStatus(status, groups) {
@@ -283,14 +157,6 @@ function getDashboardOverview() {
     Request.get('/api/monitor/overview/').then(
       res => {
         resolve(Cluster.parseFromRestApi(res.body))
-        // Add gpu status
-        // var overview = Cluster.parseFromRestApi(res.body);
-        // GPUService.getClusterGpuStatus().then((res) => {
-        //   overview.gpuStatus = res;
-        //   resolve(overview);
-        // }, (res) => {
-        //   reject(res);
-        // });
       },
       res => {
         ErrorHandler.restApiErrorHandler(res, reject)

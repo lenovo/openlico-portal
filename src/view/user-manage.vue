@@ -8,87 +8,74 @@
         :row-key="row => row.id"
         :table-data-fetcher="tableDataFetcher"
         :search-enable="true"
-        :search-props="['username']">
-        <div slot="controller">
-          <a-button v-if="ldapManaged" id="user-create-btn" type="primary" class="action-button" @click="onCreateClick">
-            {{ $t('Action.Create') }}
-          </a-button>
-          <a-button
-            v-if="!ldapManaged"
-            id="user-import-btn"
-            type="primary"
-            class="action-button"
-            @click="onImportClick">
-            {{ $t('Action.Import') }}
-          </a-button>
-          <a-button id="user-batch-import-btn" type="primary" class="action-button" @click="onBatchImportClick">
-            {{ $t('Action.BatchImport') }}
-          </a-button>
-          <a-button
-            id="user-export-btn"
-            type="primary"
-            class="action-button"
-            :disabled="exportDisabled"
-            :loading="exportDisabled"
-            @click="onExportClick">
-            {{ $t('Action.Export') }}
-          </a-button>
-        </div>
-        <template slot="username" slot-scope="{ row }">
-          <a-popover trigger="hover" @visibleChange="getUserInfo($event, row.id)">
-            <div slot="content">
-              <a-spin :spinning="tips.loading">
-                <div v-if="tips.data[row.id]" class="user-manager-tips">
-                  <div class="user-manager-tips-item">
-                    <div class="user-manager-tips-item-label">
-                      {{ $t('Menu.Admin') }}
-                    </div>
-                    <div class="user-manager-tips-item-value">
-                      {{ `${row.username}(${tips.data[row.id].uid})` }}
-                    </div>
-                  </div>
-                  <div class="user-manager-tips-item m-t-10">
-                    <div class="user-manager-tips-item-label">
-                      {{ $t('Menu.UserGroupManage') }}
-                    </div>
-                    <div class="user-manager-tips-item-value">
-                      {{ `${tips.data[row.id].userGroup.name}(${tips.data[row.id].userGroup.gid})` }}
-                    </div>
-                  </div>
-                </div>
-              </a-spin>
-            </div>
-            <a-button type="link">
-              {{ row.username }}
+        :search-props="['username', 'fullName']">
+        <template #controller>
+          <div>
+            <a-button
+              v-if="ldapManaged"
+              id="user-create-btn"
+              type="primary"
+              class="action-button"
+              @click="onCreateClick">
+              {{ $t('Action.Create') }}
             </a-button>
-          </a-popover>
+            <a-button
+              v-if="!ldapManaged"
+              id="user-import-btn"
+              type="primary"
+              class="action-button"
+              @click="onImportClick">
+              {{ $t('Action.Import') }}
+            </a-button>
+            <a-button id="user-batch-import-btn" type="primary" class="action-button" @click="onBatchImportClick">
+              {{ $t('Action.BatchImport') }}
+            </a-button>
+            <a-button
+              id="user-export-btn"
+              type="primary"
+              class="action-button"
+              :disabled="exportDisabled"
+              :loading="exportDisabled"
+              @click="onExportClick">
+              {{ $t('Action.Export') }}
+            </a-button>
+          </div>
         </template>
-        <a-dropdown slot="action" slot-scope="{ row }" placement="bottomLeft" :trigger="['click']">
-          <a-button>
-            {{ $t('Action') }}
-            <a-icon type="down" />
-          </a-button>
-          <a-menu slot="overlay">
-            <a-menu-item @click="onInfoClick(row)">
-              {{ $t('Action.Info') }}
-            </a-menu-item>
-            <a-menu-item v-if="row.username == name || row.role != 300" @click="onEditClick(row)">
-              {{ $t('Action.Edit') }}
-            </a-menu-item>
-            <a-menu-item v-if="row.role != 300" @click="onChangePasswordClick(row)">
-              {{ $t('User.Action.ChangePassword') }}
-            </a-menu-item>
-            <a-menu-item v-if="row.username == name || row.role != 300" @click="onDeleteClick(row)">
-              {{ $t('Action.Delete') }}
-            </a-menu-item>
-            <a-menu-item v-if="row.role != 300 && !row.freezed" @click="onSuspend(row)">
-              {{ $t('Action.Suspend') }}
-            </a-menu-item>
-            <a-menu-item v-if="row.role != 300 && row.freezed" @click="onResume(row)">
-              {{ $t('Action.Resume') }}
-            </a-menu-item>
-          </a-menu>
-        </a-dropdown>
+        <template #username="{ row }">
+          <user-data-tooltip :ref="`${row.username}Info`" :username="row.username">
+            <a-button type="link"> {{ row.username }}</a-button>
+          </user-data-tooltip>
+        </template>
+        <template #action="{ row }">
+          <a-dropdown placement="bottomLeft" :trigger="['click']">
+            <a-button>
+              {{ $t('Action') }}
+              <down-outlined />
+            </a-button>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item @click="onInfoClick(row)">
+                  {{ $t('Action.Info') }}
+                </a-menu-item>
+                <a-menu-item v-if="row.username == name || row.role != 300" @click="onEditClick(row)">
+                  {{ $t('Action.Edit') }}
+                </a-menu-item>
+                <a-menu-item v-if="row.role != 300" @click="onChangePasswordClick(row)">
+                  {{ $t('User.Action.ChangePassword') }}
+                </a-menu-item>
+                <a-menu-item v-if="row.username == name || row.role != 300" @click="onDeleteClick(row)">
+                  {{ $t('Action.Delete') }}
+                </a-menu-item>
+                <a-menu-item v-if="row.role != 300 && !row.freezed" @click="onSuspend(row)">
+                  {{ $t('User.Action.Suspend') }}
+                </a-menu-item>
+                <a-menu-item v-if="row.role != 300 && row.freezed" @click="onResume(row)">
+                  {{ $t('User.Action.Resume') }}
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </template>
       </composite-table>
     </div>
     <user-dialog id="tid_user-dialog" ref="userDialog" :is-scheduler="isScheduler" />
@@ -101,17 +88,19 @@
   </div>
 </template>
 <script>
-import Format from '../common/format'
-import AuthService from '../service/auth'
-import UserService from '../service/user'
-import AccessService from './../service/access'
-import UserBatchImportService from './../service/user-batch-import'
-import CompositeTable from '../component/composite-table'
-import UserDialog from './user-manage/user-dialog'
-import UserBatchImportDialog from './user-manage/user-batch-import-dialog'
-import UserBatchImportResultTable from './user-manage/user-batch-import-result-table'
-import UserPasswordDialog from './user-manage/user-password-dialog'
-import Mixins from '../mixins/set-keep-alive-pages'
+import Format from '@/common/format'
+import AuthService from '@/service/auth'
+import UserService from '@/service/user'
+import AccessService from '@/service/access'
+import UserBatchImportService from '@/service/user-batch-import'
+import CompositeTable from '@/component/composite-table.vue'
+import UserDialog from './user-manage/user-dialog.vue'
+import UserBatchImportDialog from './user-manage/user-batch-import-dialog.vue'
+import UserBatchImportResultTable from './user-manage/user-batch-import-result-table.vue'
+import UserPasswordDialog from './user-manage/user-password-dialog.vue'
+import Mixins from '@/mixins/set-keep-alive-pages'
+import UserDataTooltip from '@/component/user-data-tooltip.vue'
+import { use } from 'echarts/core'
 const name = 'user-manage'
 export default {
   name,
@@ -121,6 +110,7 @@ export default {
     'user-password-dialog': UserPasswordDialog,
     'user-batch-import-dialog': UserBatchImportDialog,
     'user-batch-import-result-table': UserBatchImportResultTable,
+    'user-data-tooltip': UserDataTooltip,
   },
   mixins: [Mixins(name)],
   data() {
@@ -139,43 +129,43 @@ export default {
           title: this.$t('User.Username'),
           dataIndex: 'username',
           sorter: true,
-          scopedSlots: { customRender: 'username' },
+          customSlot: true,
+        },
+        {
+          title: this.$t('User.Fullname'),
+          dataIndex: 'fullName',
+          sorter: true,
+          customRender: ({ text }) => text || '-',
         },
         {
           title: this.$t('User.Role'),
           dataIndex: 'role',
           sorter: true,
-          customRender: val => UserService.getUserRoleDisplayName(val),
+          customRender: ({ text }) => UserService.getUserRoleDisplayName(text),
         },
         {
           title: this.$t('User.LoginTime'),
           dataIndex: 'loginTime',
           sorter: true,
-          customRender: val => Format.formatDateTime(val),
+          customRender: ({ text }) => Format.formatDateTime(text),
         },
         {
           title: this.$t('User.ThawTime'),
           dataIndex: 'thawTime',
-          customRender: (val, row) => (row.freezed ? Format.formatDateTime(val) : '-'),
+          customRender: ({ text, record }) => (record.freezed ? Format.formatDateTime(text) : '-'),
         },
         {
           title: this.$t('User.Freezed.Status'),
           dataIndex: 'freezed',
-          customRender: val => (val ? this.$t('User.Freezed.Suspended') : '-'),
+          customRender: ({ text }) => (text ? this.$t('User.Freezed.Suspended') : '-'),
         },
         {
           title: this.$t('Action'),
           key: 'action',
-          scopedSlots: { customRender: 'action' },
+          customSlot: true,
         },
       ],
       exportDisabled: false,
-      tips: {
-        requestId: null,
-        loading: false,
-        visible: false,
-        data: {},
-      },
     }
   },
   computed: {
@@ -188,35 +178,41 @@ export default {
       this.columns.splice(3, 0, {
         title: this.$t('User.Detail.BillGroup'),
         dataIndex: 'billGroup',
-        customRender: val => (val.name ? val.name : '-'),
+        customRender: ({ text }) => (text.name ? text.name : '-'),
       })
     }
   },
   methods: {
     onCreateClick() {
-      this.$refs.userDialog.doCreate().then(
-        res => {
-          // Reload table data
-          this.$refs.userTable.fetchTableData(true)
-        },
-        res => {
-          // Do nothing
-        },
-      )
+      this.$refs.userDialog
+        .doCreate()
+        .then(
+          res => {
+            // Reload table data
+            this.$refs.userTable.fetchTableData(true)
+          },
+          res => {
+            // Do nothing
+          },
+        )
+        .catch(_ => {})
     },
     onEditClick(user) {
-      this.$refs.userDialog.doEdit(user).then(
-        res => {
-          // Reload table data
-          this.$refs.userTable.fetchTableData(true)
-          if (this.tips.data[user.id]) {
-            delete this.tips.data[user.id]
-          }
-        },
-        res => {
-          // Do nothing
-        },
-      )
+      this.$refs.userDialog
+        .doEdit(user)
+        .then(
+          res => {
+            // Reload table data
+            this.$refs.userTable.fetchTableData(true)
+            if (this.$refs[`${user.username}Info`]) {
+              this.$refs[`${user.username}Info`].clearUserData()
+            }
+          },
+          res => {
+            // Do nothing
+          },
+        )
+        .catch(_ => {})
     },
     onInfoClick(user) {
       this.$router.push({ path: `/main/user/${user.id}` })
@@ -233,61 +229,72 @@ export default {
       )
     },
     onDeleteClick(user) {
-      this.$refs.userDialog.doDelete(user).then(
-        res => {
-          // Reload table data
-          this.$refs.userTable.fetchTableData(true)
-          if (this.tips.data[user.id]) {
-            delete this.tips.data[user.id]
-          }
-        },
-        res => {
-          // Do nothing
-        },
-      )
+      this.$refs.userDialog
+        .doDelete(user)
+        .then(
+          res => {
+            // Reload table data
+            this.$refs.userTable.fetchTableData(true)
+          },
+          res => {
+            // Do nothing
+          },
+        )
+        .catch(_ => {})
     },
     onImportClick() {
-      this.$refs.userDialog.doImport().then(
-        res => {
-          // Reload table data
-          this.$refs.userTable.fetchTableData(true)
-        },
-        res => {
-          // Do nothing
-        },
-      )
+      this.$refs.userDialog
+        .doImport()
+        .then(
+          res => {
+            // Reload table data
+            this.$refs.userTable.fetchTableData(true)
+          },
+          res => {
+            // Do nothing
+          },
+        )
+        .catch(_ => {})
     },
     onSuspend(row) {
-      this.$refs.userDialog.doFreezed(row).then(
-        res => {
-          // Reload table data
-          this.$refs.userTable.fetchTableData(true)
-        },
-        res => {
-          // Do nothing
-        },
-      )
+      this.$refs.userDialog
+        .doFreezed(row)
+        .then(
+          res => {
+            // Reload table data
+            this.$refs.userTable.fetchTableData(true)
+          },
+          res => {
+            // Do nothing
+          },
+        )
+        .catch(_ => {})
     },
     onResume(row) {
-      this.$refs.userDialog.doUnfreezed(row).then(
-        res => {
-          // Reload table data
-          this.$refs.userTable.fetchTableData(true)
-        },
-        res => {
-          // Do nothing
-        },
-      )
+      this.$refs.userDialog
+        .doUnfreezed(row)
+        .then(
+          res => {
+            // Reload table data
+            this.$refs.userTable.fetchTableData(true)
+          },
+          res => {
+            // Do nothing
+          },
+        )
+        .catch(_ => {})
     },
     onBatchImportClick() {
-      UserBatchImportService.getUsersImportStatu().then(
-        res => {
-          this.$refs.userBatchImportDialog.show(res)
-        },
-        err => {
-          this.$message.error(err)
-        },
-      )
+      UserBatchImportService.getUsersImportStatu()
+        .then(
+          res => {
+            this.$refs.userBatchImportDialog.show(res)
+          },
+          err => {
+            this.$message.error(err)
+          },
+        )
+        .catch(_ => {})
     },
     importComplete() {
       this.$refs.userTable.fetchTableData(true)
@@ -301,48 +308,11 @@ export default {
         this.exportDisabled = false
       })
     },
-    getUserInfo(val, id) {
-      if (val) {
-        clearTimeout(this.tips.requestId)
-        this.tips.loading = true
-        if (!Object.prototype.hasOwnProperty.call(this.tips.data, id)) {
-          this.tips.requestId = setTimeout(() => {
-            this.tips = { ...this.tips, visible: true }
-            UserService.getUserById(id)
-              .then(
-                res => {
-                  this.tips.data[id] = res
-                },
-                err => {
-                  this.$message.error(err)
-                },
-              )
-              .finally(() => {
-                this.tips.loading = false
-              })
-          }, 500)
-        } else {
-          this.tips.loading = false
-        }
-      }
-    },
   },
 }
 </script>
 <style>
 .user-manage .action-button {
   margin-right: 10px;
-}
-.user-manager-tips-item {
-  display: flex;
-}
-.user-manager-tips-item-label {
-  margin-right: 20px;
-  min-width: 50px;
-  color: #999;
-}
-.user-manager-tips-item-value {
-  font-weight: 400;
-  color: #333;
 }
 </style>

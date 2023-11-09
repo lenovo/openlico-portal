@@ -12,56 +12,58 @@
       :page-sizes="['10', '20', '40', '50']"
       :page-size="20"
       @selection-change="onTableSelectionChange">
-      <div slot="controller" class="process-controller">
-        <a-select
-          v-model="selectedSchedulerIds"
-          class="schedulerid-select"
-          allow-clear
-          show-search
-          :show-arrow="true"
-          :placeholder="$t('Monitor.Process.SchedulerId.Placeholder')"
-          @change="filterSchedulerId">
-          <a-select-option v-for="item in schedulerOptions" :key="item.value">
-            {{ item.label }}
-          </a-select-option>
-        </a-select>
-        <a-button :disabled="!hasSchedelerId()" class="cancel-job-button" @click="cancelJobs">
-          {{ $t('Monitor.Process.Action.CancelJob') }}
-        </a-button>
-        <a-button
-          v-if="processKillable"
-          :disabled="!selectedProcesses.length"
-          class="kill-process-button"
-          @click="killProcesses">
-          {{ $t('Monitor.Process.Action.KillProcess') }}
-        </a-button>
-        <a-switch v-model="autoReFresh" size="small" class="switch-refresh" :loading="loading" />
-        <span v-if="autoReFresh" class="refresh-text">{{
-          loading
-            ? $t('Monitor.Cluster.Refreshing')
-            : $t('Monitor.Cluster.Refresh.Seconds.Tips', { number: reFreshSeconds })
-        }}</span>
-        <span v-else class="refresh-text">{{
-          loading ? $t('Monitor.Cluster.Refreshing') : $t('Monitor.Cluster.AutoRefresh')
-        }}</span>
-        <a-button
-          :disabled="loading"
-          class="fresh-button"
-          style="margin-left: 10px"
-          @click="switchAutoReFresh('manual')">
-          {{ $t('Monitor.Cluster.Refresh') }}
-        </a-button>
-      </div>
-      <template slot="schedulerId" slot-scope="{ row, schedulerId }">
+      <template #controller>
+        <div class="process-controller">
+          <a-select
+            v-model:value="selectedSchedulerIds"
+            class="schedulerid-select"
+            allow-clear
+            show-search
+            :show-arrow="true"
+            :placeholder="$t('Monitor.Process.SchedulerId.Placeholder')"
+            @change="filterSchedulerId">
+            <a-select-option v-for="item in schedulerOptions" :key="item.value">
+              {{ item.label }}
+            </a-select-option>
+          </a-select>
+          <a-button :disabled="!hasSchedelerId()" class="cancel-job-button" @click="cancelJobs">
+            {{ $t('Monitor.Process.Action.CancelJob') }}
+          </a-button>
+          <a-button
+            v-if="processKillable"
+            :disabled="!selectedProcesses.length"
+            class="kill-process-button"
+            @click="killProcesses">
+            {{ $t('Monitor.Process.Action.KillProcess') }}
+          </a-button>
+          <a-switch v-model:checked="autoReFresh" size="small" class="switch-refresh" :loading="loading" />
+          <span v-if="autoReFresh" class="refresh-text">{{
+            loading
+              ? $t('Monitor.Cluster.Refreshing')
+              : $T('Monitor.Cluster.Refresh.Seconds.Tips', { number: reFreshSeconds })
+          }}</span>
+          <span v-else class="refresh-text">{{
+            loading ? $t('Monitor.Cluster.Refreshing') : $t('Monitor.Cluster.AutoRefresh')
+          }}</span>
+          <a-button
+            :disabled="loading"
+            class="fresh-button"
+            style="margin-left: 10px"
+            @click="switchAutoReFresh('manual')">
+            {{ $t('Monitor.Cluster.Refresh') }}
+          </a-button>
+        </div>
+      </template>
+      <template #schedulerId="{ row, schedulerId }">
         <a v-if="schedulerId !== '-'" href="javascript:;" class="el-button--wrap" @click="onSchedulerIdClick(row)">{{
           schedulerId
         }}</a>
         <span v-else>{{ schedulerId }}</span>
       </template>
-      <template slot="gpu" slot-scope="{ row }">
+      <template #gpu="{ row }">
         <span v-if="!row.gpus.length">-</span>
         <a-popover v-else placement="right" overlay-class-name="gpu-detail">
-          <template slot="content">
+          <template #content>
             <p class="gpu-detail-title">GPU</p>
             <div v-for="gpu in row.gpus" :key="gpu.index" class="gpu-detail-item">
               <p class="gpu-detail-item-self">
@@ -80,21 +82,21 @@
     </CompositeTable>
     <JobActionDialog ref="jobActionDialog" />
     <a-modal
-      :visible="showJobSchedulerInfo"
+      :open="showJobSchedulerInfo"
       :footer="null"
       :title="$t('JobManage.JobSchedulerInfo.Title')"
       @cancel="showJobSchedulerInfo = false">
-      <a-input type="textarea" :auto-size="{ maxRows: 10 }" read-only :value="jobSchedulerInfo" style="resize: none" />
+      <a-textarea :auto-size="{ minRows: 10, maxRows: 10 }" read-only :value="jobSchedulerInfo" style="resize: none" />
     </a-modal>
   </div>
 </template>
 
 <script>
-import CompositeTable from '../../component/composite-table'
-import JobActionDialog from '../../widget/job-action-dialog'
-import ProcessService from '../../service/process'
-import AccessService from '../../service/access'
-import JobService from '../../service/job'
+import CompositeTable from '@/component/composite-table.vue'
+import JobActionDialog from '@/widget/job-action-dialog.vue'
+import ProcessService from '@/service/process'
+import AccessService from '@/service/access'
+import JobService from '@/service/job'
 export default {
   components: {
     CompositeTable,
@@ -128,9 +130,7 @@ export default {
         dataIndex: 'schedulerId',
         sorter: true,
         show: arch === 'host',
-        scopedSlots: {
-          customRender: 'schedulerId',
-        },
+        customSlot: true,
       },
       {
         title: this.$t('Monitor.Process.CPU'),
@@ -138,14 +138,14 @@ export default {
         sorter: true,
         defaultSortOrder: 'descend',
         show: true,
-        customRender: val => val + '%',
+        customRender: ({ text }) => text + '%',
       },
       {
         title: this.$t('Monitor.Process.Memory'),
         dataIndex: 'memory',
         sorter: true,
         show: true,
-        customRender: val => val + '%',
+        customRender: ({ text }) => text + '%',
       },
       {
         title: this.$t('Monitor.Process.GPU'),
@@ -168,7 +168,7 @@ export default {
           return preVal - nextVal
         },
         show: this.isGpus,
-        scopedSlots: { customRender: 'gpu' },
+        customSlot: true,
       },
       {
         title: this.$t('Monitor.Process.Runtime'),
@@ -224,7 +224,7 @@ export default {
   mounted() {
     this.autoReFresh = true
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.reFreshTimer)
   },
   methods: {

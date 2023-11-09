@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import Request from '../request/https'
-import Parser from '../common/parser'
-import TableDataFetcherFactory from '../common/table-data-fetcher-factory'
-import ErrorHandler from '../common/error-handler'
+import Request from '@/request/https'
+import Parser from '@/common/parser'
+import TableDataFetcherFactory from '@/common/table-data-fetcher-factory'
+import ErrorHandler from '@/common/error-handler'
 import download from './download'
-import moment from 'moment'
+import dayjs from '../dayjs'
 
 class BillGroup {
   constructor() {
@@ -81,142 +81,6 @@ class BillGroup {
     }
     return billGroup
   }
-
-  get id() {
-    return this._id
-  }
-
-  set id(id) {
-    this._id = id
-  }
-
-  get name() {
-    return this._name
-  }
-
-  set name(name) {
-    this._name = name
-  }
-
-  get chargeRate() {
-    return this._chargeRate
-  }
-
-  set chargeRate(chargeRate) {
-    this._chargeRate = chargeRate
-  }
-
-  get chargeRateMinute() {
-    return this._chargeRateMinute
-  }
-
-  set chargeRateMinute(chargeRateMinute) {
-    this._chargeRateMinute = chargeRateMinute
-  }
-
-  get chargeRateDisplayType() {
-    return this._chargeRateDisplayType
-  }
-
-  set chargeRateDisplayType(chargeRateDisplayType) {
-    this._chargeRateDisplayType = chargeRateDisplayType
-  }
-
-  get gresChargeRate() {
-    return this._gresChargeRate
-  }
-
-  set gresChargeRate(gresChargeRate) {
-    this._gresChargeRate = gresChargeRate
-  }
-
-  get gresChargeRateMinute() {
-    return this._gresChargeRateMinute
-  }
-
-  set gresChargeRateMinute(gresChargeRateMinute) {
-    this._gresChargeRateMinute = gresChargeRateMinute
-  }
-
-  get gresChargeRateDisplayType() {
-    return this._gresChargeRateDisplayType
-  }
-
-  set gresChargeRateDisplayType(gresChargeRateDisplayType) {
-    this._gresChargeRateDisplayType = gresChargeRateDisplayType
-  }
-
-  get memoryChargeRate() {
-    return this._memoryChargeRate
-  }
-
-  set memoryChargeRate(memoryChargeRate) {
-    this._memoryChargeRate = memoryChargeRate
-  }
-
-  get memoryChargeRateMinute() {
-    return this._memoryChargeRateMinute
-  }
-
-  set memoryChargeRateMinute(memoryChargeRateMinute) {
-    this._memoryChargeRateMinute = memoryChargeRateMinute
-  }
-
-  get memoryChargeRateDisplayType() {
-    return this._memoryChargeRateDisplayType
-  }
-
-  set memoryChargeRateDisplayType(memoryChargeRateDisplayType) {
-    this._memoryChargeRateDisplayType = memoryChargeRateDisplayType
-  }
-
-  get storageChargeRate() {
-    return this._storageChargeRate
-  }
-
-  set storageChargeRate(storageChargeRate) {
-    this._storageChargeRate = storageChargeRate
-  }
-
-  get totalComputingTime() {
-    return this._totalComputingTime
-  }
-
-  set totalComputingTime(totalComputingTime) {
-    this._totalComputingTime = totalComputingTime
-  }
-
-  get accountConsumed() {
-    return this._accountConsumed
-  }
-
-  set accountConsumed(accountConsumed) {
-    this._accountConsumed = accountConsumed
-  }
-
-  get accountBalance() {
-    return this._accountBalance
-  }
-
-  set accountBalance(accountBalance) {
-    this._accountBalance = accountBalance
-  }
-
-  get description() {
-    return this._description
-  }
-
-  set description(description) {
-    this._description = description
-  }
-
-  get updateTime() {
-    return this._updateTime
-  }
-
-  set updateTime(updateTime) {
-    this._updateTime = updateTime
-  }
 }
 
 class QueuePolicy {
@@ -251,102 +115,6 @@ class QueuePolicy {
     queuePolicy.updateTime = Parser.parseTimeFromRestApi(jsonObj.last_operation_time)
     return queuePolicy
   }
-
-  get id() {
-    return this._id
-  }
-
-  set id(id) {
-    return (this._id = id)
-  }
-
-  get queueList() {
-    return this._queueList
-  }
-
-  set queueList(queueList) {
-    return (this._queueList = queueList)
-  }
-
-  get chargeRate() {
-    return this._chargeRate
-  }
-
-  set chargeRate(chargeRate) {
-    return (this._chargeRate = chargeRate)
-  }
-
-  get chargeRateMinute() {
-    return this._chargeRateMinute
-  }
-
-  set chargeRateMinute(chargeRateMinute) {
-    this._chargeRateMinute = chargeRateMinute
-  }
-
-  get chargeRateDisplayType() {
-    return this._chargeRateDisplayType
-  }
-
-  set chargeRateDisplayType(chargeRateDisplayType) {
-    this._chargeRateDisplayType = chargeRateDisplayType
-  }
-
-  get gresChargeRate() {
-    return this._gresChargeRate
-  }
-
-  set gresChargeRate(gresChargeRate) {
-    return (this._gresChargeRate = gresChargeRate)
-  }
-
-  get gresChargeRateMinute() {
-    return this._gresChargeRateMinute
-  }
-
-  set gresChargeRateMinute(gresChargeRateMinute) {
-    this._gresChargeRateMinute = gresChargeRateMinute
-  }
-
-  get gresChargeRateDisplayType() {
-    return this._gresChargeRateDisplayType
-  }
-
-  set gresChargeRateDisplayType(gresChargeRateDisplayType) {
-    this._gresChargeRateDisplayType = gresChargeRateDisplayType
-  }
-
-  get memoryChargeRate() {
-    return this._memoryChargeRate
-  }
-
-  set memoryChargeRate(memoryChargeRate) {
-    return (this._memoryChargeRate = memoryChargeRate)
-  }
-
-  get memoryChargeRateMinute() {
-    return this._memoryChargeRateMinute
-  }
-
-  set memoryChargeRateMinute(memoryChargeRateMinute) {
-    this._memoryChargeRateMinute = memoryChargeRateMinute
-  }
-
-  get memoryChargeRateDisplayType() {
-    return this._memoryChargeRateDisplayType
-  }
-
-  set memoryChargeRateDisplayType(memoryChargeRateDisplayType) {
-    this._memoryChargeRateDisplayType = memoryChargeRateDisplayType
-  }
-
-  get updateTime() {
-    return this._updateTime
-  }
-
-  set updateTime(updateTime) {
-    return (this._updateTime = updateTime)
-  }
 }
 
 class StoragePolicy {
@@ -364,38 +132,6 @@ class StoragePolicy {
     storagePolicy.storageChargeRate = jsonObj.storage_charge_rate
     storagePolicy.updateTime = Parser.parseTimeFromRestApi(jsonObj.last_operation_time)
     return storagePolicy
-  }
-
-  get id() {
-    return this._id
-  }
-
-  set id(id) {
-    return (this._id = id)
-  }
-
-  get pathList() {
-    return this._pathList
-  }
-
-  set pathList(pathList) {
-    return (this._pathList = pathList)
-  }
-
-  get storageChargeRate() {
-    return this._storageChargeRate
-  }
-
-  set storageChargeRate(storageChargeRate) {
-    return (this._storageChargeRate = storageChargeRate)
-  }
-
-  get updateTime() {
-    return this._updateTime
-  }
-
-  set updateTime(updateTime) {
-    return (this._updateTime = updateTime)
   }
 }
 
@@ -415,103 +151,23 @@ class Statement {
 
   static parseFromRestApi(jsonObj) {
     const statement = new Statement()
-    statement._id = jsonObj.id
-    statement._user = jsonObj.user
-    statement._credits = jsonObj.credits
-    statement._applyTime = Parser.parseTimeFromRestApi(jsonObj.apply_time)
-    statement._approvedTime = Parser.parseTimeFromRestApi(jsonObj.approved_time)
-    statement._balance = jsonObj.balance
-    statement._billingType = jsonObj.billing_type
-    statement._displayType = jsonObj.display_type
-    statement._billing = jsonObj.billing
-    statement._description = '-'
+    statement.id = jsonObj.id
+    statement.user = jsonObj.user
+    statement.credits = jsonObj.credits
+    statement.applyTime = Parser.parseTimeFromRestApi(jsonObj.apply_time)
+    statement.approvedTime = Parser.parseTimeFromRestApi(jsonObj.approved_time)
+    statement.balance = jsonObj.balance
+    statement.billingType = jsonObj.billing_type
+    statement.displayType = jsonObj.display_type
+    statement.billing = jsonObj.billing
+    statement.description = '-'
     if (jsonObj.billing_type === 'job') {
-      statement._description = `${jsonObj.billing.scheduler_id} - ${jsonObj.billing.job_name}`
+      statement.description = `${jsonObj.billing.scheduler_id} - ${jsonObj.billing.job_name}`
     }
     if (jsonObj.billing_type === 'storage') {
-      statement._description = jsonObj.billing.path
+      statement.description = jsonObj.billing.path
     }
     return statement
-  }
-
-  get _id() {
-    return this.id
-  }
-
-  set _id(id) {
-    this.id = id
-  }
-
-  get _user() {
-    return this.user
-  }
-
-  set _user(user) {
-    this.user = user
-  }
-
-  get _credits() {
-    return this.credits
-  }
-
-  set _credits(credits) {
-    this.credits = credits
-  }
-
-  get _applyTime() {
-    return this.applyTime
-  }
-
-  set _applyTime(applyTime) {
-    this.applyTime = applyTime
-  }
-
-  get _approvedTime() {
-    return this.approvedTime
-  }
-
-  set _approvedTime(approvedTime) {
-    this.approvedTime = approvedTime
-  }
-
-  get _balance() {
-    return this.balance
-  }
-
-  set _balance(balance) {
-    this.balance = balance
-  }
-
-  get _billingType() {
-    return this.billingType
-  }
-
-  set _billingType(billingType) {
-    this.billingType = billingType
-  }
-
-  get _displayType() {
-    return this.displayType
-  }
-
-  set _displayType(displayType) {
-    this.displayType = displayType
-  }
-
-  get _billing() {
-    return this.billing
-  }
-
-  set _billing(billing) {
-    this.billing = billing
-  }
-
-  get _description() {
-    return this.description
-  }
-
-  set _description(description) {
-    this.description = description
   }
 }
 
@@ -881,11 +537,24 @@ function downloadStatement(id, type, timeRange) {
   const data = {
     language: window.gApp.$i18n.locale === 'en' ? 'en' : 'sc',
     bill_group: id,
-    start_time: String(moment(timeRange[0]).unix()),
-    end_time: String(moment(timeRange[1]).unix()),
+    start_time: String(dayjs(timeRange[0]).unix()),
+    end_time: String(dayjs(timeRange[1]).unix()),
     timezone_offset: String(new Date().getTimezoneOffset()),
   }
   return download(url, data, 'post')
+}
+
+function getUserBillGroup() {
+  return new Promise((resolve, reject) => {
+    Request.get(`/api/accounting/user_billgroup/`).then(
+      res => {
+        resolve(res.body)
+      },
+      res => {
+        ErrorHandler.restApiErrorHandler(res, reject)
+      },
+    )
+  })
 }
 
 export default {
@@ -910,4 +579,5 @@ export default {
   checkBillGroup,
   getStatementTableDataFetcher,
   downloadStatement,
+  getUserBillGroup,
 }

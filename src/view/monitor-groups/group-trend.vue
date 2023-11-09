@@ -1,7 +1,7 @@
 <template>
   <div class="TrendContainer p-20">
     <div>
-      <a-select id="tid_group-trend-time-select" v-model="trendTimeUnit" @change="onTrendTimeIntervalChange">
+      <a-select id="tid_group-trend-time-select" v-model:value="trendTimeUnit" @change="onTrendTimeIntervalChange">
         <a-select-option
           v-for="timeInterval in trendIntervalOption"
           :key="timeInterval.value"
@@ -28,7 +28,7 @@
 </template>
 <script>
 import TrendChart from './group-trend/trend-chart.vue'
-import AccessService from '../../service/access'
+import AccessService from '@/service/access'
 
 export default {
   components: {
@@ -87,7 +87,6 @@ export default {
   padding-top: 20px;
 }
 .TrendChartItem {
-  /*margin-left: 20px;*/
   margin-top: 20px;
 }
 </style>

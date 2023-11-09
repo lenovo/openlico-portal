@@ -1,9 +1,10 @@
 <template>
   <a-modal
-    v-model="dialogFormVisible"
+    :open="dialogFormVisible"
     :title="$t('User.BatchImport.Title')"
-    width="600px"
-    class="license-manage-dialog">
+    width="700px"
+    class="batch-import-manage-dialog"
+    @cancel="dialogFormVisible = false">
     <a-form v-if="status == 'idle'" label-width="140px" label-align="right">
       <a-form-item :colon="false" :label="$t('User.Import.Title.ImportFile')" class="file-select-container">
         <div class="file-info">
@@ -30,7 +31,7 @@
     <div v-if="status != 'importing' && status != 'idle'">
       <p>{{ $t('User.Import.Occupied.Tips') }}</p>
     </div>
-    <template slot="footer">
+    <template #footer>
       <a-button
         v-show="last_importing && status != 'importing'"
         type="primary"
@@ -58,9 +59,9 @@
 </template>
 
 <script>
-import UserBatchImportService from '../../service/user-batch-import'
-
+import UserBatchImportService from '@/service/user-batch-import'
 export default {
+  emits: ['import-complete', 'show-import-result'],
   data() {
     return {
       title: '',
@@ -189,10 +190,10 @@ export default {
 </script>
 
 <style scoped>
-.license-manage-dialog {
+.batch-import-manage-dialog {
   padding: 20px;
 }
-.license-manage-dialog .real-file-input[type='file'] {
+.batch-import-manage-dialog .real-file-input[type='file'] {
   display: none;
 }
 .file-select-container {

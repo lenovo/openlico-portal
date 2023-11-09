@@ -4,22 +4,21 @@
     :title="title"
     :form-model="stepForm"
     :form-rules="stepFormRules"
-    :success-message-formatter="successMessageFormatter"
-    :error-message-formatter="errorMessageFormatter">
-    <a-form-model-item :label="$t('Workflow.Step')" prop="step">
-      <a-select v-model="stepForm.step">
+    :success-message-formatter="successMessageFormatter">
+    <a-form-item :label="$t('Workflow.Step')" name="step">
+      <a-select v-model:value="stepForm.step">
         <a-select-option v-for="item in steps" :key="item.id" :value="item.id">
           {{ item.name }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
+    </a-form-item>
   </composite-form-dialog>
 </template>
 
 <script>
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
-import WrokflowService from '../../service/workflow'
+import WrokflowService from '@/service/workflow'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 export default {
   components: {
     'composite-form-dialog': CompositeFormDialog,
@@ -43,13 +42,9 @@ export default {
       return WrokflowService.moveWorkflowJob(this.oldStepId, this.stepForm.step, this.job.id)
     },
     successMessageFormatter(res) {
-      return this.$t('Workflow.Job.Move.Success', {
+      return this.$T('Workflow.Job.Move.Success', {
         name: this.job.jobName,
       })
-    },
-    errorMessageFormatter(res) {
-      const errMsg = res
-      return this.$t(errMsg)
     },
     doMove(oldStepId, steps, job) {
       this.job = job

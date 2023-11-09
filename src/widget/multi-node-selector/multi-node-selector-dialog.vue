@@ -1,33 +1,31 @@
 <template>
   <composite-form-dialog
     ref="innerDialog"
-    :title="$t('MultNode.Title')"
     size="500px"
-    composite-height="460"
+    :title="$t('MultNode.Title')"
     :form-model="selectForm"
     :form-rules="selectRules">
     <!--Filter-->
-    <a-form-model-item :label="$t('MultNode.Filter')">
-      <a-select v-model="selectForm.filterValue" @change="resetFormValidation(selectForm.filterValue)">
+    <a-form-item :label="$t('MultNode.Filter')">
+      <a-select v-model:value="selectForm.filterValue" @change="resetFormValidation(selectForm.filterValue)">
         <a-select-option v-for="item in filterOptions" :key="item.value" :value="item.value">
           {{ item.label }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
+    </a-form-item>
     <!--By hostname-->
-    <a-form-model-item
+    <a-form-item
       v-if="selectForm.filterValue == 'hostname'"
       ref="hostnameValue"
+      name="hostnameValue"
       :label="$t('MultNode.Nodes')"
-      prop="hostnameValue"
       :auto-link="false">
       <p class="multNode-nodes-input-tips">
-        <a-icon type="exclamation-circle" theme="filled" />
+        <ExclamationCircleFilled />
         {{ $t('MultNode.Nodes.Tips') }}
       </p>
-      <a-input
-        v-model="selectForm.hostnameValue"
-        type="textarea"
+      <a-textarea
+        v-model:value="selectForm.hostnameValue"
         :auto-size="{ minRows: 4, maxRows: 6 }"
         :placeholder="placeholderAll"
         @blur="
@@ -40,46 +38,58 @@
             $refs.hostnameValue.onFieldChange()
           }
         " />
-    </a-form-model-item>
+    </a-form-item>
     <!--By rack-->
-    <a-form-model-item v-if="selectForm.filterValue == 'rack'" :label="$t('MultNode.Racks')" prop="rackValue">
-      <a-select v-model="selectForm.rackValue" mode="multiple" :placeholder="placeholderAll" show-arrow>
+    <a-form-item v-if="selectForm.filterValue == 'rack'" :label="$t('MultNode.Racks')" name="rackValue">
+      <a-select v-model:value="selectForm.rackValue" mode="multiple" :placeholder="placeholderAll" show-arrow>
         <a-select-option v-for="item in rackOptions" :key="item.value" :value="item.name">
           {{ item.name }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
+    </a-form-item>
     <!--By node group-->
-    <a-form-model-item
-      v-if="selectForm.filterValue == 'nodegroup'"
-      :label="$t('MultNode.NodeGroups')"
-      prop="nodeGroupValue">
-      <a-select v-model="selectForm.nodeGroupValue" mode="multiple" :placeholder="placeholderAll" show-arrow>
+    <a-form-item v-if="selectForm.filterValue == 'nodegroup'" :label="$t('MultNode.NodeGroups')" name="nodeGroupValue">
+      <a-select v-model:value="selectForm.nodeGroupValue" mode="multiple" :placeholder="placeholderAll" show-arrow>
         <a-select-option v-for="item in nodeGroupOptions" :key="item.value" :value="item.name">
           {{ item.name }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item
+    </a-form-item>
+    <a-form-item
       v-show="selectForm.hostnameValue || selectForm.rackValue.length > 0 || selectForm.nodeGroupValue.length > 0">
-      <a-button type="danger" @click="onClearClick">
+      <a-button type="primary" danger @click="onClearClick">
         {{ $t('Action.Clear') }}
       </a-button>
-    </a-form-model-item>
+    </a-form-item>
   </composite-form-dialog>
 </template>
 <script>
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import RackService from '../../service/rack'
-import NodeGroupService from '../../service/node-group'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import RackService from '@/service/rack'
+import NodeGroupService from '@/service/node-group'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
-    'composite-form-dialog': CompositeFormDialog,
+    CompositeFormDialog,
   },
   props: ['filterType', 'hostnameMax', 'rackMax', 'nodeGroupMax', 'allable'],
   data() {
+    const vaildateMultiNodes = () => {
+      return {
+        validator: (rule, value) => {
+          const errors = []
+          if (value.length > this.rackMax) {
+            errors.push(new Error(this.$t('MultNode.Error.Limit')))
+          } else if (value.length === 0 && !this.allable) {
+            errors.push(new Error(this.$t('MultNode.Error.Empty')))
+          }
+
+          return Promise[errors.length ? 'reject' : 'resolve'](errors)
+        },
+        required: true,
+      }
+    }
     return {
       filterOptions: [],
       rackOptions: [],
@@ -94,69 +104,25 @@ export default {
         hostnameValue: [
           ValidRoleFactory.getvalidMultiHostName(false),
           {
-            validator: (rule, value, callback) => {
+            validator: (rule, value) => {
               let arrValueLength = 1
+              const errors = []
               for (const i in value) {
                 if (value[i] === ',') {
                   arrValueLength++
                 }
               }
               if (arrValueLength > this.hostnameMax) {
-                callback(new Error(this.$t('MultNode.Error.Limit')))
-              } else if (value.length === 0) {
-                callback()
-                // if (this.allable) {
-                //     callback();
-                // } else {
-                //     callback(
-                //         new Error(
-                //             this.$t("MultNode.Error.Empty")
-                //         )
-                //     );
-                // }
-              } else {
-                callback()
+                errors.push(new Error(this.$t('MultNode.Error.Limit')))
               }
+
+              return Promise[errors.length ? 'reject' : 'resolve'](errors)
             },
             // required: true
           },
         ],
-        rackValue: [
-          {
-            validator: (rule, value, callback) => {
-              if (value.length > this.rackMax) {
-                callback(new Error(this.$t('MultNode.Error.Limit')))
-              } else if (value.length === 0) {
-                if (this.allable) {
-                  callback()
-                } else {
-                  callback(new Error(this.$t('MultNode.Error.Empty')))
-                }
-              } else {
-                callback()
-              }
-            },
-            required: true,
-          },
-        ],
-        nodeGroupValue: [
-          {
-            validator: (rule, value, callback) => {
-              if (value.length > this.nodeGroupMax) {
-                callback(new Error(this.$t('MultNode.Error.Limit')))
-              } else if (value.length === 0) {
-                if (this.allable) {
-                  callback()
-                } else {
-                  callback(new Error(this.$t('MultNode.Error.Empty')))
-                }
-              } else {
-                callback()
-              }
-            },
-            required: true,
-          },
-        ],
+        rackValue: [vaildateMultiNodes()],
+        nodeGroupValue: [vaildateMultiNodes()],
       },
     }
   },
@@ -240,20 +206,16 @@ export default {
       this.rackOptions = []
       this.nodeGroupOptions = []
       RackService.getAllRacks().then(res => {
-        for (const i in res) {
-          this.rackOptions.push({
-            name: res[i].name,
-            value: res[i].id,
-          })
-        }
+        this.rackOptions = res.map(i => ({
+          name: i.name,
+          value: i.id,
+        }))
       })
       NodeGroupService.getAllNodeGroups().then(res => {
-        for (const i in res) {
-          this.nodeGroupOptions.push({
-            name: res[i]._name,
-            value: res[i]._id,
-          })
-        }
+        this.nodeGroupOptions = res.map(i => ({
+          name: i.name,
+          value: i.id,
+        }))
       })
     },
     initFilterOptions() {

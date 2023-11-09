@@ -11,10 +11,10 @@
   </div>
 </template>
 <script>
-import CompositeTable from '../../component/composite-table'
+import CompositeTable from '@/component/composite-table.vue'
 export default {
   components: {
-    'composite-table': CompositeTable,
+    CompositeTable,
   },
   props: ['dataReportAlertTable'],
   data() {

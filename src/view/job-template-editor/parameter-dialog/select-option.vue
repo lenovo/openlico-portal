@@ -1,37 +1,38 @@
 <template>
-  <a-form-model-item :label="$t('JobTemplate.Parameters.Select.Option')" prop="selectOption">
+  <a-form-item :label="$t('JobTemplate.Parameters.Select.Option')">
     <!-- <el-input style="display: none;" v-model="formParameter.selectOption"></el-input> -->
     <a-table
       id="Parameter_SelectOptions_Table"
-      :row-key="(row, index) => index"
       :bordered="true"
       :pagination="false"
       :columns="columns"
       :data-source="tableData"
       header-row-class-name="jobTemplate-parameter-select-option-table">
-      <template v-for="col in ['name', 'value']" :slot="col" slot-scope="text, record, index">
-        <a-input
-          :key="col"
-          :value="text"
-          @change="
-            e =>
-              processData(
-                Object.defineProperty(record, col, {
-                  value: e.target.value,
-                }),
-                index,
-              )
-          " />
+      <template #bodyCell="{ column, record, index }">
+        <template v-if="['name', 'value'].includes(column.dataIndex)">
+          <a-input
+            :key="column.dataIndex"
+            v-model:value="record[column.dataIndex]"
+            @change="
+              e =>
+                processData(
+                  Object.defineProperty(record, column.dataIndex, {
+                    value: e.target.value,
+                  }),
+                  index,
+                )
+            " />
+        </template>
+        <template v-if="column.dataIndex === 'action'">
+          <span
+            v-if="tableData.length > 1"
+            class="table-but-icon button-delete"
+            :title="$t('Action.Delete')"
+            @click="deleteOption(record, index)"
+            ><i class="el-erp-delete" />
+          </span>
+        </template>
       </template>
-      <span
-        v-if="tableData.length > 1"
-        slot="action"
-        slot-scope="text, record, index"
-        class="table-but-icon button-delete"
-        :title="$t('Action.Delete')"
-        @click="deleteOption(record, index)"
-        ><i class="el-erp-delete" />
-      </span>
     </a-table>
     <a-button
       id="Parameter_SelectOptions_Add_Button"
@@ -40,7 +41,7 @@
       @click="addOption">
       {{ $t('Action.Add') }}
     </a-button>
-  </a-form-model-item>
+  </a-form-item>
 </template>
 <script>
 export default {
@@ -52,19 +53,19 @@ export default {
           title: this.$t('JobTemplate.Parameters.Select.Option.Name'),
           dataIndex: 'name',
           width: 180,
-          scopedSlots: { customRender: 'name' },
+          // scopedSlots: { customRender: 'name' },
         },
         {
           title: this.$t('JobTemplate.Parameters.Select.Option.Value'),
           dataIndex: 'value',
           width: 180,
-          scopedSlots: { customRender: 'value' },
+          // scopedSlots: { customRender: 'value' },
         },
         {
           title: this.$t('Action'),
           dataIndex: 'action',
           align: 'center',
-          scopedSlots: { customRender: 'action' },
+          // scopedSlots: { customRender: 'action' },
         },
       ],
       tableData: [],
@@ -117,7 +118,7 @@ export default {
       for (let i = 0; i < this.formParam.selectOption.length; i++) {
         if (this.formParam.selectOption[i].label === option.label && i !== index) {
           this.$message.error(
-            this.$t('JobTemplate.Parameters.Select.Option.Repeat', {
+            this.$T('JobTemplate.Parameters.Select.Option.Repeat', {
               name: option.label,
             }),
           )
@@ -127,7 +128,7 @@ export default {
       for (let i = 0; i < this.tableData.length; i++) {
         if (this.tableData[i].name === option.label && i !== index) {
           this.$message.error(
-            this.$t('JobTemplate.Parameters.Select.Option.Repeat', {
+            this.$T('JobTemplate.Parameters.Select.Option.Repeat', {
               name: option.label,
             }),
           )

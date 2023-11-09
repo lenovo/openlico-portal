@@ -1,7 +1,7 @@
 <template>
   <div class="job-parameters-affinity-editor">
     <a-input-group compact>
-      <a-select v-model="defaultValue" class="job-parameters-affinity-select" style="width: 80%">
+      <a-select v-model:value="defaultValue" class="job-parameters-affinity-select" style="width: 80%">
         <a-select-option value="notbind">
           {{ $t('JobTemplate.Affinity.NotBind') }}
         </a-select-option>
@@ -21,12 +21,13 @@
   </div>
 </template>
 <script>
-import AffinityService from '../../service/job-template-affiity'
+import AffinityService from '@/service/job-template-affiity'
 import affinityIntelmpiDialog from './affinity/affinity-intelmpi-dialog.vue'
-import affinityOpenmpDialog from './affinity/affinity-openmp-dialog'
+import affinityOpenmpDialog from './affinity/affinity-openmp-dialog.vue'
 export default {
   components: { affinityOpenmpDialog, affinityIntelmpiDialog },
   props: ['value', 'type'],
+  emits: ['input', 'update:value'],
   data() {
     return {
       defaultValue: 'notbind',
@@ -44,6 +45,7 @@ export default {
         this.defaultValue = 'notbind'
       } else {
         this.$emit('input', val === 'notbind' ? null : val)
+        this.$emit('update:value', val === 'notbind' ? null : val)
       }
     },
   },

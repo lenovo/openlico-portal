@@ -1,11 +1,11 @@
 <template>
-  <a-modal :title="title" width="800px" :visible="visible" :footer="null" destroy-on-close @cancel="onCancel">
+  <a-modal :title="title" width="800px" :open="visible" :footer="null" destroy-on-close @cancel="onCancel">
     <file-manager ref="fileManager" :mode="mode" :init-path="initPath" height="400" @selected="onSelected" />
   </a-modal>
 </template>
 <script>
-import FileManager from './file-manager'
-import FileManagerService from './../service/file-manager'
+import FileManager from './file-manager.vue'
+import FileManagerService from '@/service/file-manager'
 
 export default {
   components: {

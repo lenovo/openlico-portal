@@ -3,42 +3,34 @@
     <div class="login-action-wrapper">
       <div class="login-logo-input">
         <div class="login-logo">
-          <img src="static/img/brand/login_logo.png" :alt="$t('Login.Lico.Logo')" />
+          <img src="/static/img/brand/login_logo.png" :alt="$t('Login.Lico.Logo')" />
         </div>
       </div>
       <div class="login-container" @keyup.enter="login('loginForm')">
-        <a-form-model ref="loginForm" :model="loginForm" :rules="loginRules" layout="vertical" auto-complete="off">
-          <a-form-model-item
-            :label="$t('Login.Username')"
-            prop="username"
-            class="login-input"
-            style="text-align: center">
+        <a-form ref="loginForm" :model="loginForm" :rules="loginRules" layout="vertical" auto-complete="off">
+          <a-form-item :label="$t('Login.Username')" name="username" class="login-input">
             <a-input
               id="Login_Username"
               ref="username"
-              v-model="loginForm.username"
+              v-model:value="loginForm.username"
               v-focus
               type="text"
               auto-complete="off"
-              :disabled="loading"
-              :placeholder="$t('Login.Username.Placeholder')"
-              :title="$t('Login.Username')" />
-          </a-form-model-item>
-          <a-form-model-item
-            :label="$t('Login.Password')"
-            prop="password"
-            class="login-input"
-            style="text-align: center">
+              :title="$t('Login.Username')"
+              autocomplete="new-username"
+              :disabled="loading" />
+          </a-form-item>
+          <a-form-item :label="$t('Login.Password')" name="password" class="login-input">
             <a-input
               id="Login_Password"
-              v-model="loginForm.password"
+              v-model:value="loginForm.password"
               type="password"
               auto-complete="off"
-              :disabled="loading"
-              :placeholder="$t('Login.Password.Placeholder')"
-              :title="$t('Login.Password')" />
-          </a-form-model-item>
-          <a-form-model-item style="text-align: center; margin-bottom: 0px">
+              autocomplete="new-password"
+              :title="$t('Login.Password')"
+              :disabled="loading" />
+          </a-form-item>
+          <a-form-item style="text-align: center; margin-bottom: 0px">
             <a-button
               id="Login_Submit"
               class="login-submit"
@@ -48,19 +40,21 @@
               @click="login('loginForm')">
               {{ $t('Login.Submit') }}
             </a-button>
-          </a-form-model-item>
-        </a-form-model>
+          </a-form-item>
+        </a-form>
       </div>
       <div class="login-footer">
         <a-dropdown overlay-class-name="lang-menu">
-          <a-menu slot="overlay" @click="setLangCode">
-            <a-menu-item v-for="langType of langTypes" :id="'Lang_' + langType.code" :key="langType.code">
-              {{ langType.type }}
-            </a-menu-item>
-          </a-menu>
+          <template #overlay>
+            <a-menu @click="setLangCode">
+              <a-menu-item v-for="langType of langTypes" :id="'Lang_' + langType.code" :key="langType.code">
+                {{ langType.type }}
+              </a-menu-item>
+            </a-menu>
+          </template>
           <a-button class="lang-menu-button">
             {{ getLangType }}
-            <a-icon type="down" />
+            <down-outlined />
           </a-button>
         </a-dropdown>
       </div>
@@ -68,7 +62,8 @@
   </div>
 </template>
 <script>
-import AuthService from '../service/auth'
+import AuthService from '@/service/auth'
+import AboutService from '@/service/about'
 import AccessService from '../service/access'
 
 export default {
@@ -80,18 +75,18 @@ export default {
     },
   },
   data() {
-    const validateUsername = (rule, value, callback) => {
+    const validateUsername = (rule, value) => {
       if (!value) {
-        return callback(new Error(this.$t('Login.Username.Valid.Null')))
+        return Promise.reject(new Error(this.$t('Login.Username.Valid.Null')))
       } else {
-        callback()
+        return Promise.resolve()
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error(this.$t('Login.Password.Valid.Null')))
+        return Promise.reject(new Error(this.$t('Login.Password.Valid.Null')))
       } else {
-        callback()
+        return Promise.resolve()
       }
     }
     return {
@@ -105,38 +100,42 @@ export default {
         username: [{ validator: validateUsername, trigger: 'blur' }],
       },
       loading: false,
+      about: {},
       langTypes: [
         { type: 'English', code: 'en' },
         { type: '中文', code: 'zh' },
       ],
       logo: 'logo_login.png',
+      test_1: 'Hello',
+      test_2: 'World',
     }
   },
   computed: {
     getLangType() {
-      for (const i in this.langTypes) {
-        if (this.$i18n.locale === this.langTypes[i].code) {
-          return this.langTypes[i].type
+      for (const { type, code } of this.langTypes) {
+        if (this.$i18n.locale === code) {
+          return type
         }
       }
-      return 'en'
+      return 'English'
+    },
+    license() {
+      return this.$store.getters['settings/getLicense']
     },
   },
   mounted() {
+    this.$store.dispatch('auth/init')
     this.checkLogin()
-    // AuthService.checkRegisterType().then(res => {
-    //     this.allow_registration = res.allow_registration;
-    // });
   },
   methods: {
     setLangCode(e) {
       this.$store.dispatch('settings/setLangCode', e.key)
       window.gApp.$i18n.locale = e.key
-      this.$refs.loginForm.validate(valid => {})
+      // this.$refs.loginForm.validate().catch(_ => {})
     },
     login(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
+      this.$refs[formName].validate().then(
+        () => {
           this.loading = true
           AuthService.login(this.loginForm.username, this.loginForm.password).then(
             () => {
@@ -147,10 +146,9 @@ export default {
               this.$message.error(errMsg)
             },
           )
-        } else {
-          return false
-        }
-      })
+        },
+        err => {},
+      )
     },
     checkConfig() {
       AuthService.checkConfig().then(
@@ -175,13 +173,13 @@ export default {
         this.$router.push({ path: '/main' })
       }
     },
-    toRegister() {
-      this.$router.push('/register')
+    initLogoUrl() {
+      this.logo = 'logo_login.png'
     },
   },
 }
 </script>
-<style lang="less" scoped>
+<style scoped>
 .login-wrapper {
   width: 100%;
   height: 100%;
@@ -189,64 +187,64 @@ export default {
   display: flex;
   color: #fff;
   justify-content: center;
-  .login-action-wrapper {
-    min-width: 360px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    .login-logo-input {
-      flex-grow: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      .login-logo {
-        margin-top: 61px;
-        display: flex;
-        align-items: center;
-      }
-    }
-    .login-container {
-      flex-grow: 2;
-      /deep/ label {
-        color: #fff !important;
-      }
-      /deep/ input {
-        height: 40px;
-        background-color: #1b1f4f !important;
-        color: #fff !important;
-      }
-      /deep/ input:-webkit-autofill {
-        box-shadow: 0 0 0px 1000px #1b1f4f inset !important;
-        caret-color: #fff !important;
-        -webkit-text-fill-color: #fff !important;
-      }
-      .login-submit {
-        width: 100%;
-        height: 50px;
-        margin-top: 10px;
-        font-size: 18px !important;
-      }
-    }
-    .login-footer {
-      text-align: center;
-      padding-bottom: 10px;
-      .lang-menu-button {
-        width: 130px;
-        height: 40px;
-        margin-bottom: 50px;
-        background-color: #1b1f4f !important;
-        color: #fff !important;
-      }
-      /deep/ .ant-dropdown-menu,
-      .ant-dropdown-menu-item {
-        color: #fff !important;
-        background-color: #222763 !important;
-      }
-      /deep/ .ant-btn > i,
-      .ant-btn > span {
-        font-size: 14px;
-      }
-    }
-  }
+}
+.login-action-wrapper {
+  min-width: 360px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+.login-logo-input {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.login-logo {
+  margin-top: 61px;
+  display: flex;
+  align-items: center;
+}
+.login-container {
+  flex-grow: 2;
+}
+.login-container :deep(label) {
+  color: #fff !important;
+}
+.login-container :dee0(input) {
+  height: 40px;
+  background-color: #1b1f4f !important;
+  color: #fff !important;
+}
+.login-container :deep(input:-webkit-autofill) {
+  box-shadow: 0 0 0px 1000px #1b1f4f inset !important;
+  caret-color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+}
+.login-submit {
+  width: 100%;
+  height: 50px;
+  margin-top: 10px;
+  font-size: 18px !important;
+}
+.login-footer {
+  text-align: center;
+  padding-bottom: 10px;
+}
+.lang-menu-button {
+  width: 130px;
+  height: 40px;
+  margin-bottom: 50px;
+  background-color: #1b1f4f !important;
+  color: #fff !important;
+}
+.login-footer :deep(.ant-dropdown-menu),
+.login-footer :deep(.ant-dropdown-menu-item) {
+  color: #fff !important;
+  background-color: #222763 !important;
+}
+.login-footer :deep(.ant-btn > i),
+.login-footer .ant-btn > span {
+  font-size: 14px;
 }
 </style>

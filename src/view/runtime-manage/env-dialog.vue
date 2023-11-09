@@ -1,37 +1,36 @@
 <template>
   <a-modal
     ref="popupDialog"
-    :title="title"
-    :visible="isRender"
-    :append-to-body="true"
     width="500px"
+    :title="title"
+    :open="isRender"
+    :append-to-body="true"
+    destroy-on-close
     @cancel="isRender = false">
-    <a-form-model
-      ref="runtimeEnvForm"
-      label-width="120px"
-      :model="runtimeEnvForm"
-      :rules="runtimeEnvRules"
-      :colon="false">
-      <a-form-model-item :label="$t('Admin.Runtime.Env.Name')" prop="name">
-        <a-input v-model="runtimeEnvForm.name" :placeholder="$t('Admin.Runtime.Env.Name.PlaceHolder')" />
-      </a-form-model-item>
-      <a-form-model-item :label="$t('Admin.Runtime.Env.Value')" prop="value">
-        <a-input v-model="runtimeEnvForm.value" :placeholder="$t('Admin.Runtime.Env.Value.PlaceHolder')" />
-      </a-form-model-item>
-    </a-form-model>
-    <span slot="footer" class="dialog-footer">
-      <a-button @click="isRender = false"> {{ $t('Action.Cancel') }}</a-button>
-      <a-button type="primary" @click="onSubmit"> {{ $t('Action.Confirm') }}</a-button>
-    </span>
+    <a-form ref="runtimeEnvForm" layout="vertical" :model="runtimeEnvForm" :rules="runtimeEnvRules" :colon="false">
+      <a-form-item :label="$t('Admin.Runtime.Env.Name')" name="name">
+        <a-input v-model:value="runtimeEnvForm.name" :placeholder="$t('Admin.Runtime.Env.Name.PlaceHolder')" />
+      </a-form-item>
+      <a-form-item :label="$t('Admin.Runtime.Env.Value')" name="value">
+        <a-input v-model:value="runtimeEnvForm.value" :placeholder="$t('Admin.Runtime.Env.Value.PlaceHolder')" />
+      </a-form-item>
+    </a-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <a-button @click="isRender = false"> {{ $t('Action.Cancel') }}</a-button>
+        <a-button type="primary" @click="onSubmit"> {{ $t('Action.Confirm') }}</a-button>
+      </span>
+    </template>
   </a-modal>
 </template>
 
 <script>
-import ValidRoleFactory from '../../common/valid-role-factory'
-import RuntimeService from '../../service/runtime-manage'
-import Utils from '../../common/utils'
+import Utils from '@/common/utils'
+import RuntimeService from '@/service/runtime-manage'
+import ValidRoleFactory from '@/common/valid-role-factory'
 
 export default {
+  emits: ['get-env'],
   data() {
     return {
       isRender: false,
@@ -54,21 +53,21 @@ export default {
     duplicated() {
       const _this = this
       return {
-        validator(rule, value, callback, source, options) {
+        validator(rule, value) {
           const errors = []
           if (_this.mode === 'create') {
             const dataIndex = RuntimeService.findEnvIndex({ name: value }, _this.addedEnvs)
             if (dataIndex !== -1) {
               errors.push(
                 new Error(
-                  _this.$t('Valid.Array.Unique', {
+                  _this.$T('Valid.Array.Unique', {
                     name: _this.$t('Admin.Runtime.Env.Name'),
                   }),
                 ),
               )
             }
           }
-          callback(errors)
+          return Promise[errors.length ? 'reject' : 'resolve'](errors)
         },
       }
     },
@@ -118,15 +117,13 @@ export default {
       this.title = this.$t('Admin.Runtime.Env.Edit.Title')
     },
     onSubmit() {
-      const _this = this
-      _this.$refs.runtimeEnvForm.validate(valid => {
-        if (valid) {
-          _this.$emit('get-env', _this.filterEnvs(_this.runtimeEnvForm, _this.addedEnvs, _this.mode))
-          _this.isRender = false
-        } else {
-          return false
-        }
-      })
+      this.$refs.runtimeEnvForm.validate().then(
+        _ => {
+          this.$emit('get-env', this.filterEnvs(this.runtimeEnvForm, this.addedEnvs, this.mode))
+          this.isRender = false
+        },
+        _ => {},
+      )
     },
   },
 }

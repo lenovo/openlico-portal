@@ -4,37 +4,39 @@
       <a-row>
         <a-col :span="16">
           <a-dropdown
-            v-model="vacant_select_visible"
+            v-model:open="vacant_select_visible"
             class="filter-button vacant-filter-button"
             :trigger="['click']"
             overlay-class-name="b-w vacant-filter-inner"
             @click="e => e.preventDefault()">
-            <div slot="overlay">
-              <div v-for="item in vacantFilterValue" :key="item.name">
-                <div class="filter-title" style="display: flex">
-                  <span>{{ getLabel(item.name) }}</span>
-                  <span class="filter-range">{{ `${item.value[0]}%~${item.value[1]}%` }}</span>
+            <template #overlay>
+              <div>
+                <div v-for="item in vacantFilterValue" :key="item.name">
+                  <div class="filter-title" style="display: flex">
+                    <span>{{ getLabel(item.name) }}</span>
+                    <span class="filter-range">{{ `${item.value[0]}%~${item.value[1]}%` }}</span>
+                  </div>
+                  <a-slider v-model:value="item.value" range :tooltip-visible="false" />
                 </div>
-                <a-slider v-model="item.value" range :tooltip-visible="false" />
+                <div class="controller-bar">
+                  <a-button
+                    size="small"
+                    :disabled="disable(vacantFilterValue)"
+                    class="reset"
+                    @click="resetItem('vacant')">
+                    {{ $t('Action.Reset') }}
+                  </a-button>
+                  <a-button size="small" @click="confirmVacantFilter">
+                    {{ $t('Action.Confirm') }}
+                  </a-button>
+                  <a-button size="small" @click="closedrop('vacant')">
+                    {{ $t('Action.Cancel') }}
+                  </a-button>
+                </div>
               </div>
-              <div class="controller-bar">
-                <a-button
-                  size="small"
-                  :disabled="disable(vacantFilterValue)"
-                  class="reset"
-                  @click="resetItem('vacant')">
-                  {{ $t('Action.Reset') }}
-                </a-button>
-                <a-button size="small" @click="confirmVacantFilter">
-                  {{ $t('Action.Confirm') }}
-                </a-button>
-                <a-button size="small" @click="closedrop('vacant')">
-                  {{ $t('Action.Cancel') }}
-                </a-button>
-              </div>
-            </div>
+            </template>
             <a-popover v-if="!disable(filter.vacant)" placement="topLeft">
-              <template slot="content">
+              <template #content>
                 <p v-for="(item, index) in getPopoverContent(filter.vacant)" :key="index" class="popover-content">
                   <span>{{ item.name }}</span
                   ><span>{{ item.value }}</span>
@@ -42,46 +44,48 @@
               </template>
               <a-button type="primary">
                 {{ $t('Monitor.Cluster.Resources.Vacant') }}
-                <a-icon type="down" />
+                <down-outlined />
               </a-button>
             </a-popover>
             <a-button v-else>
               {{ $t('Monitor.Cluster.Resources.Vacant') }}
-              <a-icon type="down" />
+              <down-outlined />
             </a-button>
           </a-dropdown>
           <a-dropdown
-            v-model="system_select_visible"
+            v-model:open="system_select_visible"
             class="filter-button systemused-filter-button"
             :trigger="['click']"
             overlay-class-name="b-w systemused-filter-inner"
             @click="e => e.preventDefault()">
-            <div slot="overlay">
-              <div v-for="item in systemUsedFilterValue" :key="item.name">
-                <div class="filter-title" style="display: flex">
-                  <span>{{ getLabel(item.name) }}</span>
-                  <span class="filter-range">{{ `${item.value[0]}%~${item.value[1]}%` }}</span>
+            <template #overlay>
+              <div>
+                <div v-for="item in systemUsedFilterValue" :key="item.name">
+                  <div class="filter-title" style="display: flex">
+                    <span>{{ getLabel(item.name) }}</span>
+                    <span class="filter-range">{{ `${item.value[0]}%~${item.value[1]}%` }}</span>
+                  </div>
+                  <a-slider v-model:value="item.value" range :tooltip-visible="false" />
                 </div>
-                <a-slider v-model="item.value" range :tooltip-visible="false" />
+                <div class="controller-bar">
+                  <a-button
+                    size="small"
+                    :disabled="disable(systemUsedFilterValue)"
+                    class="reset"
+                    @click="resetItem('system')">
+                    {{ $t('Action.Reset') }}
+                  </a-button>
+                  <a-button size="small" @click="confirmSystemUsedFilter">
+                    {{ $t('Action.Confirm') }}
+                  </a-button>
+                  <a-button size="small" @click="closedrop('system')">
+                    {{ $t('Action.Cancel') }}
+                  </a-button>
+                </div>
               </div>
-              <div class="controller-bar">
-                <a-button
-                  size="small"
-                  :disabled="disable(systemUsedFilterValue)"
-                  class="reset"
-                  @click="resetItem('system')">
-                  {{ $t('Action.Reset') }}
-                </a-button>
-                <a-button size="small" @click="confirmSystemUsedFilter">
-                  {{ $t('Action.Confirm') }}
-                </a-button>
-                <a-button size="small" @click="closedrop('system')">
-                  {{ $t('Action.Cancel') }}
-                </a-button>
-              </div>
-            </div>
+            </template>
             <a-popover v-if="!disable(filter.systemUsed)">
-              <template slot="content">
+              <template #content>
                 <p v-for="(item, index) in getPopoverContent(filter.systemUsed)" :key="index" class="popover-content">
                   <span>{{ item.name }}</span
                   ><span>{{ item.value }}</span>
@@ -89,42 +93,48 @@
               </template>
               <a-button type="primary">
                 {{ $t('Monitor.Cluster.Resources.SystemUsed') }}
-                <a-icon type="down" />
+                <down-outlined />
               </a-button>
             </a-popover>
             <a-button v-else>
               {{ $t('Monitor.Cluster.Resources.SystemUsed') }}
-              <a-icon type="down" />
+              <down-outlined />
             </a-button>
           </a-dropdown>
           <a-dropdown
-            v-model="job_select_visible"
+            v-model:open="job_select_visible"
             class="filter-button jobused-filter-button"
             :trigger="['click']"
             overlay-class-name="b-w jobused-filter-inner"
             @click="e => e.preventDefault()">
-            <div slot="overlay">
-              <div v-for="item in jobUsedFilterValue" :key="item.name">
-                <div class="filter-title" style="display: flex">
-                  <span>{{ getLabel(item.name) }}</span>
-                  <span class="filter-range">{{ `${item.value[0]}%~${item.value[1]}%` }}</span>
+            <template #overlay>
+              <div>
+                <div v-for="item in jobUsedFilterValue" :key="item.name">
+                  <div class="filter-title" style="display: flex">
+                    <span>{{ getLabel(item.name) }}</span>
+                    <span class="filter-range">{{ `${item.value[0]}%~${item.value[1]}%` }}</span>
+                  </div>
+                  <a-slider v-model:value="item.value" range :tooltip-visible="false" />
                 </div>
-                <a-slider v-model="item.value" range :tooltip-visible="false" />
+                <div class="controller-bar">
+                  <a-button
+                    size="small"
+                    :disabled="disable(jobUsedFilterValue)"
+                    class="reset"
+                    @click="resetItem('job')">
+                    {{ $t('Action.Reset') }}
+                  </a-button>
+                  <a-button size="small" @click="confirmJobUsedFilter">
+                    {{ $t('Action.Confirm') }}
+                  </a-button>
+                  <a-button size="small" @click="closedrop('job')">
+                    {{ $t('Action.Cancel') }}
+                  </a-button>
+                </div>
               </div>
-              <div class="controller-bar">
-                <a-button size="small" :disabled="disable(jobUsedFilterValue)" class="reset" @click="resetItem('job')">
-                  {{ $t('Action.Reset') }}
-                </a-button>
-                <a-button size="small" @click="confirmJobUsedFilter">
-                  {{ $t('Action.Confirm') }}
-                </a-button>
-                <a-button size="small" @click="closedrop('job')">
-                  {{ $t('Action.Cancel') }}
-                </a-button>
-              </div>
-            </div>
+            </template>
             <a-popover v-if="!disable(filter.jobUsed)">
-              <template slot="content">
+              <template #content>
                 <p v-for="(item, index) in getPopoverContent(filter.jobUsed)" :key="index" class="popover-content">
                   <span>{{ item.name }}</span
                   ><span>{{ item.value }}</span>
@@ -132,106 +142,112 @@
               </template>
               <a-button type="primary">
                 {{ $t('Monitor.Cluster.Resources.JobUsed') }}
-                <a-icon type="down" />
+                <down-outlined />
               </a-button>
             </a-popover>
             <a-button v-else>
               {{ $t('Monitor.Cluster.Resources.JobUsed') }}
-              <a-icon type="down" />
+              <down-outlined />
             </a-button>
           </a-dropdown>
           <a-dropdown
-            v-model="hostname_select_visible"
+            v-model:open="hostname_select_visible"
             class="filter-button hostname-filter-button"
             :trigger="['click']"
             overlay-class-name="b-w hostname-filter-inner"
             @click="e => e.preventDefault()">
-            <div slot="overlay">
-              <p>{{ $t('Monitor.Cluster.Hostname') }}</p>
-              <p class="multNode-nodes-input-tips">
-                <a-icon type="exclamation-circle" theme="filled" />
-                {{ $t('MultNode.Nodes.Tips') }}
-              </p>
-              <a-textarea
-                v-model="inputHostName"
-                :placeholder="$t('MultNode.Placeholder.Hostname')"
-                :auto-size="{ minRows: 3 }"
-                @change="validHostName" />
-              <p v-if="hostNameValidMessage" class="hostname-valid-message">
-                {{ hostNameValidMessage }}
-              </p>
-              <div class="controller-bar">
-                <a-button size="small" :disabled="!!hostNameValidMessage" @click="confirmHostName">
-                  {{ $t('Action.Confirm') }}
-                </a-button>
-                <a-button size="small" @click="closedrop('hostname')">
-                  {{ $t('Action.Cancel') }}
-                </a-button>
+            <template #overlay>
+              <div>
+                <p>{{ $t('Monitor.Cluster.Hostname') }}</p>
+                <p class="multNode-nodes-input-tips">
+                  <exclamation-circle-filled />
+                  {{ $t('MultNode.Nodes.Tips') }}
+                </p>
+                <a-textarea
+                  v-model:value="inputHostName"
+                  :placeholder="$t('MultNode.Placeholder.Hostname')"
+                  :auto-size="{ minRows: 3 }"
+                  @change="validHostName" />
+                <p v-if="hostNameValidMessage" class="hostname-valid-message">
+                  {{ hostNameValidMessage }}
+                </p>
+                <div class="controller-bar">
+                  <a-button size="small" :disabled="!!hostNameValidMessage" @click="confirmHostName">
+                    {{ $t('Action.Confirm') }}
+                  </a-button>
+                  <a-button size="small" @click="closedrop('hostname')">
+                    {{ $t('Action.Cancel') }}
+                  </a-button>
+                </div>
               </div>
-            </div>
+            </template>
             <a-popover v-if="filter.hostName.length">
-              <template slot="content">
+              <template #content>
                 <p class="hostname-popover-content">
                   {{ filter.hostName.join(',') }}
                 </p>
               </template>
               <a-button type="primary">
                 {{ $t('Monitor.Cluster.Hostname') }}
-                <a-icon type="down" />
+                <down-outlined />
               </a-button>
             </a-popover>
             <a-button v-else>
               {{ $t('Monitor.Cluster.Hostname') }}
-              <a-icon type="down" />
+              <down-outlined />
             </a-button>
           </a-dropdown>
           <a-button class="filter-button reset-all-filter" :disabled="resetAllAble()" @click="resetAll">
             {{ $t('Action.ResetAll') }}
           </a-button>
           <span v-if="!resetAllAble()" class="filter-result-nodes">{{
-            $t('Monitor.Cluster.Filter.Nodes', { number: filterData.length })
+            $T('Monitor.Cluster.Filter.Nodes', { number: filterData.length })
           }}</span>
         </a-col>
         <a-col :span="8" class="display-type-col">
           <a-dropdown-button
-            v-model="resource_select_visible"
+            v-model:open="resource_select_visible"
             class="filter-button resource-filter-button"
             :trigger="['click']"
             @click="e => e.preventDefault()">
             {{ $t('Monitor.Cluster.Resources.Show') }}
-            <div slot="overlay" class="resource-filter-inner b-w">
-              <a-checkbox-group v-model="selectedResource" @change="onChange">
-                <a-row>
-                  <a-col v-for="item in resourcesOptions" :key="item.label" class="resource-check-item">
-                    <a-checkbox :disabled="item.disabled" :value="item.value">
-                      {{ item.label }}
-                    </a-checkbox>
-                  </a-col>
-                </a-row>
-              </a-checkbox-group>
-              <p class="controller-bar">
-                <a-button
-                  size="small"
-                  :disabled="!selectedResource.length"
-                  style="cursor: pointer"
-                  @click="selectResource">
-                  {{ $t('Action.Confirm') }}
-                </a-button>
-                <a-button size="small" @click="closedrop('resource')">
-                  {{ $t('Action.Cancel') }}
-                </a-button>
-              </p>
-            </div>
-            <div slot="icon">
-              <span
-                v-for="(item, index) in filter.displayResources"
-                :key="item"
-                :class="'resource-selected' + (index + 1)">
-                <span class="icon" />
-                <span class="text">{{ getLabel(item) }}</span>
-              </span>
-              <a-icon type="down" />
-            </div>
+            <template #overlay>
+              <div class="resource-filter-inner b-w">
+                <a-checkbox-group v-model:value="selectedResource" @change="onChange">
+                  <a-row>
+                    <a-col v-for="item in resourcesOptions" :key="item.label" class="resource-check-item" span="24">
+                      <a-checkbox :disabled="item.disabled" :value="item.value">
+                        {{ item.label }}
+                      </a-checkbox>
+                    </a-col>
+                  </a-row>
+                </a-checkbox-group>
+                <p class="controller-bar">
+                  <a-button
+                    size="small"
+                    :disabled="!selectedResource.length"
+                    style="cursor: pointer"
+                    @click="selectResource">
+                    {{ $t('Action.Confirm') }}
+                  </a-button>
+                  <a-button size="small" @click="closedrop('resource')">
+                    {{ $t('Action.Cancel') }}
+                  </a-button>
+                </p>
+              </div>
+            </template>
+            <template #icon>
+              <div>
+                <span
+                  v-for="(item, index) in filter.displayResources"
+                  :key="item"
+                  :class="'resource-selected' + (index + 1)">
+                  <span class="icon" />
+                  <span class="text">{{ getLabel(item) }}</span>
+                </span>
+                <down-outlined />
+              </div>
+            </template>
           </a-dropdown-button>
         </a-col>
       </a-row>
@@ -243,9 +259,9 @@
 </template>
 
 <script>
-import NodesViewer from './nodes-viewer'
 import Schema from 'async-validator'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import NodesViewer from './nodes-viewer.vue'
 export default {
   components: {
     NodesViewer,
@@ -284,7 +300,7 @@ export default {
   },
   computed: {
     gResource() {
-      return window.gApp.$store.getters['settings/getGResource']
+      return this.$store.getters['settings/getGResource']
     },
   },
   watch: {
@@ -634,10 +650,10 @@ export default {
 .filter {
   margin-bottom: 20px;
 }
-.filter >>> .vacant-filter-inner,
-.filter >>> .systemused-filter-inner,
-.filter >>> .jobused-filter-inner,
-.filter >>> .hostname-filter-inner {
+.filter :deep(.vacant-filter-inner),
+.filter :deep(.systemused-filter-inner),
+.filter :deep(.jobused-filter-inner),
+.filter :deep(.hostname-filter-inner) {
   width: 272px;
   padding: 16px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
@@ -684,8 +700,11 @@ export default {
 .resource-selected2 .icon {
   background-color: #1abc9c;
 }
-.resource-filter-button .ant-dropdown-trigger {
+/* .resource-filter-button {
+} */
+.resource-filter-button :deep(.ant-dropdown-trigger) {
   border-radius: 0 4px 4px 0;
+  width: 100%;
 }
 .filter .resource-filter-inner {
   width: 180px;
@@ -743,9 +762,9 @@ export default {
 .filter-result-nodes {
   color: #ccc;
 }
-.filter >>> .vacant-filter-inner .ant-slider-mark,
-.filter >>> .systemused-filter-inner .ant-slider-mark,
-.filter >>> .jobused-filter-inner .ant-slider-mark {
+.filter :deep(.vacant-filter-inner .ant-slider-mark),
+.filter :deep(.systemused-filter-inner .ant-slider-mark),
+.filter :deep(.jobused-filter-inner .ant-slider-mark) {
   font-size: 12px;
 }
 .hostname-popover-content {
@@ -760,7 +779,7 @@ export default {
 .resource-filter-inner .controller-bar {
   margin-top: 20px;
 }
-.resource-filter-button >>> .ant-btn:first-child:hover {
+.resource-filter-button :deep(.ant-btn:first-child:hover) {
   cursor: default;
   color: rgba(0, 0, 0, 0.65);
   background-color: #fff;

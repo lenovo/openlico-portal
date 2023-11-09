@@ -1,8 +1,9 @@
 <script>
-import NodeService from '../service/node'
+import NodeService from '@/service/node'
 
 export default {
   props: ['autoClose'],
+  emits: ['terminalClose'],
   data() {
     return {
       terminalWindows: [],
@@ -33,21 +34,21 @@ export default {
     }
     this.startAutoConnect()
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.onresize = null
     this.stopAutoConnect()
   },
   methods: {
     popupConsole(hostname) {
       const serviceUrl = NodeService.getNodeConsoleServiceUrl(hostname)
-      const title = this.$t('WebTerminal.Console.Title', {
+      const title = this.$T('WebTerminal.Console.Title', {
         hostname,
       })
       this.createTerminalWindow(hostname, serviceUrl, title)
     },
     popupShell(hostname) {
       const serviceUrl = NodeService.getNodeShellServiceUrl(hostname)
-      const title = this.$t('WebTerminal.Shell.Title', {
+      const title = this.$T('WebTerminal.Shell.Title', {
         hostname,
       })
       this.createTerminalWindow(hostname, serviceUrl, title)
@@ -63,11 +64,11 @@ export default {
 
       if (type === 'shell') {
         serviceUrl = NodeService.getNodeShellServiceUrl(hostname)
-        title = this.$t('WebTerminal.Shell.Title', { hostname })
+        title = this.$T('WebTerminal.Shell.Title', { hostname })
       }
       if (type === 'console') {
         serviceUrl = NodeService.getNodeConsoleServiceUrl(hostname)
-        title = this.$t('WebTerminal.Console.Title', { hostname })
+        title = this.$T('WebTerminal.Console.Title', { hostname })
       }
 
       const terminal = this.createTerminalWindow(hostname, serviceUrl, title)

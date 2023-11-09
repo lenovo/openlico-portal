@@ -9,7 +9,7 @@
         </a-row>
         <a-row>
           <a-col :span="4" class="workflow-description-title">
-            <a-icon type="message" />
+            <message-outlined />
             {{ $t('Workflow.Description') }}
           </a-col>
           <a-col :span="20" class="workflow-description-editor">
@@ -18,7 +18,7 @@
         </a-row>
         <a-row style="margin-top: 5px">
           <a-col :span="4" class="workflow-jobs-title">
-            <a-icon type="container" />
+            <container-outlined />
             {{ $t('Workflow.MaxSubmitJobs') }}
           </a-col>
           <a-col :span="4" class="workflow-jobs-editor">
@@ -28,21 +28,23 @@
         <a-dropdown class="action-button" :trigger="['click']">
           <a-button>
             {{ $t('Action') }}
-            <a-icon type="down" />
+            <down-outlined />
           </a-button>
-          <a-menu slot="overlay">
-            <a-menu-item key="edit" @click="onEditClick">
-              {{ $t('Action.Edit') }}
-            </a-menu-item>
-            <a-menu-item v-show="operateText.text" key="2" @click="onRunClick">
-              {{ operateText.text }}
-            </a-menu-item>
-          </a-menu>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="edit" @click="onEditClick">
+                {{ $t('Action.Edit') }}
+              </a-menu-item>
+              <a-menu-item v-if="operateText.text" key="2" @click="onRunClick">
+                {{ operateText.text }}
+              </a-menu-item>
+            </a-menu>
+          </template>
         </a-dropdown>
         <template v-if="workflow.periodic_task">
           <a-row>
             <a-col :span="4" class="workflow-jobs-title">
-              <a-icon type="clock-circle" />
+              <ClockCircleOutlined />
               {{ $t('Workflow.Recurrence.TriggerTime') }}
             </a-col>
             <a-col :span="4" class="workflow-jobs-editor">
@@ -51,7 +53,7 @@
           </a-row>
           <a-row>
             <a-col :span="4" class="workflow-jobs-title">
-              <a-icon type="redo" />
+              <RedoOutlined />
               {{ $t('Workflow.Recurrence.Pattern') }}
             </a-col>
             <a-col :span="12" class="workflow-jobs-editor">
@@ -62,79 +64,48 @@
       </div>
       <div ref="scrollContainer" class="workflow-steps-editor">
         <ul class="workflow-step-container" :style="styleObject">
-          <li v-for="(stepItem, index) in workflow.step" :key="stepItem.id" class="step-item">
+          <li v-for="stepItem in workflow.step" :key="stepItem.id" class="step-item">
             <a-tooltip placement="topLeft">
-              <template slot="title">
+              <template #title>
                 <div class="tooltip-setp-name">{{ stepItem.name }}</div>
                 <div v-if="stepItem.description" class="tooltip-setp-description">{{ stepItem.description }}</div>
               </template>
-              <div class="step-name-container" @mouseenter="showCloseIcon(index)" @mouseleave="hideCloseIcon(index)">
+              <div class="step-name-container">
                 <div class="step-name">
                   {{ stepItem.name }}
                 </div>
-                <a-icon class="step-edit-icon" type="edit" style="display: none" @click="editStep(index)" />
-                <a-icon class="step-delete-icon" type="close" style="display: none" @click="deleteStep(index)" />
+                <edit-outlined class="step-edit-icon step-icon" type="edit" @click="editStep(stepItem)" />
+                <close-outlined class="step-delete-icon step-icon" type="close" @click="deleteStep(stepItem)" />
               </div>
             </a-tooltip>
             <div class="step-container">
-              <a-button class="step-job-create-btn" @click="createStepJob(index)">
+              <a-button class="step-job-create-btn" @click="createStepJob(stepItem)">
                 {{ $t('Workflow.CreateNewJob') }}
               </a-button>
-              <div v-for="(item, subIndex) in stepItem.stepJob" :key="item.id" class="step-job-container">
-                <div class="job-name">
-                  {{ item.jobName }}
-                  <a-dropdown class="job-action-button" :trigger="['hover']">
-                    <i class="el-erp-more2" />
-                    <a-menu slot="overlay">
-                      <a-menu-item v-if="item.template !== null" key="edit" @click="editStepJob(index, subIndex)">
-                        {{ $t('Action.Edit') }}
-                      </a-menu-item>
-                      <a-menu-item v-if="item.template !== null" key="copy" @click="copyStepJob(index, subIndex)">
-                        {{ $t('Action.Copy') }}
-                      </a-menu-item>
-                      <a-menu-item
-                        v-if="workflow.step.length > 1 && item.template !== null"
-                        key="move"
-                        @click="moveJob(index, subIndex)">
-                        {{ $t('Action.MoveTo') }}
-                      </a-menu-item>
-                      <a-menu-item key="delete" @click="deleteStepJob(index, subIndex)">
-                        {{ $t('Action.Delete') }}
-                      </a-menu-item>
-                    </a-menu>
-                  </a-dropdown>
-                </div>
-                <div class="job-type">
-                  <span v-if="item.template === null" class="template-warning-message">
-                    <a-icon class="template-warning" type="exclamation-circle" />
-                    {{ $t('Workflow.Template.Tips') }}</span
-                  >
-                  <span v-else>{{ item.template }}</span>
-                </div>
-                <a-row class="icon-area">
-                  <a-col
-                    v-if="computedNodes(item) !== false"
-                    :span="8"
-                    :title="$t('Workflow.Nodes') + ': ' + computedNodes(item)">
-                    <i class="el-erp-monitor_node" />{{ computedNodes(item) }}
-                  </a-col>
-                  <a-col
-                    v-if="computedCores(item) !== false"
-                    :span="8"
-                    :title="$t('Workflow.Cores') + ': ' + computedCores(item)">
-                    <i class="el-erp-cpu" />{{ computedCores(item) }}
-                  </a-col>
-                  <a-col
-                    v-if="computedGpus(item) !== false"
-                    :span="8"
-                    :title="$t('Workflow.GPU') + ': ' + computedGpus(item)">
-                    <i class="el-erp-GPU" />{{ computedGpus(item) }}
-                  </a-col>
-                </a-row>
-              </div>
+              <template v-for="item in stepItem.stepJob" :key="item.id">
+                <workflow-detail-job :step-job="item" mode="edit">
+                  <template #actions="{ template }">
+                    <a-menu-item v-if="template !== null" key="edit" @click="editStepJob(stepItem.id, item)">
+                      {{ $t('Action.Edit') }}
+                    </a-menu-item>
+                    <a-menu-item v-if="template !== null" key="copy" @click="copyStepJob(stepItem.id, item)">
+                      {{ $t('Action.Copy') }}
+                    </a-menu-item>
+                    <a-menu-item
+                      v-if="workflow.step.length > 1 && template !== null"
+                      key="move"
+                      @click="moveJob(stepItem.id, item)">
+                      {{ $t('Action.MoveTo') }}
+                    </a-menu-item>
+                    <a-menu-item key="delete" @click="deleteStepJob(stepItem.id, item)">
+                      {{ $t('Action.Delete') }}
+                    </a-menu-item>
+                  </template>
+                </workflow-detail-job>
+              </template>
             </div>
           </li>
-          <li class="create-new-step">
+          <li class="workflow-step-container">
             <a-button type="link" @click="addStep">
               {{ $t('Workflow.CreateNewStep') }}
             </a-button>
@@ -149,12 +120,15 @@
 </template>
 
 <script>
-import WorkflowService from '../../service/workflow'
-import WorkflowStepEdit from '../workflow-manage/workflow-step-editor'
-import WorkflowCreateDialog from '../workflow-manage/workflow-create-dialog'
-import WorkflowJobMoveDialog from '../workflow-manage/workflow-job-move-dialog'
+import WorkflowService from '@/service/workflow'
+import WorkflowStepEdit from './workflow-step-editor.vue'
+import WorkflowCreateDialog from './workflow-create-dialog.vue'
+import WorkflowJobMoveDialog from './workflow-job-move-dialog.vue'
+import WorkflowDetailJob from './workflow-detail/workflow-detail-job.vue'
+
 export default {
   components: {
+    WorkflowDetailJob,
     'workflow-step-editor': WorkflowStepEdit,
     'workflow-create-dialog': WorkflowCreateDialog,
     'workflow-job-move-dialog': WorkflowJobMoveDialog,
@@ -216,7 +190,7 @@ export default {
       this.$refs.workflowStepEdit.doCreate(defaultOrder).then(
         topRes => {
           WorkflowService.createWorkflowStep(this.id, topRes).then(
-            res => {
+            _ => {
               this.getWorkflowInfo()
             },
             err => {
@@ -224,15 +198,15 @@ export default {
             },
           )
         },
-        topErr => {},
+        _ => {},
       )
       this.$nextTick(() => {
         this.$refs.scrollContainer.scrollLeft =
           parseInt(this.styleObject.width) - this.$refs.scrollContainer.clientWidth
       })
     },
-    editStep(index) {
-      this.$refs.workflowStepEdit.doEdit(this.workflow.step[index]).then(
+    editStep(step) {
+      this.$refs.workflowStepEdit.doEdit(step).then(
         topRes => {
           WorkflowService.updateWorkflowStep(this.id, topRes).then(
             res => {
@@ -246,158 +220,98 @@ export default {
         topErr => {},
       )
     },
-    deleteStep(index) {
-      const $this = this
+    deleteStep(step) {
       this.$confirm({
         title: this.$t('Workflow.Step.Delete.Title'),
-        content: this.$t('Workflow.Step.Delete.Tips', {
-          name: $this.workflow.step[index].name,
+        content: this.$T('Workflow.Step.Delete.Tips', {
+          name: step.name,
         }),
         okText: this.$t('Action.Confirm'),
         cancelText: this.$t('Action.Cancel'),
-        onOk() {
-          WorkflowService.deleteWorkflowStep($this.id, $this.workflow.step[index].id).then(
+        onOk: () => {
+          WorkflowService.deleteWorkflowStep(this.id, step.id).then(
             res => {
-              $this.$message.success(
-                $this.$t('Workflow.Step.Delete.Success', {
-                  name: $this.workflow.step[index].name,
+              this.$message.success(
+                this.$T('Workflow.Step.Delete.Success', {
+                  name: step.name,
                 }),
               )
-              $this.getWorkflowInfo()
+              this.getWorkflowInfo()
             },
             err => {
-              $this.$message.error(err)
+              this.$message.error(err)
             },
           )
         },
       })
     },
-    createStepJob(index) {
-      if (this.workflow.step[index].stepJob.length >= 50) {
+    createStepJob(step) {
+      if (step.stepJob.length >= 50) {
         this.$message.warning(this.$t('Workflow.MaxJobTips'))
         return false
       }
-      const stepId = this.workflow.step[index].id
-      this.$router.replace(`/main/workflow-job-template-store/${this.id}/${stepId}/''`)
-    },
-    editStepJob(index, subIndex) {
-      this.$router.replace({
-        name: 'workflow-job-edit',
+      this.$router.push({
+        name: 'workflow-template-store',
         params: {
           workflowId: this.id,
-          stepId: this.workflow.step[index].id,
-          job: this.workflow.step[index].stepJob[subIndex],
-          template: this.workflow.step[index].stepJob[subIndex].templateId,
+          stepId: step.id,
         },
       })
     },
-    copyStepJob(index, subIndex) {
-      this.$router.replace({
-        name: 'workflow-job-edit',
+    editStepJob(stepId, job) {
+      this.$router.push({
+        name: 'workflow-template-ex',
         params: {
-          copy: true,
           workflowId: this.id,
-          stepId: this.workflow.step[index].id,
-          job: this.workflow.step[index].stepJob[subIndex],
-          template: this.workflow.step[index].stepJob[subIndex].templateId,
+          stepId: stepId,
+          stepJobId: job.id,
+          code: job.templateId,
+          action: 'edit',
         },
       })
     },
-    moveJob(index, subIndex) {
-      const steps = []
-      const oldStepId = this.workflow.step[index].id
-      this.workflow.step.forEach(el => {
-        if (el.id !== this.workflow.step[index].id) {
-          steps.push({
-            id: el.id,
-            name: el.name,
-          })
-        }
+    copyStepJob(stepId, job) {
+      this.$router.push({
+        name: 'workflow-template-ex',
+        params: {
+          workflowId: this.id,
+          stepId: stepId,
+          stepJobId: job.id,
+          code: job.templateId,
+          action: 'copy',
+        },
       })
-      this.$refs.workflowJobMoveDialog
-        .doMove(oldStepId, steps, this.workflow.step[index].stepJob[subIndex])
-        .then(res => {
-          this.getWorkflowInfo()
-        })
     },
-    deleteStepJob(index, subIndex) {
-      const $this = this
+    moveJob(stepId, job) {
+      const steps = this.workflow.step.filter(i => i.id !== stepId)
+      this.$refs.workflowJobMoveDialog.doMove(stepId, steps, job).then(res => {
+        this.getWorkflowInfo()
+      })
+    },
+    deleteStepJob(stepId, job) {
       this.$confirm({
         title: this.$t('Workflow.Step.Job.Delete.Title'),
-        content: this.$t('Workflow.Step.Job.Delete.Tips', {
-          name: $this.workflow.step[index].stepJob[subIndex].jobName,
+        content: this.$T('Workflow.Step.Job.Delete.Tips', {
+          name: job.jobName,
         }),
         okText: this.$t('Action.Confirm'),
         cancelText: this.$t('Action.Cancel'),
-        onOk() {
-          WorkflowService.deleteWorkflowStepJob(
-            $this.workflow.step[index].id,
-            $this.workflow.step[index].stepJob[subIndex].id,
-          ).then(
-            res => {
-              $this.$message.success(
-                $this.$t('Workflow.Step.Job.Delete.Success', {
-                  name: $this.workflow.step[index].stepJob[subIndex].jobName,
+        onOk: () => {
+          WorkflowService.deleteWorkflowStepJob(stepId, job.id).then(
+            _ => {
+              this.$message.success(
+                this.$T('Workflow.Step.Job.Delete.Success', {
+                  name: job.jobName,
                 }),
               )
-              $this.getWorkflowInfo()
+              this.getWorkflowInfo()
             },
             err => {
-              $this.$message.error(err)
+              this.$message.error(err)
             },
           )
         },
       })
-    },
-    showCloseIcon(index) {
-      const closeIcon = document.querySelectorAll('.step-delete-icon')
-      const editIcon = document.querySelectorAll('.step-edit-icon')
-      for (let i = 0, j = closeIcon.length; i < j; i++) {
-        if (index === i) {
-          closeIcon[i].style.display = 'block'
-          editIcon[i].style.display = 'block'
-          break
-        }
-      }
-    },
-    hideCloseIcon(index) {
-      const closeIcon = document.querySelectorAll('.step-delete-icon')
-      const editIcon = document.querySelectorAll('.step-edit-icon')
-      for (let i = 0, j = closeIcon.length; i < j; i++) {
-        if (index === i) {
-          closeIcon[i].style.display = 'none'
-          editIcon[i].style.display = 'none'
-          break
-        }
-      }
-    },
-    computedNodes(item) {
-      if (Object.prototype.hasOwnProperty.call(item.jsonBody, 'nodes')) {
-        return item.jsonBody.nodes
-      } else {
-        return false
-      }
-    },
-    computedCores(item) {
-      if (Object.prototype.hasOwnProperty.call(item.jsonBody, 'cores_per_node')) {
-        if (Object.prototype.hasOwnProperty.call(item.jsonBody, 'exclusive') && item.jsonBody.exclusive) {
-          return false
-        }
-        return item.jsonBody.nodes * item.jsonBody.cores_per_node
-      } else {
-        return false
-      }
-    },
-    computedGpus(item) {
-      if (Object.prototype.hasOwnProperty.call(item.jsonBody, 'gpu_per_node')) {
-        const gpuNumber = item.jsonBody.nodes * item.jsonBody.gpu_per_node
-        if (gpuNumber <= 0) {
-          return false
-        }
-        return gpuNumber
-      } else {
-        return false
-      }
     },
     onRunClick() {
       WorkflowService.operateWorkflow(this.id, this.operateText.action).then(
@@ -411,12 +325,6 @@ export default {
       )
     },
     onEditClick() {
-      // const data = {
-      //   id: this.id,
-      //   name: this.workflow.name,
-      //   maxSubmitJobs: this.workflow.maxSubmitJobs,
-      //   description: this.workflow.description,
-      // }
       this.$refs.workflowCreateDialog.doEdit(this.workflow).then(res => {
         this.getWorkflowInfo()
       })
@@ -435,13 +343,16 @@ export default {
   border-bottom: 1px solid #eee;
   position: relative;
 }
+.workflow-top-bar :deep(.ant-dropdown) {
+  width: max-content;
+}
 .workflow-steps-editor {
   padding-bottom: 20px;
   overflow: auto;
-  height: 592px;
+  /* height: 725px; */
 }
 .workflow-step-container {
-  height: 552px;
+  height: 695px;
 }
 .workflow-step-container > li {
   display: inline-block;
@@ -452,7 +363,7 @@ export default {
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 10px;
-  height: 500px;
+  height: 635px;
   overflow: auto;
 }
 .step-job-create-btn {
@@ -465,44 +376,24 @@ export default {
 .step-item {
   padding: 10px;
 }
-.step-job-container {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  position: relative;
-}
-.create-new-step {
-  padding: 10px;
-  height: 552px;
-}
-.job-name {
-  color: #000;
-  position: relative;
-  font-size: 14px;
-  padding-right: 30px;
-  word-break: break-all;
-}
-.job-type {
-  margin: 8px 0 4px;
-  color: #999;
-  font-size: 12px;
-  word-break: break-all;
-}
 .step-name-container {
   position: relative;
 }
-.step-name-container .step-edit-icon {
+
+.step-name-container .step-icon {
   font-size: 18px;
   position: absolute;
-  right: 20px;
   top: 7px;
+  display: none;
+}
+.step-name-container .step-edit-icon {
+  right: 20px;
 }
 .step-name-container .step-delete-icon {
-  font-size: 18px;
-  position: absolute;
   right: 0;
-  top: 7px;
+}
+.step-name-container:hover .step-icon {
+  display: block;
 }
 .step-name {
   width: 80%;
@@ -523,15 +414,9 @@ export default {
   margin-top: 5px;
   opacity: 0.8;
 }
-.workflow-step-container >>> .ant-tooltip-inner {
+.workflow-step-container :deep(.ant-tooltip-inner) {
   padding: 6px 12px;
   display: inline-block;
-}
-.icon-area i {
-  font-size: 14px;
-}
-.icon-area {
-  color: #666;
 }
 .action-button {
   position: absolute;
@@ -556,21 +441,5 @@ export default {
 .workflow-description-info {
   word-wrap: break-word;
   line-height: 20px;
-}
-.job-action-button {
-  position: absolute;
-  right: 0;
-  top: 0;
-  font-size: 16px;
-  color: #999;
-}
-.template-warning {
-  margin-right: 4px;
-}
-.el-erp-more2 {
-  cursor: pointer;
-}
-.template-warning-message {
-  color: #ff5454;
 }
 </style>

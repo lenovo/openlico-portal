@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-select v-model="selectedTimeDefalut" style="margin-bottom: 20px" @change="onTrendTimeIntervalChange">
+    <a-select v-model:value="selectedTimeDefalut" style="margin-bottom: 20px" @change="onTrendTimeIntervalChange">
       <a-select-option v-for="item in selectTimeOptions" :key="item.value" :value="item.value">
         {{ $t('Time.Select.' + item.label) }}
       </a-select-option>
@@ -76,16 +76,16 @@
   </div>
 </template>
 <script>
-import Format from '../../common/format'
-import MonitorDataService from '../../service/monitor-data'
-import NodeCpuChart from './node-monitor/node-cpu-chart'
-import NodeLoadChart from './node-monitor/node-load-chart'
-import NodeTemperatureChart from './node-monitor/node-temperature-chart'
-import NodeEnergyChart from './node-monitor/node-energy-chart'
-import NodeRamChart from './node-monitor/node-ram-chart'
-import NodeEthChart from './node-monitor/node-eth-chart'
-import NodeIBChart from './node-monitor/node-ib-chart'
-import NodeDiskChart from './node-monitor/node-disk-chart'
+import Format from '@/common/format'
+import MonitorDataService from '@/service/monitor-data'
+import NodeCpuChart from './node-monitor/node-cpu-chart.vue'
+import NodeLoadChart from './node-monitor/node-load-chart.vue'
+import NodeTemperatureChart from './node-monitor/node-temperature-chart.vue'
+import NodeEnergyChart from './node-monitor/node-energy-chart.vue'
+import NodeRamChart from './node-monitor/node-ram-chart.vue'
+import NodeEthChart from './node-monitor/node-eth-chart.vue'
+import NodeIBChart from './node-monitor/node-ib-chart.vue'
+import NodeDiskChart from './node-monitor/node-disk-chart.vue'
 export default {
   components: {
     'node-cpu-chart': NodeCpuChart,

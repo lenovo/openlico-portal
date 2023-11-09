@@ -1,6 +1,6 @@
 <template>
   <div style="display: flex">
-    <a-input v-model="psWorkerDisplay" style="width: 300px" :disabled="true" />
+    <a-input v-model:value="psWorkerDisplay" style="width: 300px" :disabled="true" />
     <a-button @click="onSettingClick">
       {{ modeText }}
     </a-button>
@@ -8,13 +8,14 @@
   </div>
 </template>
 <script>
-import PsWorkerDialog from './ps-worker-dialog'
+import PsWorkerDialog from './ps-worker-dialog.vue'
 
 export default {
   components: {
     'ps-worker-dialog': PsWorkerDialog,
   },
   props: ['value', 'nodes', 'gpuPerNode', 'workerAutoPolicy', 'psPolicy'],
+  emits: ['input', 'update:value'],
   data() {
     return {
       psWorkerDisplay: '',
@@ -105,6 +106,7 @@ export default {
         this.psWorkerDisplay = psWorker.psNumber + ' PS, ' + psWorker.workerNumber + ' Worker'
       }
       this.$emit('input', psWorker)
+      this.$emit('update:value', psWorker)
     },
   },
 }

@@ -1,7 +1,7 @@
 <template>
   <div ref="outerContainer" class="b-w outer-container">
     <a-popover overlay-class-name="width-266" :align="{ points: ['tl', 'tr'] }">
-      <template slot="content">
+      <template #content>
         <a-row v-if="text.length" type="flex" style="margin-bottom: 16px">
           <a-col :span="12">
             {{ text[0] }}
@@ -86,6 +86,7 @@
 
 <script>
 export default {
+  inject: ['resize'],
   props: {
     text: {
       type: Array,
@@ -147,14 +148,15 @@ export default {
         this.draw()
       })
     },
+    resize(val) {
+      this.onResize()
+    },
   },
   mounted() {
     this.setCanvasSize()
     this.draw()
-    window.addEventListener('resize', this.resize)
   },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.resize)
+  beforeUnmount() {
     clearTimeout(this.resizeTimer)
   },
   methods: {
@@ -163,13 +165,15 @@ export default {
       this.$refs.canvas.width = parseInt(width) >= 100 ? parseInt(width) : 100
       this.$refs.canvas.height = this.barHeight + 6
     },
-    resize() {
+    onResize() {
       this.$nextTick(() => {
         clearTimeout(this.resizeTimer)
-        this.resizeTimer = setTimeout(() => {
-          this.setCanvasSize()
-          this.draw()
-        }, 200)
+        this.resizeTimer =
+          (() => {
+            this.setCanvasSize()
+            this.draw()
+          },
+          200)
       })
     },
     draw() {
@@ -289,7 +293,7 @@ export default {
 .title {
   padding-bottom: 20px;
 }
-.outer-container >>> .width-266 {
+.outer-container :deep(.width-266) {
   width: 266px;
 }
 .job-used-tips .icon,

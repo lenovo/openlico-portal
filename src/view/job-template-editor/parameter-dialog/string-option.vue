@@ -1,20 +1,26 @@
 <template>
   <div class="">
-    <a-form-model-item :label="$t('JobTemplate.Parameters.Max.Length')" prop="maxLength">
-      <a-input id="tid_jobTemplate-parameter-maxLength" v-model="formParam.maxLength" />
-    </a-form-model-item>
-    <a-form-model-item :label="$t('JobTemplate.Parameters.Invalid')" prop="Invalid">
-      <a-select id="tid_jobTemplate-parameter-invalid" v-model="formParam.invalid">
+    <a-form-item :label="$t('JobTemplate.Parameters.Max.Length')" name="maxLength">
+      <a-input
+        id="tid_jobTemplate-parameter-maxLength"
+        v-model:value="formParam.maxLength"
+        :disabled="getDisabledStatus ? getDisabledStatus('maxLength') : false" />
+    </a-form-item>
+    <a-form-item :label="$t('JobTemplate.Parameters.Invalid')" name="Invalid">
+      <a-select
+        id="tid_jobTemplate-parameter-invalid"
+        v-model:value="formParam.invalid"
+        :disabled="getDisabledStatus ? getDisabledStatus('invalid') : false">
         <a-select-option v-for="item in invalidOption" :key="item.value" :value="item.value">
           {{ item.label }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
+    </a-form-item>
   </div>
 </template>
 <script>
 export default {
-  props: ['formParameter', 'formRules'],
+  props: ['formParameter', 'formRules', 'getDisabledStatus'],
   data() {
     return {
       invalid: ['none', 'default', 'phone', 'email'],

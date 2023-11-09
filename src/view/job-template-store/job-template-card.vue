@@ -18,7 +18,7 @@
         class="job-template-card-favorite"
         :class="{ 'job-template-card-favorite-display': jobTemplate.favorite }"
         @click.stop>
-        <a-rate :default-value="jobTemplate.favorite ? 1 : 0" :count="1" @change="toggleFavorite" />
+        <a-rate :value="jobTemplate.favorite ? 1 : 0" :count="1" @change="toggleFavorite" />
       </div>
       <div
         v-if="jobTemplate.type != 'system' && username == jobTemplate.username && !isWorkflow"
@@ -28,36 +28,39 @@
           <a class="ant-dropdown-link" @click="e => e.preventDefault()">
             <i class="el-erp-templateCardAction job-template-card-action-icon" />
           </a>
-          <a-menu slot="overlay" @click="doAction">
-            <a-menu-item v-if="jobTemplate.type == 'private'" key="edit">
-              {{ $t('Action.Edit') }}
-            </a-menu-item>
-            <a-menu-item key="copy">
-              {{ $t('Action.Copy') }}
-            </a-menu-item>
-            <a-menu-item v-if="jobTemplate.type == 'private' && $store.state.auth.role == 300" key="publish">
-              {{ $t('Action.Publish') }}
-            </a-menu-item>
-            <a-menu-item v-if="jobTemplate.type == 'public'" key="unpublish">
-              {{ $t('Action.Unpublish') }}
-            </a-menu-item>
-            <a-menu-item key="export">
-              {{ $t('Action.Export') }}
-            </a-menu-item>
-            <a-menu-item v-if="jobTemplate.type == 'private'" key="delete">
-              {{ $t('Action.Delete') }}
-            </a-menu-item>
-          </a-menu>
+          <template #overlay>
+            <a-menu @click="doAction">
+              <a-menu-item v-if="jobTemplate.type == 'private'" key="edit">
+                {{ $t('Action.Edit') }}
+              </a-menu-item>
+              <a-menu-item key="copy">
+                {{ $t('Action.Copy') }}
+              </a-menu-item>
+              <a-menu-item v-if="jobTemplate.type == 'private' && $store.state.auth.role == 300" key="publish">
+                {{ $t('Action.Publish') }}
+              </a-menu-item>
+              <a-menu-item v-if="jobTemplate.type == 'public'" key="unpublish">
+                {{ $t('Action.Unpublish') }}
+              </a-menu-item>
+              <a-menu-item key="export">
+                {{ $t('Action.Export') }}
+              </a-menu-item>
+              <a-menu-item v-if="jobTemplate.type == 'private'" key="delete">
+                {{ $t('Action.Delete') }}
+              </a-menu-item>
+            </a-menu>
+          </template>
         </a-dropdown>
       </div>
     </div>
   </div>
 </template>
 <script>
-import JobTemplateService from '../../service/job-template'
+import JobTemplateService from '@/service/job-template'
 
 export default {
-  props: ['jobTemplate', 'workflowId', 'workflowStepId'],
+  props: ['jobTemplate'],
+  emits: ['action-trigger', 'toggle-favorite-click'],
   data() {
     return {
       username: this.$store.state.auth.username,
@@ -78,9 +81,11 @@ export default {
   methods: {
     onUseClick() {
       const code = this.jobTemplate.code
-      if (this.workflowId || this.workflowId === 0) {
-        this.$router.replace({
-          path: `/main/workflow-job-template-ex/${this.workflowId}/${this.workflowStepId}/` + code,
+      if (this.isWorkflow) {
+        const stepId = this.$route.params.stepId
+        const workflowId = this.$route.params.workflowId
+        this.$router.push({
+          path: `/main/workflow-job-template-ex/${workflowId}/${stepId}/${code}/create`,
         })
       } else {
         this.$router.push({ path: '/main/job-template-ex/' + code })
@@ -89,7 +94,7 @@ export default {
     doAction({ key }) {
       if (key === 'edit') {
         this.$router.push({
-          path: '/main/job-template-editor/' + this.jobTemplate.code,
+          path: '/main/job-template-editor/edit/' + this.jobTemplate.code,
         })
       } else if (key === 'copy') {
         this.$router.push({
@@ -129,7 +134,10 @@ export default {
   cursor: pointer;
 }
 .job-template-card:hover {
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05), 0px 2px 20px rgba(0, 0, 0, 0.1), 0px 0px 10px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0px 4px 4px rgba(0, 0, 0, 0.05),
+    0px 2px 20px rgba(0, 0, 0, 0.1),
+    0px 0px 10px rgba(0, 0, 0, 0.05);
 }
 .job-template-card-logo {
   padding: 12px 16px 12px 20px;

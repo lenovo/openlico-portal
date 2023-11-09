@@ -4,26 +4,24 @@
     :title="$t('Multi.User.Title')"
     size="500px"
     :form-model="usersForm"
-    :form-rules="usersRules"
-    composite-height="400">
-    <a-form-model-item :label="$t('Multi.User.Filter')">
-      <a-select v-model="usersForm.Filter" @change="clearState">
+    :form-rules="usersRules">
+    <a-form-item :label="$t('Multi.User.Filter')">
+      <a-select v-model:value="usersForm.Filter" @change="clearState">
         <a-select-option v-for="item in filterList" :key="item.toString()" :value="item">
           {{ $t('Multi.User.' + item) }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item v-if="usersForm.Filter == 'username'" :label="$t('Multi.User.username')" prop="username">
-      <a-input
-        v-model="usersForm.username"
-        type="textarea"
+    </a-form-item>
+    <a-form-item v-if="usersForm.Filter == 'username'" :label="$t('Multi.User.username')" name="username">
+      <a-textarea
+        v-model:value="usersForm.username"
         resize="none"
         :placeholder="$t(allable ? 'Multi.User.All' : 'Multi.User.PleaseSelect')"
         :auto-size="{ minRows: 2 }" />
-    </a-form-model-item>
-    <a-form-model-item v-if="usersForm.Filter == 'usergroup'" :label="$t('Multi.User.usergroup')" prop="usergroup">
+    </a-form-item>
+    <a-form-item v-if="usersForm.Filter == 'usergroup'" :label="$t('Multi.User.usergroup')" name="usergroup">
       <a-select
-        v-model="usersForm.usergroup"
+        v-model:value="usersForm.usergroup"
         :placeholder="$t(allable ? 'Multi.User.All' : 'Multi.User.PleaseSelect')"
         :filter-option="filterOption"
         mode="multiple"
@@ -33,13 +31,10 @@
           {{ item.name }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item
-      v-if="usersForm.Filter == 'billinggroup'"
-      :label="$t('Multi.User.billinggroup')"
-      prop="billinggroup">
+    </a-form-item>
+    <a-form-item v-if="usersForm.Filter == 'billinggroup'" :label="$t('Multi.User.billinggroup')" name="billinggroup">
       <a-select
-        v-model="usersForm.billinggroup"
+        v-model:value="usersForm.billinggroup"
         :placeholder="$t(allable ? 'Multi.User.All' : 'Multi.User.PleaseSelect')"
         :filter-option="filterOption"
         mode="multiple"
@@ -49,26 +44,27 @@
           {{ item.name }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item v-if="clearable" style="margin-top: 10px">
-      <a-button type="danger" size="small" @click="onClearClick">
+    </a-form-item>
+    <a-form-item v-if="clearable" style="margin-top: 10px">
+      <a-button type="primary" danger size="small" @click="onClearClick">
         {{ $t('Action.Clear') }}
       </a-button>
-    </a-form-model-item>
+    </a-form-item>
   </composite-form-dialog>
 </template>
 
 <script>
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import UserGroupService from '../../service/user-group'
-import BillGroupService from '../../service/bill-group'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import UserGroupService from '@/service/user-group'
+import BillGroupService from '@/service/bill-group'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
-    'composite-form-dialog': CompositeFormDialog,
+    CompositeFormDialog,
   },
   props: ['formValue', 'filterList', 'allable', 'maxValue'],
+  emits: ['on-selected'],
   data() {
     return {
       usersForm: {
@@ -168,7 +164,7 @@ export default {
       // multiple-limit
       if (val.length > this.maxValue.usergroup) {
         this.$message.warning(
-          this.$t('Multi.User.tooLong', {
+          this.$T('Multi.User.tooLong', {
             value: this.maxValue.usergroup,
           }),
         )
@@ -179,7 +175,7 @@ export default {
       // multiple-limit
       if (val.length > this.maxValue.billinggroup) {
         this.$message.warning(
-          this.$t('Multi.User.tooLong', {
+          this.$T('Multi.User.tooLong', {
             value: this.maxValue.billinggroup,
           }),
         )

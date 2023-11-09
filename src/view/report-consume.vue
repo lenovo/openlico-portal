@@ -8,7 +8,7 @@
           <date-region-picker
             id="tid_report-time-picker"
             ref="dateSelect"
-            v-model="defaultDaterange"
+            v-model:value="defaultDaterange"
             quick-pick="default"
             @date-change="onDateChange" />
         </a-col>
@@ -32,28 +32,33 @@
       <hr class="halving-line" style="width: 100%; margin: 20px 0" />
       <!-- filter button -->
       <span class="report-consume-filter-span" />
-      <a-button type="primary" :disabled="disabled" @click="onPreview">
+      <a-button type="primary" :disabled="disabled || loading" style="margin-right: 20px" @click="onPreview">
         {{ $t('Report.Button.Preview') }}
+      </a-button>
+      <a-button :disabled="disabled || loading" @click="download()">
+        {{ $t('Report.Button.Submit') }}
       </a-button>
     </a-row>
 
     <a-row v-if="isShowChart" class="" type="flex">
       <a-col :span="access == 'admin' ? 12 : 24" class="">
-        <a-col :span="access == 'admin' ? 24 : 12" class="p-10">
-          <div class="b-w p-10">
-            <!-- Resource chart -->
-            <resource-chart ref="reportResourceChart" :data="innerData" />
-          </div>
-        </a-col>
-        <a-col :span="access == 'admin' ? 24 : 12" class="p-10">
-          <div class="b-w p-10">
-            <!-- Queue chart -->
-            <queue-chart ref="reportQueueChart" :data="innerData" />
-          </div>
-        </a-col>
+        <a-row>
+          <a-col :span="access == 'admin' ? 24 : 12" class="p-10">
+            <div class="b-w p-10">
+              <!-- Resource chart -->
+              <resource-chart ref="reportResourceChart" :data="innerData" />
+            </div>
+          </a-col>
+          <a-col :span="access == 'admin' ? 24 : 12" class="p-10">
+            <div class="b-w p-10">
+              <!-- Queue chart -->
+              <queue-chart ref="reportQueueChart" :data="innerData" />
+            </div>
+          </a-col>
+        </a-row>
       </a-col>
       <!-- Ranking chart -->
-      <a-col v-if="isShowChart && access == 'admin'" :span="12" class="p-10">
+      <a-col v-if="access == 'admin'" :span="12" class="p-10" style="height: 100%">
         <ranking-chart ref="rankingChart" class="b-w p-10" :data="rankingData" />
       </a-col>
     </a-row>
@@ -69,19 +74,23 @@
         {{ $t('No.Data') }}
       </p>
     </div>
+    <report-dialog ref="ReportDialog" :export-list="['csv']" />
   </div>
 </template>
 <script>
-import ConsumeService from './../service/report-consume'
-import UserSelect from '../widget/multi-user-selector'
-import DateRegionPicker from '../component/date-region-picker'
-import RankingChart from './report-consume/ranking-chart'
-import QueueChart from './report-consume/report-queue-chart'
-import ResourceChart from './report-consume/report-resource-chart'
-import ExpensesStatement from './report-consume/expenses-statement-chart'
+import ConsumeService from '@/service/report-consume'
+import DateRegionPicker from '@/component/date-region-picker.vue'
+import UserSelect from '@/widget/multi-user-selector.vue'
+import RankingChart from './report-consume/ranking-chart.vue'
+import QueueChart from './report-consume/report-queue-chart.vue'
+import ResourceChart from './report-consume/report-resource-chart.vue'
+import ExpensesStatement from './report-consume/expenses-statement-chart.vue'
+import ReportDialog from './report/report-dialog.vue'
+import Format from '@/common/format'
 
 export default {
   components: {
+    'report-dialog': ReportDialog,
     'date-region-picker': DateRegionPicker,
     'multi-user-selector': UserSelect,
     'resource-chart': ResourceChart,
@@ -102,6 +111,7 @@ export default {
         value_type: 'username',
       },
       filterDate: [],
+      loading: false,
     }
   },
   computed: {
@@ -109,10 +119,10 @@ export default {
       return this.innerData.length <= 0
     },
     isShowChart() {
-      return this.innerData.length > 0 || this.rankingData
+      return !this.loading && Boolean(this.innerData.length > 0 || this.rankingData)
     },
     disabled() {
-      return !(this.filterDate[0] && this.filterDate[1])
+      return Boolean(!(this.filterDate[0] && this.filterDate[1]))
     },
   },
   mounted() {
@@ -121,30 +131,53 @@ export default {
   },
   methods: {
     getConsumeData() {
-      ConsumeService.getExpensesStatement(this.filter, this.filterDate, this.access).then(
-        res => {
-          this.innerData = res
-        },
-        err => {
-          this.$message.error(err)
-        },
-      )
+      ConsumeService.getExpensesStatement(this.filter, this.filterDate, this.access)
+        .then(
+          res => {
+            this.innerData = res
+          },
+          err => {
+            this.$message.error(err)
+          },
+        )
+        .finally(() => {
+          this.loading = false
+        })
     },
     getRankingData() {
-      ConsumeService.getUsersRanking(this.filter, this.filterDate, this.access).then(
-        res => {
-          this.rankingData = res
-        },
-        err => {
-          this.$message.error(err)
-        },
-      )
+      ConsumeService.getUsersRanking(this.filter, this.filterDate, this.access)
+        .then(
+          res => {
+            this.rankingData = res
+          },
+          err => {
+            this.$message.error(err)
+          },
+        )
+        .finally(() => {
+          this.loading = false
+        })
     },
     onPreview() {
+      this.loading = true
       this.getConsumeData()
       if (this.access !== 'staff') {
         this.getRankingData()
       }
+    },
+    download() {
+      const data = {
+        target: 'expense',
+        start_time: new Date(this.filterDate[0]).valueOf(),
+        end_time: new Date(this.filterDate[1]).valueOf(),
+        filter: this.filter,
+      }
+      this.$refs.ReportDialog.download(data, 'report-expense').then(
+        res => {
+          // window.open(res);
+        },
+        res => {},
+      )
     },
     onDateChange(val) {
       this.innerData = false

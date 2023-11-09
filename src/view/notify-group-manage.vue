@@ -10,35 +10,41 @@
         :default-sort="{ prop: 'name', order: 'ascending' }"
         :search-enable="true"
         :search-props="['name']">
-        <ul slot="controller" class="composite-table-controller">
-          <a-button id="tid_notify-group-create" type="primary" @click="onCreateClick">
-            {{ $t('UserGroup.Action.Create') }}
-          </a-button>
-        </ul>
-        <a-dropdown slot="action" slot-scope="{ row }" placement="bottomLeft" :trigger="['click']">
-          <a-button>
-            {{ $t('Action') }}
-            <a-icon type="down" />
-          </a-button>
-          <a-menu slot="overlay">
-            <a-menu-item @click="onEditClick(row)">
-              {{ $t('Action.Edit') }}
-            </a-menu-item>
-            <a-menu-item @click="onDeleteClick(row)">
-              {{ $t('Action.Delete') }}
-            </a-menu-item>
-          </a-menu>
-        </a-dropdown>
+        <template #controller>
+          <ul class="composite-table-controller">
+            <a-button id="tid_notify-group-create" type="primary" @click="onCreateClick">
+              {{ $t('UserGroup.Action.Create') }}
+            </a-button>
+          </ul>
+        </template>
+        <template #action="{ row }">
+          <a-dropdown placement="bottomLeft" :trigger="['click']">
+            <a-button>
+              {{ $t('Action') }}
+              <DownOutlined />
+            </a-button>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item @click="onEditClick(row)">
+                  {{ $t('Action.Edit') }}
+                </a-menu-item>
+                <a-menu-item @click="onDeleteClick(row)">
+                  {{ $t('Action.Delete') }}
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </template>
       </composite-table>
       <notify-group-dialog ref="notifyGroupDialog" />
     </div>
   </div>
 </template>
 <script>
-import CompositeTable from '../component/composite-table'
-import NotifyGroupService from '../service/notify-group'
-import Format from '../common/format'
-import NotifyGroupDialog from './notify-group-manage/notify-group-dialog'
+import Format from '@/common/format'
+import NotifyGroupService from '@/service/notify-group'
+import CompositeTable from '@/component/composite-table.vue'
+import NotifyGroupDialog from './notify-group-manage/notify-group-dialog.vue'
 
 export default {
   components: {
@@ -55,21 +61,21 @@ export default {
           defaultSortOrder: 'ascend',
         },
         {
-          title: this.$t('NotifyGroup.Emails'),
+          title: this.$t('NotifyGroup.Table.Emails'),
           dataIndex: 'emails',
-          customRender: val => Format.formatCount(val.length),
+          customRender: ({ text }) => Format.formatCount(text.length),
           align: 'center',
         },
         {
-          title: this.$t('NotifyGroup.Mobiles'),
+          title: this.$t('NotifyGroup.Table.Mobiles'),
           dataIndex: 'mobiles',
-          customRender: val => Format.formatCount(val.length),
+          customRender: ({ text }) => Format.formatCount(text.length),
           align: 'center',
         },
         {
           title: this.$t('Action'),
           key: 'action',
-          scopedSlots: { customRender: 'action' },
+          customSlot: true,
           width: 200,
         },
       ],

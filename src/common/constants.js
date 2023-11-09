@@ -33,7 +33,7 @@ const unitEnums = {
   job: '',
 }
 
-module.exports = {
+export default {
   NodeHealthState,
   DataCategoryEnums,
   HeatDataCategoryEnums,

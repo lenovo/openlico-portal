@@ -68,45 +68,45 @@ export default {
 }
 </script>
 
-<style scoped lang="less">
+<style scoped>
 .remotely-debug {
   width: 100%;
   border: 1px solid #e9eef2;
   padding-bottom: 10px;
   margin-bottom: 10px;
-  .debug-title {
-    height: 20px;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    font-weight: 900;
-    padding-left: 10px;
-    margin-top: 10px;
-    .title-round {
-      width: 10px;
-      height: 10px;
-      border: 1px solid #999;
-      border-radius: 50%;
-      margin-right: 5px;
-      background-color: #999;
-    }
-    .title-info {
-      font-size: 14px;
-    }
-  }
-  .pt-5 {
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-  .pl-25 {
-    padding-left: 25px;
-    background-color: #f8f8f8;
-  }
-  .pl-30 {
-    padding-left: 30px;
-  }
-  .margin-30 {
-    margin: 0 20px 0 30px;
-  }
+}
+.debug-title {
+  height: 20px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 900;
+  padding-left: 10px;
+  margin-top: 10px;
+}
+.title-round {
+  width: 10px;
+  height: 10px;
+  border: 1px solid #999;
+  border-radius: 50%;
+  margin-right: 5px;
+  background-color: #999;
+}
+.title-info {
+  font-size: 14px;
+}
+.pt-5 {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.pl-25 {
+  padding-left: 25px;
+  background-color: #f8f8f8;
+}
+.pl-30 {
+  padding-left: 30px;
+}
+.margin-30 {
+  margin: 0 20px 0 30px;
 }
 </style>

@@ -9,7 +9,8 @@
           <span>{{ $t('Alert.Status') }}</span>
           <a-select
             id="tid_alert-status"
-            v-model="dataFilter.status.values"
+            v-model:value="dataFilter.status.values"
+            style="width: 200px"
             :options="statusOptions"
             mode="multiple"
             show-arrow />
@@ -19,7 +20,8 @@
           <span>{{ $t('Alert.PolicyLevel') }}</span>
           <a-select
             id="tid_alert-level"
-            v-model="dataFilter.policyLevel.values"
+            v-model:value="dataFilter.policyLevel.values"
+            style="width: 200px"
             :options="policyLevelOptions"
             mode="multiple"
             show-arrow />
@@ -30,7 +32,7 @@
         <span class="alert-search-date-title">{{ $t('Alert.Screen.selectDate') }}</span>
         <date-region-picker
           ref="dateRegionPicker"
-          v-model="pickerSearchDate"
+          v-model:value="pickerSearchDate"
           quick-pick="default"
           @date-change="onDateChange" />
       </a-row>
@@ -58,38 +60,42 @@
         :external-filter="dataFilterTemp"
         :auto-refresh="30 * 1000"
         @selection-change="onSelectionChange">
-        <ul slot="controller" class="composite-table-controller">
-          <li class="alert-manage-action">
-            <a-button id="tid_alert-confirm-btn" :disabled="alertActionIsDisabled" @click="alertConfirm('confirm')">
-              {{ $t('Alert.Action.confirm') }}
-            </a-button>
-          </li>
-          <li class="alert-manage-action">
-            <a-button id="tid_alert-fix-btn" :disabled="alertActionIsDisabled" @click="alertFix('fix')">
-              {{ $t('Alert.Action.fix') }}
-            </a-button>
-          </li>
-          <li class="alert-manage-action">
-            <a-button id="tid_alert-btn" :disabled="alertActionIsDisabled" @click="alertDelete('delete')">
-              {{ $t('Alert.Action.delete') }}
-            </a-button>
-          </li>
-          <a-dropdown>
-            <a-menu slot="overlay" @click="alertAction">
-              <a-menu-item v-for="action in actionsAll" :key="action">
-                {{ $t(`Alert.Action.${action}`) }}
-              </a-menu-item>
-            </a-menu>
-            <a-button style="margin-left: 8px" type="primary">
-              {{ $t('Alert.Action.actionAll') }}
-              <a-icon type="down" />
-            </a-button>
-          </a-dropdown>
-        </ul>
-        <template slot="policyLevel" slot-scope="{ policyLevel }">
+        <template #controller>
+          <ul class="composite-table-controller">
+            <li class="alert-manage-action">
+              <a-button id="tid_alert-confirm-btn" :disabled="alertActionIsDisabled" @click="alertConfirm('confirm')">
+                {{ $t('Alert.Action.confirm') }}
+              </a-button>
+            </li>
+            <li class="alert-manage-action">
+              <a-button id="tid_alert-fix-btn" :disabled="alertActionIsDisabled" @click="alertFix('fix')">
+                {{ $t('Alert.Action.fix') }}
+              </a-button>
+            </li>
+            <li class="alert-manage-action">
+              <a-button id="tid_alert-btn" :disabled="alertActionIsDisabled" @click="alertDelete('delete')">
+                {{ $t('Alert.Action.delete') }}
+              </a-button>
+            </li>
+            <a-dropdown>
+              <template #overlay>
+                <a-menu @click="alertAction">
+                  <a-menu-item v-for="action in actionsAll" :key="action">
+                    {{ $t(`Alert.Action.${action}`) }}
+                  </a-menu-item>
+                </a-menu>
+              </template>
+              <a-button style="margin-left: 8px" type="primary">
+                {{ $t('Alert.Action.actionAll') }}
+                <down-outlined />
+              </a-button>
+            </a-dropdown>
+          </ul>
+        </template>
+        <template #policyLevel="{ policyLevel }">
           <alert-table-level :level="policyLevel" />
         </template>
-        <template slot="comment" slot-scope="{ row }">
+        <template #comment="{ row }">
           <div class="ellipsis">
             <p class="alert-table-note" @click="alertEditComment(row)">
               {{ row.comment }}
@@ -99,17 +105,21 @@
             </p>
           </div>
         </template>
-        <a-dropdown slot="action" slot-scope="{ row }" :trigger="['click']">
-          <a-menu slot="overlay" @click="({ key }) => onActionCommand(key, row.id)">
-            <a-menu-item v-for="action in actions" :key="action" :disabled="canAction(row.status, action)">
-              {{ $t(`Alert.Action.${action}`) }}
-            </a-menu-item>
-          </a-menu>
-          <a-button style="margin-left: 8px">
-            {{ $t('Action') }}
-            <a-icon type="down" />
-          </a-button>
-        </a-dropdown>
+        <template #action="{ row }">
+          <a-dropdown :trigger="['click']">
+            <template #overlay>
+              <a-menu @click="({ key }) => onActionCommand(key, row.id)">
+                <a-menu-item v-for="action in actions" :key="action" :disabled="canAction(row.status, action)">
+                  {{ $t(`Alert.Action.${action}`) }}
+                </a-menu-item>
+              </a-menu>
+            </template>
+            <a-button style="margin-left: 8px">
+              {{ $t('Action') }}
+              <DownOutlined />
+            </a-button>
+          </a-dropdown>
+        </template>
       </composite-table>
     </a-row>
     <!-- dialog comment -->
@@ -117,13 +127,13 @@
   </div>
 </template>
 <script>
-import CompositeTable from '../component/composite-table'
-import DateRegionPicker from '../component/date-region-picker'
-import AlertTablelevel from '../widget/alert-policy-level-label.vue'
-import AlertDialog from '../widget/alert-dialog'
-import AlertService from '../service/alert'
-import AlertPolicyService from '../service/alert-policy'
-import Format from '../common/format'
+import Format from '@/common/format'
+import AlertService from '@/service/alert'
+import AlertPolicyService from '@/service/alert-policy'
+import CompositeTable from '@/component/composite-table.vue'
+import DateRegionPicker from '@/component/date-region-picker.vue'
+import AlertTablelevel from '@/widget/alert-policy-level-label.vue'
+import AlertDialog from './alert-manage/alert-dialog.vue'
 
 export default {
   components: {
@@ -175,24 +185,18 @@ export default {
           title: this.$t('Alert.Table.title.policyLevel'),
           align: 'left',
           sorter: true,
-          scopedSlots: {
-            customRender: 'policyLevel',
-          },
+          customSlot: true,
         },
         {
           dataIndex: 'status',
           title: this.$t('Alert.Table.title.status'),
           sorter: true,
-          customRender: (text, record) => {
-            return this.$t(`Alert.Status.${text}`)
-          },
+          customRender: ({ text }) => this.$t(`Alert.Status.${text}`),
         },
         {
           dataIndex: 'createTime',
           title: this.$t('Alert.Table.title.createTime'),
-          customRender: (text, recorde) => {
-            return Format.formatDateTime(text)
-          },
+          customRender: ({ text }) => Format.formatDateTime(text),
           sorter: true,
           defaultSortOrder: 'descend',
         },
@@ -200,7 +204,7 @@ export default {
           dataIndex: 'nodeName',
           title: this.$t('Alert.Table.title.nodeName'),
           sorter: true,
-          customRender: (text, record) => {
+          customRender: ({ text, record }) => {
             if (record.gpuId) {
               return `${text}:gpu${record.gpuId}`
             }
@@ -211,13 +215,12 @@ export default {
           dataIndex: 'comment',
           title: this.$t('Alert.Table.title.comment'),
           ellipsis: true,
-          scopedSlots: { customRender: 'comment' },
+          customSlot: true,
         },
         {
           title: this.$t('Alert.Table.title.operation'),
-          scopedSlots: {
-            customRender: 'action',
-          },
+          key: 'action',
+          customSlot: true,
         },
       ],
     }
@@ -360,7 +363,7 @@ export default {
   margin-bottom: 20px;
 }
 
-.alert-manage-condition >>> .ant-select-selection {
+.alert-manage-condition :deep(.ant-select-selection) {
   box-sizing: border-box;
   width: 188px;
 }

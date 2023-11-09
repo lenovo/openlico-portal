@@ -6,45 +6,60 @@
     :title="title"
     :form-model="formParameter"
     :form-rules="formRules"
-    :composite-height="mode == 'delete' ? 230 : 0"
     :success-message-formatter="successMessageFormatter"
     :error-message-formatter="errorMessageFormatter"
     :external-validate="externalValidate">
-    <a-form-model-item v-if="mode != 'delete'" :label="$t('JobTemplate.Parameters.Id')" prop="id">
-      <a-input id="tid_jobTemplate-parameter-id" v-model="formParameter.id"></a-input>
-    </a-form-model-item>
-    <a-form-model-item v-if="mode != 'delete'" :label="$t('JobTemplate.Parameters.Name')" prop="name">
-      <a-input id="tid_jobTemplate-parameter-name" v-model="formParameter.name"></a-input>
-    </a-form-model-item>
-    <a-form-model-item v-if="mode != 'delete'" :label="$t('JobTemplate.Parameters.Class')" prop="class">
-      <a-select id="tid_jobTemplate-parameter-class" v-model="formParameter.class">
+    <a-form-item v-if="mode != 'delete'" :label="$t('JobTemplate.Parameters.Id')" name="id">
+      <a-input
+        id="tid_jobTemplate-parameter-id"
+        v-model:value="formParameter.id"
+        :disabled="getDisabledStatus('id')"></a-input>
+    </a-form-item>
+    <a-form-item v-if="mode != 'delete'" :label="$t('JobTemplate.Parameters.Name')" name="name">
+      <a-input
+        id="tid_jobTemplate-parameter-name"
+        v-model:value="formParameter.name"
+        :disabled="getDisabledStatus('name')"></a-input>
+    </a-form-item>
+    <a-form-item v-if="mode != 'delete'" :label="$t('JobTemplate.Parameters.Class')" name="class">
+      <a-select
+        id="tid_jobTemplate-parameter-class"
+        v-model:value="formParameter.class"
+        :disabled="getDisabledStatus('class')">
         <a-select-option v-for="item in classOptions" :key="item.value" :value="item.value"
           >{{ item.label }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item v-if="mode != 'delete'" :label="$t('JobTemplate.Parameters.DataType')" prop="dataType">
-      <a-select id="tid_jobTemplate-parameter-dataType" v-model="formParameter.dataType">
+    </a-form-item>
+    <a-form-item v-if="mode != 'delete'" :label="$t('JobTemplate.Parameters.DataType')" name="dataType">
+      <a-select
+        id="tid_jobTemplate-parameter-dataType"
+        v-model:value="formParameter.dataType"
+        :disabled="getDisabledStatus('dataType')">
         <a-select-option v-for="item in dataTypeOptions" :key="item.value" :value="item.value"
           >{{ item.label }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
-    <a-form-model-item
+    </a-form-item>
+    <a-form-item
       v-if="mode != 'delete' && (formParameter.dataType == 'string' || formParameter.dataType == 'number')"
       :label="$t('JobTemplate.Parameters.Input')"
-      prop="input">
-      <a-select id="tid_jobTemplate-parameter-input" v-model="formParameter.input">
+      name="input">
+      <a-select
+        id="tid_jobTemplate-parameter-input"
+        v-model:value="formParameter.input"
+        :disabled="getDisabledStatus('input')">
         <a-select-option v-for="item in inputOptions" :key="item.value" :value="item.value"
           >{{ item.label }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
+    </a-form-item>
     <string-option
       v-if="mode != 'delete' && formParameter.dataType == 'string' && formParameter.input == 'input'"
       ref="stringOption"
       :form-parameter="formParameter"
-      :form-rules="formRules" />
+      :form-rules="formRules"
+      :get-disabled-status="getDisabledStatus" />
     <number-option
       v-if="mode != 'delete' && formParameter.dataType == 'number' && formParameter.input == 'input'"
       ref="numberOption"
@@ -70,22 +85,24 @@
       :form-parameter="formParameter"
       :show-framework="true"
       :form-rules="formRules" />
-    <a-form-model-item
+    <a-form-item
       v-if="mode != 'delete' && (formParameter.dataType == 'string' || formParameter.dataType == 'number')"
       :label="$t('JobTemplate.Parameters.Default.Value')"
-      prop="defaultValue">
-      <a-input id="tid_jobTemplate-parameter-default-value" v-model="formParameter.defaultValue"></a-input>
-    </a-form-model-item>
-    <a-form-model-item
+      name="defaultValue">
+      <a-input id="tid_jobTemplate-parameter-default-value" v-model:value="formParameter.defaultValue"></a-input>
+    </a-form-item>
+    <a-form-item
       v-if="mode != 'delete' && formParameter.dataType != 'runtime'"
-      :label="$t('JobTemplate.Parameters.Must')"
-      prop="must">
-      <a-checkbox id="tid_jobTemplate-parameter-must" v-model="formParameter.must"></a-checkbox>
-    </a-form-model-item>
+      :label="$t('JobTemplate.Parameters.Must')">
+      <a-checkbox
+        id="tid_jobTemplate-parameter-must"
+        v-model:checked="formParameter.must"
+        :disabled="getDisabledStatus('must')"></a-checkbox>
+    </a-form-item>
     <div v-if="mode == 'delete'" class="">
       <p>
         {{
-          $t('JobTemplate.Parameters.Delete.Text', {
+          $T('JobTemplate.Parameters.Delete.Text', {
             name: formParameter.name,
           })
         }}
@@ -94,15 +111,15 @@
   </composite-form-dialog>
 </template>
 <script>
-import StringOption from './parameter-dialog/string-option'
-import NumberOption from './parameter-dialog/number-option'
-import SelectOption from './parameter-dialog/select-option'
-import FileOption from './parameter-dialog/file-option'
-import FolderOption from './parameter-dialog/folder-option'
-import ModulesOption from './parameter-dialog/modules-option'
-import ContainerImageOption from './parameter-dialog/container-image-option'
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import StringOption from './parameter-dialog/string-option.vue'
+import NumberOption from './parameter-dialog/number-option.vue'
+import SelectOption from './parameter-dialog/select-option.vue'
+import FileOption from './parameter-dialog/file-option.vue'
+import FolderOption from './parameter-dialog/folder-option.vue'
+import ModulesOption from './parameter-dialog/modules-option.vue'
+import ContainerImageOption from './parameter-dialog/container-image-option.vue'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import ValidRoleFactory from '@/common/valid-role-factory'
 export default {
   components: {
     CompositeFormDialog,
@@ -285,17 +302,17 @@ export default {
     },
     successMessageFormatter(res) {
       if (this.mode === 'add') {
-        return this.$t('JobTemplate.Parameters.Add.Success', {
+        return this.$T('JobTemplate.Parameters.Add.Success', {
           name: this.formParameter.name,
         })
       }
       if (this.mode === 'edit') {
-        return this.$t('JobTemplate.Parameters.Edit.Success', {
+        return this.$T('JobTemplate.Parameters.Edit.Success', {
           name: this.formParameter.name,
         })
       }
       if (this.mode === 'delete') {
-        return this.$t('JobTemplate.Parameters.Delete.Success', {
+        return this.$T('JobTemplate.Parameters.Delete.Success', {
           name: this.formParameter.name,
         })
       }
@@ -306,13 +323,13 @@ export default {
         return this.$t('JobTemplate.Parameters.Select.Option.Nodata')
       }
       if (this.mode === 'add') {
-        return this.$t('JobTemplate.Parameters.Add.repeat', {
+        return this.$T('JobTemplate.Parameters.Add.repeat', {
           label: this.$t(`JobTemplate.Parameters.${res.name}`),
           value: res.value,
         })
       }
       if (this.mode === 'edit') {
-        return this.$t('JobTemplate.Parameters.Edit.repeat', {
+        return this.$T('JobTemplate.Parameters.Edit.repeat', {
           label: this.$t(`JobTemplate.Parameters.${res.name}`),
           value: res.value,
         })
@@ -422,12 +439,23 @@ export default {
     onMinValueChange(val) {
       // this.formRules.maxValue[3] = ValidRoleFactory.getNumberRangeRoleForText(this.$t('JobTemplate.Parameters.Max.Value'), this.formParameter.minValue, 99999999999);
     },
+    getDisabledStatus(attr) {
+      if (this.formParameter.id !== 'run_time') {
+        return false
+      }
+
+      if (attr === 'defaultValue') {
+        return false
+      }
+
+      return true
+    },
   },
 }
 </script>
 
 <style lang="css">
-.jobTemplate-parameter-add-dialog .a-form-model-item__content {
+.jobTemplate-parameter-add-dialog .a-form-item__content {
   width: 370px;
 }
 </style>

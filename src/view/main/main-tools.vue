@@ -1,121 +1,122 @@
 <template>
-  <a-drawer
-    wrap-class-name="main-tools-drawer"
-    placement="bottom"
-    :closable="false"
-    :visible="visible"
-    :mask="false"
-    :mask-closable="false"
-    :height="height">
-    <template slot="title">
-      <div class="main-tools-top" @touchmove.prevent>
+  <div class="main-tools-drawer">
+    <a-drawer
+      root-class-name="main-tools-drawer-continer"
+      placement="bottom"
+      :closable="false"
+      :open="visible"
+      :mask="false"
+      :mask-closable="false"
+      :height="height">
+      <template #title>
+        <div class="main-tools-top" @touchmove.prevent>
+          <div
+            class="main-tools-drag-row"
+            :title="$t('MainTools.Header.Title.Msg')"
+            @dblclick="onVisible({})"
+            @mousedown="onMousedown($event, 'y')">
+            <div />
+          </div>
+        </div>
+      </template>
+      <div class="main-tools-content">
         <div
-          class="main-tools-drag-row"
-          :title="$t('MainTools.Header.Title.Msg')"
-          @dblclick="onVisible({})"
-          @mousedown="onMousedown($event, 'y')">
-          <div />
-        </div>
-      </div>
-    </template>
-    <div class="main-tools-content">
-      <div
-        v-show="showFilemanager && filemanagerEnable"
-        class="main-tools-filemanager"
-        :style="'width: ' + filemanagerWidth + 'px;'">
-        <div class="main-tools-filemanager-title">
-          <span>{{ $t('MainTools.FileManage') }}</span>
-          <span
-            v-show="shellEnable && showShell"
-            class="main-tools-min"
-            style="float: right"
-            @click="onMinCkick('shell')">
-            <span class="el-erp-SystemToolsMax" />
-          </span>
-        </div>
-        <file-manager ref="mainFilemanager" :height="height - 41" :init-path="filePath" :auto-focus="false" />
-      </div>
-      <div class="main-tools-drag-col">
-        <div style="height: 32px" :style="!showFilemanager || !showShell ? 'background: #fff;' : 'background: #eee;'" />
-        <div
-          class="main-tools-drag-col-poninter"
-          :class="{
-            'main-tools-drag': showFilemanager && showShell && filemanagerEnable && shellEnable,
-            'main-filemanager-restore': !showFilemanager,
-            'main-ssh-restore': !showShell,
-          }"
-          @mousedown="onMousedown($event, 'x')"
-          @click="onRestoreClick"
-          @touchmove.prevent>
-          <a-icon v-if="!showFilemanager && filemanagerEnable" type="double-right" />
-          <a-icon v-if="!showShell && shellEnable" type="double-left" />
-        </div>
-      </div>
-      <div v-show="showShell && shellEnable" class="main-tools-ssh" :style="'width: ' + sshWidth + 'px;'">
-        <div class="main-tools-ssh-header">
-          <span class="main-tools-ssh-header-title">{{ $t('MainTools.Console') }}</span>
-          <div class="main-tools-ssh-tabs-title" style="width: 100%">
-            <div class="main-tools-ssh-tabs-title-container">
-              <span
-                v-for="item in terminalList"
-                :key="item.id"
-                class="main-tools-ssh-tabs-title-item"
-                :class="{ 'main-tools-active': item.visible }"
-                :title="item.title"
-                @click="onTerminalTabclick(item.id)">
-                <span class="main-tools-ssh-tabs-item-title">{{ item.hostname }}</span>
-                <a-icon
-                  class="main-tools-ssh-tabs-item-close"
-                  type="close"
-                  :title="$t('Action.Close')"
-                  @click="onCloseSSHClick($event, item)" />
-                <i class="main-tools-ssh-tabs-item-border" />
-              </span>
-            </div>
-            <span v-if="terminalList.length < maxConnected" class="main-tools-ssh-item-add" @click="onAddSSHClick">
-              <a-icon type="plus" />
+          v-show="showFilemanager && filemanagerEnable"
+          class="main-tools-filemanager"
+          :style="'width: ' + filemanagerWidth + 'px;'">
+          <div class="main-tools-filemanager-title">
+            <span>{{ $t('MainTools.FileManage') }}</span>
+            <span
+              v-show="shellEnable && showShell"
+              class="main-tools-min"
+              style="float: right"
+              @click="onMinCkick('shell')">
+              <span class="el-erp-SystemToolsMax" />
             </span>
           </div>
-          <span
-            v-show="filemanagerEnable && showFilemanager"
-            class="main-tools-min"
-            style="padding: 4px 15px 0 0"
-            @click="onMinCkick('file')">
-            <span class="el-erp-SystemToolsMax" style="font-weight: bold" />
-          </span>
-          <div class="main-tools-ssh-header-border" />
+          <file-manager ref="mainFilemanager" :height="height - 41" :init-path="filePath" :auto-focus="false" />
         </div>
-        <div class="main-tools-ssh-content" :style="'height: ' + (height - 41) + 'px;'">
-          <div v-for="item in terminalList" v-show="item.visible" :id="item.id" :key="item.id" style="height: 100%">
-            <main-tools-terminal
-              ref="mainToolsTerminal"
-              :hostname="item.hostname"
-              :type="item.type"
-              @destroyTerminal="onCloseSSHClick('', item)" />
+        <div class="main-tools-drag-col">
+          <div
+            style="height: 32px"
+            :style="!showFilemanager || !showShell ? 'background: #fff;' : 'background: #eee;'" />
+          <div
+            class="main-tools-drag-col-poninter"
+            :class="{
+              'main-tools-drag': showFilemanager && showShell && filemanagerEnable && shellEnable,
+              'main-filemanager-restore': !showFilemanager,
+              'main-ssh-restore': !showShell,
+            }"
+            @mousedown="onMousedown($event, 'x')"
+            @click="onRestoreClick"
+            @touchmove.prevent>
+            <double-right-outlined v-if="!showFilemanager && filemanagerEnable" />
+            <double-left-outlined v-if="!showShell && shellEnable" />
           </div>
-          <div v-if="!terminalList.length" class="main-tools-ssh-default-diaplay">
-            <div>
-              <img src="static/img/system/main/no_connected.png" style="width: 50px; height: 50px" />
-              <p style="color: #bbb">
-                {{ $t('MainTools.NoConnect') }}
-              </p>
-              <a-button @click="onAddSSHClick">
-                {{ $t('Action.Connect') }}
-              </a-button>
+        </div>
+        <div v-show="showShell && shellEnable" class="main-tools-ssh" :style="'width: ' + sshWidth + 'px;'">
+          <div class="main-tools-ssh-header">
+            <span class="main-tools-ssh-header-title">{{ $t('MainTools.Console') }}</span>
+            <div class="main-tools-ssh-tabs-title" style="width: 100%">
+              <div class="main-tools-ssh-tabs-title-container">
+                <span
+                  v-for="item in terminalList"
+                  :key="item.id"
+                  class="main-tools-ssh-tabs-title-item"
+                  :class="{ 'main-tools-active': item.visible }"
+                  :title="item.title"
+                  @click="onTerminalTabclick(item.id)">
+                  <span class="main-tools-ssh-tabs-item-title">{{ item.hostname }}</span>
+                  <close-outlined @click="onCloseSSHClick($event, item)" />
+                  <i class="main-tools-ssh-tabs-item-border" />
+                </span>
+              </div>
+              <span v-if="terminalList.length < maxConnected" class="main-tools-ssh-item-add" @click="onAddSSHClick">
+                <plus-outlined />
+              </span>
+            </div>
+            <span
+              v-show="filemanagerEnable && showFilemanager"
+              class="main-tools-min"
+              style="padding: 4px 15px 0 0"
+              @click="onMinCkick('file')">
+              <span class="el-erp-SystemToolsMax" style="font-weight: bold" />
+            </span>
+            <div class="main-tools-ssh-header-border" />
+          </div>
+          <div class="main-tools-ssh-content" :style="'height: ' + (height - 41) + 'px;'">
+            <div v-for="item in terminalList" v-show="item.visible" :id="item.id" :key="item.id" style="height: 100%">
+              <main-tools-terminal
+                ref="mainToolsTerminal"
+                :hostname="item.hostname"
+                :type="item.type"
+                @destroy-terminal="onCloseSSHClick('', item)" />
+            </div>
+            <div v-if="!terminalList.length" class="main-tools-ssh-default-diaplay">
+              <div>
+                <img src="/static/img/system/main/no_connected.png" style="width: 50px; height: 50px" />
+                <p style="color: #bbb">
+                  {{ $t('MainTools.NoConnect') }}
+                </p>
+                <a-button @click="onAddSSHClick">
+                  {{ $t('Action.Connect') }}
+                </a-button>
+              </div>
             </div>
           </div>
         </div>
+        <ssh-action-dialog ref="sshActionDialog" />
       </div>
-      <ssh-action-dialog ref="sshActionDialog" />
-    </div>
-  </a-drawer>
+    </a-drawer>
+  </div>
 </template>
 <script>
-import FileManager from './../../component/file-manager.vue'
+import FileManager from '@/component/file-manager.vue'
 import SshActionDialog from './main-tools/ssh-action-dialog.vue'
 import MainToolsTerminal from './main-tools/main-tools-terminal.vue'
 import { v4 as uuidv4 } from 'uuid'
-import AccessService from '../../service/access'
+import AccessService from '@/service/access'
+import { h } from 'vue'
 
 export default {
   components: {
@@ -174,7 +175,7 @@ export default {
     window.addEventListener('onMainToolsVisible', this.onVisible)
     window.addEventListener('resize', this.windowResize)
   },
-  beforeDestroy() {
+  beforeUnmount() {
     window.removeEventListener('mousemove', this.getResizePosition)
     window.removeEventListener('mouseup', this.onMouseup)
     window.removeEventListener('onMainToolsVisible', this.onVisible)
@@ -338,7 +339,7 @@ export default {
         return i
       })
       this.$nextTick(() => {
-        $jq(`#${id} .termwindow .focusBtn`).click()
+        $(`#${id} .termwindow .focusBtn`).click()
       })
     },
     onCloseSSHClick(e, node) {
@@ -347,7 +348,14 @@ export default {
         e.preventDefault()
         this.$confirm({
           centered: true,
-          title: this.$t('MainTools.SSH.Close.Msg', { hostname: node.hostname }),
+          zIndex: 3000,
+          title: h(
+            'div',
+            {
+              style: 'color: rgba(0,0,0,.85);font-size: 14px;font-weight: 400;',
+            },
+            this.$T('MainTools.SSH.Close.Msg', { hostname: node.hostname }),
+          ),
           onOk: () => {
             this.closeSSH(node)
           },
@@ -371,7 +379,7 @@ export default {
             i.resize()
           })
         }
-        if (this.$refs.mainFilemanager && $jq('.lico-fileManager').elfinder('instance')) {
+        if (this.$refs.mainFilemanager && $('.lico-fileManager').elfinder('instance')) {
           this.$refs.mainFilemanager.resize()
         }
         if (this.filemanagerEnable) {
@@ -385,15 +393,7 @@ export default {
   },
 }
 </script>
-<style scoped>
-.main-tools-drawer >>> .ant-drawer-content,
-.main-tools-drawer >>> .ant-drawer-wrapper-body {
-  overflow: unset;
-}
-.main-tools-drawer >>> .ant-drawer-header,
-.main-tools-drawer >>> .ant-drawer-body {
-  padding: 0;
-}
+<style lang="css" scoped>
 .main-tools-top {
   padding: 2px 0;
   background: #eee;
@@ -530,7 +530,7 @@ export default {
   margin: auto;
   text-align: center;
 }
-.main-tools-ssh-content >>> .termwindow .grip {
+.main-tools-ssh-content :deep(.termwindow .grip) {
   display: none;
 }
 </style>

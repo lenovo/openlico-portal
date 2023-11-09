@@ -1,10 +1,10 @@
 <template>
-  <div id="tid_node_ib_chart" ref="innerNodeIBChart" class="node-monitor-chart-style" />
+  <div id="tid_node_ib_chart" ref="container" class="node-monitor-chart-style" />
 </template>
 <script>
-import * as ECharts from 'echarts'
-import Format from '../../../common/format'
+import Format from '@/common/format'
 export default {
+  inject: ['resize'],
   props: ['nodeId', 'interval', 'initData', 'formatTime'],
   data() {
     return {
@@ -26,27 +26,22 @@ export default {
       this.clear()
       this.refresh()
     },
+    resize(val) {
+      this.resizeChart()
+    },
   },
   mounted() {
     this.$nextTick(() => {
       this.init()
-      window.removeEventListener('resize', this.resizeChart)
-      window.addEventListener('resize', this.resizeChart)
-      window.gApp.$watch('isCollapse', (newValue, oldValue) => {
-        setTimeout(() => {
-          this.resizeChart()
-        }, 300)
-      })
     })
   },
-  destroyed() {
+  unmounted() {
     clearTimeout(this.innerNodeId)
-    window.removeEventListener('resize', this.resizeChart)
     this.innerNodeId = null
   },
   methods: {
     init() {
-      this.innerChart = ECharts.init(this.$refs.innerNodeIBChart, window.gApp.echartsTheme.common)
+      this.$chart.init(this.$refs.container, window.gApp.echartsTheme.common)
       const options = {
         tooltip: {
           trigger: 'axis',
@@ -99,7 +94,7 @@ export default {
         },
         series: [],
       }
-      this.innerChart.setOption(options)
+      this.$chart.getInstanceByDom(this.$refs.container).setOption(options)
       this.refresh()
     },
     parseIBValue(data, type) {
@@ -121,7 +116,7 @@ export default {
       })
       const series = ['In', 'Out'].map(i => {
         return {
-          name: pointer.$t(`Monitor.Net.${i}`),
+          name: pointer.$T(`Monitor.Net.${i}`),
           type: 'line',
           symbol: 'none',
           data: seriesData[i].map(item => {
@@ -143,7 +138,7 @@ export default {
           showMinLabel: this.initData.name === 'getNodeDataByMonth',
         },
       }
-      this.innerChart.setOption({ xAxis, yAxis: { max }, series })
+      this.$chart.getInstanceByDom(this.$refs.container).setOption({ xAxis, yAxis: { max }, series })
       this.innerNodeId = setTimeout(this.refresh, this.interval)
     },
     refresh() {
@@ -159,14 +154,14 @@ export default {
       )
     },
     clear() {
-      this.innerChart.setOption({
+      this.$chart.getInstanceByDom(this.$refs.container).setOption({
         xAxis: {},
         series: [],
       })
       this.refresh()
     },
     resizeChart() {
-      this.innerChart.resize()
+      this.$chart.getInstanceByDom(this.$refs.container).resize()
     },
   },
 }

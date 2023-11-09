@@ -3,7 +3,7 @@
     <div class="table-style b-w p-20" style="height: 500px; text-align: center">
       <div>
         <div style="margin-top: 100px">
-          <img src="static/img/system/main/operation-log.svg" class="placeholder-img" />
+          <img src="/static/img/system/main/operation-log.svg" class="placeholder-img" />
         </div>
         <div style="color: #333333; font-size: 16px; margin-bottom: 10px">
           {{ $t('Menu.OperationLogManage') }}
@@ -11,7 +11,7 @@
         <date-region-picker
           id="tid_report-time-picker"
           ref="dateSelect"
-          v-model="daterange"
+          v-model:value="daterange"
           quick-pick=""
           style="margin: 0"
           @date-change="onDateChange" />
@@ -25,8 +25,8 @@
 </template>
 
 <script>
-import DateRegionPicker from '../component/date-region-picker'
-import ReportDialog from './report/report-dialog'
+import DateRegionPicker from '@/component/date-region-picker.vue'
+import ReportDialog from './report/report-dialog.vue'
 export default {
   components: {
     'date-region-picker': DateRegionPicker,

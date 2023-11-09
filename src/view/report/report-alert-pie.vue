@@ -1,13 +1,13 @@
 <template>
-  <div ref="innerChart" style="width: 100%; height: 500px" />
+  <div ref="innerChart" style="width: 100%; height: 500px"></div>
 </template>
 <script>
-import Format from './../../common/format'
-import * as EChart from 'echarts'
+import Format from '@/common/format'
 
 export default {
-  components: {},
+  inject: ['resize'],
   props: ['dataReportAlertPie'],
+  emits: ['clickPie'],
   data() {
     return {
       pieObject: {},
@@ -18,29 +18,27 @@ export default {
     dataReportAlertPie: {
       handler: function (val, oldVal) {
         this.p = val
-        this.pieObject.resize()
+        this.onResize()
         this.draw()
       },
       deep: true,
     },
+    resize(val) {
+      this.onResize()
+    },
   },
   mounted() {
-    const self = this
+    const chart = this.$chart.init(this.$refs.innerChart, window.gApp.echartsTheme.alert)
     this.$nextTick(function () {
-      this.pieObject = EChart.init(this.$refs.innerChart, window.gApp.echartsTheme.alert)
-      this.pieObject.on('click', function (para) {
-        self.$emit('clickPie', para)
+      chart.on('click', para => {
+        this.$emit('clickPie', para)
       })
       this.draw()
-      window.addEventListener('resize', this.onResize)
     })
-  },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.onResize)
   },
   methods: {
     onResize() {
-      this.pieObject.resize()
+      this.$chart.getInstanceByDom(this.$refs.innerChart).resize()
     },
     draw: function () {
       const self = this
@@ -84,7 +82,7 @@ export default {
           },
         ],
       }
-      this.pieObject.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.innerChart).setOption(option)
     },
   },
 }

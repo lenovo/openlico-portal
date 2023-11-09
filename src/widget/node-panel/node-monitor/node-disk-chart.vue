@@ -3,9 +3,9 @@
 </template>
 
 <script>
-import Format from './../../../common/format'
-import * as ECharts from 'echarts'
+import Format from '@/common/format'
 export default {
+  inject: ['resize'],
   props: ['node'],
   data() {
     return {
@@ -24,27 +24,20 @@ export default {
       },
       deep: true,
     },
+    resize(val) {
+      this.resizeChart()
+    },
   },
   mounted() {
     this.$nextTick(() => {
-      this.innerChart = ECharts.init(this.$refs.container, window.gApp.echartsTheme.common)
-      window.removeEventListener('resize', this.resizeChart)
-      window.addEventListener('resize', this.resizeChart)
+      this.$chart.init(this.$refs.container, window.gApp.echartsTheme.common)
       this.resizeChart()
       this.init()
-      window.gApp.$watch('isCollapse', (newValue, oldValue) => {
-        setTimeout(() => {
-          this.resizeChart()
-        }, 300)
-      })
     })
-  },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.resizeChart)
   },
   methods: {
     resizeChart() {
-      this.innerChart.resize()
+      this.$chart.getInstanceByDom(this.$refs.container).resize()
     },
 
     init() {
@@ -121,7 +114,7 @@ export default {
           },
         ],
       }
-      this.innerChart.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.container).setOption(option)
     },
   },
 }

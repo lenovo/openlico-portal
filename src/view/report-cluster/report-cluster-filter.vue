@@ -5,7 +5,7 @@
       <date-region-picker
         id="tid_report-time-picker"
         ref="dateSelect"
-        v-model="defaultDaterange"
+        v-model:value="defaultDaterange"
         quick-pick="default"
         @date-change="onDateChange" />
     </a-col>
@@ -26,24 +26,27 @@
     </a-col>
     <a-col v-if="arch == 'host'" :lg="12" :md="24" class="m-t-20">
       <span class="report-cluster-filter-span">{{ $t('Report.Filter.Queue') }}</span>
-      <multi-queue-selector id="tid_report-filter-queue" v-model="filterQueue.values" :placeholder="$t('Select.All')" />
+      <multi-queue-selector
+        id="tid_report-filter-queue"
+        v-model:value="filterQueue.values"
+        :placeholder="$t('Select.All')" />
     </a-col>
     <a-col :span="24" class="m-t-20" style="display: inline-block; line-height: 32px">
       <span class="report-cluster-filter-span">{{ $t('Report.Filter.WaitingTime') }}</span>
       <a-input
-        v-model="waitingTime"
+        v-model:value="waitingTime"
         style="width: 200px"
         :addon-after="$t('Report.Filter.WaitingTime.Unit')"
         @blur="onWaitingTime" />
       <a-popover placement="right" trigger="hover" width="350" :content="$t('Report.Filter.WaitingTime.Help')">
-        <a-icon type="question-circle" class="cluster-report-waitingTime-help" style="color: #1890ff" />
+        <QuestionCircleOutlined class="cluster-report-waitingTime-help" style="color: #1890ff" />
       </a-popover>
     </a-col>
     <a-col :span="24">
       <hr class="halving-line" style="width: 100%; margin: 20px 0" />
       <div>
         <span class="report-cluster-filter-span" />
-        <a-button type="primary" :disabled="disabled" @click="onPreviewClick">
+        <a-button type="primary" :disabled="disabled || loading" @click="onPreviewClick">
           {{ $t('Report.Button.Preview') }}
         </a-button>
       </div>
@@ -51,10 +54,10 @@
   </a-row>
 </template>
 <script>
-import DateRegionPicker from '../../component/date-region-picker'
-import UserSelect from '../../widget/multi-user-selector'
-import QueueSelect from '../../widget/multi-queue-selector'
-import AccessService from '../../service/access'
+import AccessService from '@/service/access'
+import DateRegionPicker from '@/component/date-region-picker.vue'
+import UserSelect from '@/widget/multi-user-selector.vue'
+import QueueSelect from '@/widget/multi-queue-selector.vue'
 
 export default {
   components: {
@@ -62,6 +65,8 @@ export default {
     'multi-user-selector': UserSelect,
     'multi-queue-selector': QueueSelect,
   },
+  props: ['noData', 'loading'],
+  emits: ['input', 'update:value', 'filter-change'],
   data() {
     const arch = AccessService.getSchedulerArch()
     return {
@@ -118,6 +123,12 @@ export default {
     },
     onPreviewClick() {
       this.$emit('input', {
+        date: this.filterDate,
+        user: this.filterUser,
+        queue: this.filterQueue,
+        waitingTime: this.waitingTime,
+      })
+      this.$emit('update:value', {
         date: this.filterDate,
         user: this.filterUser,
         queue: this.filterQueue,

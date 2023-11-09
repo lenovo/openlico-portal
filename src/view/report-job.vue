@@ -4,7 +4,7 @@
       <a-row style="margin-bottom: 20px">
         <a-col :span="12" class="report-job-col">
           <span class="report-job-filter-label">{{ $t('Report.Label.Type') }}</span>
-          <a-radio-group v-model="reportFilterForm.job_type" class="reportFilter-button" button-style="solid">
+          <a-radio-group v-model:value="reportFilterForm.job_type" class="reportFilter-button" button-style="solid">
             <a-radio-button id="tid_report-filter-type-job" value="job">
               {{ $t('Report.Label.Type.Job') }}
             </a-radio-button>
@@ -34,7 +34,7 @@
           <span class="report-job-filter-label">{{ $t('Report.Label.BillGroup') }}</span>
           <a-select
             id="tid_report-filter-billgroup-select"
-            v-model="reportFilterForm.billGroup"
+            v-model:value="reportFilterForm.billGroup"
             style="width: 300px"
             mode="multiple"
             :placeholder="$t('Select.All')">
@@ -50,7 +50,7 @@
           <date-region-picker
             id="tid_report-time-picker"
             ref="dateSelect"
-            v-model="daterange"
+            v-model:value="daterange"
             quick-pick="default"
             @date-change="onDateChange" />
         </a-col>
@@ -62,36 +62,28 @@
           <a-button
             id="tid_report-submit"
             type="primary"
-            :disabled="isOK()"
+            :disabled="disabled"
             style="margin-right: 20px"
             @click="submit()">
             {{ $t('Report.Button.Preview') }}
           </a-button>
-          <a-button :disabled="isOK()" @click="download()">
+          <a-button :disabled="daterange.includes('')" @click="download()">
             {{ $t('Report.Button.Submit') }}
           </a-button>
         </a-col>
       </a-row>
     </div>
     <report-dialog ref="ReportDialog" />
-    <div v-show="isShow" class="nodata">
-      <div style="margin-top: 160px">
-        <img src="/static/img/system/main/nodata.png" style="height: 60px; width: 80px" />
-      </div>
-      <div style="margin-top: 20px; color: #ccc; font-size: 16px">
-        {{ $t('No.Data') }}
-      </div>
-    </div>
-    <report-preview v-show="show" ref="reportPreview" :preview="preview" @onDataChange="onPreviewChange" />
+    <report-preview v-if="show" ref="reportPreview" v-model:loading="loading" :preview="preview" />
   </div>
 </template>
 <script>
-import AccessService from '../service/access'
-import BillGroupService from '../service/bill-group'
-import DateRegionPicker from '../component/date-region-picker'
-import MultiUserSelector from '../widget/multi-user-selector'
-import ReportDialog from './report/report-dialog'
-import ReportPreview from './report-job/report-preview'
+import AccessService from '@/service/access'
+import BillGroupService from '@/service/bill-group'
+import DateRegionPicker from '@/component/date-region-picker.vue'
+import MultiUserSelector from '@/widget/multi-user-selector.vue'
+import ReportDialog from './report/report-dialog.vue'
+import ReportPreview from './report-job/report-preview.vue'
 
 export default {
   components: {
@@ -103,7 +95,7 @@ export default {
   data() {
     return {
       show: false,
-      isShow: false,
+      loading: false,
       daterange: ['', ''],
       billOption: [],
       preview: {},
@@ -116,28 +108,30 @@ export default {
         },
         billGroup: [],
       },
-      isOK: function () {
-        if (this.daterange.includes('')) {
-          return true
-        } else {
-          return false
-        }
-      },
+      // isOK: function () {
+      //   if (this.daterange.includes('')) {
+      //     return true
+      //   } else {
+      //     return false
+      //   }
+      // },
     }
   },
   computed: {
     multiUserFilter() {
-      if (this.arch === 'host' && this.job_type === 'user') {
+      if (this.arch === 'host' && this.reportFilterForm.job_type === 'user') {
         return 'username'
       }
       return 'username,usergroup,billinggroup'
+    },
+    disabled() {
+      return this.loading || this.daterange.includes('')
     },
   },
   watch: {
     reportFilterForm: {
       handler: function () {
         this.show = false
-        this.isShow = false
       },
       deep: true,
     },
@@ -176,7 +170,7 @@ export default {
     },
     submit() {
       const twoColumns = this.reportFilterForm.job_type !== 'job'
-      this.preview = {
+      const preview = {
         target: 'job',
         twoColumns,
         start_time: new Date(this.daterange[0]).valueOf(),
@@ -185,19 +179,12 @@ export default {
         user: this.reportFilterForm.user,
         billgroup: this.reportFilterForm.billGroup,
       }
+      this.preview = preview
+      this.show = true
     },
     onDateChange(val) {
       this.daterange = val
       this.show = false
-    },
-    onPreviewChange(data) {
-      if (data.length < 1) {
-        this.show = false
-        this.isShow = true
-      } else {
-        this.show = true
-        this.isShow = false
-      }
     },
   },
 }

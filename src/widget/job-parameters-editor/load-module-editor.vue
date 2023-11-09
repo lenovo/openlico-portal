@@ -2,22 +2,25 @@
   <div class="load-module-editor">
     <a-input-group compact>
       <a-select
-        v-model="collection"
+        v-model:value="collection"
         style="width: 67%"
         mode="multiple"
+        :open="open"
         :filter-option="filterOption"
         :placeholder="$t('JobTemplate.LoadModule.DefaultCollection')"
-        @change="onSelectChange">
-        <div slot="clearIcon">
-          <a-icon type="menu" />
-        </div>
+        @change="onSelectChange"
+        @click="open = !open"
+        @blur="open = false">
+        <template #clearIcon>
+          <menu-outlined />
+        </template>
         <a-select-option
           v-for="option in options"
           :key="String(option.id)"
           :value="option.id"
           :disabled="collection.length == maxSelected && !collection.includes(option.id)">
           <a-popover v-if="popoverEnable(option)">
-            <template slot="content">
+            <template #content>
               <span style="margin-right: 10px">{{ option.name }}</span>
               <a-button type="link" style="padding: 0" @click="viewRuntimeDetail(option.id, $event)">
                 {{ $t('Runtime.Detail') }}
@@ -52,12 +55,12 @@
   </div>
 </template>
 <script>
-import RuntimeService from '../../service/runtime-manage'
-import RuntimeViewDialog from './load-module-detail'
+import RuntimeService from '@/service/runtime-manage'
+import RuntimeViewDialog from './load-module-detail.vue'
 
 export default {
   components: {
-    'runtime-view-dialog': RuntimeViewDialog,
+    RuntimeViewDialog,
   },
   props: {
     value: {},
@@ -66,10 +69,12 @@ export default {
       default: 10,
     },
   },
+  emits: ['input', 'update:value'],
   data() {
     return {
       collection: [],
       options: [],
+      open: false,
     }
   },
   computed: {
@@ -99,10 +104,12 @@ export default {
         value = null
       }
       this.$emit('input', value)
+      this.$emit('update:value', value)
     },
     clearSelected() {
       this.collection = []
       this.$emit('input', null)
+      this.$emit('update:value', null)
     },
     initSelected() {
       let selected = null
@@ -191,25 +198,28 @@ export default {
   background: #fafafa;
   text-align: center;
 }
-.load-module-editor >>> .ant-select-selection-selected-value {
+.load-module-editor :deep(.ant-select-selection-selected-value) {
   width: 100%;
 }
-.load-module-editor >>> .ant-select-selection__choice,
-.load-module-editor >>> .ant-select-dropdown-menu-item {
+.load-module-editor :deep(.ant-select-selection__choice),
+.load-module-editor :deep(.ant-select-dropdown-menu-item) {
   overflow: unset;
 }
 .ant-select-selection__choice .jobtemplate-runitme-item-type {
   display: none;
 }
-.load-module-editor .ant-select-dropdown-menu-item-active:hover .jobtemplate-runitme-item-type {
+.load-module-editor :deep(.ant-select-item-option-active:hover) .jobtemplate-runitme-item-type {
   color: #6fbfff !important;
   display: inline-block;
 }
-.load-module-editor >>> .ant-popover-content {
+.load-module-editor :deep(.ant-popover-content) {
   width: calc(100% + 25px);
 }
-.load-module-editor >>> .ant-popover-inner-content {
+.load-module-editor :deep(.ant-popover-inner-content) {
   padding: 5px 10px;
+}
+.load-module-editor :deep(.ant-select-selection-item) {
+  overflow: unset;
 }
 /* .ant-select-dropdown-menu-item-active:hover .jobtemplate-runitme-item-type {
     color: #6fbfff !important;

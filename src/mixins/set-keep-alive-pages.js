@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Utils from '../common/utils'
+import Utils from '@/common/utils'
 export default function (componentName, autoRefreshComponentRef) {
   return {
     data() {

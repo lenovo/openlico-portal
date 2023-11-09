@@ -1,8 +1,9 @@
 <template>
   <div id="tid_dashboard-joblist" class="b-w p-20 height--100">
-    <a-row class="">
+    <a-row style="display: flex; justify-content: space-between">
+      <span class="dashboard-card-title">{{ $t('Dashboard.Job.List.Title') }}</span>
       <a-radio-group
-        v-model="jobStatus"
+        v-model:value="jobStatus"
         style="float: right"
         size="small"
         button-style="solid"
@@ -18,7 +19,6 @@
           {{ $t(`Dashboard.JobList.Status.waiting`) }}
         </a-radio-button>
       </a-radio-group>
-      <span class="dashboard-card-title">{{ $t('Dashboard.Job.List.Title') }}</span>
     </a-row>
     <div class="dashboard-joblist-title">
       <a-row class="dashboard-joblist-row">
@@ -54,11 +54,12 @@
   </div>
 </template>
 <script>
-import Format from './../../common/format'
-import JobService from './../../service/job'
-import AccessService from './../../service/access'
+import Format from '@/common/format'
+import JobService from '@/service/job'
+import AccessService from '@/service/access'
 export default {
   props: ['initData', 'status'],
+  emits: ['onStatusChange'],
   data() {
     return {
       notStaff: this.$store.state.auth.access !== 'staff',
@@ -103,36 +104,30 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
+.dashboard-card-title {
+  line-height: 24px;
+}
 .dashboard-joblist-title {
-  font-weight: bold;
+  font-weight: 500;
   font-size: 12px;
 }
-.dashboard-joblist-col-left {
-  float: left;
-}
-/* .dashboard-joblist-col-left a {
-    color: #666;
-} */
-.dashboard-joblist-col-right {
-  float: right;
-}
-/* .dashboard-joblist-row {
-    border-bottom: 1px solid #eeeeee;
-} */
 .dashboard-joblist-line {
   height: 32px;
   line-height: 32px;
 }
 .dashboard-joblist-content {
   font-size: 12px;
-  /* color: #666; */
 }
 .defaultCursor {
   cursor: default;
 }
 #tid_dashboard-joblist {
   width: 100%;
+}
+.dashboard-joblist-row {
+  display: flex;
+  justify-content: space-between;
 }
 .dashboard-joblist-job-name {
   width: 80%;

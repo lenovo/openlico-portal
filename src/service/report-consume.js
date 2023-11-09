@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import Request from '../request/https'
+import Format from '../common/format'
 import ErrorHandler from '../common/error-handler'
-import Format from './../common/format'
+import Request from '../request/https'
 import download from './download'
 
 const gResource = window.gApp.$store.getters['settings/getGResource']
@@ -29,25 +29,9 @@ class LatestDate {
 
   static parseFromRestApi(jsonObj) {
     const date = new LatestDate()
-    date._latestDate = jsonObj.latest_daily
-    date._latestMonth = jsonObj.latest_monthly
+    date.latestDate = jsonObj.latest_daily
+    date.latestMonth = jsonObj.latest_monthly
     return date
-  }
-
-  get _latestDate() {
-    return this.latestDate
-  }
-
-  set _latestDate(latestDate) {
-    this.latestDate = latestDate
-  }
-
-  get _latestMonth() {
-    return this.latestMonth
-  }
-
-  set _latestMonth(latestMonth) {
-    this.latestMonth = latestMonth
   }
 }
 
@@ -60,9 +44,9 @@ class QueueCost {
 
   static parseFromRestApi(jsonObj) {
     const queueCost = new QueueCost()
-    queueCost._queueName = jsonObj.queue
-    queueCost._cpuCost = jsonObj.cpu_costs
-    queueCost._memCost = jsonObj.mem_costs
+    queueCost.queueName = jsonObj.queue
+    queueCost.cpuCost = jsonObj.cpu_costs
+    queueCost.memCost = jsonObj.mem_costs
 
     gResource.forEach(item => {
       if (Object.prototype.hasOwnProperty.call(jsonObj, item.code)) {
@@ -71,30 +55,6 @@ class QueueCost {
     })
 
     return queueCost
-  }
-
-  get _queueName() {
-    return this.queueName
-  }
-
-  set _queueName(queueName) {
-    this.queueName = queueName
-  }
-
-  get _cpuCost() {
-    return this.cpuCost
-  }
-
-  set _cpuCost(cpuCost) {
-    this.cpuCost = cpuCost
-  }
-
-  get _memCost() {
-    return this.memCost
-  }
-
-  set _memCost(memCost) {
-    this.memCost = memCost
   }
 }
 
@@ -106,25 +66,9 @@ class StorageCost {
 
   static parseFromRestApi(jsonObj) {
     const storageCost = new StorageCost()
-    storageCost._path = jsonObj.path
-    storageCost._cost = jsonObj.cost
+    storageCost.path = jsonObj.path
+    storageCost.cost = jsonObj.cost
     return storageCost
-  }
-
-  get _path() {
-    return this.path
-  }
-
-  set _path(path) {
-    this.path = path
-  }
-
-  get _cost() {
-    return this.cost
-  }
-
-  set _cost(cost) {
-    this.cost = cost
   }
 }
 
@@ -137,44 +81,20 @@ class DailyBill {
 
   static parseFromRestApi(jsonObj) {
     const dailyBill = new DailyBill()
-    dailyBill._date = jsonObj.date
+    dailyBill.date = jsonObj.date
     const queues = []
     for (let i = 0; i < jsonObj.cost.queue.length; i++) {
       queues.push(QueueCost.parseFromRestApi(jsonObj.cost.queue[i]))
     }
-    dailyBill._queueCost = queues
+    dailyBill.queueCost = queues
 
     const storages = []
     for (let i = 0; i < jsonObj.cost.storage.length; i++) {
       storages.push(StorageCost.parseFromRestApi(jsonObj.cost.storage[i]))
     }
-    dailyBill._storageCost = storages
+    dailyBill.storageCost = storages
 
     return dailyBill
-  }
-
-  get _date() {
-    return this.date
-  }
-
-  set _date(date) {
-    this.date = date
-  }
-
-  get _queueCost() {
-    return this.queueCost
-  }
-
-  set _queueCost(queueCost) {
-    this.queueCost = queueCost
-  }
-
-  get _storageCost() {
-    return this.storageCost
-  }
-
-  set _storageCost(storageCost) {
-    this.storageCost = storageCost
   }
 }
 

@@ -20,7 +20,7 @@ import Collection from '../common/collection'
 import Format from '../common/format'
 import download from './download'
 import AccessService from './access'
-import CategorySortMap from 'static/settings/system-template-categories.json'
+// import CategorySortMap from '/static/settings/system-template-categories.json'
 
 // const JobTemplateTypeEnums = ['system', 'private', 'public']
 
@@ -38,7 +38,7 @@ const MigOption = {
   class: 'resource',
   dataType: 'mig',
   selectOption: [],
-  visible: 'context.gpu_per_node>0&&(this.migOptions&&this.migOptions.length>0 || context.gpu_resource_name.length>0)',
+  visible: 'context.gpu_per_node>0&&(migOptions&&migOptions.length>0 || context.gpu_resource_name.length>0)',
   must: false,
 }
 
@@ -56,23 +56,25 @@ class JobTemplate {
     this.scheduler = ''
     this.helpUrl = ''
     this.display = false
+    this.entrance = ''
   }
 
   static parseFromStatic(jsonObj) {
     const jobTemplate = new JobTemplate()
-    jobTemplate._code = jsonObj.code
-    jobTemplate._name = jsonObj.name
-    jobTemplate._index = jsonObj.index
-    jobTemplate._logo = jsonObj.logoUrl
-    jobTemplate._description = jsonObj.description
-    jobTemplate._category = jsonObj.category.split(',')
-    jobTemplate._featureCode = jsonObj.featureCode
-    jobTemplate._type = 'system'
-    jobTemplate._display = jsonObj.display
-    jobTemplate._username = ''
+    jobTemplate.code = jsonObj.code
+    jobTemplate.name = jsonObj.name
+    jobTemplate.index = jsonObj.index
+    jobTemplate.logo = jsonObj.logoUrl
+    jobTemplate.description = jsonObj.description
+    jobTemplate.category = jsonObj.category.split(',')
+    jobTemplate.featureCode = jsonObj.featureCode
+    jobTemplate.type = 'system'
+    jobTemplate.display = jsonObj.display
+    jobTemplate.username = ''
+    jobTemplate.entrance = jsonObj.entrance
     if (jsonObj.help) {
       const lang = window.gApp.$i18n.locale
-      jobTemplate._helpUrl = `/jobtemplates/help/?code=${jsonObj.code}&language=${lang}`
+      jobTemplate.helpUrl = `/jobtemplates/help/?code=${jsonObj.code}&language=${lang}`
     }
     if (jsonObj.hypervisor) {
       jobTemplate.hypervisor = jsonObj.hypervisor
@@ -101,7 +103,7 @@ class JobTemplate {
       jobTemplate.templateFileContent = jsonObj.template_file
     }
     if (jsonObj.scheduler) {
-      jobTemplate._scheduler = jsonObj.scheduler
+      jobTemplate.scheduler = jsonObj.scheduler
     }
     if (jsonObj.subTemplates) {
       jobTemplate.subTemplates = jsonObj.subTemplates
@@ -113,15 +115,15 @@ class JobTemplate {
 
   static parseFromRestApi(jsonObj) {
     const jobTemplate = new JobTemplate()
-    jobTemplate._code = String(jsonObj.id)
-    jobTemplate._name = jsonObj.name
-    jobTemplate._index = jsonObj.index
-    jobTemplate._logo = jsonObj.logo
-    jobTemplate._description = jsonObj.desc
-    jobTemplate._category = jsonObj.category.split(',')
-    jobTemplate._featureCode = jsonObj.feature_code
-    jobTemplate._type = jsonObj.type.toLowerCase()
-    jobTemplate._username = jsonObj.username
+    jobTemplate.code = String(jsonObj.id)
+    jobTemplate.name = jsonObj.name
+    jobTemplate.index = jsonObj.index
+    jobTemplate.logo = jsonObj.logo
+    jobTemplate.description = jsonObj.desc
+    jobTemplate.category = jsonObj.category.split(',')
+    jobTemplate.featureCode = jsonObj.feature_code
+    jobTemplate.type = jsonObj.type.toLowerCase()
+    jobTemplate.username = jsonObj.username
     if (jsonObj.parameters_json) {
       // jobTemplate.params = JSON.parse(jsonObj.parameters_json);
       const params = JSON.parse(jsonObj.parameters_json)
@@ -141,105 +143,9 @@ class JobTemplate {
       jobTemplate.workspace = jsonObj.workspace
     }
     if (jsonObj.scheduler) {
-      jobTemplate._scheduler = jsonObj.scheduler
+      jobTemplate.scheduler = jsonObj.scheduler
     }
     return jobTemplate
-  }
-
-  get _code() {
-    return this.code
-  }
-
-  set _code(code) {
-    return (this.code = code)
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    return (this.name = name)
-  }
-
-  get _index() {
-    return this.index
-  }
-
-  set _index(index) {
-    return (this.index = index)
-  }
-
-  get _logo() {
-    return this.logo
-  }
-
-  set _logo(logo) {
-    return (this.logo = logo)
-  }
-
-  get _description() {
-    return this.description
-  }
-
-  set _description(description) {
-    return (this.description = description)
-  }
-
-  get _category() {
-    return this.category
-  }
-
-  set _category(category) {
-    return (this.category = category)
-  }
-
-  get _featureCode() {
-    return this.featureCode
-  }
-
-  set _featureCode(featureCode) {
-    return (this.featureCode = featureCode)
-  }
-
-  get _type() {
-    return this.type
-  }
-
-  set _type(type) {
-    return (this.type = type)
-  }
-
-  get _display() {
-    return this.display
-  }
-
-  set _display(display) {
-    return (this.display = display)
-  }
-
-  get _username() {
-    return this.username
-  }
-
-  set _username(username) {
-    return (this.username = username)
-  }
-
-  get _scheduler() {
-    return this.scheduler
-  }
-
-  set _scheduler(scheduler) {
-    return (this.scheduler = scheduler)
-  }
-
-  get _helpUrl() {
-    return this.helpUrl
-  }
-
-  set _helpUrl(helpUrl) {
-    return (this.helpUrl = helpUrl)
   }
 }
 
@@ -251,78 +157,32 @@ class TemplateCard {
     this.username = ''
     this.category = ''
     this.favorite = ''
+    this.allCategorys
   }
 
   static parseFromRestApi(jsonObj) {
     const templateCard = new TemplateCard()
-    templateCard._code = jsonObj.code
-    templateCard._name = jsonObj.name
-    templateCard._type = jsonObj.type
-    templateCard._username = jsonObj.username
-    templateCard._category = jsonObj.category
-    templateCard._favorite = jsonObj.favorite
+    templateCard.code = jsonObj.code
+    templateCard.name = jsonObj.name
+    templateCard.type = jsonObj.type
+    templateCard.username = jsonObj.username
+    templateCard.category = jsonObj.category
+    templateCard.allCategorys = jsonObj.allCategorys
+    templateCard.favorite = jsonObj.favorite
     return templateCard
   }
 
   get categoryDisplay() {
-    return this._category
+    return this.category
       .split(',')
       .map(i => {
-        const category = CategorySortMap.filter(({ category }) => category === i)[0]
+        const category = this.allCategorys.filter(({ category }) => category === i)[0]
         if (category) {
           return category.label[window.gApp.$i18n.locale]
         }
         return i
       })
       .join(',')
-  }
-
-  get _code() {
-    return this.code
-  }
-
-  set _code(code) {
-    return (this.code = code)
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    return (this.name = name)
-  }
-
-  get _type() {
-    return this.type
-  }
-
-  set _type(type) {
-    return (this.type = type)
-  }
-
-  get _username() {
-    return this.username
-  }
-
-  set _username(username) {
-    return (this.username = username)
-  }
-
-  get _category() {
-    return this.category
-  }
-
-  set _category(category) {
-    return (this.category = category)
-  }
-
-  get _favorite() {
-    return this.favorite
-  }
-
-  set _favorite(favorite) {
-    return (this.favorite = favorite)
   }
 }
 
@@ -335,34 +195,10 @@ class License {
 
   static parseFromRestApi(jsonObj) {
     const license = new License()
-    license._name = jsonObj.feature
-    license._total = jsonObj.total
-    license._used = jsonObj.used
+    license.name = jsonObj.feature
+    license.total = jsonObj.total
+    license.used = jsonObj.used
     return license
-  }
-
-  get _name() {
-    return this.name
-  }
-
-  set _name(name) {
-    return (this.name = name)
-  }
-
-  get _total() {
-    return this.total
-  }
-
-  set _total(total) {
-    return (this.total = total)
-  }
-
-  get _used() {
-    return this.used
-  }
-
-  set _used(used) {
-    return (this.used = used)
   }
 }
 
@@ -643,10 +479,10 @@ function getTemplateCategory() {
       feature_code: window.gApp.$store.state.auth.featureCodes.join(','),
     }
     Request.get('api/template/categories/', { params: req }).then(
-      res => {
+      async res => {
         const data = res.body
-
-        // filter and sort system category by "static/settings/system-template-categories.json";
+        const CategorySortMap = await getTemplateCategoryByJson()
+        // filter and sort system category by "/static/settings/system-template-categories.json";
         let categories = CategorySortMap.filter(({ category }) => Object.keys(data.categories).includes(category)).map(
           ({ category, label }) => {
             const categoryLabel = label[window.gApp.$i18n.locale]
@@ -660,13 +496,12 @@ function getTemplateCategory() {
         )
 
         // filter custom category
-        let customCategorise = Object.keys(data.categories).filter(
-          i => !CategorySortMap.filter(({ category }) => category === i)[0],
-        )
-        customCategorise = customCategorise.map(i => ({
-          key: i,
-          counts: data.categories[i],
-        }))
+        let customCategorise = Object.keys(data.categories)
+          .filter(i => !CategorySortMap.filter(({ category }) => category === i)[0])
+          .map(i => ({
+            key: i,
+            counts: data.categories[i],
+          }))
 
         // sort custom category by name
         Collection.sortObjectsByProp(customCategorise, 'key', 'asc')
@@ -727,8 +562,9 @@ function getTemplatesByFilter(filterskeys, sort, search, currentPage, pageSize) 
       filters,
     }
     Request.get('/api/template/alltemplates/', { params: { args } }).then(
-      res => {
-        const data = res.body.data.map(i => TemplateCard.parseFromRestApi(i))
+      async res => {
+        const CategorySortMap = await getTemplateCategoryByJson()
+        const data = res.body.data.map(i => TemplateCard.parseFromRestApi({ ...i, allCategorys: CategorySortMap }))
 
         resolve({
           data,
@@ -756,6 +592,32 @@ function getJobLicenseFeature() {
   })
 }
 
+function getTemplateCategoryByJson() {
+  return new Promise((resolve, reject) => {
+    Request.get('/static/settings/system-template-categories.json').then(
+      res => {
+        resolve(res.body)
+      },
+      err => {
+        ErrorHandler.restApiErrorHandler(err, reject)
+      },
+    )
+  })
+}
+
+function getLadlBussiness() {
+  return new Promise((resolve, reject) => {
+    Request.get('/static/settings/example/ladl-scenario-example.json').then(
+      res => {
+        resolve(res.body)
+      },
+      err => {
+        ErrorHandler.restApiErrorHandler(err, reject)
+      },
+    )
+  })
+}
+
 export default {
   CategoryEnums,
   getAllJobTemplates,
@@ -774,4 +636,5 @@ export default {
   getTemplateCategory,
   getTemplatesByFilter,
   getJobLicenseFeature,
+  getLadlBussiness,
 }

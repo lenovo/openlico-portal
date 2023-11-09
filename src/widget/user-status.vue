@@ -1,7 +1,7 @@
-<template>
+<template lang="">
   <span class="user-status">
     <a-popover ref="popoverUser" placement="bottomRight">
-      <template v-if="licenseOperationStatus" slot="content">
+      <template v-if="licenseOperationStatus" #content>
         <div class="user-status-title" style="width: 180px">
           <i class="el-erp-user1 user-status-icon" />
           <i
@@ -15,7 +15,7 @@
         <!-- <p class="user-status-username">{{ $t('User.Status.Id', {'id': userId}) }}</p> -->
 
         <p class="user-status-userName" :title="userName" @click="editUser">
-          {{ $t('User.Status.Username', { name: userName }) }}
+          {{ $T('User.Status.Username', { name: userName }) }}
         </p>
 
         <!-- <p class="user-status-username">{{ $t('User.Group', {'group': userGroup}) }}</p> -->
@@ -26,18 +26,18 @@
             :key="index"
             class="user-status-row"
             @click="shiftAccess(access)">
-            <a-icon v-if="currentAccess == access" type="check-circle" class="access-selected-icon" />
             <a href="javascript:void(0)">{{ $t('Access.' + access) }}</a>
+            <check-circle-outlined v-if="currentAccess == access" class="access-selected-icon" />
           </li>
         </ul>
       </template>
-      <template v-else slot="content">
+      <template v-else #content>
         <div class="user-status-title" style="width: 150px">
           <i class="el-erp-user1 user-status-icon" />
           <i id="My_Logout" class="el-erp-logout user-status-icon" :title="$t('Logout')" @click="logout" />
         </div>
         <p class="user-status-userName" style="cursor: default" :title="userName">
-          {{ $t('User.Status.Username', { name: userName }) }}
+          {{ $T('User.Status.Username', { name: userName }) }}
         </p>
       </template>
       <i class="el-erp-user1 user-status-icon" />
@@ -48,11 +48,11 @@
   </span>
 </template>
 <script type="text/javascript">
-import AuthService from '../service/auth'
-import AccessService from '../service/access'
-import AboutDialog from './about/about-dialog'
-import EditUserDialog from './user-status/edit-user-dialog'
-import ChangePasswordDialog from './user-status/change-password-dialog'
+import AuthService from '@/service/auth'
+import AccessService from '@/service/access'
+import AboutDialog from './about/about-dialog.vue'
+import EditUserDialog from './user-status/edit-user-dialog.vue'
+import ChangePasswordDialog from './user-status/change-password-dialog.vue'
 
 export default {
   components: {
@@ -61,6 +61,7 @@ export default {
     'change-password-dialog': ChangePasswordDialog,
   },
   props: ['userId', 'userGroup'],
+  emits: ['on-change'],
   data() {
     return {
       showClose: true,
@@ -103,7 +104,7 @@ export default {
       )
     },
     editUser() {
-      this.$refs.editUserDialog.open()
+      this.$refs.editUserDialog.open().cetch(res => {})
     },
     showAbout() {
       this.$refs.aboutDialog.open()
@@ -166,7 +167,7 @@ export default {
   padding: 15px 0;
   /* border-top: 1px solid #eee; */
 }
-.user-status-row > i {
+.user-status-row > span {
   width: 16px;
   height: 16px;
   margin-top: 2px;

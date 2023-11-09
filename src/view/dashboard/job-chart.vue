@@ -2,7 +2,7 @@
   <div class="b-w p-20 height--100">
     <div class="">
       <a-select
-        v-model="selectedTimeDefalut"
+        v-model:value="selectedTimeDefalut"
         style="float: right; z-index: 10"
         size="small"
         @change="
@@ -15,8 +15,7 @@
         </a-select-option>
       </a-select>
       <a-select
-        v-if="arch == 'host'"
-        v-model="jobQueueDefalut"
+        v-model:value="jobQueueDefalut"
         class="dashboard-queue"
         size="small"
         @change="
@@ -34,15 +33,14 @@
   </div>
 </template>
 <script>
-import Format from './../../common/format'
-import * as ECharts from 'echarts'
-import DashboardService from './../../service/dashboard-monitor'
-import AccessService from '../../service/access'
+import Format from '@/common/format'
+import DashboardService from '@/service/dashboard-monitor'
 export default {
+  inject: ['resize'],
   props: ['initData'],
+  emits: ['onJobTimeChange', 'onJobQueueChange'],
   data() {
     return {
-      arch: AccessService.getSchedulerArch(),
       innerChart: null,
       jobQueueDefalut: '',
       initJobQueueData: [{ label: this.$t('All'), value: '' }],
@@ -59,39 +57,29 @@ export default {
     initData(val, oldVal) {
       this.init()
     },
+    resize(val) {
+      this.onResize()
+    },
   },
   mounted() {
     this.$nextTick(() => {
-      if (this.arch === 'host') {
-        DashboardService.getJobChartQueue().then(res => {
-          res.forEach(item => {
-            this.initJobQueueData.push({
-              label: item.name,
-              value: item.name,
-            })
+      DashboardService.getJobChartQueue().then(res => {
+        res.forEach(item => {
+          this.initJobQueueData.push({
+            label: item.name,
+            value: item.name,
           })
         })
-      }
-      this.innerChart = ECharts.init(this.$refs.container, window.gApp.echartsTheme.jobStatus)
-      window.removeEventListener('resize', this.onResize)
-      window.addEventListener('resize', this.onResize)
-      this.onResize()
+      })
+      this.$chart.init(this.$refs.container, window.gApp.echartsTheme.jobStatus)
       if (this.initData) {
         this.init()
       }
-      window.gApp.$watch('isCollapse', (newValue, oldValue) => {
-        setTimeout(() => {
-          this.onResize()
-        }, 300)
-      })
     })
-  },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.onResize)
   },
   methods: {
     onResize() {
-      this.innerChart.resize()
+      this.$chart.getInstanceByDom(this.$refs.container).resize()
     },
 
     init() {
@@ -185,13 +173,13 @@ export default {
           return series
         })(data.data),
       }
-      this.innerChart.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.container).setOption(option)
     },
   },
 }
 </script>
 
-<style>
+<style scoped>
 .dashboard-queue {
   margin-right: 10px;
   float: right;

@@ -2,34 +2,41 @@
   <div v-if="innerNode != null" id="tid_node-panel" class="node-detail-panel">
     <a-row class="node-panel-top">
       <a-col :span="12">
-        {{ innerNode.hostname }}
+        <span style="font-size: 14px; line-height: 22px">{{ innerNode.hostname }}</span>
         <node-status-label v-if="isScheduler" id="tid_node-panel-status" :status="innerNode.status" />
-        <alert-policy-level-label id="tid_node-panel-alert-level" :level="innerNode.alertPolicyLevel" />
+        <alert-policy-level-label
+          id="tid_node-panel-alert-level"
+          :level="innerNode.alertPolicyLevel"
+          style="margin-left: 10px" />
       </a-col>
       <a-col :span="12" align="right">
+        <i v-if="arch == 'host' && isScheduler && nodesState" class="el-erp-scheduler el-icon--right" />
+        {{ isScheduler ? nodesState : '' }}
         <a-dropdown
           id="tid_nodes-multi-power-on"
           style="margin-right: 10px"
           placement="bottomRight"
           :trigger="['click']">
-          <a-button>
+          <a-button :disabled="innerNode.onCloud">
             {{ $t('Action') }}
-            <a-icon type="down" />
+            <down-outlined />
           </a-button>
-          <a-menu slot="overlay">
-            <a-menu-item v-if="innerNode.powerStatus === false" id="tid_node-panel-power-on" @click="onPowerOnClick">
-              {{ $t('Node.Action.PowerOn') }}
-            </a-menu-item>
-            <a-menu-item v-if="innerNode.powerStatus === true" id="tid_node-panel-power-off" @click="onPowerOffClick">
-              {{ $t('Node.Action.PowerOff') }}
-            </a-menu-item>
-            <a-menu-item id="tid_node-panel-console" @click="onConsoleClick">
-              {{ $t('Node.RemoteAccess.Console') }}
-            </a-menu-item>
-            <a-menu-item id="tid_node-panel-Shell" @click="onShellClick">
-              {{ $t('Node.RemoteAccess.Shell') }}
-            </a-menu-item>
-          </a-menu>
+          <template #overlay>
+            <a-menu style="width: 150px">
+              <a-menu-item v-if="innerNode.powerStatus === false" id="tid_node-panel-power-on" @click="onPowerOnClick">
+                {{ $t('Node.Action.PowerOn') }}
+              </a-menu-item>
+              <a-menu-item v-if="innerNode.powerStatus === true" id="tid_node-panel-power-off" @click="onPowerOffClick">
+                {{ $t('Node.Action.PowerOff') }}
+              </a-menu-item>
+              <a-menu-item id="tid_node-panel-console" @click="onConsoleClick">
+                {{ $t('Node.RemoteAccess.Console') }}
+              </a-menu-item>
+              <a-menu-item id="tid_node-panel-Shell" @click="onShellClick">
+                {{ $t('Node.RemoteAccess.Shell') }}
+              </a-menu-item>
+            </a-menu>
+          </template>
         </a-dropdown>
       </a-col>
     </a-row>
@@ -42,7 +49,7 @@
     </a-row>
     <a-row>
       <a-col :span="24">
-        <a-tabs id="tid_node-panel-tabs" v-model="nodeMonitorTab" :animated="false">
+        <a-tabs id="tid_node-panel-tabs" v-model:activeKey="nodeMonitorTab" :animated="false">
           <a-tab-pane key="nodeMonitorMonitor" :tab="$t('NodePanel.Monitor')">
             <node-monitor
               id="tid_node-panel-monitor"
@@ -83,19 +90,19 @@
   </div>
 </template>
 <script>
-import NodeHardware from './node-panel/node-hardware'
-import NodeStatusLabel from './node-status-label'
-import AlertPolicyLevelLabel from './alert-policy-level-label'
-import NodeMonitor from './node-panel/node-monitor'
-import NodeGpu from './node-panel/node-gpu'
-import NodeAlert from './node-panel/node-alert'
-import NodeJob from './node-panel/node-job'
-import NodeHealth from './node-panel/node-health'
-import NodeInformation from './node-panel/node-information'
-import NodeProcess from './node-panel/node-process'
-import NodeService from '../service/node'
-import NodeActionDialog from './nodes-table/node-action-dialog'
-import AccessService from '../service/access'
+import NodeHardware from './node-panel/node-hardware.vue'
+import NodeStatusLabel from './nodes-table/node-status-label.vue'
+import AlertPolicyLevelLabel from './alert-policy-level-label.vue'
+import NodeMonitor from './node-panel/node-monitor.vue'
+import NodeGpu from './node-panel/node-gpu.vue'
+import NodeAlert from './node-panel/node-alert.vue'
+import NodeJob from './node-panel/node-job.vue'
+import NodeHealth from './node-panel/node-health.vue'
+import NodeProcess from './node-panel/node-process.vue'
+import NodeInformation from './node-panel/node-information.vue'
+import NodeActionDialog from './nodes-table/node-action-dialog.vue'
+import NodeService from '@/service/node'
+import AccessService from '@/service/access'
 
 export default {
   components: {
@@ -107,9 +114,9 @@ export default {
     'node-alert': NodeAlert,
     'node-job': NodeJob,
     'node-health': NodeHealth,
+    'node-process': NodeProcess,
     'node-information': NodeInformation,
     'node-action-dialog': NodeActionDialog,
-    'node-process': NodeProcess,
   },
   props: ['nodeName'],
   data() {
@@ -120,6 +127,7 @@ export default {
       nodeMonitorTab: 'nodeMonitorMonitor',
       timerId: 0,
       arch: AccessService.getSchedulerArch(),
+      nodesState: '',
     }
   },
   computed: {
@@ -155,7 +163,7 @@ export default {
   // mounted() {
   //   this.refresh()
   // },
-  destroyed() {
+  unmounted() {
     this.innerNodeName = ''
     clearTimeout(this.timerId)
     this.timerId = null
@@ -247,11 +255,11 @@ export default {
 .node-detail-panel .composite-table {
   padding-top: 0;
 }
-#tid_node-panel-monitor >>> .composite-table,
-#tid_node-panel-alarm >>> .composite-table,
-#tid_node-panel-job >>> .composite-table,
-#tid_node-panel-health >>> .composite-table,
-#tid_node-panel-process >>> .composite-table {
+#tid_node-panel-monitor :deep(.composite-table),
+#tid_node-panel-alarm :deep(.composite-table),
+#tid_node-panel-job :deep(.composite-table),
+#tid_node-panel-health :deep(.composite-table),
+#tid_node-panel-process :deep(.composite-table) {
   padding: 0;
 }
 #tid_node-panel-status {
@@ -260,5 +268,8 @@ export default {
 .node-panel-top #tid_node-panel-status,
 .node-panel-top #tid_node-panel-alert-level {
   font-size: 14px;
+}
+.node-detail-panel :deep(.composite-table) {
+  padding: 0;
 }
 </style>

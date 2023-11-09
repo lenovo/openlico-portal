@@ -20,15 +20,15 @@
   </a-row>
 </template>
 <script>
-import * as EChart from 'echarts'
-import MonitorDataService from '../../../service/monitor-data'
-import NodeDetailDialog from '../../../widget/nodes-table/node-detail-dialog'
-import LevelCard from '../../../widget/level-card'
+import MonitorDataService from '@/service/monitor-data'
+import NodeDetailDialog from '@/widget/nodes-table/node-detail-dialog.vue'
+import LevelCard from '@/widget/level-card.vue'
 export default {
   components: {
     'node-detail-dialog': NodeDetailDialog,
     'level-card': LevelCard,
   },
+  inject: ['resize'],
   props: ['healthCategory', 'groupId'],
   data() {
     return {
@@ -84,24 +84,24 @@ export default {
       }
       this.fetchHeatChartData(this.groupId, newCategory)
     },
+    resize(val) {
+      this.onResize()
+    },
   },
   mounted() {
     this.$nextTick(() => {
-      this.healthChartObj = EChart.init(
+      this.healthChartObj = this.$chart.init(
         document.getElementById(this.healthCategory + 'HealthChart'),
         window.gApp.echartsTheme.common,
       )
       this.fetchHeatChartData(this.groupId, this.healthCategory)
-      window.removeEventListener('resize', this.onResize)
-      window.addEventListener('resize', this.onResize)
       const self = this
       this.healthChartObj.on('click', function (params) {
         self.$refs.detailDialog.showDetail(params.data.hostname)
       })
     })
   },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.onResize)
+  beforeUnmount() {
     if (this.setTimeoutId > 0) clearTimeout(this.setTimeoutId)
   },
   methods: {
@@ -110,11 +110,9 @@ export default {
       MonitorDataService.getGroupHeatData(groupId, category).then(
         res => {
           this.heatDataSet = res.data
-          // if(this.heatDataSet.length>0){
           this.totalDataNum = this.heatDataSet.length
           const currentHeatData = this.getInterceptDataByPage()
           this.drawHeatChart(currentHeatData)
-          // }
           this.refreshHealthChartData()
         },
         res => {
@@ -130,12 +128,11 @@ export default {
     getInterceptDataByPage() {
       const startIndex = this.pageSize * (this.currentPage - 1)
       const endIndex = this.pageSize * this.currentPage
-      // console.log('startIndex, endIndex', startIndex, endIndex);
       const dataSet = this.heatDataSet.slice(startIndex, endIndex)
       return dataSet
     },
     onResize() {
-      this.healthChartObj.resize()
+      this.$chart.getInstanceByDom(document.getElementById(this.healthCategory + 'HealthChart')).resize()
     },
     drawHeatChart(dataSet) {
       const axisLen = this.autoAllocationAxisLength(dataSet)
@@ -146,7 +143,7 @@ export default {
       } else {
         options = this.getChartOption([], 0, 0, axisLen)
       }
-      this.healthChartObj.setOption(options)
+      this.$chart.getInstanceByDom(document.getElementById(this.healthCategory + 'HealthChart')).setOption(options)
     },
     autoAllocationAxisLength(dataSet) {
       let xAxisLen = 0
@@ -310,10 +307,11 @@ export default {
               show: true,
               fontSize: 14,
             },
+            emphasis: {
+              scale: false,
+            },
             itemStyle: {
-              emphasis: {
-                shadowBlur: 10,
-              },
+              shadowBlur: 10,
             },
           },
         ],
@@ -327,12 +325,9 @@ export default {
       this.pageSize = newSize
       const currentHeatData = this.getInterceptDataByPage()
       this.drawHeatChart(currentHeatData)
-      // this.fetchHeatChartData(this.groupId, this.healthCategory)
     },
     handleCurrentChange(newPage) {
       this.currentPage = newPage
-      // console.log("this.category", this.groupId, this.healthCategory);
-      // this.fetchHeatChartData(this.groupId, this.healthCategory)
       const currentHeatData = this.getInterceptDataByPage()
       this.drawHeatChart(currentHeatData)
     },
@@ -349,7 +344,7 @@ export default {
   },
 }
 </script>
-<style>
+<style scoped>
 .HealthChart {
   width: 100%;
   height: 600px;

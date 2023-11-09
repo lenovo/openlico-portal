@@ -2,61 +2,61 @@
   <div>
     <a-modal
       ref="innerDialog"
+      v-model:open="isRender"
       width="980px"
       :title="title"
-      :visible="isRender"
       :footer="null"
       destroy-on-close
       @cancel="onCancel">
       <div class="build-image">
         <div class="build-image-collapse" :class="{ active: collapse }">
-          <a-form-model
+          <a-form
             ref="imageBuildForm"
             layout="vertical"
             class="build-image-form"
             :model="imageForm"
             :rules="imageRules"
             :colon="false">
-            <a-form-model-item :label="$t('Image.Name')" prop="name">
-              <a-input v-model="imageForm.name" :addon-after="imageSuffix" :disabled="!isEditable" />
-            </a-form-model-item>
-            <a-form-model-item :label="$t('Image.Build.Workspace')" prop="workspace">
+            <a-form-item :label="$t('Image.Name')" name="name">
+              <a-input v-model:value="imageForm.name" :addon-after="imageSuffix" :disabled="!isEditable" />
+            </a-form-item>
+            <a-form-item :label="$t('Image.Build.Workspace')" name="workspace">
               <file-select
-                v-model="imageForm.workspace"
+                v-model:value="imageForm.workspace"
                 type="folder"
                 :default-folder="imageForm.workspace"
                 :disabled="!isEditable" />
-            </a-form-model-item>
-            <a-form-model-item :label="$t('Image.Build.Source')" prop="source">
-              <a-select v-model="imageForm.source" :disabled="!isEditable" @change="onSourceChange">
+            </a-form-item>
+            <a-form-item :label="$t('Image.Build.Source')" name="source">
+              <a-select v-model:value="imageForm.source" :disabled="!isEditable" @change="onSourceChange">
                 <a-select-option v-for="item in sourceOpts" :key="item.index">
                   {{ $t(`Image.Build.Source.${item.label}`) }}
                 </a-select-option>
               </a-select>
-            </a-form-model-item>
-            <a-form-model-item
+            </a-form-item>
+            <a-form-item
               v-if="showImagepath('local')"
               :label="$t('Image.Build.ImagePath')"
-              prop="imagePath"
+              name="imagePath"
               class="build-image-select-image">
               <image-selection
-                v-model="imageForm.imagePath"
+                v-model:value="imageForm.imagePath"
                 :arch="arch"
                 :images="imageOptions"
                 :disabled="!isEditable"
                 :dispalay-image-type="false" />
-            </a-form-model-item>
-            <a-form-model-item v-if="showImagepath('hub')" :label="$t('Image.Build.ImagePath')" prop="imagePath">
-              <a-input v-model="imageForm.imagePath" :disabled="!isEditable" />
-            </a-form-model-item>
-            <a-form-model-item v-if="showImagepath('file')" :label="$t('Image.Build.DefFile')" prop="definitionFile">
+            </a-form-item>
+            <a-form-item v-if="showImagepath('hub')" :label="$t('Image.Build.ImagePath')" name="imagePath">
+              <a-input v-model:value="imageForm.imagePath" :disabled="!isEditable" />
+            </a-form-item>
+            <a-form-item v-if="showImagepath('file')" :label="$t('Image.Build.DefFile')" name="definitionFile">
               <file-select
-                v-model="imageForm.definitionFile"
+                v-model:value="imageForm.definitionFile"
                 type="file"
                 default-folder="MyFolder"
                 :disabled="!isEditable" />
-            </a-form-model-item>
-            <a-form-model-item>
+            </a-form-item>
+            <a-form-item>
               <div class="btns">
                 <span v-if="canSetAuth" class="sub-btn" @click="onOpenAuthDialog">
                   <i class="el-erp-Authentication" />
@@ -68,40 +68,37 @@
                   {{ $t('Image.Build.AdvancedSettings') }}
                 </span>
               </div>
-            </a-form-model-item>
-            <a-form-model-item>
+            </a-form-item>
+            <a-form-item>
               <a-checkbox
                 v-if="canShowHttps"
-                :checked="imageForm.enableHttps"
+                v-model:checked="imageForm.enableHttps"
                 :disabled="!isEditable"
                 @change="onCertChange">
                 {{ $t('Image.Build.Cert.HTTPS') }}
                 <a-tooltip placement="topLeft" overlay-class-name="helpTooltip">
-                  <template slot="title">
+                  <template #title>
                     {{ $t('Image.Build.Cert.HTTPS.Help') }}
                   </template>
-                  <a-icon type="question-circle" theme="filled" class="help-icon" />
+                  <QuestionCircleFilled class="help-icon" />
                 </a-tooltip>
               </a-checkbox>
-            </a-form-model-item>
-            <a-form-model-item align="right" class="build-image-form-submit-item">
+            </a-form-item>
+            <a-form-item align="right" class="build-image-form-submit-item">
               <a-button class="m-r-10" :disabled="!isEditable || loading" @click="onReset">
                 {{ $t('Action.Reset') }}
               </a-button>
               <a-button type="primary" :disabled="!isEditable" :loading="loading" @click="onStartBuild">
                 {{ $t('Image.Build.Action.Start') }}
               </a-button>
-            </a-form-model-item>
-          </a-form-model>
+            </a-form-item>
+          </a-form>
           <div class="build-form-action" :class="{ active: collapse }">
             <img
               class="build-form-action-icon"
               :src="`/static/img/system/main/build-image-${collapse ? 'inactive' : 'active'}.png`"
               @click="onCollapse" />
           </div>
-          <!-- <div class="build-form-action" :class="{active: collapse}" @click="onCollapse">
-                        <a-icon :type="collapse?'right':'left'" class="build-form-action-icon"/>
-                    </div> -->
         </div>
         <div class="build-log">
           <build-logview
@@ -110,8 +107,8 @@
             :can-import="canImport"
             :can-cancel="canCancel"
             :start-time="startTime"
-            @getBuildStatus="getBuildStatus"
-            @importImageDialogShow="importImageDialogShow" />
+            @get-build-status="getBuildStatus"
+            @import-image-dialog-show="importImageDialogShow" />
         </div>
       </div>
     </a-modal>
@@ -122,17 +119,17 @@
   </div>
 </template>
 <script>
-import Format from './../../../common/format'
-import FileManagerDialog from '../../../component/file-manager-dialog'
-import FileSelect from '../../../component/file-select'
-import ValidRoleFactory from '../../../common/valid-role-factory'
-import ImageService from '../../../service/image'
-import BuildLogView from './image-build-logview'
-import AuthenticationDialog from './authentication-dialog'
-import AdvancedSettingDialog from './setting-dialog'
-import ImportImageDialog from '../image-create-dialog'
-import ImageSelection from '../../../widget/image-selection'
-import AccessService from '../../../service/access'
+import Format from '@/common/format'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import ImageService from '@/service/image'
+import AccessService from '@/service/access'
+import FileSelect from '@/component/file-select.vue'
+import FileManagerDialog from '@/component/file-manager-dialog.vue'
+import ImageSelection from '@/widget/image-selection.vue'
+import BuildLogView from './image-build-logview.vue'
+import ImportImageDialog from '../image-create-dialog.vue'
+import AuthenticationDialog from './authentication-dialog.vue'
+import AdvancedSettingDialog from './setting-dialog.vue'
 
 export default {
   components: {
@@ -144,6 +141,7 @@ export default {
     'import-image-dialog': ImportImageDialog,
     'image-selection': ImageSelection,
   },
+  emits: ['refreshContainerImageStoreTable'],
   data() {
     return {
       title: '',
@@ -225,7 +223,7 @@ export default {
       this.imagePathCache[this.imageForm.source] = val
     },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.setTimeoutId)
   },
   methods: {
@@ -286,7 +284,7 @@ export default {
           if (['pending', 'running'].includes(res)) {
             this.setTimeoutId = setTimeout(this.getBuildStatus, this.interval)
           }
-          if (this.logFilePath) {
+          if (this.logFilePath && this.$refs.imageBuildLog) {
             this.$refs.imageBuildLog.getLogs(this.logFilePath)
           }
           this.loading = false
@@ -342,8 +340,8 @@ export default {
     },
     onStartBuild() {
       const self = this
-      this.$refs.imageBuildForm.validate(valid => {
-        if (valid) {
+      this.$refs.imageBuildForm.validate().then(
+        _ => {
           this.loading = true
           ImageService.isImageFileExist(this.ImagePath).then(
             res => {
@@ -352,7 +350,7 @@ export default {
               } else {
                 this.imageExist = res
                 self.$confirm({
-                  content: self.$t('Image.Build.ImageExist', {
+                  content: self.$T('Image.Build.ImageExist', {
                     file: this.ImagePath,
                   }),
                   centered: true,
@@ -368,8 +366,9 @@ export default {
               this.$message.error(err)
             },
           )
-        }
-      })
+        },
+        _ => {},
+      )
     },
     kickBuild() {
       const form = this.imageForm
@@ -401,14 +400,15 @@ export default {
         this.getImageOptions()
       })
       return new Promise((resolve, reject) => {
-        this.$refs.innerDialog.validate(valid => {
-          if (valid) {
+        this.$refs.innerDialog.validate().then(
+          _ => {
             this.isRender = false
             resolve()
-          } else {
+          },
+          _ => {
             reject(new Error('Error'))
-          }
-        })
+          },
+        )
       })
     },
     onOpenAuthDialog() {
@@ -486,9 +486,9 @@ export default {
   color: #449fff;
   border-color: #449fff;
 }
-.build-image >>> .helpTooltip,
-.build-authentication >>> .helpTooltip,
-.build-settings >>> .helpTooltip {
+.build-image :deep(.helpTooltip),
+.build-authentication :deep(.helpTooltip),
+.build-settings :deep(.helpTooltip) {
   width: 500px !important;
   z-index: 10;
 }
@@ -546,10 +546,10 @@ export default {
   color: #d9d9d9;
   cursor: not-allowed;
 }
-.build-image-select-image >>> .image-version-tag {
+.build-image-select-image :deep(.image-version-tag) {
   width: 100%;
 }
-.build-image-select-image >>> .image-version-tag > ul {
+.build-image-select-image :deep(.image-version-tag > ul) {
   padding: 5px;
 }
 </style>

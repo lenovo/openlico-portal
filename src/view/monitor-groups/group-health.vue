@@ -5,7 +5,7 @@
         <a-button
           v-for="(item, index) in healthCategoryEnum"
           :key="index"
-          :type="currentSelectedHealthCategory == item ? 'primary' : 'normal'"
+          :type="currentSelectedHealthCategory == item ? 'primary' : 'default'"
           :title="chartBtnTitle[item]"
           @click="onHealthActionButtonClick(item)">
           <i :class="itemBtnIcon[item]" />
@@ -19,7 +19,7 @@
 </template>
 <script>
 import HealthChart from './group-health/health-chart.vue'
-import Constants from '../../common/constants'
+import Constants from '@/common/constants'
 export default {
   components: {
     'health-chart': HealthChart,

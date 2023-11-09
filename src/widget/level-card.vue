@@ -1,13 +1,13 @@
 <template>
-  <div v-show="mode != 'common'" ref="levelcard" class="level-card" />
+  <div v-show="mode != 'common'" ref="levelcard" :class="type === 'hybrid-gpu' ? 'level-card-hybrid' : 'level-card'" />
 </template>
 <script type="text/javascript">
-import * as EChart from 'echarts'
 export default {
-  props: ['ranges', 'mode'],
+  inject: ['resize'],
+  props: ['ranges', 'mode', 'grid', 'color', 'type'],
+  emits: ['get-chart-color'],
   data() {
     return {
-      chartObj: {},
       min_value: ['0'],
       max_real: 100,
       levels: [],
@@ -22,6 +22,8 @@ export default {
         energy: ' W',
         network: ' MB/s',
         job: '',
+        util: '%',
+        memory: '%',
       },
     }
   },
@@ -33,7 +35,13 @@ export default {
         return ['2000W+']
       } else if (this.mode === 'load' || this.mode === 'job') {
         return ['100+']
-      } else if (this.mode === 'cpu' || this.mode === 'disk' || this.mode === 'ram') {
+      } else if (
+        this.mode === 'cpu' ||
+        this.mode === 'disk' ||
+        this.mode === 'ram' ||
+        this.mode === 'util' ||
+        this.mode === 'memory'
+      ) {
         return ['100%']
       } else if (this.mode === 'network') {
         return ['50GB/s+']
@@ -46,29 +54,43 @@ export default {
     mode(newVal) {
       this.drawLevelCard(newVal)
     },
+    resize(val) {
+      this.resizeChart()
+    },
   },
   mounted() {
-    Object.defineProperty(this.$refs.levelcard, 'clientWidth', {
-      get: function () {
-        return 300
-      },
+    this.$nextTick(() => {
+      if (this.type !== 'hybrid-gpu') {
+        Object.defineProperty(this.$refs.levelcard, 'clientWidth', {
+          get: function () {
+            return 300
+          },
+        })
+        Object.defineProperty(this.$refs.levelcard, 'clientHeight', {
+          get: function () {
+            return 50
+          },
+        })
+      }
+      const chartObj = this.$chart.init(this.$refs.levelcard, window.gApp.echartsTheme.common)
+      window.gApp.$watch('isCollapse', (val, old) => {
+        setTimeout(() => {
+          this.resizeChart()
+        }, 300)
+      })
+      const levelColor = chartObj._theme.visualMap.inRange.color
+      for (let i = 0; i < levelColor.length; i++) {
+        this.series_data.push([i, 0, i + 1])
+        this.levels.push(String(i + 1))
+      }
+      this.drawLevelCard(this.mode)
+      this.$emit('get-chart-color', levelColor)
     })
-    Object.defineProperty(this.$refs.levelcard, 'clientHeight', {
-      get: function () {
-        return 50
-      },
-    })
-    this.chartObj = EChart.init(this.$refs.levelcard, window.gApp.echartsTheme.common)
-
-    const levelColor = this.chartObj._theme.visualMap.inRange.color
-    for (let i = 0; i < levelColor.length; i++) {
-      this.series_data.push([i, 0, i + 1])
-      this.levels.push(String(i + 1))
-    }
-    this.drawLevelCard(this.mode)
-    this.$emit('get-chart-color', levelColor)
   },
   methods: {
+    resizeChart() {
+      this.$chart.getInstanceByDom(this.$refs.levelcard).resize()
+    },
     drawLevelCard(mode) {
       if (mode === 'common') {
         return
@@ -77,7 +99,7 @@ export default {
       const max = Number(this.ranges[mode][1])
       const unit = this.unit[mode]
       const options = this.getChartOption(min, max, unit, mode)
-      this.chartObj.setOption(options)
+      this.$chart.getInstanceByDom(this.$refs.levelcard).setOption(options)
     },
     getChartOption(min, max, unit, mode) {
       const option = {
@@ -171,16 +193,26 @@ export default {
           },
         ],
       }
+      if (this.grid) {
+        option.grid = this.grid
+      }
+      if (this.color) {
+        option.visualMap.inRange = { color: this.color[this.mode] }
+      }
       return option
     },
   },
 }
 </script>
-<style>
+<style scoped>
 .level-card {
   width: 300px;
   height: 50px;
   left: 20px;
   bottom: 7px;
+}
+.level-card-hybrid {
+  width: 60%;
+  height: 35px;
 }
 </style>

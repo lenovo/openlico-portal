@@ -10,61 +10,71 @@
         :search-enable="true"
         :search-props="['name', 'status', 'version', 'tag']"
         :auto-refresh="30 * 1000">
-        <div slot="controller" class="composite-table-controller">
-          <a-button id="Create_Container_Import_Button" type="primary" class="action-button" @click="onCreateClick">
-            {{ $t('Action.Import') }}
-          </a-button>
-          <a-button
-            v-if="canBuild()"
-            id="Create_Container_Build_Button"
-            type="primary"
-            class="action-button"
-            @click="onBuildClick">
-            {{ $t('Action.Build') }}
-          </a-button>
-        </div>
-        <template slot="tags" slot-scope="{ tags }">
+        <template #controller>
+          <div class="composite-table-controller">
+            <a-button id="Create_Container_Import_Button" type="primary" class="action-button" @click="onCreateClick">
+              {{ $t('Action.Import') }}
+            </a-button>
+            <a-button
+              v-if="canBuild()"
+              id="Create_Container_Build_Button"
+              type="primary"
+              class="action-button"
+              @click="onBuildClick">
+              {{ $t('Action.Build') }}
+            </a-button>
+          </div>
+        </template>
+        <template #tags="{ tags }">
           <a-tag v-for="item in tags" :key="item" style="margin-right: 2px">{{ item }}</a-tag>
         </template>
-        <template slot="status" slot-scope="{ status }">
+        <template #status="{ status }">
           <image-status-label :status="status"></image-status-label>
         </template>
-        <a-dropdown slot="action" slot-scope="{ row }" :trigger="['click']" placement="bottomLeft">
-          <a-button v-show="canDelete(row) || canBrowse(row) || canDownload(row) || canReupload(row)">
-            {{ $t('Action') }}
-            <a-icon type="down" />
-          </a-button>
-          <a-menu slot="overlay">
-            <a-menu-item v-if="canDelete(row)" @click="editImage(row)">{{ $t('Action.Edit') }} </a-menu-item>
-            <a-menu-item v-if="canBrowse(row)" @click="showPath(row)">{{ $t('Action.Browse') }} </a-menu-item>
-            <a-menu-item v-if="canDelete(row)" @click="deleteImage(row)">{{ $t('Action.Delete') }} </a-menu-item>
-            <a-menu-item v-if="canDownload(row)" @click="downloadImage(row)"> {{ $t('Action.Download') }}</a-menu-item>
-            <a-menu-item v-if="canReupload(row)" @click="reupload(row)">{{ $t('Action.Reupload') }} </a-menu-item>
-          </a-menu>
-        </a-dropdown>
+        <template #action="{ row }">
+          <a-dropdown :trigger="['click']" placement="bottomLeft">
+            <a-button v-show="canDelete(row) || canBrowse(row) || canDownload(row) || canReupload(row)">
+              {{ $t('Action') }}
+              <down-outlined />
+            </a-button>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item v-if="canDelete(row)" @click="editImage(row)">{{ $t('Action.Edit') }} </a-menu-item>
+                <a-menu-item v-if="canBrowse(row)" @click="showPath(row)">{{ $t('Action.Browse') }} </a-menu-item>
+                <a-menu-item v-if="canDelete(row)" @click="deleteImage(row)">{{ $t('Action.Delete') }} </a-menu-item>
+                <a-menu-item v-if="canDownload(row)" @click="downloadImage(row)">
+                  {{ $t('Action.Download') }}</a-menu-item
+                >
+                <a-menu-item v-if="canReupload(row)" @click="reupload(row)">{{ $t('Action.Reupload') }} </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </template>
       </composite-table>
-      <ai-image-dialog ref="imageDialog" />
-      <image-build-dialog ref="imageBuildDialog" @refreshContainerImageStoreTable="refreshContainerImageStoreTable" />
+      <image-dialog ref="imageDialog" />
+      <image-build-dialog
+        ref="imageBuildDialog"
+        @refresh-container-image-store-table="refreshContainerImageStoreTable" />
       <image-action ref="imageActionDialog" />
       <image-message ref="imageMessageDialog" />
     </div>
   </div>
 </template>
 <script>
-import CompositeTable from '../component/composite-table'
-import ImageService from '../service/image'
-import ImageDialog from './container-image-manage/image-create-dialog'
-import ImageBuildDialog from './container-image-manage/image-build/image-build-dialog'
-import ImageAction from './container-image-manage/image-action-dialog'
-import ImageMessage from './container-image-manage/image-message-dialog'
-import ImageStatusLabel from '../widget/image-status-label'
-import Format from '../common/format'
-import AccessService from '../service/access'
+import Format from '@/common/format'
+import ImageService from '@/service/image'
+import AccessService from '@/service/access'
+import CompositeTable from '@/component/composite-table.vue'
+import ImageAction from './container-image-manage/image-action-dialog.vue'
+import ImageDialog from './container-image-manage/image-create-dialog.vue'
+import ImageMessage from './container-image-manage/image-message-dialog.vue'
+import ImageBuildDialog from './container-image-manage/image-build/image-build-dialog.vue'
+import ImageStatusLabel from '@/widget/image-status-label.vue'
 
 export default {
   components: {
     'composite-table': CompositeTable,
-    'ai-image-dialog': ImageDialog,
+    'image-dialog': ImageDialog,
     'image-build-dialog': ImageBuildDialog,
     'image-status-label': ImageStatusLabel,
     'image-action': ImageAction,
@@ -98,13 +108,13 @@ export default {
           title: this.$t('Image.Framework'),
           dataIndex: 'framework',
           sorter: true,
-          customRander: val => this.$t(`Image.Framework${val}`),
+          customRander: ({ text }) => this.$t(`Image.Framework${text}`),
           align: 'left',
         },
         {
           title: this.$t('Image.Type'),
           dataIndex: 'username',
-          customRender: val => this.$t(`Image.Type.${val ? 'Private' : 'System'}`),
+          customRender: ({ text }) => this.$t(`Image.Type.${text ? 'Private' : 'System'}`),
           sorter: true,
           width: 80,
           align: 'left',
@@ -118,28 +128,24 @@ export default {
         {
           title: this.$t('Image.Tag'),
           dataIndex: 'tags',
-          scopedSlots: { customRender: 'tags' },
+          customSlot: true,
           // width: 180,
           align: 'left',
         },
         {
+          title: this.$t('Image.Status'),
+          dataIndex: 'status',
+          customSlot: true,
+          width: 120,
+          align: 'left',
+        },
+        {
           title: this.$t('Action'),
-          key: 'actoin',
-          scopedSlots: { customRender: 'action' },
+          key: 'action',
+          customSlot: true,
           width: 100,
         },
       ],
-    }
-  },
-  mounted() {
-    if (this.arch === 'host') {
-      this.columns.splice(6, 0, {
-        title: this.$t('Image.Status'),
-        dataIndex: 'status',
-        scopedSlots: { customRender: 'status' },
-        width: 120,
-        align: 'left',
-      })
     }
   },
   methods: {
@@ -276,7 +282,7 @@ export default {
   overflow: visible;
   white-space: pre-line;
 }
-.disableClass >>> .demonstration {
+.disableClass :deep(.demonstration) {
   border: 1px solid #dcdfe6;
   border-radius: 3px;
   line-height: 32px;

@@ -1,9 +1,9 @@
-<template lang="html">
+<template>
   <div id="tid_date-picker" class="lico-date-picke-date" @click="disabledEdit">
     <a-date-picker
       id="tid_date-picker-start-time"
-      v-model="startTime"
-      dropdown-class-name="date-pick-container"
+      v-model:value="startTime"
+      popup-class-name="date-pick-container"
       name="lico-date-picker-start-time"
       mode="date"
       :show-today="false"
@@ -13,8 +13,8 @@
     <i style="margin-right: 5px"> -</i>
     <a-date-picker
       id="tid_date-picker-end-time"
-      v-model="endTime"
-      dropdown-class-name="date-pick-container"
+      v-model:value="endTime"
+      popup-class-name="date-pick-container"
       mode="date"
       :show-today="false"
       :disabled-date="endPickerOptions"
@@ -26,7 +26,7 @@
           class="lico-date-picke-label-style"
           :class="{ highLight: index == currentIndex }"
           @click="onSetTime(label, index)"
-          >{{ $t('Date.Picker.' + label.unit, { size: label.size }) }}</a
+          >{{ $T('Date.Picker.' + label.unit, { size: label.size }) }}</a
         >
       </span>
     </div>
@@ -34,16 +34,16 @@
 </template>
 
 <script>
-import moment from 'moment'
+import dayjs from '@/dayjs'
 export default {
-  // eslint-disable-next-line vue/require-prop-types
   props: ['value', 'quickPick', 'disabled'],
+  emits: ['date-change'],
   data() {
     return {
       startPickerOptions: this.pickerDateDisabled(this.value[1], 'start'),
       endPickerOptions: this.pickerDateDisabled(this.value[0], 'end'),
-      startTime: this.value[0] ? moment(this.value[0]) : null,
-      endTime: this.value[1] ? moment(this.value[1]) : null,
+      startTime: this.value[0] ? dayjs(this.value[0]) : null,
+      endTime: this.value[1] ? dayjs(this.value[1]) : null,
       pickerLabelList: ['d', 'day', 'w', 'week', 'm', 'month'],
       quickPickenabel: this.quickPick && this.quickPick !== '' && this.quickPick !== [],
       pickerLabelDefault: [],
@@ -145,9 +145,8 @@ export default {
         startTime.setTime(startTime.getTime() - oneDayTime * 30 * num)
         endTime.setTime(Date.now())
       }
-
-      this.startTime = moment(startTime, 'YYYY-MM-DD')
-      this.endTime = moment(endTime, 'YYYY-MM-DD')
+      this.startTime = dayjs(startTime.getTime())
+      this.endTime = dayjs(endTime.getTime())
     },
     pickerDateDisabled(date, type) {
       const disabledDate = function (time) {

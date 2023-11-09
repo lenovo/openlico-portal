@@ -4,64 +4,63 @@
     class="learning-rate-dialog"
     :title="$t('JobTemplate.LearningRate.Dialog.Title')"
     size="580px"
-    :composite-height="500"
     :form-model="innerForm"
     :form-rules="innerRules">
     <!--Decay Type-->
-    <a-form-model-item prop="decayType" label-width="180px" :label="$t('JobTemplate.LearningRate.DecayType')">
-      <a-select v-model="innerForm.decayType">
+    <a-form-item name="decayType" label-width="180px" :label="$t('JobTemplate.LearningRate.DecayType')">
+      <a-select v-model:value="innerForm.decayType">
         <a-select-option v-for="option in decayTypeOptions" :key="option.value" :value="option.value">
           {{ option.label }}
         </a-select-option>
       </a-select>
-    </a-form-model-item>
+    </a-form-item>
     <!--Learning Rate-->
-    <a-form-model-item prop="beginValue" label-width="180px" :label="$t('JobTemplate.LearningRate.BeginValue')">
-      <a-input v-model="innerForm.beginValue" />
-    </a-form-model-item>
+    <a-form-item name="beginValue" label-width="180px" :label="$t('JobTemplate.LearningRate.BeginValue')">
+      <a-input v-model:value="innerForm.beginValue" />
+    </a-form-item>
     <!--End Learning Rate-->
-    <a-form-model-item
+    <a-form-item
       v-if="innerForm.decayType == 'polynomial'"
-      prop="endValue"
+      name="endValue"
       label-width="180px"
       :label="$t('JobTemplate.LearningRate.EndValue')">
-      <a-input v-model="innerForm.endValue" />
-    </a-form-model-item>
+      <a-input v-model:value="innerForm.endValue" />
+    </a-form-item>
     <!--Decay Factor-->
-    <a-form-model-item
+    <a-form-item
       v-if="innerForm.decayType != 'fixed'"
-      prop="decayFactor"
+      name="decayFactor"
       label-width="180px"
       :label="$t('JobTemplate.LearningRate.DecayFactor')">
-      <a-input v-model="innerForm.decayFactor" />
-    </a-form-model-item>
+      <a-input v-model:value="innerForm.decayFactor" />
+    </a-form-item>
     <!--Epoches Per Decay-->
-    <a-form-model-item
+    <a-form-item
       v-if="innerForm.decayType != 'fixed'"
-      prop="epochsPerDecay"
+      name="epochsPerDecay"
       label-width="180px"
       :label="$t('JobTemplate.LearningRate.EpochsPerDecay')">
-      <a-input v-model="innerForm.epochsPerDecay" />
-    </a-form-model-item>
+      <a-input v-model:value="innerForm.epochsPerDecay" />
+    </a-form-item>
     <!--Moving Average Decay-->
-    <a-form-model-item
+    <a-form-item
       v-if="innerForm.decayType != 'fixed'"
       v-show="false"
-      prop="movingAverageDecay"
+      name="movingAverageDecay"
       label-width="180px"
       :label="$t('JobTemplate.LearningRate.MovingAverageDecay')">
-      <a-input v-model="innerForm.movingAverageDecay" />
-    </a-form-model-item>
+      <a-input v-model:value="innerForm.movingAverageDecay" />
+    </a-form-item>
   </composite-form-dialog>
 </template>
 
 <script>
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
-    'composite-form-dialog': CompositeFormDialog,
+    CompositeFormDialog,
   },
   data() {
     return {

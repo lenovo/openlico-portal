@@ -1,23 +1,16 @@
 <template>
   <div class="dashboard-monitor height--100 p-10">
-    <a-row v-if="initOverData" id="tid_dashboard-node-hardware" class="node-panel m-t-10" :gutter="[20, 20]">
-      <a-col
-        v-for="item in initOverData.hardware"
-        :key="item.type"
-        :sm="24"
-        :md="12"
-        :lg="12"
-        :xl="6"
-        class="node-panel-card">
-        <div class="cell-card" style="display: flex">
+    <a-row v-if="initOverData" id="tid_dashboard-node-hardware" class="m-b-20" :gutter="[20]">
+      <a-col v-for="item in initOverData.hardware" :key="item.type" :sm="24" :md="12" :lg="12" :xl="6" flex>
+        <div class="cell-card p-10 b-w" style="display: flex">
           <node-hardware :data="item"></node-hardware>
           <node-hardware v-if="item.groupData" :data="item.groupData"></node-hardware>
         </div>
       </a-col>
     </a-row>
-    <a-row :gutter="[20, 20]">
+    <a-row :gutter="[20]">
       <a-col :sm="24" :md="24" :lg="24" :xl="18">
-        <a-row v-if="showNodeStatue" :gutter="[20, 20]">
+        <a-row v-if="showNodeStatue" :gutter="[20, 20]" class="m-b-20">
           <a-col :sm="24" :md="12" :lg="12" :xl="8">
             <a-spin :spinning="!initOverData">
               <node-status :node="initOverData" :style="{ height: isScheduler ? '230px' : '530px' }"></node-status>
@@ -31,23 +24,23 @@
             </a-spin>
           </a-col>
         </a-row>
-        <a-row v-if="isScheduler" :gutter="[20, 20]">
+        <a-row v-if="isScheduler" :gutter="[20, 20]" class="m-b-20">
           <a-col :sm="24" :md="12" :lg="12" :xl="8">
             <a-spin :spinning="!initJobListData">
               <job-list
                 :init-data="initJobListData"
                 :status="jobListDefalut"
-                :style="{ height: showNodeStatue ? '280px' : '530px' }"
-                @onStatusChange="onJobListChange"></job-list>
+                :style="{ height: showNodeStatue ? '280px' : '570px' }"
+                @on-status-change="onJobListChange"></job-list>
             </a-spin>
           </a-col>
           <a-col :sm="24" :md="12" :lg="12" :xl="16">
             <a-spin :spinning="!initJobListData">
               <job-chart
                 :init-data="initJobChartData"
-                :style="{ height: showNodeStatue ? '280px' : '530px' }"
-                @onJobTimeChange="onJobTimeChange"
-                @onJobQueueChange="onJobQueueChange"></job-chart>
+                :style="{ height: showNodeStatue ? '280px' : '570px' }"
+                @on-job-time-change="onJobTimeChange"
+                @on-job-queue-change="onJobQueueChange"></job-chart>
             </a-spin>
           </a-col>
         </a-row>
@@ -69,15 +62,15 @@
   </div>
 </template>
 <script>
-import AccessService from '../service/access'
-import DashboardService from './../service/dashboard-monitor'
-import JobList from './dashboard/job-list'
-import JobChart from './dashboard/job-chart'
-import NodeStatus from './dashboard/node-status-chart'
-import NodeHardware from './dashboard/dashboard-node-hardware'
-import NodeGroupStatus from './dashboard/node-group-status-chart'
-import DashboardMessage from './dashboard/dashboard-message'
-import DashboardTemplate from './dashboard/dashboard-job-template'
+import AccessService from '@/service/access'
+import DashboardService from '@/service/dashboard-monitor'
+import JobList from './dashboard/job-list.vue'
+import JobChart from './dashboard/job-chart.vue'
+import NodeStatus from './dashboard/node-status-chart.vue'
+import NodeHardware from './dashboard/dashboard-node-hardware.vue'
+import NodeGroupStatus from './dashboard/node-group-status-chart.vue'
+import DashboardMessage from './dashboard/dashboard-message.vue'
+import DashboardTemplate from './dashboard/dashboard-job-template.vue'
 
 export default {
   components: {
@@ -122,7 +115,7 @@ export default {
     this.init()
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.refreshTimeout)
   },
   methods: {
@@ -196,7 +189,10 @@ export default {
 </script>
 
 <style scoped>
-.node-panel .cell-card {
-  padding: 10px;
+.ant-row {
+  width: auto;
+}
+.dashboard-monitor :deep(.dashboard-card-title) {
+  font-weight: 400;
 }
 </style>

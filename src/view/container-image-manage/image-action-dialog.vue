@@ -4,33 +4,31 @@
       ref="innerDialog"
       :title="title"
       size="500px"
-      :composite-height="compositeHeight"
       :form-model="imageForm"
       :form-rules="imageRules"
-      :success-message-formatter="successMessageFormatter"
-      :error-message-formatter="errorMessageFormatter">
-      <a-form-model-item v-if="mode == 'delete'" :label="$t('Image.Name')" prop="name">
-        <a-input v-model="imageForm.name" disabled />
-      </a-form-model-item>
-      <a-form-model-item v-if="mode == 'download'" :label="$t('Image.Download.Name')" prop="targetName">
-        <a-input v-model="imageForm.targetName" />
-      </a-form-model-item>
-      <a-form-model-item v-if="mode == 'download'" :label="$t('Image.Download.path')" prop="targetPath">
-        <file-select v-model="imageForm.targetPath" type="folder" />
-      </a-form-model-item>
-      <a-form-model-item v-if="mode == 'reupload'" :label="$t('Image.SourceFile')" prop="sourceFile">
-        <file-select v-model="imageForm.sourceFile" type="file" />
-      </a-form-model-item>
+      :success-message-formatter="successMessageFormatter">
+      <a-form-item v-if="mode == 'delete'" :label="$t('Image.Name')" name="name">
+        <a-input v-model:value="imageForm.name" disabled />
+      </a-form-item>
+      <a-form-item v-if="mode == 'download'" :label="$t('Image.Download.Name')" name="targetName">
+        <a-input v-model:value="imageForm.targetName" />
+      </a-form-item>
+      <a-form-item v-if="mode == 'download'" :label="$t('Image.Download.path')" name="targetPath">
+        <file-select v-model:value="imageForm.targetPath" type="folder" />
+      </a-form-item>
+      <a-form-item v-if="mode == 'reupload'" :label="$t('Image.SourceFile')" name="sourceFile">
+        <file-select v-model:value="imageForm.sourceFile" type="file" />
+      </a-form-item>
     </composite-form-dialog>
     <file-manager-dialog ref="ImagefileManagerDialog" />
   </div>
 </template>
 <script>
-import FileSelect from '../../component/file-select'
-import FileManagerDialog from '../../component/file-manager-dialog'
-import ImageService from '../../service/image'
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
+import ImageService from '@/service/image'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import FileSelect from '@/component/file-select.vue'
+import FileManagerDialog from '@/component/file-manager-dialog.vue'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
@@ -59,15 +57,15 @@ export default {
       },
     }
   },
-  computed: {
-    compositeHeight() {
-      let retval
-      if (this.mode === 'delete') retval = 280
-      if (this.mode === 'download') retval = 370
-      if (this.mode === 'reupload') retval = 280
-      return retval
-    },
-  },
+  // computed: {
+  //   compositeHeight() {
+  //     let retval
+  //     if (this.mode === 'delete') retval = 280
+  //     if (this.mode === 'download') retval = 370
+  //     if (this.mode === 'reupload') retval = 280
+  //     return retval
+  //   },
+  // },
   methods: {
     submitForm() {
       if (this.mode === 'delete') {
@@ -86,18 +84,14 @@ export default {
     },
     successMessageFormatter(res) {
       if (this.mode === 'delete') {
-        return this.$t('Image.Delete.Success', { name: this.imageForm.name })
+        return this.$T('Image.Delete.Success', { name: this.imageForm.name })
       }
       if (this.mode === 'download') {
-        return this.$t('Image.Download.Ready', { name: this.imageForm.targetName })
+        return this.$T('Image.Download.Ready', { name: this.imageForm.targetName })
       }
       if (this.mode === 'reupload') {
-        return this.$t('Image.Reupload.Ready', { name: this.imageForm.name })
+        return this.$T('Image.Reupload.Ready', { name: this.imageForm.name })
       }
-    },
-    errorMessageFormatter(res) {
-      const errMsg = res
-      return this.$t(errMsg)
     },
     doDelete(data) {
       this.mode = 'delete'
@@ -123,7 +117,7 @@ export default {
       this.mode = 'reupload'
       this.imageId = data.id
       this.imageForm = {
-        name: '',
+        name: data.name,
         sourceFile: '',
         targetFile: '',
       }

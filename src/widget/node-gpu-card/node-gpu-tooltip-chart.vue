@@ -1,7 +1,7 @@
 <template>
   <a-spin :spinning="loading" size="small">
     <div class="node-gpu-tooltip-container">
-      <span class="node-gpu-tooltip-title">{{ $t('NodeGpus.Monitor.Tooltip.Title', { index: gpuId }) }}</span>
+      <span class="node-gpu-tooltip-title">{{ $T('NodeGpus.Monitor.Tooltip.Title', { index: gpuId }) }}</span>
       <p style="color: #999; font-size: 12px; padding: 0 0 5px">
         {{ container.types[gpuId] }}
       </p>
@@ -15,7 +15,7 @@
         :style="getCurrenrValuePosition(index)"
         >{{ currentData[index] }}</span
       >
-      <div ref="tooltip_chart" class="node-gpu-tooltip-chart" :style="`height: ${chartHeight * chartList.length}px;`" />
+      <div ref="tooltipChart" class="node-gpu-tooltip-chart" :style="`height: ${chartHeight * chartList.length}px;`" />
     </div>
     <div v-if="vendor === 'NVIDIA'" class="node-gpu-tooltip-mig">
       <p
@@ -49,11 +49,10 @@
   </a-spin>
 </template>
 <script>
-import * as Echart from 'echarts'
-import MonitorService from './../../service/monitor-data'
-import AccessService from './../../service/access'
-
+import MonitorService from '@/service/monitor-data'
+import AccessService from '@/service/access'
 export default {
+  inject: ['resize'],
   props: ['container', 'gpuId', 'job', 'vendor'],
   data() {
     return {
@@ -65,7 +64,6 @@ export default {
       arch: AccessService.getSchedulerArch(),
       access: this.$store.state.auth.access,
       gap: 7,
-      innerChart: null,
       refreshId: null,
       refreshInterval: 15000,
     }
@@ -74,13 +72,26 @@ export default {
     container(val, oldVal) {
       this.renderChart()
     },
+    resize(val) {
+      this.onResize()
+    },
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.refreshId)
   },
   mounted() {
     this.$nextTick(() => {
-      this.innerChart = Echart.init(this.$refs.tooltip_chart, window.gApp.echartsTheme.common)
+      Object.defineProperty(this.$refs.tooltipChart, 'clientWidth', {
+        get: function () {
+          return 200
+        },
+      })
+      Object.defineProperty(this.$refs.tooltipChart, 'clientHeight', {
+        get: function () {
+          return 150
+        },
+      })
+      this.$chart.init(this.$refs.tooltipChart, window.gApp.echartsTheme.common)
       this.renderChart()
     })
   },
@@ -90,9 +101,10 @@ export default {
       const chartHeight = this.chartHeight
       const titleHeight = this.titleHeight
       const gap = this.gap
-
-      this.innerChart.resize()
       this.initData().then(res => {
+        if (_this.$refs.tooltipChart === null) {
+          return
+        }
         const option = {
           animation: false,
           title: _this.chartList.map((item, index) => {
@@ -135,7 +147,7 @@ export default {
               type: 'line',
               lineStyle: {
                 width: 1,
-                color: _this.innerChart._theme.color[0],
+                color: _this.$chart.getInstanceByDom(_this.$refs.tooltipChart)._theme.color[0],
               },
               showSymbol: false,
               data: res.y[index],
@@ -144,13 +156,9 @@ export default {
             }
           }),
         }
-
         this.loading = false
-        this.innerChart.setOption(option)
+        this.$chart.getInstanceByDom(this.$refs.tooltipChart).setOption(option)
       })
-      // this.refreshId = setTimeout(_ => {
-      //     this.renderChart();
-      // }, this.refreshInterval);
     },
     initData() {
       return new Promise((resolve, reject) => {
@@ -212,10 +220,12 @@ export default {
       }
     },
     onResize() {
-      this.innerChart.resize()
+      this.$nextTick(() => {
+        this.$chart.getInstanceByDom(this.$refs.tooltipChart).resize()
+      })
     },
     getCurrenrValuePosition(index) {
-      const top = index * this.chartHeight + 68
+      const top = index * this.chartHeight + 90
       return `top: ${top}px;`
     },
   },
@@ -258,5 +268,9 @@ export default {
 .node-gpu-tooltip-tile-item {
   margin: 5px 0;
   text-align: center;
+}
+.node-gpu-tooltip-current-value {
+  margin-top: -20px;
+  display: inline-block;
 }
 </style>

@@ -1,38 +1,37 @@
-# openlico-portal
+# lico-portal
 
----
+This template should help get you started developing with Vue 3 in Vite.
 
-## Project setup
+## Recommended IDE Setup
 
-```
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+
+## Customize configuration
+
+See [Vite Configuration Reference](https://vitejs.dev/config/).
+
+## Project Setup
+
+```sh
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Compile and Hot-Reload for Development
 
-```
-npm run serve -- --0.0.0.0
-```
-or
-```
-npm run serve -- --0.0.0.0:<port>
+```sh
+npm run dev
 ```
 
+You can change the address of `VITE_BACKEND_URL` in '.env.local 'for debugging and development
 
-### Compiles and minifies for production
+### Compile and Minify for Production
 
-```
+```sh
 npm run build
 ```
 
-### ESlint
+### Lint with [ESLint](https://eslint.org/)
 
+```sh
+npm run lint
 ```
-npm run lint-fix
-```
-
----
-
-### Customize configuration
-
-See [Configuration Reference](https://cli.vuejs.org/config/).

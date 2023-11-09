@@ -1,7 +1,8 @@
 <template>
   <div class="multi-node-selector">
     <a-input-group compact>
-      <a-input v-model="inputValue" read-only :placeholder="placeholderAll" style="width: 80%" />
+      <!-- eslint-disable-next-line -->
+      <a-input v-model:value="inputValue" readOnly :placeholder="placeholderAll" style="width: 80%" />
       <a-button type="primary" style="width: 20%" @click="onSelectClick(nodeValueObj)">
         {{ $t('Action.Select') }}
       </a-button>
@@ -16,11 +17,11 @@
   </div>
 </template>
 <script>
-import MultiNodeSelectorDialog from '../widget/multi-node-selector/multi-node-selector-dialog'
-import RackService from '../service/rack'
+import RackService from '@/service/rack'
+import MultiNodeSelectorDialog from './multi-node-selector/multi-node-selector-dialog.vue'
 export default {
   components: {
-    'multi-node-selector-dialog': MultiNodeSelectorDialog,
+    MultiNodeSelectorDialog,
   },
   props: {
     filterType: { default: 'hostname,rack,nodegroup' },
@@ -34,6 +35,7 @@ export default {
       },
     },
   },
+  emits: ['nodes-selected-change'],
   data() {
     return {
       nodeValueObj: '',

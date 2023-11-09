@@ -30,13 +30,13 @@ class NotifyEmail {
 
   static parseFromRestApi(jsonObj) {
     const notifyEmail = new NotifyEmail()
-    notifyEmail._status = jsonObj.enabled
-    notifyEmail._ssl = jsonObj.ssl
-    notifyEmail._id = jsonObj.username
-    notifyEmail._password = jsonObj.password
-    notifyEmail._address = jsonObj.server_address
-    notifyEmail._port = String(jsonObj.server_port)
-    notifyEmail._mailbox = jsonObj.sender_address
+    notifyEmail.status = jsonObj.enabled
+    notifyEmail.ssl = jsonObj.ssl
+    notifyEmail.id = jsonObj.username
+    notifyEmail.password = jsonObj.password
+    notifyEmail.address = jsonObj.server_address
+    notifyEmail.port = String(jsonObj.server_port)
+    notifyEmail.mailbox = jsonObj.sender_address
     return notifyEmail
   }
 
@@ -51,67 +51,11 @@ class NotifyEmail {
     notifyEmail.sender_address = form.mailbox
     return notifyEmail
   }
-
-  get _status() {
-    return this.status
-  }
-
-  set _status(status) {
-    this.status = status
-  }
-
-  get _ssl() {
-    return this.ssl
-  }
-
-  set _ssl(ssl) {
-    this.ssl = ssl
-  }
-
-  get _id() {
-    return this.id
-  }
-
-  set _id(id) {
-    this.id = id
-  }
-
-  get _password() {
-    return this.password
-  }
-
-  set _password(password) {
-    this.password = password
-  }
-
-  get _address() {
-    return this.address
-  }
-
-  set _address(address) {
-    this.address = address
-  }
-
-  get _port() {
-    return this.port
-  }
-
-  set _port(port) {
-    this.port = port
-  }
-
-  get _mailbox() {
-    return this.mailbox
-  }
-
-  set _mailbox(mailbox) {
-    this.mailbox = mailbox
-  }
 }
 
 function getNotifyEmail() {
   return new Promise((resolve, reject) => {
-    Request.get('/api/external/notice/mail/config/').then(
+    Request.get('/api/notice/mail/config/').then(
       res => {
         resolve(NotifyEmail.parseFromRestApi(res.data))
       },
@@ -125,7 +69,7 @@ function getNotifyEmail() {
 function updateMail(form) {
   return new Promise((resolve, reject) => {
     const req = NotifyEmail.toRestApi(form)
-    Request.post('/api/external/notice/mail/config/', req).then(
+    Request.post('/api/notice/mail/config/', req).then(
       res => {
         resolve()
       },
@@ -143,7 +87,7 @@ function testMail(target) {
       title: 'This is a Test email',
       msg: 'LiCO test',
     }
-    Request.post('/api/external/notice/mail/', req).then(
+    Request.post('/api/notice/mail/', req).then(
       res => {
         resolve()
       },

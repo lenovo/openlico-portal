@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-import LibPhoneNumber from 'google-libphonenumber'
+// import LibPhoneNumber from 'google-libphonenumber'
 import Utils from './utils'
-const phoneUtil = LibPhoneNumber.PhoneNumberUtil.getInstance()
+// const phoneUtil = LibPhoneNumber.PhoneNumberUtil.getInstance()
 
 function getRequireRoleForText(itemLabel) {
   return {
     required: true,
-    message: window.gApp.$t('Valid.Require', { name: itemLabel }),
+    message: window.gApp.$T('Valid.Require', { name: itemLabel }),
     //  trigger: 'blur'
   }
 }
-
 function getLengthRoleForText(itemLabel, min, max) {
   return {
     min,
     max,
-    message: window.gApp.$t('Valid.Text.Length', { name: itemLabel, min, max }),
+    message: window.gApp.$T('Valid.Text.Length', { name: itemLabel, min, max }),
     // trigger: 'blur'
   }
 }
@@ -42,9 +41,13 @@ function getValidTemplateFileName(itemLabel) {
       const errors = []
       const regExp = pattern
       if (value.toString().length > 0 && !regExp.test(value.toString())) {
-        errors.push(new Error(window.gApp.$t('Valid.Template.Name', { name: itemLabel })))
+        errors.push(new Error(window.gApp.$T('Valid.Template.Name', { name: itemLabel })))
       }
-      callback(errors)
+      if (errors.length) {
+        return Promise.reject(errors)
+      } else {
+        return Promise.resolve()
+      }
     },
   }
 }
@@ -52,13 +55,17 @@ function getValidTemplateFileName(itemLabel) {
 function getValidIdentityNameRoleForText(itemLabel) {
   const pattern = '^[a-zA-Z0-9_]+$'
   return {
-    validator(rule, value, callback, source, options) {
+    validator(rule, value) {
       const errors = []
       const regExp = new RegExp(pattern)
       if (value.toString().length > 0 && !regExp.test(value.toString())) {
-        errors.push(new Error(window.gApp.$t('Valid.Text.Name', { name: itemLabel })))
+        errors.push(new Error(window.gApp.$T('Valid.Text.Name', { name: itemLabel })))
       }
-      callback(errors)
+      if (errors.length) {
+        return Promise.reject(errors)
+      } else {
+        return Promise.resolve()
+      }
     },
   }
 }
@@ -66,13 +73,12 @@ function getValidIdentityNameRoleForText(itemLabel) {
 function getValidQueueNameRoleForText(itemLabel) {
   const pattern = '^[a-zA-Z0-9_-]+$'
   return {
-    validator(rule, value, callback, source, options) {
-      const errors = []
+    validator(rule, value) {
       const regExp = new RegExp(pattern)
       if (value.toString().length > 0 && !regExp.test(value.toString())) {
-        errors.push(new Error(window.gApp.$t('Valid.Queue.Name', { name: itemLabel })))
+        return Promise.reject(new Error(window.gApp.$T('Valid.Queue.Name', { name: itemLabel })))
       }
-      callback(errors)
+      return Promise.resolve()
     },
   }
 }
@@ -80,15 +86,14 @@ function getValidQueueNameRoleForText(itemLabel) {
 function getValidRunTimeRoleForText(itemLabel) {
   const pattern = '^([\\s]*([0-9]+d\\b)?[\\s]*)([0-9]+h\\b)?[\\s]*([0-9]+m\\b)?[\\s]*$'
   return {
-    validator(rule, value, callback, source, options) {
+    validator(rule, value) {
       if (value === '') {
-        callback()
-        return
+        return Promise.resolve()
       }
       const errors = []
       const regExp = new RegExp(pattern)
       if (value.replace(/\s+/g, '') && value.toString().length > 0 && !regExp.test(value.toString())) {
-        errors.push(new Error(window.gApp.$t('Valid.Text.RunTime', { name: itemLabel })))
+        errors.push(new Error(window.gApp.$T('Valid.Text.RunTime', { name: itemLabel })))
       }
       const result = value.split(/\s+/)
       let temp = 0
@@ -110,12 +115,12 @@ function getValidRunTimeRoleForText(itemLabel) {
       })
 
       if (value.replace(/\s+/g, '') && temp > 525600) {
-        errors.push(new Error(window.gApp.$t('Valid.Text.RunTime.Max', { name: itemLabel })))
+        errors.push(new Error(window.gApp.$T('Valid.Text.RunTime.Max', { name: itemLabel })))
       }
       if (value.replace(/\s+/g, '') && temp < 1) {
-        errors.push(new Error(window.gApp.$t('Valid.Text.RunTime.Min', { name: itemLabel })))
+        errors.push(new Error(window.gApp.$T('Valid.Text.RunTime.Min', { name: itemLabel })))
       }
-      callback(errors)
+      return Promise.reject(errors)
     },
   }
 }
@@ -124,13 +129,12 @@ function getValidRunTimeRoleForText(itemLabel) {
 function getValidIdentityNameRoleIncludeChineseText(itemLabel) {
   const pattern = /^(?!_|-|\s)(?!.*?(_|-|\s)$)[a-zA-Z0-9_\u4e00-\u9fa5\s-]+$/
   return {
-    validator(rule, value, callback, source, options) {
-      const errors = []
+    validator(rule, value) {
       const regExp = pattern
       if (value.toString().length > 0 && !regExp.test(value.toString())) {
-        errors.push(new Error(window.gApp.$t('Valid.Text.Chinese.Name', { name: itemLabel })))
+        return Promise.reject(new Error(window.gApp.$T('Valid.Text.Chinese.Name', { name: itemLabel })))
       }
-      callback(errors)
+      return Promise.resolve()
     },
   }
 }
@@ -139,7 +143,7 @@ function getRequireRoleForNumber(itemLabel) {
   return {
     type: 'number',
     required: true,
-    message: window.gApp.$t('Valid.Require', { name: itemLabel }),
+    message: window.gApp.$T('Valid.Require', { name: itemLabel }),
     // trigger: 'blur'
   }
 }
@@ -149,7 +153,7 @@ function getValidNumberRoleForText(itemLabel) {
     type: 'pattern',
     // eslint-disable-next-line no-useless-escape
     pattern: /^(\-|\+)?\d+(\.\d+)?$/,
-    message: window.gApp.$t('Valid.Number', { name: itemLabel }),
+    message: window.gApp.$T('Valid.Number', { name: itemLabel }),
     // trigger: 'blur'
   }
 }
@@ -158,7 +162,7 @@ function getNodesExpressionRoleForText(itemLabel) {
   return {
     type: 'pattern',
     pattern: /(^(\w)+$)|(^[\w].*([\w|\]])$)/,
-    message: window.gApp.$t('Valid.NodesExpression', { name: itemLabel }),
+    message: window.gApp.$T('Valid.NodesExpression', { name: itemLabel }),
     // trigger: 'blur'
   }
 }
@@ -167,49 +171,53 @@ function getMaxTimeForText(itemLabel) {
   return {
     type: 'pattern',
     pattern: /(\d{1,3}-\d{1,2}:\d{1,2}$)|(\d{1,3}-\d{1,2}:\d{1,2}:\d{1,2}$)/,
-    message: window.gApp.$t('Valid.MaxTime', { name: itemLabel }),
+    message: window.gApp.$T('Valid.MaxTime', { name: itemLabel }),
     // trigger: 'blur'
   }
 }
 
 function getMaxTimeRangeRoleForText() {
   return {
-    validator(rule, value, callback, source, options) {
-      const errors = []
-      const days = value.split('-')[0]
-      const hours = value.split('-')[1].split(':')[0]
-      const mins = value.split('-')[1].split(':')[1]
-      if (days < 0 || days > 365) {
-        errors.push(new Error(window.gApp.$t('Valid.MaxTime.Days.Range')))
-      } else if (hours < 0 || hours > 23) {
-        errors.push(new Error(window.gApp.$t('Valid.MaxTime.Hours.Range')))
-      } else if (mins < 0 || mins > 59) {
-        errors.push(new Error(window.gApp.$t('Valid.MaxTime.Mins.Range')))
+    validator(rule, value) {
+      if (value) {
+        const days = value.split('-')[0]
+        const hours = value.split('-')[1] === undefined ? -1 : value.split('-')[1].split(':')[0]
+        const mins = value.split('-')[1] === undefined ? -1 : value.split('-')[1].split(':')[1]
+
+        if (days < 0 || days > 365) {
+          return Promise.reject(new Error(window.gApp.$T('Valid.MaxTime.Days.Range')))
+        } else if (hours < 0 || hours > 23) {
+          return Promise.reject(new Error(window.gApp.$T('Valid.MaxTime.Hours.Range')))
+        } else if (mins < 0 || mins > 59) {
+          return Promise.reject(new Error(window.gApp.$T('Valid.MaxTime.Mins.Range')))
+        }
       }
-      callback(errors)
+
+      return Promise.resolve()
     },
   }
 }
 
 function getNumberRangeRoleForText(itemLabel, min, max) {
   return {
-    validator(rule, value, callback, source, options) {
-      const errors = []
+    validator(rule, value) {
       if (value.length > 0) {
         const num = parseFloat(value)
         if (num < min || num > max) {
           if (min === max) {
-            errors.push(new Error(window.gApp.$t('Valid.Number.Range.Equal', { name: itemLabel, equal: max })))
+            return Promise.reject(
+              new Error(window.gApp.$T('Valid.Number.Range.Equal', { name: itemLabel, equal: max })),
+            )
           } else if (!max && max !== 0) {
-            errors.push(new Error(window.gApp.$t('Valid.Number.Range.Min', { name: itemLabel, min })))
+            return Promise.reject(new Error(window.gApp.$T('Valid.Number.Range.Min', { name: itemLabel, min })))
           } else if (!min && min !== 0) {
-            errors.push(new Error(window.gApp.$t('Valid.Number.Range.Max', { name: itemLabel, max })))
+            return Promise.reject(new Error(window.gApp.$T('Valid.Number.Range.Max', { name: itemLabel, max })))
           } else {
-            errors.push(new Error(window.gApp.$t('Valid.Number.Range', { name: itemLabel, min, max })))
+            return Promise.reject(new Error(window.gApp.$T('Valid.Number.Range', { name: itemLabel, min, max })))
           }
         }
       }
-      callback(errors)
+      return Promise.resolve()
     },
   }
 }
@@ -218,14 +226,20 @@ function getNumberDecimalRoleForText(itemLabel, decimal) {
   const numberPattern = '^(\\-|\\+)?\\d+(\\.\\d+)?$'
   const pattern = '^[-]?\\d+(\\.\\d{0,' + decimal + '})?$'
   return {
-    validator(rule, value, callback, source, options) {
-      const errors = []
+    validator(rule, value) {
       const numberRegExp = new RegExp(numberPattern)
       const regExp = new RegExp(pattern)
       if (value.length > 0 && numberRegExp.test(value) && !regExp.test(value)) {
-        errors.push(new Error(window.gApp.$t('Valid.Number.Decimal', { name: itemLabel, decimal })))
+        return Promise.reject(
+          new Error(
+            window.gApp.$T('Valid.Number.Decimal', {
+              name: itemLabel,
+              decimal,
+            }),
+          ),
+        )
       }
-      callback(errors)
+      return Promise.resolve()
     },
   }
 }
@@ -233,27 +247,39 @@ function getNumberDecimalRoleForText(itemLabel, decimal) {
 function getValidNaturalNumber(itemLabel) {
   const pattern = /^\d+$/
   return {
-    validator(rule, value, callback, source, options) {
+    validator(rule, value) {
       const errors = []
       if (!!value && !pattern.test(value)) {
-        errors.push(new Error(window.gApp.$t('Valid.Number', { name: itemLabel })))
+        errors.push(new Error(window.gApp.$T('Valid.Number', { name: itemLabel })))
       }
-      callback(errors)
+      return Promise[errors.length ? 'reject' : 'resolve'](errors)
     },
   }
 }
 
 function getRangeRoleForNumber(itemLabel, min, max) {
   return {
-    validator(rule, value, callback, source, options) {
+    validator(rule, value) {
       const errors = []
       if (value.toString().length > 0) {
         const num = parseFloat(value.toString())
         if (num < min || num > max) {
-          errors.push(new Error(window.gApp.$t('Valid.Number.Range', { name: itemLabel, min, max })))
+          errors.push(
+            new Error(
+              window.gApp.$T('Valid.Number.Range', {
+                name: itemLabel,
+                min,
+                max,
+              }),
+            ),
+          )
         }
       }
-      callback(errors)
+      if (errors.length) {
+        return Promise.reject(errors)
+      } else {
+        return Promise.resolve()
+      }
     },
   }
 }
@@ -265,7 +291,15 @@ function getDynamicRangeRoleForNumber(itemLabel, min, max) {
       if (value.toString().length > 0) {
         const num = parseFloat(value.toString())
         if (num < min() || num > max()) {
-          errors.push(new Error(window.gApp.$t('Valid.Number.Range', { name: itemLabel, min: min(), max: max() })))
+          errors.push(
+            new Error(
+              window.gApp.$T('Valid.Number.Range', {
+                name: itemLabel,
+                min: min(),
+                max: max(),
+              }),
+            ),
+          )
         }
       }
       callback(errors)
@@ -280,9 +314,20 @@ function getDecimalRoleForNumber(itemLabel, decimal) {
       const errors = []
       const regExp = new RegExp(pattern)
       if (value.toString().length > 0 && !regExp.test(value.toString())) {
-        errors.push(new Error(window.gApp.$t('Valid.Number.Decimal', { name: itemLabel, decimal })))
+        errors.push(
+          new Error(
+            window.gApp.$T('Valid.Number.Decimal', {
+              name: itemLabel,
+              decimal,
+            }),
+          ),
+        )
       }
-      callback(errors)
+      if (errors.length) {
+        return Promise.reject(errors)
+      } else {
+        return Promise.resolve()
+      }
     },
   }
 }
@@ -291,8 +336,8 @@ function getRequireRoleForArray(itemLabel) {
   return {
     type: 'array',
     required: true,
-    message: window.gApp.$t('Valid.Require', { name: itemLabel }),
-    trigger: 'blur',
+    message: window.gApp.$T('Valid.Require', { name: itemLabel }),
+    trigger: 'input',
   }
 }
 
@@ -301,29 +346,39 @@ function getLengthRoleForArray(itemLabel, min, max) {
     type: 'array',
     min,
     max,
-    message: window.gApp.$t('Valid.Array.Length', { name: itemLabel, min, max }),
+    message: window.gApp.$T('Valid.Array.Length', {
+      name: itemLabel,
+      min,
+      max,
+    }),
     trigger: 'blur',
   }
 }
 
 function getUniqueRoleForArray(itemLabel) {
   return {
-    validator(rule, value, callback, source, options) {
-      const errors = []
-      if (value instanceof Array) {
-        for (let i = 0; i < value.length; i++) {
-          for (let j = i + 1; j < value.length; j++) {
-            if (Utils.objectEquals(value[i], value[j])) {
-              errors.push(new Error(window.gApp.$t('Valid.Array.Unique', { name: itemLabel })))
+    validator(rule, value) {
+      return new Promise((resolve, reject) => {
+        const errors = []
+        if (value instanceof Array) {
+          for (let i = 0; i < value.length; i++) {
+            for (let j = i + 1; j < value.length; j++) {
+              if (Utils.objectEquals(value[i], value[j])) {
+                errors.push(new Error(window.gApp.$T('Valid.Array.Unique', { name: itemLabel })))
+                break
+              }
+            }
+            if (errors.length > 0) {
               break
             }
           }
-          if (errors.length > 0) {
-            break
-          }
         }
-      }
-      callback(errors)
+        if (errors.length > 0) {
+          reject(errors)
+        } else {
+          resolve()
+        }
+      })
     },
   }
 }
@@ -336,17 +391,17 @@ function getEmailRole(itemLabel) {
     // pattern: /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/,
     // eslint-disable-next-line no-useless-escape
     pattern: /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/,
-    message: window.gApp.$t('Valid.Email', { name: itemLabel }),
+    message: window.gApp.$T('Valid.Email', { name: itemLabel }),
     trigger: 'blur',
   }
 }
 function getPathRole(itemLabel) {
   return {
-    validator: (rule, value, callback) => {
+    validator: (rule, value) => {
       if (value.indexOf('\\') > 0) {
-        callback(new Error(window.gApp.$t('Valid.Path', { name: itemLabel })))
+        return Promise.reject(new Error(window.gApp.$T('Valid.Path', { name: itemLabel })))
       } else {
-        callback()
+        return Promise.resolve()
       }
     },
     trigger: 'blur',
@@ -357,27 +412,18 @@ function getPasswordRole(itemLabel) {
   const pattern =
     '^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\\W_]+$)(?![a-z0-9]+$)(?![a-z\\W_]+$)(?![0-9\\W_]+$)[a-zA-Z0-9\\W_]{10,20}$'
   return {
-    validator(rule, value, callback, source, options) {
-      const errors = []
+    validator(rule, value) {
       const regExp = new RegExp(pattern)
       if (value.length > 0 && !regExp.test(value)) {
         if (value.length < 10 || value.length > 32) {
-          errors.push(new Error(window.gApp.$t('Valid.Password.Length', { name: itemLabel })))
+          return Promise.reject(new Error(window.gApp.$T('Valid.Password.Length', { name: itemLabel })))
         } else {
-          errors.push(new Error(window.gApp.$t('Valid.Password', { name: itemLabel })))
+          return Promise.reject(new Error(window.gApp.$T('Valid.Password', { name: itemLabel })))
         }
       }
-      callback(errors)
+      return Promise.resolve()
     },
   }
-
-  // return {
-  //   type: 'pattern',
-  //   // pattern: /^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)(?![a-zA-z\d]+$)(?![a-zA-z!@#$%^&*]+$)(?![\d!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]+$/,
-  //   pattern: /^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\W_]+$)(?![a-z0-9]+$)(?![a-z\W_]+$)(?![0-9\W_]+$)[a-zA-Z0-9\W_]{10,20}$/,
-  //   message: window.gApp.$t('Valid.Password', {'name': itemLabel}),
-  //   trigger: 'blur'
-  // };
 }
 
 // function getMobileRole(itemLabel) {
@@ -385,64 +431,64 @@ function getPasswordRole(itemLabel) {
 //     type: 'pattern',
 //     //pattern: /^1(3[0-9]|4[57]|5[0-35-9]|8[0-9]|70)\d{8}$/,
 //     pattern: /^((1[3,5,8][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/,
-//     message: window.gApp.$t('Valid.Mobile', {'name': itemLabel}),
+//     message: window.gApp.$T('Valid.Mobile', {'name': itemLabel}),
 //     trigger: 'blur'
 //   };
 // }
 
-function getMobileRole(itemLabel, country, mustMobile) {
-  // Get country code
-  // const country = window.gApp.$store.getters['settings/getMobilePolicy']
-  return {
-    validator: (rule, value, callback) => {
-      if (value.length > 0) {
-        try {
-          const phonenumber = phoneUtil.parseAndKeepRawInput(value, country)
-          let isaphone = phoneUtil.isValidNumber(phonenumber)
-          const isMobile = phoneUtil.getNumberType(phonenumber)
-          if (!isaphone) {
-            isaphone = false
-            throw Error(false)
-          } else {
-            if (mustMobile) {
-              // PhoneNumberType
-              // PhoneNumberType
-              // FIXED_LINE:0,MOBILE:1,FIXED_LINE_OR_MOBILE:2,
-              // TOLL_FREE:3,PREMIUM_RATE:4,SHARED_COST:5,
-              // VOIP:6,PERSONAL_NUMBER:7,PAGER:8,UAN:9,
-              // VOICEMAIL:10,UNKNOWN:-1
-              // 1 || 2 is mobile
-              if (isMobile === 1 || isMobile === 2) {
-                callback()
-              } else {
-                isaphone = false
-                throw Error(false)
-              }
-            } else {
-              callback()
-            }
-          }
-        } catch (error) {
-          callback(new Error(window.gApp.$t('Valid.Mobile', { name: itemLabel })))
-        }
-      } else {
-        callback()
-      }
-    },
-    // trigger: 'chenge'
-  }
-}
+// function getMobileRole(itemLabel, country, mustMobile) {
+//   // Get country code
+//   // const country = window.gApp.$store.getters['settings/getMobilePolicy']
+//   return {
+//     validator: (rule, value, callback) => {
+//       if (value.length > 0) {
+//         try {
+//           const phonenumber = phoneUtil.parseAndKeepRawInput(value, country)
+//           let isaphone = phoneUtil.isValidNumber(phonenumber)
+//           const isMobile = phoneUtil.getNumberType(phonenumber)
+//           if (!isaphone) {
+//             isaphone = false
+//             throw Error(false)
+//           } else {
+//             if (mustMobile) {
+//               // PhoneNumberType
+//               // PhoneNumberType
+//               // FIXED_LINE:0,MOBILE:1,FIXED_LINE_OR_MOBILE:2,
+//               // TOLL_FREE:3,PREMIUM_RATE:4,SHARED_COST:5,
+//               // VOIP:6,PERSONAL_NUMBER:7,PAGER:8,UAN:9,
+//               // VOICEMAIL:10,UNKNOWN:-1
+//               // 1 || 2 is mobile
+//               if (isMobile === 1 || isMobile === 2) {
+//                 callback()
+//               } else {
+//                 isaphone = false
+//                 throw Error(false)
+//               }
+//             } else {
+//               callback()
+//             }
+//           }
+//         } catch (error) {
+//           callback(new Error(window.gApp.$T('Valid.Mobile', { name: itemLabel })))
+//         }
+//       } else {
+//         callback()
+//       }
+//     },
+//     // trigger: 'chenge'
+//   }
+// }
 
 function getArrayRequireForAI(itemLabel) {
   return {
     validator(rule, value, callback, source, options) {
       const errors = []
       if (value.trim() === '') {
-        errors.push(new Error(window.gApp.$t('Valid.StepValues.Require')))
+        errors.push(new Error(window.gApp.$T('Valid.StepValues.Require')))
       } else if (!value.trim().includes(' ')) {
-        errors.push(new Error(window.gApp.$t('Valid.StepValues.Sequence')))
+        errors.push(new Error(window.gApp.$T('Valid.StepValues.Sequence')))
       } else if (!isNaN(Number(value.trim()))) {
-        errors.push(new Error(window.gApp.$t('Valid.StepValues.Sequence')))
+        errors.push(new Error(window.gApp.$T('Valid.StepValues.Sequence')))
       }
       callback(errors)
     },
@@ -460,11 +506,11 @@ function getArrayValidForAI(itemLabel) {
       while (i < numList.length) {
         const num = numList[i]
         if (isNaN(Number(num))) {
-          errors.push(new Error(window.gApp.$t('Valid.StepValues.Sequence')))
+          errors.push(new Error(window.gApp.$T('Valid.StepValues.Sequence')))
           break
         }
         if (num === '') {
-          errors.push(new Error(window.gApp.$t('Valid.StepValues.Sequence')))
+          errors.push(new Error(window.gApp.$T('Valid.StepValues.Sequence')))
           break
         } else {
           i += 1
@@ -473,13 +519,13 @@ function getArrayValidForAI(itemLabel) {
       if (errors.length === 0) {
         let tmp = numList[0]
         if (tmp === '0') {
-          errors.push(new Error(window.gApp.$t('Valid.StepValues.Number')))
+          errors.push(new Error(window.gApp.$T('Valid.StepValues.Number')))
         } else {
           for (i = 1; i < numList.length; i++) {
             if (tmp < numList[i]) {
               tmp = numList[i]
             } else {
-              errors.push(new Error(window.gApp.$t('Valid.StepValues.Ascend')))
+              errors.push(new Error(window.gApp.$T('Valid.StepValues.Ascend')))
               break
             }
           }
@@ -492,45 +538,43 @@ function getArrayValidForAI(itemLabel) {
 
 function getSuffixValid(itemLabel, rules) {
   const str = rules.join(', ')
-  const pattern = `(${rules.join('|')})$`
+  const regExp = new RegExp(`(${rules.join('|')})$`)
   return {
     trigger: 'blur',
-    validator(rule, value, callback, source, options) {
-      let errors = []
-      if (value.length > 0) {
-        errors = [new Error(window.gApp.$t('Valid.Filename.Suffix', { name: itemLabel, value: str }))]
-        const regExp = new RegExp(pattern, 'i')
-        for (let i = 0; i < rules.length; i++) {
-          if (regExp.test(value.substr(0 - rules[i].length))) {
-            errors = []
-            break
-          }
-        }
+    validator(rule, value) {
+      const errors = []
+      const type = value.split(';')[0]
+      if (!regExp.test(type)) {
+        errors.push(
+          new Error(
+            window.gApp.$T('Valid.Filename.Suffix', {
+              name: itemLabel,
+              value: str,
+            }),
+          ),
+        )
       }
-      callback(errors)
+      return Promise[errors.length ? 'reject' : 'resolve'](errors)
     },
   }
 }
 
 function getValidUserameForText(itemLabel, caseInsensitive) {
-  // eslint-disable-next-line no-useless-escape
   let pattern = '^[a-zA-Z0-9.][a-zA-Z0-9._-]+$'
   if (!caseInsensitive) {
-    // eslint-disable-next-line no-useless-escape
     pattern = '^[a-z0-9.][a-z0-9._-]+$'
   }
   return {
-    validator(rule, value, callback, source, options) {
-      const errors = []
+    validator(rule, value) {
       const regExp = new RegExp(pattern)
       if (value.toString().length > 1 && !regExp.test(value.toString())) {
         if (caseInsensitive) {
-          errors.push(new Error(window.gApp.$t('Valid.Text.Username', { name: itemLabel })))
+          return Promise.reject(new Error(window.gApp.$T('Valid.Text.Username', { name: itemLabel })))
         } else {
-          errors.push(new Error(window.gApp.$t('Valid.Text.Username.NoCaseInsensitive', { name: itemLabel })))
+          return Promise.reject(new Error(window.gApp.$T('Valid.Text.Username.NoCaseInsensitive', { name: itemLabel })))
         }
       }
-      callback(errors)
+      return Promise.resolve()
     },
   }
 }
@@ -541,17 +585,23 @@ function getValidSystemNameRoleForText(itemLabel, caseInsensitive) {
     pattern = '^[a-z][a-z0-9_-]+$'
   }
   return {
-    validator(rule, value, callback, source, options) {
+    validator(rule, value) {
       const errors = []
       const regExp = new RegExp(pattern)
       if (value.toString().length > 1 && !regExp.test(value.toString())) {
         if (caseInsensitive) {
-          errors.push(new Error(window.gApp.$t('Valid.Text.SystemName', { name: itemLabel })))
+          errors.push(new Error(window.gApp.$T('Valid.Text.SystemName', { name: itemLabel })))
         } else {
-          errors.push(new Error(window.gApp.$t('Valid.Text.SystemName.NoCaseInsensitive', { name: itemLabel })))
+          errors.push(
+            new Error(
+              window.gApp.$T('Valid.Text.SystemName.NoCaseInsensitive', {
+                name: itemLabel,
+              }),
+            ),
+          )
         }
       }
-      callback(errors)
+      return Promise[errors.length ? 'reject' : 'resolve'](errors)
     },
   }
 }
@@ -566,7 +616,7 @@ function getValidFileName(itemLabel) {
       const errorChars = '\\/:*?"<>| '
       for (let i = 0; i < value.length; i++) {
         if (errorChars.includes(value[i])) {
-          errors.push(new Error(window.gApp.$t('Valid.FileName')))
+          errors.push(new Error(window.gApp.$T('Valid.FileName')))
           break
         }
       }
@@ -577,22 +627,20 @@ function getValidFileName(itemLabel) {
 
 function getValidUsersName(allable, maxValue) {
   return {
-    validator(rule, value, callback) {
+    validator(rule, value) {
       // eslint-disable-next-line no-useless-escape
       const Reg = /^[a-zA-Z0-9_,-\.]*$/
-      if (value === '') {
-        if (allable) {
-          callback()
-        } else {
-          callback(new Error(window.gApp.$t('Multi.User.Required')))
+      const errors = []
+      if (!allable) {
+        if (value === '') {
+          errors.push(new Error(window.gApp.$T('Multi.User.Required')))
+        } else if (!value.match(Reg)) {
+          errors.push(new Error(window.gApp.$T('Multi.User.FormatError')))
+        } else if (value.split(',').length > maxValue) {
+          errors.push(new Error(window.gApp.$T('Multi.User.tooLong', { value: maxValue })))
         }
-      } else if (!value.match(Reg)) {
-        callback(new Error(window.gApp.$t('Multi.User.FormatError')))
-      } else if (value.split(',').length > maxValue) {
-        callback(new Error(window.gApp.$t('Multi.User.tooLong', { value: maxValue })))
-      } else {
-        callback()
       }
+      return Promise[errors.length ? 'reject' : 'resolve'](errors)
     },
     trigger: 'change',
   }
@@ -600,12 +648,12 @@ function getValidUsersName(allable, maxValue) {
 
 function getValidMultiSelect(allable) {
   return {
-    validator(rule, value, callback) {
-      if (value.length === 0 && !allable) {
-        callback(new Error(window.gApp.$t('Multi.User.Required')))
-      } else {
-        callback()
+    validator(rule, value) {
+      const errors = []
+      if (!allable && value.length === 0) {
+        errors.push(new Error(window.gApp.$T('Multi.User.Required')))
       }
+      return Promise[errors.length ? 'reject' : 'resolve'](errors)
     },
     trigger: 'change',
   }
@@ -619,7 +667,13 @@ function getValidPathForText(itemLabel) {
       const errors = []
       const regExp = new RegExp(pattern)
       if (value.toString().length > 0 && !regExp.test(value.toString())) {
-        errors.push(new Error(window.gApp.$t('Admin.Runtime.Env.Value.Valid', { name: itemLabel })))
+        errors.push(
+          new Error(
+            window.gApp.$T('Admin.Runtime.Env.Value.Valid', {
+              name: itemLabel,
+            }),
+          ),
+        )
       }
       callback(errors)
     },
@@ -631,9 +685,8 @@ function getvalidMultiHostName(required = true) {
   return {
     required,
     pattern,
-    validator(rule, value, callback) {
+    async validator(rule, value) {
       if (!required && !value) {
-        callback()
         return
       }
       const hosts = value.split(',')
@@ -645,9 +698,9 @@ function getvalidMultiHostName(required = true) {
         }
       }
       if (valid) {
-        callback()
+        return Promise.resolve()
       } else {
-        callback(new Error(window.gApp.$t('MultNode.Error.Format')))
+        return Promise.reject(new Error(window.gApp.$T('MultNode.Error.Format')))
       }
     },
   }
@@ -656,12 +709,12 @@ function getvalidMultiHostName(required = true) {
 function getPasswordRoleByText() {
   const pattern = /(^\s|\s$)/
   return {
-    validator(rule, value, callback) {
+    validator(rule, value) {
       if (pattern.test(value)) {
-        callback(new Error(window.gApp.$t('Password.Invalid.Space')))
+        return Promise.reject(new Error(window.gApp.$T('Password.Invalid.Space')))
       }
 
-      callback()
+      return Promise.resolve()
     },
   }
 }
@@ -669,12 +722,18 @@ function getPasswordRoleByText() {
 function getUsernameRoleByText(itemLabel) {
   const pattern = /\s/
   return {
-    validator(rule, value, callback) {
+    validator(rule, value) {
       if (pattern.test(value)) {
-        callback(new Error(window.gApp.$t('CloudTools.Username.Verification', { name: itemLabel })))
+        return Promise.reject(
+          new Error(
+            window.gApp.$T('CloudTools.Username.Verification', {
+              name: itemLabel,
+            }),
+          ),
+        )
       }
 
-      callback()
+      return Promise.resolve()
     },
   }
 }
@@ -684,11 +743,68 @@ function getVaildPositiveInteger(itemLabel) {
   return {
     validator(rule, value, callback) {
       if (!pattern.test(value)) {
-        callback(new Error(window.gApp.$t('Valid.Positive.Integer', { name: itemLabel })))
+        return Promise.reject(new Error(window.gApp.$T('Valid.Positive.Integer', { name: itemLabel })))
       }
 
-      callback()
+      return Promise.resolve()
     },
+  }
+}
+
+function getValidRuntimeTime(itemLabel) {
+  return {
+    type: 'pattern',
+    // pattern that matches <min> or <min>:<sec> or <hr>:<min>:<sec> or <days>-<hr>:<min>:<sec> or <days>-<hr>
+    pattern:
+      /^((\d+)-)?(\d{1,2}):(\d{1,2}):(\d{1,2})$|^((\d+)-)?(\d{1,2})$|^(\d{1,2}):(\d{1,2}):(\d{1,2})$|^(\d{1,2}):(\d{1,2})$|^(\d+)$/,
+    message: window.gApp.$T('Valid.Runtime.Text', { name: itemLabel }),
+    trigger: 'blur',
+  }
+}
+
+function getValidLimitationSetting(itemLabel) {
+  // Checks if the value is between 1 and 999999
+  return {
+    type: 'pattern',
+    pattern: /^[1-9][0-9]{0,5}$/,
+    message: window.gApp.$T('Valid.Limitation.Text', { name: itemLabel }),
+    trigger: 'blur',
+  }
+}
+
+function checkNotBlank(item) {
+  return {
+    validator(rule, value) {
+      if (value.trim() === '') {
+        return Promise.reject(new Error(window.gApp.$T('Valid.Text.NotBlank', { name: item })))
+      } else {
+        return Promise.resolve()
+      }
+    },
+    trigger: 'blur',
+  }
+}
+
+function getVaildMustInteger(itemLabel) {
+  return {
+    type: 'pattern',
+    pattern: /^0$|(^-?[1-9]\d*$)/,
+    message: window.gApp.$T('Valid.Integer', { name: itemLabel }),
+  }
+}
+
+function getValidIPAddress(itemLabel) {
+  return {
+    required: true,
+    validator(rule, value) {
+      const errors = []
+      const temp = value.split('.')
+      if (value && (temp.length !== 4 || !temp.every(e => e && !isNaN(e) && -1 < Number(e) && Number(e) < 256))) {
+        errors.push(new Error(window.gApp.$T('Valid.Address.IPv4', { label: itemLabel })))
+      }
+      return Promise[errors.length ? 'reject' : 'resolve'](errors)
+    },
+    // trigger: 'blur',
   }
 }
 
@@ -711,7 +827,7 @@ export default {
   getUniqueRoleForArray,
   getEmailRole,
   getPasswordRole,
-  getMobileRole,
+  // getMobileRole,
   getArrayRequireForAI,
   getArrayValidForAI,
   getSuffixValid,
@@ -731,4 +847,9 @@ export default {
   getPasswordRoleByText,
   getUsernameRoleByText,
   getVaildPositiveInteger,
+  getValidRuntimeTime,
+  getValidLimitationSetting,
+  checkNotBlank,
+  getVaildMustInteger,
+  getValidIPAddress,
 }

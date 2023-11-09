@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="height--100">
     <composite-table
       id="tid_discount-user-table"
       ref="discountUserTable"
@@ -8,48 +8,55 @@
       :table-data="tableData"
       :pagination-enable="false"
       :page-sizes="[]">
-      <div slot="controller">
+      <template #controller>
         <a-button id="tid_discount-user-create" type="primary" @click="onCreateClick">
           {{ $t('Discount.Create') }}
         </a-button>
-      </div>
-      <span slot="name" slot-scope="{ row }">
-        <a-tag v-for="tag in row.name" :key="tag">
-          {{ tag }}
-        </a-tag>
-      </span>
-      <a-dropdown slot="action" slot-scope="{ row }" :trigger="['click']" placement="bottomLeft">
-        <a-button>
-          {{ $t('Action') }}
-          <a-icon type="down" />
-        </a-button>
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="onEditUsersClick(row)">
-            {{ $t('Discount.User.Edit') }}
-          </a-menu-item>
-          <a-menu-item key="2" @click="onEditClick(row)">
-            {{ $t('Discount.Discount.Edit') }}
-          </a-menu-item>
-          <a-menu-item key="3" @click="onDeleteClick(row)">
-            {{ $t('Action.Delete') }}
-          </a-menu-item>
-        </a-menu>
-      </a-dropdown>
+      </template>
+      <template #name="{ row }">
+        <span>
+          <a-tag v-for="tag in row.name" :key="tag">
+            {{ tag }}
+          </a-tag>
+        </span>
+      </template>
+      <template #action="{ row }">
+        <a-dropdown :trigger="['click']" placement="bottomLeft">
+          <a-button>
+            {{ $t('Action') }}
+            <down-outlined />
+          </a-button>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="1" @click="onEditUsersClick(row)">
+                {{ $t('Discount.User.Edit') }}
+              </a-menu-item>
+              <a-menu-item key="2" @click="onEditClick(row)">
+                {{ $t('Discount.Discount.Edit') }}
+              </a-menu-item>
+              <a-menu-item key="3" @click="onDeleteClick(row)">
+                {{ $t('Action.Delete') }}
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
+      </template>
     </composite-table>
     <user-discount-create-dialog ref="discountCreateDialog" />
   </div>
 </template>
 
 <script>
-import CompositeTable from '../../component/composite-table'
-import UserDiscountCreateDialog from './user-discount-dialog'
-import DiscountService from '../../service/discount'
+import CompositeTable from '@/component/composite-table.vue'
+import UserDiscountCreateDialog from './discount-dialog.vue'
+import DiscountService from '@/service/discount'
 export default {
   components: {
     'composite-table': CompositeTable,
     'user-discount-create-dialog': UserDiscountCreateDialog,
   },
   props: ['discount'],
+  emits: ['update-discount'],
   data() {
     return {
       sourceData: [],
@@ -65,14 +72,15 @@ export default {
           align: 'left',
           title: this.$t('Discount.Type.User'),
           dataIndex: 'name',
-          scopedSlots: { customRender: 'name' },
+          customSlot: true,
         },
         {
           title: this.$t('Action'),
           key: 'action',
-          scopedSlots: { customRender: 'action' },
+          customSlot: true,
         },
       ],
+      userType: 'User',
     }
   },
   watch: {
@@ -111,7 +119,7 @@ export default {
   },
   methods: {
     onCreateClick() {
-      this.$refs.discountCreateDialog.doCreate().then(
+      this.$refs.discountCreateDialog.doCreate(this.userType).then(
         res => {
           this.$emit('update-discount')
         },
@@ -134,7 +142,7 @@ export default {
           }
         })
       })
-      this.$refs.discountCreateDialog.doEditDiscount(discount.name, data).then(
+      this.$refs.discountCreateDialog.doEditDiscount(discount.name, data, this.userType).then(
         res => {
           this.$emit('update-discount')
         },
@@ -157,7 +165,7 @@ export default {
           }
         })
       })
-      this.$refs.discountCreateDialog.doEditUser(discount.name, data).then(
+      this.$refs.discountCreateDialog.doEditUser(discount.name, data, this.userType).then(
         res => {
           this.$emit('update-discount')
         },

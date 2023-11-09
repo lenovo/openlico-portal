@@ -9,44 +9,51 @@
       <a-table
         id="Job_template_Parameters_Table"
         ref="parameterTable"
+        style="width: 1200px"
+        class="job-template-parameters-table"
         row-key="id"
         :columns="columns"
         :data-source="params"
         :bordered="true"
-        :pagination="false"
-        header-cell-class-name="job-template-parameters-table-header"
-        style="max-width: 1200px">
-        <template v-if="record.type != 'system'" slot="action" slot-scope="text, record, index">
-          <span
-            class="table-but-icon button-edit"
-            :title="$t('JobTemplate.Parameters.Table.Edit')"
-            @click="editParameter(record, index)"
-            ><i class="el-erp-edit"
-          /></span>
-          <span
-            class="table-but-icon button-delete"
-            :title="$t('JobTemplate.Parameters.Table.Delete')"
-            @click="deleteParameter(record, index)"
-            ><i class="el-erp-delete"
-          /></span>
-          <span
-            class="table-but-icon button-Move-up"
-            :class="{
-              'not-action': index - 1 == defaultIndex,
-            }"
-            :title="$t('JobTemplate.Parameters.Table.MoveUp')"
-            @click="moveParametersUpAndDown(record, index, 'up')">
-            <a-icon type="arrow-up"
-          /></span>
-          <span
-            class="table-but-icon button-move-down"
-            :class="{
-              'not-action': index + 1 == params.length,
-            }"
-            :title="$t('JobTemplate.Parameters.Table.MoveDown')"
-            @click="moveParametersUpAndDown(record, index, 'down')">
-            <a-icon type="arrow-down"
-          /></span>
+        :pagination="false">
+        <template #bodyCell="{ column, record, index }">
+          <template v-if="column.dataIndex === 'action'">
+            <div v-if="shouldRenderActionSlot(record)">
+              <span
+                class="table-but-icon button-edit"
+                :title="$t('JobTemplate.Parameters.Table.Edit')"
+                @click="editParameter(record, index)">
+                <i class="el-erp-edit" />
+              </span>
+              <span
+                v-if="record.id !== 'run_time'"
+                class="table-but-icon button-delete"
+                :title="$t('JobTemplate.Parameters.Table.Delete')"
+                @click="deleteParameter(record, index)">
+                <i class="el-erp-delete" />
+              </span>
+              <span
+                v-if="record.id != 'run_time'"
+                class="table-but-icon button-Move-up"
+                :class="{
+                  'not-action': index - 1 == defaultIndex,
+                }"
+                :title="$t('JobTemplate.Parameters.Table.MoveUp')"
+                @click="moveParametersUpAndDown(record, index, 'up')">
+                <arrow-up-outlined style="color: rgba(0, 0, 0, 0.44)" />
+              </span>
+              <span
+                v-if="record.id != 'run_time'"
+                class="table-but-icon button-move-down"
+                :class="{
+                  'not-action': index + 1 == params.length,
+                }"
+                :title="$t('JobTemplate.Parameters.Table.MoveDown')"
+                @click="moveParametersUpAndDown(record, index, 'down')">
+                <arrow-down-outlined style="color: rgba(0, 0, 0, 0.44)" />
+              </span>
+            </div>
+          </template>
         </template>
       </a-table>
     </a-row>
@@ -54,7 +61,7 @@
   </div>
 </template>
 <script>
-import ParameterDialog from './parameter-dialog'
+import ParameterDialog from './parameter-dialog.vue'
 export default {
   components: {
     'parameter-dialog': ParameterDialog,
@@ -63,7 +70,7 @@ export default {
   data() {
     return {
       parameter: null,
-      defaultIndex: 0,
+      // defaultIndex: 0,
       params: this.parameters,
       columns: [
         {
@@ -83,39 +90,43 @@ export default {
           title: this.$t('JobTemplate.Parameters.Table.DataType'),
           dataIndex: 'dataType',
           width: 150,
-          customRender: val => this.$t(`JobTemplate.Parameters.DataType.${val}`),
+          customRender: ({ text }) => this.$t(`JobTemplate.Parameters.DataType.${text}`),
         },
         {
           title: this.$t('JobTemplate.Parameters.Table.Must'),
           dataIndex: 'must',
           width: 100,
-          customRender: val => this.$t(`JobTemplate.Parameters.Table.Must.${val ? 'Yes' : 'No'}`),
+          customRender: ({ text }) => this.$t(`JobTemplate.Parameters.Table.Must.${text ? 'Yes' : 'No'}`),
         },
         {
           title: this.$t('Action'),
           dataIndex: 'action',
           width: 150,
           align: 'center',
-          scopedSlots: { customRender: 'action' },
+          // scopedSlots: { customRender: 'action' },
         },
       ],
     }
   },
-  watch: {
-    params(val, oldVal) {
-      for (let i = 0; i < val.length; i++) {
-        if (val[i].type === 'system') {
-          this.defaultIndex = i
-        } else {
-          break
-        }
-      }
+  computed: {
+    defaultIndex() {
+      return this.params.filter(i => i.type === 'system').length - 1
     },
+  },
+  watch: {
+    // params(val, oldVal) {
+    //   for (let i = 0; i < val.length; i++) {
+    //     if (val[i].type === 'system') {
+    //       this.defaultIndex = i + 1
+    //     } else {
+    //       break
+    //     }
+    //   }
+    // },
     parameters(val) {
       this.params = val
     },
   },
-  mounted() {},
   methods: {
     addParameter() {
       this.$refs.parameterDialog.doAdd().then(res => {
@@ -171,16 +182,28 @@ export default {
       this.params.splice(i, 1)
       this.params.splice(index, 0, row)
     },
+    shouldRenderActionSlot(record) {
+      if (record.id === 'run_time') {
+        return true
+      }
+      return record.type !== 'system'
+    },
   },
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
 .job-template-parameters-table-header {
   background-color: #eeeeee !important;
 }
+/* .job-template-parameters-table :deep(.ant-table-cell) {
+  padding: 8px;
+} */
 .parameters-add {
   margin: 20px;
+}
+.table-but-icon {
+  cursor: pointer;
 }
 .not-action {
   cursor: not-allowed;

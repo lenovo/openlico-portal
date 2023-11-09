@@ -8,18 +8,18 @@
     :external-validate="externalValidate"
     :success-message-formatter="successMessageFormatter"
     :error-message-formatter="errorMessageFormatter">
-    <a-form-model-item v-if="mode == 'add'" prop="tags" label="">
+    <a-form-item v-if="mode == 'add'" name="tags" label="">
       <a-select
         ref="jobTagSelect"
-        v-model="formModel.tags"
+        v-model:value="formModel.tags"
         mode="tags"
         :options="tagsOptions"
         :token-separators="[',']"
-        :placeholder="$t('JobManager.Tag.Placeholder', { length: tagLength })"
+        :placeholder="$T('JobManager.Tag.Placeholder', { length: tagLength })"
         class="job-tags-select-action"
         @blur="onJobTagSelectBlur"
         @focus="onJobTagSelectFocus" />
-    </a-form-model-item>
+    </a-form-item>
     <div v-if="mode == 'add'" style="height: 220px" />
     <div v-if="mode == 'delete'">
       <p>{{ $t('JobManager.Tags.Clear.Content') }}</p>
@@ -29,27 +29,31 @@
 </template>
 
 <script>
-import CompositeFormDialog from '../component/composite-form-dialog'
-import JobService from '../service/job'
+import JobService from '@/service/job'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
-    'composite-form-dialog': CompositeFormDialog,
+    CompositeFormDialog,
   },
   data() {
-    const validateTags = (rule, value, callback) => {
+    const validateTags = (rule, value) => {
       const errors = []
       if (value.length) {
         value.forEach(item => {
           if (item.length > this.tagLength) {
-            errors.push(new Error(this.$t('JobManager.Tag.validate.Length', { length: this.tagLength })))
+            errors.push(new Error(this.$T('JobManager.Tag.validate.Length', { length: this.tagLength })))
           }
         })
         if (value.length > this.tagsCounts) {
-          errors.push(new Error(this.$t('JobManager.Tag.Length.Valid', { counts: this.tagsCounts })))
+          errors.push(new Error(this.$T('JobManager.Tag.Length.Valid', { counts: this.tagsCounts })))
         }
       }
-      callback(errors)
+      if (errors.length) {
+        return Promise.reject(errors)
+      } else {
+        return Promise.resolve()
+      }
     }
     return {
       tagLength: 20,
@@ -129,7 +133,7 @@ export default {
         const validJobs = this.jobs.filter(job => job.tags.length + this.formModel.tags.length > this.tagsCounts)
         if (validJobs.length) {
           const jobs = validJobs.map(job => job.id).join(', ')
-          const message = this.$t('JobManager.Tags.Length.Valid', { counts: this.tagsCounts })
+          const message = this.$T('JobManager.Tags.Length.Valid', { counts: this.tagsCounts })
           this.showErrorContent(message, jobs)
           callbackFunc(false)
         } else {

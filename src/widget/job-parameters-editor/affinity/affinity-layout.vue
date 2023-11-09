@@ -4,15 +4,15 @@
       <div class="job-parameters-affinity-layout-params">
         <span>
           <i>{{ $t('JobTemplate.Affinity.Layout.Cores') }}</i>
-          <a-input v-model.number="params.coresPerSocket" size="small" />
+          <a-input v-model.number:value="params.coresPerSocket" size="small" />
         </span>
         <span>
           <i>{{ $t('JobTemplate.Affinity.Layout.Sockets') }}</i>
-          <a-input v-model.number="params.socketsPerNode" size="small" />
+          <a-input v-model.number:value="params.socketsPerNode" size="small" />
         </span>
         <span>
           <i>{{ $t('JobTemplate.Affinity.Layout.Hyper') }}</i>
-          <a-switch v-model="params.hyperThreading" size="small" />
+          <a-switch v-model:checked="params.hyperThreading" size="small" />
         </span>
         <span>
           <i>{{ $t('JobTemplate.Affinity.Layout.LoadNodeSet') }}</i>
@@ -28,7 +28,7 @@
     </a-spin>
     <a-modal
       class="full-screen-modal"
-      :visible="showChartModal"
+      :open="showChartModal"
       :closable="false"
       width="1400px"
       dialog-class="affinity-layout-modal"
@@ -37,15 +37,15 @@
       <div class="job-parameters-affinity-layout-params">
         <span>
           <i>{{ $t('JobTemplate.Affinity.Layout.Cores') }}</i>
-          <a-input v-model.number="params.coresPerSocket" size="small" />
+          <a-input v-model.number:value="params.coresPerSocket" size="small" />
         </span>
         <span>
           <i>{{ $t('JobTemplate.Affinity.Layout.Sockets') }}</i>
-          <a-input v-model.number="params.socketsPerNode" size="small" />
+          <a-input v-model.number:value="params.socketsPerNode" size="small" />
         </span>
         <span>
           <i>{{ $t('JobTemplate.Affinity.Layout.Hyper') }}</i>
-          <a-switch v-model="params.hyperThreading" size="small" />
+          <a-switch v-model:checked="params.hyperThreading" size="small" />
         </span>
         <span>
           <i>{{ $t('JobTemplate.Affinity.Layout.LoadNodeSet') }}</i>
@@ -63,7 +63,7 @@
   </div>
 </template>
 <script>
-import AffinityService from './../../../service/job-template-affiity'
+import AffinityService from '@/service/job-template-affiity'
 import LoadNodeDialog from './load-node-dialog.vue'
 import relationChart from './relation-chart.vue'
 export default {

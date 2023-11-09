@@ -2,10 +2,10 @@
   <div ref="container" class="node-monitor-chart-style" />
 </template>
 <script>
-import * as ECharts from 'echarts'
-import Format from '../../../common/format'
+import Format from '@/common/format'
 
 export default {
+  inject: ['resize'],
   props: ['nodeId', 'interval', 'initData', 'formatTime'],
   data() {
     return {
@@ -23,30 +23,25 @@ export default {
       this.clear()
       this.refresh()
     },
+    resize(val) {
+      this.resizeChart()
+    },
   },
   mounted() {
     this.$nextTick(() => {
-      this.innerChart = ECharts.init(this.$refs.container, window.gApp.echartsTheme.common)
-      window.removeEventListener('resize', this.resizeChart)
-      window.addEventListener('resize', this.resizeChart)
+      this.$chart.init(this.$refs.container, window.gApp.echartsTheme.common)
       this.resizeChart()
       this.init()
       this.refresh()
-      window.gApp.$watch('isCollapse', (newValue, oldValue) => {
-        setTimeout(() => {
-          this.resizeChart()
-        }, 300)
-      })
     })
   },
-  destroyed() {
+  unmounted() {
     clearTimeout(this.innerNodeId)
-    window.removeEventListener('resize', this.resizeChart)
     this.innerNodeId = null
   },
   methods: {
     resizeChart() {
-      this.innerChart.resize()
+      this.$chart.getInstanceByDom(this.$refs.container).resize()
     },
     init() {
       const option = {
@@ -119,7 +114,7 @@ export default {
           },
         ],
       }
-      this.innerChart.setOption(option)
+      this.$chart.getInstanceByDom(this.$refs.container).setOption(option)
     },
     chartDataMapping(timeSeriesItem) {
       return {
@@ -127,7 +122,7 @@ export default {
       }
     },
     clear() {
-      this.innerChart.setOption({
+      this.$chart.getInstanceByDom(this.$refs.container).setOption({
         series: [
           {
             data: [],
@@ -140,7 +135,7 @@ export default {
       response.data.forEach(item => {
         cpuData.push(this.chartDataMapping(item))
       })
-      this.innerChart.setOption({
+      this.$chart.getInstanceByDom(this.$refs.container).setOption({
         xAxis: {
           axisLabel: {
             showMinLabel: this.initData.name === 'getNodeDataByMonth',

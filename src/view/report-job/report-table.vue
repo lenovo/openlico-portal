@@ -11,12 +11,12 @@
   </div>
 </template>
 <script>
-import CompositeTable from '../../component/composite-table'
+import CompositeTable from '@/component/composite-table.vue'
 export default {
   components: {
-    'composite-table': CompositeTable,
+    CompositeTable,
   },
-  props: ['table', 'job_type'],
+  props: ['table', 'jobType'],
   data() {
     return {
       columns: [
@@ -31,7 +31,7 @@ export default {
           dataIndex: 'name',
           sorter: true,
           align: 'right',
-          customRender: text => text || '-',
+          customRender: ({ text }) => text || '-',
         },
         {
           title: this.$t('Report.Table.Job'),
@@ -50,7 +50,7 @@ export default {
           dataIndex: 'cpu_runtime',
           sorter: true,
           align: 'right',
-          customRender: val => val.toFixed(2),
+          customRender: ({ text }) => text.toFixed(2),
         },
         {
           title: this.$t('Report.Table.GPU'),
@@ -63,14 +63,14 @@ export default {
           dataIndex: 'gpu_runtime',
           sorter: true,
           align: 'right',
-          customRender: val => val.toFixed(2),
+          customRender: ({ text }) => text.toFixed(2),
         },
       ],
       tableColumns: [],
     }
   },
   watch: {
-    job_type(val, old) {
+    jobType(val, old) {
       this.initTableColumns()
     },
   },
@@ -80,12 +80,12 @@ export default {
   methods: {
     initTableColumns() {
       let arr = []
-      if (this.job_type === 'job') {
+      if (this.jobType === 'job') {
         arr = this.columns.filter(item => item.dataIndex !== 'name')
       } else {
         arr = this.columns.map(item => {
           if (item.dataIndex === 'name') {
-            item.title = this.$t(this.job_type === 'user' ? 'Login.Username' : 'BillGroup')
+            item.title = this.$t(this.jobType === 'user' ? 'Login.Username' : 'BillGroup')
           }
           return item
         })

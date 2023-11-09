@@ -7,11 +7,17 @@
     :form-rules="reportDownloadRules"
     :success-message-formatter="successMessageFormatter"
     :error-message-formatter="errorMessageFormatter">
-    <a-alert v-show="target != 'operation'" :message="$t('Report.Message.Dialog')" type="info" show-icon />
+    <a-alert
+      v-show="target != 'operation' && target != 'expense'"
+      :message="$t('Report.Message.Dialog')"
+      type="info"
+      show-icon></a-alert>
     <div style="margin-left: 20px">
-      <div v-show="target != 'operation'" class="reportDialog-div-header">{{ $t('Report.Label.Content') }}:</div>
-      <a-form-model-item v-show="target != 'operation'">
-        <a-radio-group v-model="reportDownloadForm.content" button-style="solid">
+      <div v-show="target != 'operation' && target != 'expense'" class="reportDialog-div-header">
+        {{ $t('Report.Label.Content') }}:
+      </div>
+      <a-form-item v-show="target != 'operation' && target != 'expense'">
+        <a-radio-group v-model:value="reportDownloadForm.content" button-style="solid" @change="onContentChange">
           <a-radio-button id="tid_report-filter-statistics" value="statistics">
             {{ $t('Report.Label.Content.Stat') }}
           </a-radio-button>
@@ -19,32 +25,29 @@
             {{ $t('Report.Label.Content.Detail') }}
           </a-radio-button>
         </a-radio-group>
-      </a-form-model-item>
+      </a-form-item>
       <div class="reportFormat">
         <div class="reportDialog-div-header">{{ $t('Report.Title.Format') }}:</div>
         <a-row>
           <div>
-            <template v-for="item in exportTypeList">
-              <div v-show="reportDownloadForm.content == 'statistics' || item != 'pdf'" :key="item" class="inline">
-                <input
-                  :id="'tid_reportFormat_' + item"
-                  v-model="reportDownloadForm.format"
-                  type="radio"
-                  :value="item" />
+            <template v-for="item in exportTypeOptions" :key="item">
+              <div class="inline">
+                <input :id="'tid_reportFormat_' + item" type="radio" :value="item" />
                 <label
                   :for="'tid_reportFormat_' + item"
                   :style="{
-                    'background-image': `url('static/img/system/report/${item}${
+                    'background-image': `url('/static/img/system/report/${item}${
                       reportDownloadForm.format == item ? '_check' : ''
                     }.png')`,
-                  }" />
+                  }"
+                  @click="onExportTypeClick(item, exportTypeOptions)"></label>
               </div>
             </template>
           </div>
         </a-row>
         <a-row id="tid_reportDirection" class="reportFilter-div-header reportDirection">
           <div v-show="reportDownloadForm.format == 'pdf' && reportDownloadForm.content == 'statistics'">
-            <a-radio-group v-model="reportDownloadForm.direction">
+            <a-radio-group v-model:value="reportDownloadForm.direction">
               <a-radio id="tid_reportPdfHorizontal" value="landscape">
                 {{ $t('Report.Direction.Horizontal') }}
               </a-radio>
@@ -59,13 +62,13 @@
   </composite-form-dialog>
 </template>
 <script>
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import download from '../../service/download'
-import ReportService from '../../service/report'
+import download from '@/service/download'
+import ReportService from '@/service/report'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
 
 export default {
   components: {
-    'composite-form-dialog': CompositeFormDialog,
+    CompositeFormDialog,
   },
   props: ['exportList'],
   data() {
@@ -75,6 +78,7 @@ export default {
       title: this.$t('Report.Button.Submit'),
       target: 'job',
       disableVertical: false,
+      exportTypeOptions: [],
       reportDownloadForm: {
         content: 'statistics',
         format: 'csv',
@@ -83,14 +87,6 @@ export default {
       },
       reportDownloadRules: {},
     }
-  },
-  computed: {
-    exportTypeList() {
-      if (Array.isArray(this.exportList)) return this.exportList
-
-      const list = ['xlsx', 'pdf', 'html']
-      return list
-    },
   },
   watch: {
     reportDownloadForm: {
@@ -103,11 +99,6 @@ export default {
         }
       },
       deep: true,
-    },
-    'reportDownloadForm.content'(val, old) {
-      if (this.reportDownloadForm.format === 'pdf') {
-        this.reportDownloadForm.format = this.exportTypeList[0]
-      }
     },
   },
   methods: {
@@ -148,6 +139,19 @@ export default {
         return download('/api/download/operation/optlog/download/', data, 'post', 'formData')
       } else if (this.type === 'report-job') {
         return download(`/api/download/job/job_report/${data.url}/`, data, 'post', 'formData')
+      } else if (this.type == 'report-expense') {
+        const req = {
+          args: {
+            filter: this.reportDownloadForm.filter,
+            start_time: data.start_time,
+            end_time: data.end_time,
+          },
+          timezone_offset: String(data.timezone_offset),
+        }
+        if (this.$store.state.auth.access !== 'staff') {
+          req.role = 'admin'
+        }
+        return download(`/api/accounting/consume_report/${data.url}/`, req, 'post')
       }
     },
     successMessageFormatter(res) {
@@ -162,7 +166,7 @@ export default {
       this.target = data.target
       this.reportDownloadForm = {
         content: 'statistics',
-        format: this.exportTypeList[0],
+        format: this.exportTypeOptions[0],
         direction: 'landscape',
         start_time: data.start_time,
         end_time: data.end_time,
@@ -174,8 +178,28 @@ export default {
         utilization_report_type: data.valueType,
         utilization_report_value: data.value,
         time_type: data.time_type,
+        filter: data.filter,
       }
+      this.onContentChange()
       return this.$refs.innerDialog.popup(this.submitForm)
+    },
+    exportTypeList() {
+      let list = ['xlsx', 'pdf', 'html']
+      if (Array.isArray(this.exportList)) {
+        list = this.exportList
+      }
+
+      if (this.reportDownloadForm.content !== 'statistics') {
+        list = list.filter(i => i !== 'pdf')
+      }
+      return list
+    },
+    onExportTypeClick(item) {
+      this.reportDownloadForm.format = item
+    },
+    onContentChange() {
+      this.exportTypeOptions = this.exportTypeList()
+      this.reportDownloadForm.format = this.exportTypeOptions[0]
     },
   },
 }

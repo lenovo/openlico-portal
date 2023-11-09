@@ -2,35 +2,41 @@
   <div class="job-resource-container">
     <div class="filter">
       <div>
-        <a-radio-group v-model="dataType" button-style="solid" :disabled="!isGpus" @change="setOptions(dataType)">
+        <a-radio-group v-model:value="dataType" button-style="solid" :disabled="!isGpus" @change="setOptions(dataType)">
           <a-radio-button value="cpu"> CPU </a-radio-button>
           <a-radio-button value="gpu"> GPU </a-radio-button>
         </a-radio-group>
       </div>
       <div>
         <a-dropdown-button
-          v-model="resource_select_visible"
+          v-model:open="resource_select_visible"
           class="filter-button resource-filter-button"
           :trigger="['click']"
           @click="e => e.preventDefault()">
-          <div slot="overlay" class="resource-filter-inner b-w">
-            <a-checkbox-group v-model="selectedResource">
-              <a-row>
-                <a-col v-for="item in resourcesOptions[dataType]" :key="item.label" class="resource-check-item">
-                  <a-checkbox :value="item.value">
-                    {{ item.label }}
-                  </a-checkbox>
-                </a-col>
-              </a-row>
-            </a-checkbox-group>
-            <p class="controller-bar">
-              <a-button size="small" :disabled="!selectedResource.length" @click="selectResource">
-                {{ $t('Action.Confirm') }}</a-button
-              >
-              <a-button size="small" @click="cancelSelectResource"> {{ $t('Action.Cancel') }}</a-button>
-            </p>
-          </div>
-          <div slot="icon">
+          <template #overlay>
+            <div class="resource-filter-inner b-w">
+              <a-checkbox-group
+                v-model:value="selectedResource"
+                class="resource-filter-checkbox-group"
+                :options="resourcesOptions[dataType]">
+              </a-checkbox-group>
+              <p class="controller-bar">
+                <a-button size="small" @click="cancelSelectResource"> {{ $t('Action.Cancel') }}</a-button>
+                <a-button
+                  size="small"
+                  type="link"
+                  class="m-l-20"
+                  :disabled="!selectedResource.length"
+                  @click="selectResource">
+                  {{ $t('Action.Confirm') }}
+                </a-button>
+              </p>
+            </div>
+          </template>
+          <template #icon>
+            <down-outlined />
+          </template>
+          <div>
             <span
               v-for="(item, index) in filter.displayResources"
               :key="item"
@@ -38,7 +44,6 @@
               <span class="icon"></span>
               <span class="text">{{ getLabel(item) }}</span>
             </span>
-            <a-icon type="down" />
           </div>
         </a-dropdown-button>
       </div>
@@ -55,8 +60,8 @@
             overlay-class-name="hover-chart"
             destroy-tooltip-on-hide
             :align="{ points: ['tl', 'tr'] }"
-            @visibleChange="popoverVisibleChange($event, item, filter.displayResources[0])">
-            <template slot="content">
+            @open-change="popoverVisibleChange($event, item, filter.displayResources[0])">
+            <template #content>
               <a-spin :spinning="popoverLoading">
                 <div v-if="dataType == 'cpu'">
                   <p class="chart-title">
@@ -103,8 +108,8 @@
             overlay-class-name="hover-chart"
             destroy-tooltip-on-hide
             :align="{ points: ['tl', 'tr'] }"
-            @visibleChange="popoverVisibleChange($event, item, filter.displayResources[1])">
-            <template slot="content">
+            @open-change="popoverVisibleChange($event, item, filter.displayResources[1])">
+            <template #content>
               <a-spin :spinning="popoverLoading">
                 <div v-if="dataType == 'cpu'">
                   <p class="chart-title">
@@ -154,10 +159,10 @@
 </template>
 
 <script>
-import JobResourceChart from './job-resource/job-resource-chart'
-import JobResourceService from '../../service/job-resource'
-import MonitorService from '../../service/monitor-data'
-import Format from '../../common/format'
+import Format from '@/common/format'
+import MonitorService from '@/service/monitor-data'
+import JobResourceService from '@/service/job-resource'
+import JobResourceChart from './job-resource/job-resource-chart.vue'
 export default {
   components: {
     JobResourceChart,
@@ -357,12 +362,17 @@ export default {
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
   border-radius: 4px;
 }
-.filter .resource-filter-button >>> .ant-dropdown-trigger {
+.filter .resource-filter-button :deep(.ant-dropdown-trigger) {
   border-radius: 4px;
+  width: 100%;
 }
 .controller-bar {
   margin-top: 40px;
-  overflow: hidden;
+  /* overflow: hidden; */
+}
+.resource-filter-checkbox-group {
+  display: flex;
+  flex-direction: column;
 }
 .resource-filter-inner .controller-bar {
   text-align: right;
@@ -402,13 +412,9 @@ export default {
   background-color: #1abc9c;
 }
 .controller-bar .ant-btn {
-  float: right;
   background-color: #fff;
   border: none;
   padding: 0;
-}
-.controller-bar .reset {
-  float: left;
 }
 .controller-bar .ant-btn:last-child {
   margin-right: 10px;
@@ -418,9 +424,6 @@ export default {
 }
 .resource-filter-inner .controller-bar {
   margin-top: 20px;
-}
-.resource-filter-button >>> .ant-btn-default:first-child {
-  display: none;
 }
 .nodes-container {
   width: 100%;
@@ -437,6 +440,7 @@ export default {
   border: 1px solid #eee;
   border-radius: 4px;
   padding: 10px;
+  box-sizing: border-box;
 }
 .node-item .node-name {
   margin-bottom: 10px;
@@ -446,14 +450,14 @@ export default {
   overflow: hidden;
   position: relative;
 }
-.square-progress >>> .ant-progress-inner {
+.square-progress :deep(.ant-progress-inner) {
   border-radius: 2px;
 }
 .placeholder-bar {
   width: 100%;
   height: 21px;
 }
-.node-item >>> .hover-chart .ant-popover-inner-content {
+.node-item :deep(.hover-chart .ant-popover-inner-content) {
   padding: 10px;
 }
 .current-value,
@@ -473,12 +477,15 @@ export default {
   height: 11px;
   margin-right: 5px;
 }
-.node-item >>> .hover-chart {
+.node-item :deep(.hover-chart) {
   width: 400px;
 }
-.node-item >>> .hover-chart .tendency-chart {
+.node-item :deep(.hover-chart .tendency-chart) {
   width: 100%;
   height: 150px;
+}
+.node-item :deep(.ant-progress-line) {
+  margin-bottom: 0px;
 }
 .chart-title {
   margin-bottom: 8px;

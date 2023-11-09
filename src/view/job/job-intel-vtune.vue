@@ -3,20 +3,25 @@
     <a-spin :spinning="loading">
       <a-row v-if="data.help.length" class="job-intel-item">
         <a-alert type="info" show-icon style="width: 100%; color: #0798f1; padding-left: 50px">
-          <p slot="icon" style="font-size: 16px">
-            <a-icon type="question-circle" />
-          </p>
-          <p slot="message" style="color: #0798f1">
-            {{ $t('Help') }}
-          </p>
-          <div slot="description">
-            <template v-for="item in data.help">
-              <p v-if="item == 'command'" :key="item" class="job-intel-vtune-command">{{ data.command }}</p>
-              <p v-else-if="item" :key="item">
+          <template #icon>
+            <p style="font-size: 16px">
+              <QuestionCircleOutlined />
+            </p>
+          </template>
+          <template #message>
+            <p style="color: #0798f1">
+              {{ $t('Help') }}
+            </p>
+          </template>
+
+          <template #description>
+            <template v-for="item in data.help" :key="item">
+              <p v-if="item == 'command'" class="job-intel-vtune-command">{{ data.command }}</p>
+              <p v-else-if="item">
                 {{ item }}
               </p>
             </template>
-          </div>
+          </template>
         </a-alert>
       </a-row>
       <a-row class="job-intel-item">
@@ -57,7 +62,7 @@
   </div>
 </template>
 <script>
-import IntelService from '../../service/intel-analyzer'
+import IntelService from '@/service/intel-analyzer'
 
 export default {
   props: ['job'],

@@ -1,20 +1,19 @@
 <template>
   <composite-form-dialog
     ref="innerDialog"
-    :title="title"
     size="520px"
+    :title="title"
     :form-model="alertPolicyForm"
     :form-rules="alertPolicyRules"
-    :success-message-formatter="successMessageFormatter"
-    :error-message-formatter="errorMessageFormatter">
-    <a-form-model-item :label="$t('Alert.Policy.Name')" prop="name">
-      <a-input id="tid_alert-policy-name" v-model="alertPolicyForm.name" :disabled="mode == 'delete'" />
-    </a-form-model-item>
+    :success-message-formatter="successMessageFormatter">
+    <a-form-item :label="$t('Alert.Policy.Name')" name="name">
+      <a-input id="tid_alert-policy-name" v-model:value="alertPolicyForm.name" :disabled="mode == 'delete'" />
+    </a-form-item>
     <div v-if="mode != 'delete'">
-      <a-form-model-item :label="$t('Alert.Policy.Monitor')" prop="monitor">
+      <a-form-item :label="$t('Alert.Policy.Monitor')" name="monitor">
         <a-select
           id="tid_alert-policy-monitor"
-          v-model="alertPolicyForm.monitor"
+          v-model:value="alertPolicyForm.monitor"
           :get-popup-container="trigger => trigger.parentNode"
           @change="monitorChange()">
           <a-select-option v-for="item in AlertTriggerMonitorEnums" :key="item" :value="item">
@@ -22,41 +21,44 @@
           </a-select-option>
         </a-select>
         <p v-if="['GPU', 'GPU_Temperature'].includes(alertPolicyForm.monitor)" style="color: #4798d1">
-          {{ $t('Alert.Policy.Mig.Tip', { target: $t('Alert.Policy.' + alertPolicyForm.monitor) }) }}
+          {{ $T('Alert.Policy.Mig.Tip', { target: $t('Alert.Policy.' + alertPolicyForm.monitor) }) }}
         </p>
-      </a-form-model-item>
-      <a-form-model-item
+      </a-form-item>
+      <a-form-item
         v-if="showCondition"
         :label="$t('Alert.Policy.Condition')"
-        :prop="alertPolicyForm.AlertInputRole.value && mode != 'delete' ? 'value' : ''">
+        :name="alertPolicyForm.AlertInputRole.value && mode != 'delete' ? 'value' : ''">
         <a-input-group compact>
-          <a-select
-            id="tid_alert-policy-condition"
-            v-model="alertPolicyForm.condition"
-            class="alert-policy-condition-select"
-            :get-popup-container="trigger => trigger.parentNode"
-            style="width: 20%">
-            <a-select-option v-for="item in alertPolicyForm.AlertInputRole.typeOptions" :key="item" :value="item">
-              {{ $t('Alert.Policy.' + item) }}
-            </a-select-option>
-          </a-select>
+          <a-form-item-rest>
+            <a-select
+              id="tid_alert-policy-condition"
+              v-model:value="alertPolicyForm.condition"
+              class="alert-policy-condition-select"
+              :get-popup-container="trigger => trigger.parentNode"
+              style="width: 20%">
+              <a-select-option v-for="item in alertPolicyForm.AlertInputRole.typeOptions" :key="item" :value="item">
+                {{ $t('Alert.Policy.' + item) }}
+              </a-select-option>
+            </a-select>
+          </a-form-item-rest>
+
           <a-input
             v-if="alertPolicyForm.AlertInputRole.value"
             id="tid_alert-policy-condition-value"
-            v-model="alertPolicyForm.value"
+            v-model:value="alertPolicyForm.value"
             style="width: 80%"
             :suffix="alertPolicyForm.AlertInputRole.unit" />
         </a-input-group>
-      </a-form-model-item>
-      <a-form-model-item :label="$t('Alert.Policy.Duration')" :prop="mode != 'delete' ? 'duration' : ''">
+      </a-form-item>
+      <a-form-item :label="$t('Alert.Policy.Duration')" :name="mode != 'delete' ? 'duration' : ''">
         <a-input
           id="tid_alert-policy-duration"
-          v-model="alertPolicyForm.duration"
+          v-model:value="alertPolicyForm.duration"
           :disabled="!alertPolicyForm.AlertInputRole.duration"
           suffix="S" />
-      </a-form-model-item>
-      <a-form-model-item :label="$t('Alert.Policy.Level')" :prop="mode != 'delete' ? 'level' : ''">
-        <a-radio-group v-model="alertPolicyForm.level">
+      </a-form-item>
+      <a-form-item :label="$t('Alert.Policy.Level')" :name="mode != 'delete' ? 'level' : ''">
+        <a-radio-group v-model:value="alertPolicyForm.level">
           <a-radio
             v-for="item in AlertLevelList"
             id="tid_alert-policy-level-fatal"
@@ -66,30 +68,25 @@
             {{ $t(`Alert.PolicyLevel.${item}`) }}
           </a-radio>
         </a-radio-group>
-      </a-form-model-item>
-      <a-form-model-item :label="$t('Alert.Policy.Nogify')">
-        <a-select
-          id="tid_alert-policy-notify"
-          v-model="alertPolicyForm.nogify"
-          allow-clear
-          :get-popup-container="trigger => trigger.parentNode"
-          mode="multiple">
-          <a-select-option v-for="item in AlertNotifyList" :key="item.id" :value="item.id">
+      </a-form-item>
+      <a-form-item :label="$t('Alert.Policy.Nogify')">
+        <a-select id="tid_alert-policy-notify" v-model:value="alertPolicyForm.nogify" allow-clear mode="multiple">
+          <a-select-option v-for="item in AlertNotifyList" :key="item.id" :value="item.id" :label="item.name">
             {{ item.name }}
           </a-select-option>
         </a-select>
-      </a-form-model-item>
-      <a-form-model-item :label="$t('Alert.Policy.Node')">
+      </a-form-item>
+      <a-form-item :label="$t('Alert.Policy.Node')">
         <multi-node-selector
           id="tid_alert-policy-node"
           :nodes="alertPolicyForm.node"
           :hostname-max="50"
           @nodes-selected-change="nodeSelectChange" />
-      </a-form-model-item>
-      <a-form-model-item :label="$t('Alert.Policy.Script')">
+      </a-form-item>
+      <a-form-item :label="$t('Alert.Policy.Script')">
         <a-select
           id="tid_alert-policy-script"
-          v-model="alertPolicyForm.script"
+          v-model:value="alertPolicyForm.script"
           :get-popup-container="trigger => trigger.parentNode"
           allow-clear
           :placeholder="$t('Alert.Policy.Hint.Select')">
@@ -97,22 +94,27 @@
             {{ script }}
           </a-select-option>
         </a-select>
-      </a-form-model-item>
-      <a-form-model-item :label="$t('Alert.Policy.Status')">
-        <a-checkbox id="tid_alert-policy-status" v-model="alertPolicyForm.status">
+      </a-form-item>
+      <!-- <a-form-item :label="$t('Alert.Policy.Notice')">
+        <a-checkbox id="tid_alert-policy-notice-wechat" v-model:checked="alertPolicyForm.wechat">
+          {{ $t('Alert.Policy.Notice.Wechat') }}
+        </a-checkbox>
+      </a-form-item> -->
+      <a-form-item :label="$t('Alert.Policy.Status')">
+        <a-checkbox id="tid_alert-policy-status" v-model:checked="alertPolicyForm.status">
           {{ $t('Alert.Policy.Notice.Open') }}
         </a-checkbox>
-      </a-form-model-item>
+      </a-form-item>
     </div>
   </composite-form-dialog>
 </template>
 <script>
-import AlertPolicyService from '../../service/alert-policy'
-import AlertScriptService from '../../service/alert-script'
-import NotifuGroupService from '../../service/notify-group'
-import CompositeFormDialog from '../../component/composite-form-dialog'
-import ValidRoleFactory from '../../common/valid-role-factory'
-import MultiNodeSelector from '../../widget/multi-node-selector'
+import AlertPolicyService from '@/service/alert-policy'
+import AlertScriptService from '@/service/alert-script'
+import NotifuGroupService from '@/service/notify-group'
+import ValidRoleFactory from '@/common/valid-role-factory'
+import CompositeFormDialog from '@/component/composite-form-dialog.vue'
+import MultiNodeSelector from '@/widget/multi-node-selector.vue'
 
 export default {
   components: {
@@ -139,7 +141,10 @@ export default {
         level: '',
         nogify: '',
         node: [],
+        email: '',
+        sms: '',
         script: '',
+        wechat: false,
         status: false,
         AlertInputRole: AlertPolicyService.getTriggerInputRole('CPU'),
       },
@@ -185,36 +190,28 @@ export default {
     },
     successMessageFormatter() {
       if (this.mode === 'create') {
-        return this.$t('Alert.Policy.Create.Success', {
+        return this.$T('Alert.Policy.Create.Success', {
           name: this.alertPolicyForm.name,
         })
       }
       if (this.mode === 'edit') {
-        return this.$t('Alert.Policy.Edit.Success', {
+        return this.$T('Alert.Policy.Edit.Success', {
           name: this.alertPolicyForm.name,
         })
       }
       if (this.mode === 'delete') {
-        return this.$t('Alert.Policy.Delete.Success', {
+        return this.$T('Alert.Policy.Delete.Success', {
           name: this.alertPolicyForm.name,
         })
       }
     },
-    errorMessageFormatter(res) {
-      const errMsg = res
-      return this.$t(errMsg)
-    },
     initNotifyGroup() {
-      const nogifyList = []
       NotifuGroupService.getAllNotifyGroups().then(res => {
-        res.forEach(item => {
-          nogifyList.push({
-            name: item.name,
-            id: item.id,
-          })
-        })
+        this.AlertNotifyList = res.map(i => ({
+          name: i.name,
+          id: i.id,
+        }))
       })
-      this.AlertNotifyList = nogifyList
     },
     doCreate() {
       this.initNotifyGroup()
@@ -228,7 +225,10 @@ export default {
         level: '',
         nogify: [],
         node: [],
+        email: '',
+        sms: '',
         script: '',
+        wechat: false,
         status: false,
         AlertInputRole: AlertPolicyService.getTriggerInputRole('CPU'),
       }
@@ -260,7 +260,10 @@ export default {
             level: alertPolicy.level,
             nogify: alertPolicy.targets,
             node: alertPolicy.node,
+            email: alertPolicy.email,
+            sms: alertPolicy.sms,
             script: alertPolicy.script,
+            wechat: alertPolicy.wechat,
             status: alertPolicy.status,
             AlertInputRole: AlertPolicyService.getTriggerInputRole(alertPolicy.trigger.monitor),
           }
@@ -280,7 +283,7 @@ export default {
             ValidRoleFactory.getNumberRangeRoleForText(this.$t('Alert.Policy.Value'), 0, maxLength),
             ValidRoleFactory.getNumberDecimalRoleForText(this.$t('Alert.Policy.Value'), 0),
           ]
-          this.title = this.$t('Alert.Policy.Edit.Title', {
+          this.title = this.$T('Alert.Policy.Edit.Title', {
             name: alertPolicy.name,
           })
         },
@@ -304,7 +307,7 @@ export default {
             duration: alertPolicy.trigger.duration,
             AlertInputRole: AlertPolicyService.getTriggerInputRole(alertPolicy.type),
           }
-          this.title = this.$t('Alert.Policy.Delete.Title', {
+          this.title = this.$T('Alert.Policy.Delete.Title', {
             name: alertPolicy.name,
           })
         },

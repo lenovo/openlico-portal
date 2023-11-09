@@ -1,42 +1,54 @@
 <template>
-  <a-row class="reportPreview p-20 b-w">
-    <a-col :span="8">
-      <report-pie v-if="preview.twoColumns" :pie="data_pie" @clickPie="filter" />
-    </a-col>
-    <a-col :span="preview.twoColumns ? 16 : 24">
-      <a-tabs v-model="activeName" :animated="false" @change="changeTab">
-        <a-tab-pane key="chart" :tab="$t('Report.Tab.Chart')">
-          <a-radio-group v-model="chartType" button-style="solid" @change="handleClick">
-            <a-radio-button value="job">
-              {{ $t('Monitor.Job') }}
-            </a-radio-button>
-            <a-radio-button value="CPU">
-              {{ 'CPU' }}
-            </a-radio-button>
-            <a-radio-button value="GPU">
-              {{ 'GPU' }}
-            </a-radio-button>
-          </a-radio-group>
-          <div>
-            <report-bar v-if="chartType == 'job'" ref="jobChart" :bar="data_bar" />
-            <report-essemble v-if="chartType != 'job'" ref="essChart" :essemble="data_essemble" />
-          </div>
-        </a-tab-pane>
-        <a-tab-pane key="table" :tab="$t('Report.Tab.Table')">
-          <report-table :table="data_table" :job_type="preview.job_type" />
-        </a-tab-pane>
-      </a-tabs>
-    </a-col>
-  </a-row>
+  <a-spin :spinning="loading">
+    <div style="width: 100%; min-height: 200px" class="b-w">
+      <div v-if="!loading && !rawData.length" class="nodata">
+        <div style="margin-top: 160px">
+          <img src="/static/img/system/main/nodata.png" style="height: 60px; width: 80px" />
+        </div>
+        <div style="margin-top: 20px; color: #ccc; font-size: 16px">
+          {{ $t('No.Data') }}
+        </div>
+      </div>
+      <a-row v-if="!loading && rawData.length" class="reportPreview p-20 b-w">
+        <a-col :span="8">
+          <report-pie v-if="preview.twoColumns" :pie="data_pie" @click-pie="filter" />
+        </a-col>
+        <a-col :span="preview.twoColumns ? 16 : 24">
+          <a-tabs v-model:activeKey="activeName" :animated="false" @change="changeTab">
+            <a-tab-pane key="chart" :tab="$t('Report.Tab.Chart')">
+              <a-radio-group v-model:value="chartType" button-style="solid" @change="handleClick">
+                <a-radio-button value="job">
+                  {{ $t('Monitor.Job') }}
+                </a-radio-button>
+                <a-radio-button value="CPU">
+                  {{ 'CPU' }}
+                </a-radio-button>
+                <a-radio-button value="GPU">
+                  {{ 'GPU' }}
+                </a-radio-button>
+              </a-radio-group>
+              <div>
+                <report-bar v-if="chartType == 'job'" ref="jobChart" :bar="data_bar" />
+                <report-essemble v-if="chartType != 'job'" ref="essChart" :essemble="data_essemble" />
+              </div>
+            </a-tab-pane>
+            <a-tab-pane key="table" :tab="$t('Report.Tab.Table')">
+              <report-table :table="data_table" :job-type="preview.job_type" />
+            </a-tab-pane>
+          </a-tabs>
+        </a-col>
+      </a-row>
+    </div>
+  </a-spin>
 </template>
 <script>
-import { v1 as uuidv1 } from 'uuid'
-import ReportPie from './report-pie'
-import ReportBar from './report-bar'
-import ReportEssemble from './report-essemble'
-import ReportTable from './report-table'
 import _ from 'lodash'
-import ReportService from '../../service/report'
+import { v1 as uuidv1 } from 'uuid'
+import ReportService from '@/service/report'
+import ReportPie from './report-pie.vue'
+import ReportBar from './report-bar.vue'
+import ReportEssemble from './report-essemble.vue'
+import ReportTable from './report-table.vue'
 
 export default {
   components: {
@@ -45,7 +57,8 @@ export default {
     'report-essemble': ReportEssemble,
     'report-table': ReportTable,
   },
-  props: ['preview'],
+  props: ['preview', 'loading'],
+  emits: ['onDataChange', 'update:loading'],
   data() {
     return {
       activeName: 'chart',
@@ -157,39 +170,47 @@ export default {
     }
   },
   watch: {
-    preview: {
-      handler: function () {
-        const $this = this
-        if (!isNaN(this.preview.start_time)) {
-          ReportService.previewJobReport(this.preview).then(res => {
-            $this.changeRuntimeUnit(res)
-            $this.rawData = _.sortBy(res, ['start_time'])
-            $this.filterData = $this.rawData
-            $this.data_pie = $this.get_pie($this.rawData)
-            $this.$emit('onDataChange', $this.rawData)
-          })
-        } else {
-          $this.rawData = []
-          $this.filterData = $this.rawData
-          $this.data_pie = $this.get_pie($this.rawData)
-          $this.$emit('onDataChange', $this.rawData)
-        }
-      },
-      deep: true,
-    },
     filterData: {
       handler: function () {
         this.data_bar = this.get_bar(this.filterData)
         this.data_essemble = this.get_essemble(this.filterData)
-        this.data_table.splice(0, this.data_table.length)
-        this.get_table(this.filterData).forEach(item => {
-          this.data_table.push(item)
-        })
+        this.data_table = this.get_table(this.filterData)
       },
       deep: true,
     },
+    activeName() {
+      this.$nextTick(() => {
+        this.$refs.jobChart.onResize()
+      })
+    },
+    preview() {
+      this.init()
+    },
+  },
+  mounted() {
+    this.init()
   },
   methods: {
+    init() {
+      this.$emit('update:loading', true)
+      ReportService.previewJobReport(this.preview)
+        .then(
+          res => {
+            this.changeRuntimeUnit(res)
+            this.rawData = _.sortBy(res, ['start_time'])
+            this.filterData = this.rawData
+          },
+          err => {
+            this.rawData = []
+            this.filterData = this.rawData
+          },
+        )
+        .finally(_ => {
+          this.data_pie = this.get_pie(this.rawData)
+          this.$emit('onDataChange', this.rawData)
+          this.$emit('update:loading', false)
+        })
+    },
     handleClick() {
       this.$nextTick(() => {
         if (this.chartType === 'job') {
@@ -203,7 +224,7 @@ export default {
       })
     },
     filter(data) {
-      if (data.data.selected) {
+      if (data.event.target.selected) {
         this.filterData = _.filter(this.rawData, {
           name: data.data.name,
         })
@@ -214,10 +235,7 @@ export default {
     changeTab(event) {
       this.data_bar = this.get_bar(this.filterData)
       this.data_essemble = this.get_essemble(this.filterData)
-      this.data_table.splice(0, this.data_table.length)
-      this.get_table(this.filterData).forEach(item => {
-        this.data_table.push(item)
-      })
+      this.data_table = this.get_table(this.filterData)
     },
     changeRuntimeUnit(data) {
       data.forEach(function (item) {
