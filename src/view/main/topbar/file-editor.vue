@@ -9,7 +9,7 @@
             class="file-editor-item"
             :class="{ 'file-editor-item-border': editorOptions.length > 1 && editorOptions.length > index + 1 }">
             <span class="file-editor-item-name" @click="onNameClick(item)">{{ item.editor.file.name }}</span>
-            <close-outlined @click="onCloseEditor(item)" />
+            <close-outlined v-if="closeEnable" @click="onCloseEditor(item)" />
           </p>
         </template>
         <i class="el-erp-FileManagerEdit" style="font-size: 20px; color: #5fbdfc; cursor: pointer" />
@@ -26,6 +26,11 @@ export default {
       max: 10,
     }
   },
+  computed: {
+    closeEnable() {
+      return window.gApp.mainToolsVisible
+    },
+  },
   mounted() {
     window.addEventListener('elEditorAction', this.getEditorOptions)
   },
@@ -34,6 +39,11 @@ export default {
   },
   methods: {
     getEditorOptions(e) {
+      if (e.data.type === 'clear') {
+        this.editorOptions = []
+        return
+      }
+
       const data = e.data
       const item = data.editor
       const action = data.type
@@ -55,6 +65,17 @@ export default {
       }
     },
     onNameClick(item) {
+      if (!window.gApp.mainToolsVisible) {
+        const event = new Event('onMainToolsVisible')
+        window.dispatchEvent(event)
+        setTimeout(_ => {
+          this.triggerEditor(item)
+        }, 500)
+      } else {
+        this.triggerEditor(item)
+      }
+    },
+    triggerEditor(item) {
       const dialog = $(item[0]).parents('.elfinder-dialog')
       if (dialog.is(':visible')) {
         dialog.trigger('mousedown')

@@ -1,8 +1,8 @@
 define("ace/mode/cobol_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var CobolHighlightRules = function() {
 var keywords = "ACCEPT|MERGE|SUM|ADD||MESSAGE|TABLE|ADVANCING|MODE|TAPE|" +
@@ -16,86 +16,86 @@ var keywords = "ACCEPT|MERGE|SUM|ADD||MESSAGE|TABLE|ADVANCING|MODE|TAPE|" +
 "RECORD|CONTINUE|REDEFINES|CONTROL|REFERENCE|COPY|REMAINDER|COUNT|REPLACE|DATA|REPORT|DATE|RESERVE|" +
 "DAY|RESET|DELETE|RETURN|DESTINATION|REWIND|DISABLE|REWRITE|DISPLAY|RIGHT|DIVIDE|RUN|DOWN|SAME|" +
 "ELSE|SEARCH|ENABLE|SECTION|END|SELECT|ENVIRONMENT|SENTENCE|EQUAL|SET|ERROR|SIGN|EXIT|SEQUENTIAL|" +
-"EXTERNAL|SIZE|FLASE|SORT|FILE|SOURCE|LENGTH|SPACE|LESS|STANDARD|LIMIT|START|LINE|STOP|LOCK|STRING|LOW-VALUE|SUBTRACT";
+"EXTERNAL|SIZE|FLASE|SORT|FILE|SOURCE|LENGTH|SPACE|LESS|STANDARD|LIMIT|START|LINE|STOP|LOCK|STRING|LOW-VALUE|SUBTRACT"
 
     var builtinConstants = (
         "true|false|null"
-    );
+    )
 
     var builtinFunctions = (
         "count|min|max|avg|sum|rank|now|coalesce|main"
-    );
+    )
 
     var keywordMapper = this.createKeywordMapper({
         "support.function": builtinFunctions,
         "keyword": keywords,
-        "constant.language": builtinConstants
-    }, "identifier", true);
+        "constant.language": builtinConstants,
+    }, "identifier", true)
 
     this.$rules = {
         "start" : [ {
             token : "comment",
-            regex : "\\*.*$"
+            regex : "\\*.*$",
         }, {
             token : "string",           // " string
-            regex : '".*?"'
+            regex : '".*?"',
         }, {
             token : "string",           // ' string
-            regex : "'.*?'"
+            regex : "'.*?'",
         }, {
             token : "constant.numeric", // float
-            regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b"
+            regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b",
         }, {
             token : keywordMapper,
-            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b",
         }, {
             token : "keyword.operator",
-            regex : "\\+|\\-|\\/|\\/\\/|%|<@>|@>|<@|&|\\^|~|<|>|<=|=>|==|!=|<>|="
+            regex : "\\+|\\-|\\/|\\/\\/|%|<@>|@>|<@|&|\\^|~|<|>|<=|=>|==|!=|<>|=",
         }, {
             token : "paren.lparen",
-            regex : "[\\(]"
+            regex : "[\\(]",
         }, {
             token : "paren.rparen",
-            regex : "[\\)]"
+            regex : "[\\)]",
         }, {
             token : "text",
-            regex : "\\s+"
-        } ]
-    };
-};
+            regex : "\\s+",
+        } ],
+    }
+}
 
-oop.inherits(CobolHighlightRules, TextHighlightRules);
+oop.inherits(CobolHighlightRules, TextHighlightRules)
 
-exports.CobolHighlightRules = CobolHighlightRules;
-});
+exports.CobolHighlightRules = CobolHighlightRules
+})
 
 define("ace/mode/cobol",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/cobol_highlight_rules"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var CobolHighlightRules = require("./cobol_highlight_rules").CobolHighlightRules;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var CobolHighlightRules = require("./cobol_highlight_rules").CobolHighlightRules
 
 var Mode = function() {
-    this.HighlightRules = CobolHighlightRules;
-    this.$behaviour = this.$defaultBehaviour;
-};
+    this.HighlightRules = CobolHighlightRules
+    this.$behaviour = this.$defaultBehaviour
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
 
-    this.lineCommentStart = "*";
+    this.lineCommentStart = "*"
 
-    this.$id = "ace/mode/cobol";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/cobol"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 
 });                (function() {
                     window.require(["ace/mode/cobol"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

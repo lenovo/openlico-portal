@@ -10,10 +10,9 @@
       <div class="main-contents">
         <breadcrumb-bar />
         <router-view v-slot="{ Component }">
-          <keep-alive :max="4">
-            <component :is="Component" v-if="$route.meta.keepAlive" />
+          <keep-alive :max="4" :include="keepAliveList">
+            <component :is="Component" :key="$route.name" />
           </keep-alive>
-          <component :is="Component" v-if="!$route.meta.keepAlive" />
         </router-view>
       </div>
     </div>
@@ -37,6 +36,9 @@ export default {
     isMin() {
       return window.gApp.isCollapse
     },
+    keepAliveList() {
+      return this.$store.getters['settings/getKeepAlivePages']
+    },
   },
 }
 </script>
@@ -45,7 +47,7 @@ export default {
   min-height: 100%;
   position: relative;
   /* display: flex; */
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 .main-sidebar {
   position: absolute;

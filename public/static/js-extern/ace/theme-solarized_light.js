@@ -1,7 +1,7 @@
 ace.define("ace/theme/solarized_light",[], function(require, exports, module) {
 
-exports.isDark = false;
-exports.cssClass = "ace-solarized-light";
+exports.isDark = false
+exports.cssClass = "ace-solarized-light"
 exports.cssText = ".ace-solarized-light .ace_gutter {\
 background: #fbf1d3;\
 color: #333\
@@ -84,15 +84,15 @@ color: #93A1A1\
 }\
 .ace-solarized-light .ace_indent-guide {\
 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNgYGBgYHjy8NJ/AAjgA5fzQUmBAAAAAElFTkSuQmCC) right repeat-y\
-}";
+}"
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+var dom = require("../lib/dom")
+dom.importCssString(exports.cssText, exports.cssClass)
 });                (function() {
                     ace.require(["ace/theme/solarized_light"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

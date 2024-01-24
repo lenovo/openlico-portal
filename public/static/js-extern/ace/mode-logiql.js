@@ -1,8 +1,8 @@
 ace.define("ace/mode/logiql_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var LogiQLHighlightRules = function() {
 
@@ -11,25 +11,25 @@ var LogiQLHighlightRules = function() {
            regex: '/\\*',
            push: 
             [ { token: 'comment.block', regex: '\\*/', next: 'pop' },
-              { defaultToken: 'comment.block' } ]
+              { defaultToken: 'comment.block' } ],
             },
          { token: 'comment.single',
-           regex: '//.*'
+           regex: '//.*',
             },
          { token: 'constant.numeric',
-           regex: '\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?[fd]?'
+           regex: '\\d+(?:\\.\\d+)?(?:[eE][+-]?\\d+)?[fd]?',
             },
          { token: 'string',
            regex: '"',
            push: 
             [ { token: 'string', regex: '"', next: 'pop' },
-              { defaultToken: 'string' } ]
+              { defaultToken: 'string' } ],
             },
          { token: 'constant.language',
-           regex: '\\b(true|false)\\b'
+           regex: '\\b(true|false)\\b',
             },
          { token: 'entity.name.type.logicblox',
-           regex: '`[a-zA-Z_:]+(\\d|\\a)*\\b'
+           regex: '`[a-zA-Z_:]+(\\d|\\a)*\\b',
             },
          { token: 'keyword.start', regex: '->',  comment: 'Constraint' },
          { token: 'keyword.start', regex: '-->', comment: 'Level 1 Constraint'},
@@ -49,120 +49,120 @@ var LogiQLHighlightRules = function() {
             [ { include: '$self' },
               { token: 'support.function',
                 regex: '>>',
-                next: 'pop' } ]
+                next: 'pop' } ],
             },
          { token: 'storage.modifier',
-           regex: '\\b(lang:[\\w:]*)'
+           regex: '\\b(lang:[\\w:]*)',
             },
          { token: [ 'storage.type', 'text' ],
-           regex: '(export|sealed|clauses|block|alias|alias_all)(\\s*\\()(?=`)'
+           regex: '(export|sealed|clauses|block|alias|alias_all)(\\s*\\()(?=`)',
             },
          { token: 'entity.name',
-           regex: '[a-zA-Z_][a-zA-Z_0-9:]*(@prev|@init|@final)?(?=(\\(|\\[))'
+           regex: '[a-zA-Z_][a-zA-Z_0-9:]*(@prev|@init|@final)?(?=(\\(|\\[))',
             },
          { token: 'variable.parameter',
-           regex: '([a-zA-Z][a-zA-Z_0-9]*|_)\\s*(?=(,|\\.|<-|->|\\)|\\]|=))'
-            } ] };
+           regex: '([a-zA-Z][a-zA-Z_0-9]*|_)\\s*(?=(,|\\.|<-|->|\\)|\\]|=))',
+            } ] }
     
-    this.normalizeRules();
-};
+    this.normalizeRules()
+}
 
-oop.inherits(LogiQLHighlightRules, TextHighlightRules);
+oop.inherits(LogiQLHighlightRules, TextHighlightRules)
 
-exports.LogiQLHighlightRules = LogiQLHighlightRules;
-});
+exports.LogiQLHighlightRules = LogiQLHighlightRules
+})
 
 ace.define("ace/mode/folding/coffee",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../../lib/oop");
-var BaseFoldMode = require("./fold_mode").FoldMode;
-var Range = require("../../range").Range;
+var oop = require("../../lib/oop")
+var BaseFoldMode = require("./fold_mode").FoldMode
+var Range = require("../../range").Range
 
-var FoldMode = exports.FoldMode = function() {};
+var FoldMode = exports.FoldMode = function() {}
 oop.inherits(FoldMode, BaseFoldMode);
 
 (function() {
 
     this.getFoldWidgetRange = function(session, foldStyle, row) {
-        var range = this.indentationBlock(session, row);
+        var range = this.indentationBlock(session, row)
         if (range)
-            return range;
+            return range
 
-        var re = /\S/;
-        var line = session.getLine(row);
-        var startLevel = line.search(re);
+        var re = /\S/
+        var line = session.getLine(row)
+        var startLevel = line.search(re)
         if (startLevel == -1 || line[startLevel] != "#")
-            return;
+            return
 
-        var startColumn = line.length;
-        var maxRow = session.getLength();
-        var startRow = row;
-        var endRow = row;
+        var startColumn = line.length
+        var maxRow = session.getLength()
+        var startRow = row
+        var endRow = row
 
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var level = line.search(re);
+            line = session.getLine(row)
+            var level = line.search(re)
 
             if (level == -1)
-                continue;
+                continue
 
             if (line[level] != "#")
-                break;
+                break
 
-            endRow = row;
+            endRow = row
         }
 
         if (endRow > startRow) {
-            var endColumn = session.getLine(endRow).length;
-            return new Range(startRow, startColumn, endRow, endColumn);
+            var endColumn = session.getLine(endRow).length
+            return new Range(startRow, startColumn, endRow, endColumn)
         }
-    };
+    }
     this.getFoldWidget = function(session, foldStyle, row) {
-        var line = session.getLine(row);
-        var indent = line.search(/\S/);
-        var next = session.getLine(row + 1);
-        var prev = session.getLine(row - 1);
-        var prevIndent = prev.search(/\S/);
-        var nextIndent = next.search(/\S/);
+        var line = session.getLine(row)
+        var indent = line.search(/\S/)
+        var next = session.getLine(row + 1)
+        var prev = session.getLine(row - 1)
+        var prevIndent = prev.search(/\S/)
+        var nextIndent = next.search(/\S/)
 
         if (indent == -1) {
-            session.foldWidgets[row - 1] = prevIndent!= -1 && prevIndent < nextIndent ? "start" : "";
-            return "";
+            session.foldWidgets[row - 1] = prevIndent!= -1 && prevIndent < nextIndent ? "start" : ""
+            return ""
         }
         if (prevIndent == -1) {
             if (indent == nextIndent && line[indent] == "#" && next[indent] == "#") {
-                session.foldWidgets[row - 1] = "";
-                session.foldWidgets[row + 1] = "";
-                return "start";
+                session.foldWidgets[row - 1] = ""
+                session.foldWidgets[row + 1] = ""
+                return "start"
             }
         } else if (prevIndent == indent && line[indent] == "#" && prev[indent] == "#") {
             if (session.getLine(row - 2).search(/\S/) == -1) {
-                session.foldWidgets[row - 1] = "start";
-                session.foldWidgets[row + 1] = "";
-                return "";
+                session.foldWidgets[row - 1] = "start"
+                session.foldWidgets[row + 1] = ""
+                return ""
             }
         }
 
         if (prevIndent!= -1 && prevIndent < indent)
-            session.foldWidgets[row - 1] = "start";
+            session.foldWidgets[row - 1] = "start"
         else
-            session.foldWidgets[row - 1] = "";
+            session.foldWidgets[row - 1] = ""
 
         if (indent < nextIndent)
-            return "start";
+            return "start"
         else
-            return "";
-    };
+            return ""
+    }
 
-}).call(FoldMode.prototype);
+}).call(FoldMode.prototype)
 
-});
+})
 
 ace.define("ace/mode/matching_brace_outdent",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var Range = require("../range").Range;
+var Range = require("../range").Range
 
 var MatchingBraceOutdent = function() {};
 
@@ -170,148 +170,148 @@ var MatchingBraceOutdent = function() {};
 
     this.checkOutdent = function(line, input) {
         if (! /^\s+$/.test(line))
-            return false;
+            return false
 
-        return /^\s*\}/.test(input);
-    };
+        return /^\s*\}/.test(input)
+    }
 
     this.autoOutdent = function(doc, row) {
-        var line = doc.getLine(row);
-        var match = line.match(/^(\s*\})/);
+        var line = doc.getLine(row)
+        var match = line.match(/^(\s*\})/)
 
-        if (!match) return 0;
+        if (!match) return 0
 
-        var column = match[1].length;
-        var openBracePos = doc.findMatchingBracket({row: row, column: column});
+        var column = match[1].length
+        var openBracePos = doc.findMatchingBracket({row: row, column: column})
 
-        if (!openBracePos || openBracePos.row == row) return 0;
+        if (!openBracePos || openBracePos.row == row) return 0
 
-        var indent = this.$getIndent(doc.getLine(openBracePos.row));
-        doc.replace(new Range(row, 0, row, column-1), indent);
-    };
+        var indent = this.$getIndent(doc.getLine(openBracePos.row))
+        doc.replace(new Range(row, 0, row, column-1), indent)
+    }
 
     this.$getIndent = function(line) {
-        return line.match(/^\s*/)[0];
-    };
+        return line.match(/^\s*/)[0]
+    }
 
-}).call(MatchingBraceOutdent.prototype);
+}).call(MatchingBraceOutdent.prototype)
 
-exports.MatchingBraceOutdent = MatchingBraceOutdent;
-});
+exports.MatchingBraceOutdent = MatchingBraceOutdent
+})
 
 ace.define("ace/mode/logiql",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var LogiQLHighlightRules = require("./logiql_highlight_rules").LogiQLHighlightRules;
-var FoldMode = require("./folding/coffee").FoldMode;
-var TokenIterator = require("../token_iterator").TokenIterator;
-var Range = require("../range").Range;
-var CstyleBehaviour = require("./behaviour/cstyle").CstyleBehaviour;
-var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var LogiQLHighlightRules = require("./logiql_highlight_rules").LogiQLHighlightRules
+var FoldMode = require("./folding/coffee").FoldMode
+var TokenIterator = require("../token_iterator").TokenIterator
+var Range = require("../range").Range
+var CstyleBehaviour = require("./behaviour/cstyle").CstyleBehaviour
+var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent
 
 var Mode = function() {
-    this.HighlightRules = LogiQLHighlightRules;
-    this.foldingRules = new FoldMode();
-    this.$outdent = new MatchingBraceOutdent();
-    this.$behaviour = new CstyleBehaviour();
-};
+    this.HighlightRules = LogiQLHighlightRules
+    this.foldingRules = new FoldMode()
+    this.$outdent = new MatchingBraceOutdent()
+    this.$behaviour = new CstyleBehaviour()
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
-    this.lineCommentStart = "//";
-    this.blockComment = {start: "/*", end: "*/"};
+    this.lineCommentStart = "//"
+    this.blockComment = {start: "/*", end: "*/"}
 
     this.getNextLineIndent = function(state, line, tab) {
-        var indent = this.$getIndent(line);
+        var indent = this.$getIndent(line)
 
-        var tokenizedLine = this.getTokenizer().getLineTokens(line, state);
-        var tokens = tokenizedLine.tokens;
-        var endState = tokenizedLine.state;
+        var tokenizedLine = this.getTokenizer().getLineTokens(line, state)
+        var tokens = tokenizedLine.tokens
+        var endState = tokenizedLine.state
         if (/comment|string/.test(endState))  
-            return indent;
+            return indent
         if (tokens.length && tokens[tokens.length - 1].type == "comment.single")
-            return indent;
+            return indent
 
-        var match = line.match();
+        var match = line.match()
         if (/(-->|<--|<-|->|{)\s*$/.test(line))
-            indent += tab;
-        return indent;
-    };
+            indent += tab
+        return indent
+    }
 
     this.checkOutdent = function(state, line, input) {
         if (this.$outdent.checkOutdent(line, input))
-            return true;
+            return true
 
         if (input !== "\n" && input !== "\r\n")
-            return false;
+            return false
             
         if (!/^\s+/.test(line))
-            return false;
+            return false
 
-        return true;
-    };
+        return true
+    }
 
     this.autoOutdent = function(state, doc, row) {
         if (this.$outdent.autoOutdent(doc, row))
-            return;
-        var prevLine = doc.getLine(row);
-        var match = prevLine.match(/^\s+/);
-        var column = prevLine.lastIndexOf(".") + 1;
-        if (!match || !row || !column) return 0;
+            return
+        var prevLine = doc.getLine(row)
+        var match = prevLine.match(/^\s+/)
+        var column = prevLine.lastIndexOf(".") + 1
+        if (!match || !row || !column) return 0
 
-        var line = doc.getLine(row + 1);
-        var startRange = this.getMatching(doc, {row: row, column: column});
-        if (!startRange || startRange.start.row == row) return 0;
+        var line = doc.getLine(row + 1)
+        var startRange = this.getMatching(doc, {row: row, column: column})
+        if (!startRange || startRange.start.row == row) return 0
 
-        column = match[0].length;
-        var indent = this.$getIndent(doc.getLine(startRange.start.row));
-        doc.replace(new Range(row + 1, 0, row + 1, column), indent);
-    };
+        column = match[0].length
+        var indent = this.$getIndent(doc.getLine(startRange.start.row))
+        doc.replace(new Range(row + 1, 0, row + 1, column), indent)
+    }
 
     this.getMatching = function(session, row, column) {
         if (row == undefined)
-            row = session.selection.lead;
+            row = session.selection.lead
         if (typeof row == "object") {
-            column = row.column;
-            row = row.row;
+            column = row.column
+            row = row.row
         }
 
-        var startToken = session.getTokenAt(row, column);
-        var KW_START = "keyword.start", KW_END = "keyword.end";
-        var tok;
+        var startToken = session.getTokenAt(row, column)
+        var KW_START = "keyword.start", KW_END = "keyword.end"
+        var tok
         if (!startToken)
-            return;
+            return
         if (startToken.type == KW_START) {
-            var it = new TokenIterator(session, row, column);
-            it.step = it.stepForward;
+            var it = new TokenIterator(session, row, column)
+            it.step = it.stepForward
         } else if (startToken.type == KW_END) {
-            var it = new TokenIterator(session, row, column);
-            it.step = it.stepBackward;
+            var it = new TokenIterator(session, row, column)
+            it.step = it.stepBackward
         } else
-            return;
+            return
 
         while (tok = it.step()) {
             if (tok.type == KW_START || tok.type == KW_END)
-                break;
+                break
         }
         if (!tok || tok.type == startToken.type)
-            return;
+            return
 
-        var col = it.getCurrentTokenColumn();
-        var row = it.getCurrentTokenRow();
-        return new Range(row, col, row, col + tok.value.length);
-    };
-    this.$id = "ace/mode/logiql";
-}).call(Mode.prototype);
+        var col = it.getCurrentTokenColumn()
+        var row = it.getCurrentTokenRow()
+        return new Range(row, col, row, col + tok.value.length)
+    }
+    this.$id = "ace/mode/logiql"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     ace.require(["ace/mode/logiql"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

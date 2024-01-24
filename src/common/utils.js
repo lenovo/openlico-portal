@@ -17,6 +17,7 @@
 // Define all utils functions
 import dayjs from '../dayjs'
 import menu from '../menu/menu'
+import Format from './format'
 
 function isEmptyObject(obj) {
   return Object.keys(obj).length === 0
@@ -227,6 +228,17 @@ function getTimezoneShortByLang(tz, lang = 'en') {
   return arr ? arr.join('') : tz
 }
 
+function chartFormatTime(val, timespan) {
+  if (timespan === 'h' || timespan === 'd') {
+    // h: hour, d: day
+    return ' ' + Format.formatDateTime(new Date(val), 'hh:mm')
+  }
+  if (timespan === 'w' || timespan === 'm') {
+    // w: week, m: month
+    return ' ' + Format.formatDateTime(new Date(val), 'MM-dd')
+  }
+}
+
 export default {
   isEmptyObject,
   isUndefined,
@@ -242,4 +254,5 @@ export default {
   getBase64ByFile,
   getLabelByLocale,
   getTimezoneShortByLang,
+  chartFormatTime,
 }

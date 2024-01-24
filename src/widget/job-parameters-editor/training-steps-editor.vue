@@ -49,7 +49,7 @@ export default {
     onSettingClick() {
       this.$refs.settingDialog.doSetting(this.setting).then(
         res => {
-          this.setting = res
+          this.setting = { ...this.setting, ...res }
         },
         res => {
           // Do nothing

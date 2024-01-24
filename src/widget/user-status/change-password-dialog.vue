@@ -8,13 +8,13 @@
     :form-rules="userRules"
     :success-message-formatter="successMessageFormatter">
     <a-form-item :label="$t('Auth.CurrentPassword')" name="currentPassword">
-      <a-input id="tid_change-password-current-password" v-model:value="userForm.currentPassword" type="password" />
+      <a-input v-model:value="userForm.currentPassword" type="password" />
     </a-form-item>
     <a-form-item :label="$t('Auth.NewPassword')" name="password">
-      <a-input id="tid_change-password-password" v-model:value="userForm.password" type="password" />
+      <a-input v-model:value="userForm.password" type="password" />
     </a-form-item>
     <a-form-item :label="$t('Auth.NewPassword.Check')" name="passwordCheck">
-      <a-input id="tid_change-password-password-check" v-model:value="userForm.passwordCheck" type="password" />
+      <a-input v-model:value="userForm.passwordCheck" type="password" />
     </a-form-item>
   </composite-form-dialog>
 </template>

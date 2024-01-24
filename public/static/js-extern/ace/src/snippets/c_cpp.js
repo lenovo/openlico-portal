@@ -1,5 +1,5 @@
 define("ace/snippets/c_cpp",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "## STL Collections\n\
 # std::array\n\
@@ -132,14 +132,14 @@ snippet lld\n\
 	[${1}](${2}){\n\
 		${3:/* code */}\n\
 	}${4}\n\
-";
-exports.scope = "c_cpp";
+"
+exports.scope = "c_cpp"
 
 });                (function() {
                     window.require(["ace/snippets/c_cpp"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

@@ -1,59 +1,59 @@
 define("ace/mode/doc_comment_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var DocCommentHighlightRules = function() {
     this.$rules = {
         "start" : [ {
             token : "comment.doc.tag",
-            regex : "@[\\w\\d_]+" // TODO: fix email addresses
+            regex : "@[\\w\\d_]+", // TODO: fix email addresses
         }, 
         DocCommentHighlightRules.getTagRule(),
         {
             defaultToken : "comment.doc",
-            caseInsensitive: true
-        }]
-    };
-};
+            caseInsensitive: true,
+        }],
+    }
+}
 
-oop.inherits(DocCommentHighlightRules, TextHighlightRules);
+oop.inherits(DocCommentHighlightRules, TextHighlightRules)
 
 DocCommentHighlightRules.getTagRule = function(start) {
     return {
         token : "comment.doc.tag.storage.type",
-        regex : "\\b(?:TODO|FIXME|XXX|HACK)\\b"
-    };
-};
+        regex : "\\b(?:TODO|FIXME|XXX|HACK)\\b",
+    }
+}
 
 DocCommentHighlightRules.getStartRule = function(start) {
     return {
         token : "comment.doc", // doc comment
         regex : "\\/\\*(?=\\*)",
-        next  : start
-    };
-};
+        next  : start,
+    }
+}
 
 DocCommentHighlightRules.getEndRule = function (start) {
     return {
         token : "comment.doc", // closing comment
         regex : "\\*\\/",
-        next  : start
-    };
-};
+        next  : start,
+    }
+}
 
 
-exports.DocCommentHighlightRules = DocCommentHighlightRules;
+exports.DocCommentHighlightRules = DocCommentHighlightRules
 
-});
+})
 
 define("ace/mode/apex_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules","ace/mode/doc_comment_highlight_rules"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("../mode/text_highlight_rules").TextHighlightRules;
-var DocCommentHighlightRules = require("../mode/doc_comment_highlight_rules").DocCommentHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("../mode/text_highlight_rules").TextHighlightRules
+var DocCommentHighlightRules = require("../mode/doc_comment_highlight_rules").DocCommentHighlightRules
 
 var ApexHighlightRules = function() {
     var mainKeywordMapper = this.createKeywordMapper({
@@ -75,11 +75,11 @@ var ApexHighlightRules = function() {
         "constant.language":
             "true|false|null|after|before|count|excludes|first|includes|last|order|sharing|with",
         "support.function":
-            "system|apex|label|apexpages|userinfo|schema"
-    }, "identifier", true);
+            "system|apex|label|apexpages|userinfo|schema",
+    }, "identifier", true)
     function keywordMapper(value) {
-        if (value.slice(-3) == "__c") return "support.function";
-        return mainKeywordMapper(value);
+        if (value.slice(-3) == "__c") return "support.function"
+        return mainKeywordMapper(value)
     }
     
     function string(start, options) {
@@ -88,18 +88,18 @@ var ApexHighlightRules = function() {
             token: "string.start",
             next: [{
                 regex: options.escape,
-                token: "character.escape"
+                token: "character.escape",
             }, {
                 regex: options.error,
-                token: "error.invalid"
+                token: "error.invalid",
             }, {
                 regex: start + (options.multiline ? "" : "|$"),
                 token: "string.end",
-                next: options.next || "start"
+                next: options.next || "start",
             }, {
-                defaultToken: "string"
-            }]
-        };
+                defaultToken: "string",
+            }],
+        }
     }
     
     function comments() {
@@ -109,8 +109,8 @@ var ApexHighlightRules = function() {
                 next : [
                     DocCommentHighlightRules.getTagRule(),
                     {token : "comment", regex : "$|^", next : "start"},
-                    {defaultToken : "comment", caseInsensitive: true}
-                ]
+                    {defaultToken : "comment", caseInsensitive: true},
+                ],
             },
             DocCommentHighlightRules.getStartRule("doc-start"),
             {
@@ -119,10 +119,10 @@ var ApexHighlightRules = function() {
                 next : [
                     DocCommentHighlightRules.getTagRule(),
                     {token : "comment", regex : "\\*\\/", next : "start"},
-                    {defaultToken : "comment", caseInsensitive: true}
-                ]
-            }
-        ];
+                    {defaultToken : "comment", caseInsensitive: true},
+                ],
+            },
+        ]
     }
     
     this.$rules = {
@@ -130,7 +130,7 @@ var ApexHighlightRules = function() {
             string("'", {
                 escape: /\\[nb'"\\]/,
                 error: /\\./,
-                multiline: false
+                multiline: false,
             }),
             comments("c"),
             {
@@ -141,317 +141,317 @@ var ApexHighlightRules = function() {
                     "meta.package.apex",
                     "storage.modifier.package.apex",
                     "meta.package.apex",
-                    "punctuation.terminator.apex"
+                    "punctuation.terminator.apex",
                 ],
-                regex: /^(\s*)(package)\b(?:(\s*)([^ ;$]+)(\s*)((?:;)?))?/
+                regex: /^(\s*)(package)\b(?:(\s*)([^ ;$]+)(\s*)((?:;)?))?/,
             }, {
                  regex: /@[a-zA-Z_$][a-zA-Z_$\d\u0080-\ufffe]*/,
-                 token: "constant.language"
+                 token: "constant.language",
             },
             {
                 regex: /[a-zA-Z_$][a-zA-Z_$\d\u0080-\ufffe]*/,
-                token: keywordMapper
+                token: keywordMapper,
             },  
             {
                 regex: "`#%",
-                token: "error.invalid"
+                token: "error.invalid",
             }, {
                 token : "constant.numeric", // float
-                regex : /[+-]?\d+(?:(?:\.\d*)?(?:[LlDdEe][+-]?\d+)?)\b|\.\d+[LlDdEe]/
+                regex : /[+-]?\d+(?:(?:\.\d*)?(?:[LlDdEe][+-]?\d+)?)\b|\.\d+[LlDdEe]/,
             }, {
                 token : "keyword.operator",
                 regex : /--|\+\+|===|==|=|!=|!==|<=|>=|<<=|>>=|>>>=|<>|<|>|!|&&|\|\||\?\:|[!$%&*+\-~\/^]=?/,
-                next  : "start"
+                next  : "start",
             }, {
                 token : "punctuation.operator",
                 regex : /[?:,;.]/,
-                next  : "start"
+                next  : "start",
             }, {
                 token : "paren.lparen",
                 regex : /[\[]/,
                 next  : "maybe_soql",
-                merge : false
+                merge : false,
             }, {
                 token : "paren.lparen",
                 regex : /[\[({]/,
                 next  : "start",
-                merge : false
+                merge : false,
             }, {
                 token : "paren.rparen",
                 regex : /[\])}]/,
-                merge : false
-            } 
+                merge : false,
+            }, 
         ], 
         maybe_soql: [{
             regex: /\s+/,
-            token: "text"
+            token: "text",
         }, {
             regex: /(SELECT|FIND)\b/,
             token: "keyword",
             caseInsensitive: true,
-            next: "soql"
+            next: "soql",
         }, {
             regex: "",
             token: "none",
-            next: "start"
+            next: "start",
         }],
         soql: [{
             regex: "(:?ASC|BY|CATEGORY|CUBE|DATA|DESC|END|FIND|FIRST|FOR|FROM|GROUP|HAVING|IN|LAST"
                 + "|LIMIT|NETWORK|NULLS|OFFSET|ORDER|REFERENCE|RETURNING|ROLLUP|SCOPE|SELECT"
                 + "|SNIPPET|TRACKING|TYPEOF|UPDATE|USING|VIEW|VIEWSTAT|WHERE|WITH|AND|OR)\\b",
             token: "keyword",
-            caseInsensitive: true
+            caseInsensitive: true,
         }, {
             regex: "(:?target_length|toLabel|convertCurrency|count|Contact|Account|User|FIELDS)\\b",
             token: "support.function",
-            caseInsensitive: true
+            caseInsensitive: true,
         }, {
             token : "paren.rparen",
             regex : /[\]]/,
             next  : "start",
-            merge : false
+            merge : false,
         }, 
         string("'", {
             escape: /\\[nb'"\\]/,
             error: /\\./,
             multiline: false,
-            next: "soql"
+            next: "soql",
         }),
         string('"', {
             escape: /\\[nb'"\\]/,
             error: /\\./,
             multiline: false,
-            next: "soql"
+            next: "soql",
         }),
         {
             regex: /\\./,
-            token: "character.escape"
+            token: "character.escape",
         },
         {
             regex : /[\?\&\|\!\{\}\[\]\(\)\^\~\*\:\"\'\+\-\,\.=\\\/]/,
-            token : "keyword.operator"
+            token : "keyword.operator",
         }],
         
         "log-start" : [ {
             token : "timestamp.invisible",
             regex : /^[\d:.() ]+\|/, 
-            next: "log-header"
+            next: "log-header",
         },  {
             token : "timestamp.invisible",
-            regex : /^  (Number of|Maximum)[^:]*:/,
-            next: "log-comment"
+            regex : /^ {2}(Number of|Maximum)[^:]*:/,
+            next: "log-comment",
         }, {
             token : "invisible",
             regex : /^Execute Anonymous:/,
-            next: "log-comment"
+            next: "log-comment",
         },  {
-            defaultToken: "text"
+            defaultToken: "text",
         }],
         "log-comment": [{
             token : "log-comment",
             regex : /.*$/,
-            next: "log-start"
+            next: "log-start",
         }],
         "log-header": [{
             token : "timestamp.invisible",
-            regex : /((USER_DEBUG|\[\d+\]|DEBUG)\|)+/
+            regex : /((USER_DEBUG|\[\d+\]|DEBUG)\|)+/,
         },
         {
             token : "keyword",
             regex: "(?:EXECUTION_FINISHED|EXECUTION_STARTED|CODE_UNIT_STARTED"
                 + "|CUMULATIVE_LIMIT_USAGE|LIMIT_USAGE_FOR_NS"
-                + "|CUMULATIVE_LIMIT_USAGE_END|CODE_UNIT_FINISHED)"
+                + "|CUMULATIVE_LIMIT_USAGE_END|CODE_UNIT_FINISHED)",
         }, {
             regex: "",
-            next: "log-start"
-        }]
-    };
+            next: "log-start",
+        }],
+    }
     this.embedRules(DocCommentHighlightRules, "doc-",
-        [ DocCommentHighlightRules.getEndRule("start") ]);
+        [ DocCommentHighlightRules.getEndRule("start") ])
         
 
-    this.normalizeRules();
-};
+    this.normalizeRules()
+}
 
 
-oop.inherits(ApexHighlightRules, TextHighlightRules);
+oop.inherits(ApexHighlightRules, TextHighlightRules)
 
-exports.ApexHighlightRules = ApexHighlightRules;
-});
+exports.ApexHighlightRules = ApexHighlightRules
+})
 
 define("ace/mode/folding/cstyle",["require","exports","module","ace/lib/oop","ace/range","ace/mode/folding/fold_mode"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../../lib/oop");
-var Range = require("../../range").Range;
-var BaseFoldMode = require("./fold_mode").FoldMode;
+var oop = require("../../lib/oop")
+var Range = require("../../range").Range
+var BaseFoldMode = require("./fold_mode").FoldMode
 
 var FoldMode = exports.FoldMode = function(commentRegex) {
     if (commentRegex) {
         this.foldingStartMarker = new RegExp(
-            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start)
-        );
+            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start),
+        )
         this.foldingStopMarker = new RegExp(
-            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end)
-        );
+            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end),
+        )
     }
-};
+}
 oop.inherits(FoldMode, BaseFoldMode);
 
 (function() {
     
-    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/;
-    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/;
-    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/;
-    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/;
-    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/;
-    this._getFoldWidgetBase = this.getFoldWidget;
+    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/
+    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/
+    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/
+    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/
+    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/
+    this._getFoldWidgetBase = this.getFoldWidget
     this.getFoldWidget = function(session, foldStyle, row) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
     
         if (this.singleLineBlockCommentRe.test(line)) {
             if (!this.startRegionRe.test(line) && !this.tripleStarBlockCommentRe.test(line))
-                return "";
+                return ""
         }
     
-        var fw = this._getFoldWidgetBase(session, foldStyle, row);
+        var fw = this._getFoldWidgetBase(session, foldStyle, row)
     
         if (!fw && this.startRegionRe.test(line))
-            return "start"; // lineCommentRegionStart
+            return "start" // lineCommentRegionStart
     
-        return fw;
-    };
+        return fw
+    }
 
     this.getFoldWidgetRange = function(session, foldStyle, row, forceMultiline) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
         
         if (this.startRegionRe.test(line))
-            return this.getCommentRegionBlock(session, line, row);
+            return this.getCommentRegionBlock(session, line, row)
         
-        var match = line.match(this.foldingStartMarker);
+        var match = line.match(this.foldingStartMarker)
         if (match) {
-            var i = match.index;
+            var i = match.index
 
             if (match[1])
-                return this.openingBracketBlock(session, match[1], row, i);
+                return this.openingBracketBlock(session, match[1], row, i)
                 
-            var range = session.getCommentFoldRange(row, i + match[0].length, 1);
+            var range = session.getCommentFoldRange(row, i + match[0].length, 1)
             
             if (range && !range.isMultiLine()) {
                 if (forceMultiline) {
-                    range = this.getSectionRange(session, row);
+                    range = this.getSectionRange(session, row)
                 } else if (foldStyle != "all")
-                    range = null;
+                    range = null
             }
             
-            return range;
+            return range
         }
 
         if (foldStyle === "markbegin")
-            return;
+            return
 
-        var match = line.match(this.foldingStopMarker);
+        var match = line.match(this.foldingStopMarker)
         if (match) {
-            var i = match.index + match[0].length;
+            var i = match.index + match[0].length
 
             if (match[1])
-                return this.closingBracketBlock(session, match[1], row, i);
+                return this.closingBracketBlock(session, match[1], row, i)
 
-            return session.getCommentFoldRange(row, i, -1);
+            return session.getCommentFoldRange(row, i, -1)
         }
-    };
+    }
     
     this.getSectionRange = function(session, row) {
-        var line = session.getLine(row);
-        var startIndent = line.search(/\S/);
-        var startRow = row;
-        var startColumn = line.length;
-        row = row + 1;
-        var endRow = row;
-        var maxRow = session.getLength();
+        var line = session.getLine(row)
+        var startIndent = line.search(/\S/)
+        var startRow = row
+        var startColumn = line.length
+        row = row + 1
+        var endRow = row
+        var maxRow = session.getLength()
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var indent = line.search(/\S/);
+            line = session.getLine(row)
+            var indent = line.search(/\S/)
             if (indent === -1)
-                continue;
+                continue
             if  (startIndent > indent)
-                break;
-            var subRange = this.getFoldWidgetRange(session, "all", row);
+                break
+            var subRange = this.getFoldWidgetRange(session, "all", row)
             
             if (subRange) {
                 if (subRange.start.row <= startRow) {
-                    break;
+                    break
                 } else if (subRange.isMultiLine()) {
-                    row = subRange.end.row;
+                    row = subRange.end.row
                 } else if (startIndent == indent) {
-                    break;
+                    break
                 }
             }
-            endRow = row;
+            endRow = row
         }
         
-        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length);
-    };
+        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length)
+    }
     this.getCommentRegionBlock = function(session, line, row) {
-        var startColumn = line.search(/\s*$/);
-        var maxRow = session.getLength();
-        var startRow = row;
+        var startColumn = line.search(/\s*$/)
+        var maxRow = session.getLength()
+        var startRow = row
         
-        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/;
-        var depth = 1;
+        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/
+        var depth = 1
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var m = re.exec(line);
-            if (!m) continue;
-            if (m[1]) depth--;
-            else depth++;
+            line = session.getLine(row)
+            var m = re.exec(line)
+            if (!m) continue
+            if (m[1]) depth--
+            else depth++
 
-            if (!depth) break;
+            if (!depth) break
         }
 
-        var endRow = row;
+        var endRow = row
         if (endRow > startRow) {
-            return new Range(startRow, startColumn, endRow, line.length);
+            return new Range(startRow, startColumn, endRow, line.length)
         }
-    };
+    }
 
-}).call(FoldMode.prototype);
+}).call(FoldMode.prototype)
 
-});
+})
 
 define("ace/mode/apex",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/apex_highlight_rules","ace/mode/folding/cstyle","ace/mode/behaviour/cstyle"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("../mode/text").Mode;
-var ApexHighlightRules = require("./apex_highlight_rules").ApexHighlightRules;
-var FoldMode = require("../mode/folding/cstyle").FoldMode;
-var CstyleBehaviour = require("../mode/behaviour/cstyle").CstyleBehaviour;
+var oop = require("../lib/oop")
+var TextMode = require("../mode/text").Mode
+var ApexHighlightRules = require("./apex_highlight_rules").ApexHighlightRules
+var FoldMode = require("../mode/folding/cstyle").FoldMode
+var CstyleBehaviour = require("../mode/behaviour/cstyle").CstyleBehaviour
 
 function ApexMode() {
-    TextMode.call(this);
+    TextMode.call(this)
 
-    this.HighlightRules = ApexHighlightRules;
-    this.foldingRules = new FoldMode();
-    this.$behaviour = new CstyleBehaviour();
+    this.HighlightRules = ApexHighlightRules
+    this.foldingRules = new FoldMode()
+    this.$behaviour = new CstyleBehaviour()
 }
 
-oop.inherits(ApexMode, TextMode);
+oop.inherits(ApexMode, TextMode)
 
-ApexMode.prototype.lineCommentStart = "//";
+ApexMode.prototype.lineCommentStart = "//"
 
 ApexMode.prototype.blockComment = {
     start: "/*",
-    end: "*/"
-};
+    end: "*/",
+}
 
-exports.Mode = ApexMode;
+exports.Mode = ApexMode
 
 });                (function() {
                     window.require(["ace/mode/apex"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

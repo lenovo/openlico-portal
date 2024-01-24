@@ -10,6 +10,7 @@
     :keyboard="!submitting"
     :mask-closable="!submitting"
     :closable="!submitting"
+    :z-index="zIndex || 1000"
     @cancel="onCancelClick"
     @after-close="onDialogClose">
     <a-form
@@ -103,6 +104,7 @@ export default {
     // eslint-disable-next-line vue/require-prop-types
     'submitContinue',
     'failedCloseDialog',
+    'zIndex',
   ],
   emits: ['dialog-opened', 'dialog-closed'],
   data() {

@@ -1,5 +1,5 @@
 ace.define("ace/snippets/liquid",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "\n\
 # liquid specific snippets\n\
@@ -882,14 +882,14 @@ snippet video\n\
 	<video src=\"${1} height=\"${2}\" width=\"${3}\" preload=\"${5:none}\" autoplay=\"${6:autoplay}>${7}</video>${8}\n\
 snippet wbr\n\
 	<wbr />${1}\n\
-";
-exports.scope = "liquid";
+"
+exports.scope = "liquid"
 
 });                (function() {
                     ace.require(["ace/snippets/liquid"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

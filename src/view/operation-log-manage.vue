@@ -3,7 +3,7 @@
     <div class="table-style b-w p-20" style="height: 500px; text-align: center">
       <div>
         <div style="margin-top: 100px">
-          <img src="/static/img/system/main/operation-log.svg" class="placeholder-img" />
+          <img src="/static/img/system/main/operation-log.svg" class="placeholder-img" alt="" />
         </div>
         <div style="color: #333333; font-size: 16px; margin-bottom: 10px">
           {{ $t('Menu.OperationLogManage') }}

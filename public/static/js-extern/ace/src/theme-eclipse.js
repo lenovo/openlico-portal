@@ -1,7 +1,7 @@
 define("ace/theme/eclipse",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-exports.isDark = false;
+exports.isDark = false
 exports.cssText = ".ace-eclipse .ace_gutter {\
 background: #ebebeb;\
 border-right: 1px solid rgb(159, 159, 159);\
@@ -89,17 +89,17 @@ border: 1px solid rgb(181, 213, 255);\
 }\
 .ace-eclipse .ace_indent-guide {\
 background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==\") right repeat-y;\
-}";
+}"
 
-exports.cssClass = "ace-eclipse";
+exports.cssClass = "ace-eclipse"
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+var dom = require("../lib/dom")
+dom.importCssString(exports.cssText, exports.cssClass)
 });                (function() {
                     window.require(["ace/theme/eclipse"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

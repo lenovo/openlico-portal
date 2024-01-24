@@ -36,7 +36,7 @@ PR['registerLangHandler'](
         [
             [PR['PR_PLAIN'],       /^[\t\n\r \xA0]+/, null, '\t\n\r \xA0'],
 	    [PR['PR_STRING'],      /^\"(?:[^\"\\]|\\[\s\S])*(?:\"|$)/, null, '"'],
-	    [PR['PR_STRING'],      /^\'(?:[^\'\\]|\\[\s\S])*(?:\'|$)/, null, "'"]
+	    [PR['PR_STRING'],      /^\'(?:[^\'\\]|\\[\s\S])*(?:\'|$)/, null, "'"],
         ],
         [
             [PR['PR_COMMENT'],     /^#.*/],
@@ -52,6 +52,6 @@ PR['registerLangHandler'](
 	    // valid variable names
 	    [PR['PR_PLAIN'], /^(?:[A-Za-z]+[A-Za-z0-9_.]*|\.[a-zA-Z_][0-9a-zA-Z\._]*)(?![A-Za-z0-9_.])/],
 	    // string backtick
-	    [PR['PR_STRING'], /^`.+`/]
+	    [PR['PR_STRING'], /^`.+`/],
         ]),
-    ['r', 's', 'R', 'S', 'Splus']);
+    ['r', 's', 'R', 'S', 'Splus'])

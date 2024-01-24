@@ -59,17 +59,9 @@ const app = createApp({
   },
   watch: {
     isCollapse(val) {
-      let num = 20
-      const windowOnResize = this.windowOnResize
-      function resize() {
-        if (num === 0) return
-        setTimeout(_ => {
-          num--
-          windowOnResize()
-          resize()
-        }, 20)
-      }
-      resize()
+      setTimeout(_ => {
+        this.windowOnResize()
+      }, 500)
     },
   },
   mounted() {
@@ -106,6 +98,9 @@ const app = createApp({
     },
     windowOnResize() {
       this.windowResize++
+      setTimeout(_ => {
+        this.windowResize++
+      }, 300)
     },
   },
   render: _ => h(App),
@@ -118,6 +113,7 @@ app.config.globalProperties.$chart = Echarts
 app.config.globalProperties.$message = message
 app.config.globalProperties.$confirm = Modal.confirm
 app.config.globalProperties.$success = Modal.success
+app.config.globalProperties.$warning = Modal.warning
 app.config.globalProperties.$error = Modal.error
 app.config.globalProperties.$axios = Axios
 app.config.globalProperties.$T = T

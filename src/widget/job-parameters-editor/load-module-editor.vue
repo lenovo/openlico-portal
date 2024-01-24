@@ -6,7 +6,7 @@
         style="width: 67%"
         mode="multiple"
         :open="open"
-        :filter-option="filterOption"
+        :option-filter-prop="'title'"
         :placeholder="$t('JobTemplate.LoadModule.DefaultCollection')"
         @change="onSelectChange"
         @click="open = !open"
@@ -18,6 +18,7 @@
           v-for="option in options"
           :key="String(option.id)"
           :value="option.id"
+          :title="option.name"
           :disabled="collection.length == maxSelected && !collection.includes(option.id)">
           <a-popover v-if="popoverEnable(option)">
             <template #content>
@@ -160,14 +161,6 @@ export default {
       if (typeof this.collection === 'number') return this.collection === option.id
       if (Array.isArray(this.collection)) return this.collection.includes(option.id)
       return false
-    },
-    filterOption(input, option) {
-      const labelElement = option.componentOptions.children
-      let label = labelElement[0].elm ? labelElement[0].elm.textContent : ''
-      if (!label) {
-        label = labelElement[1].children ? labelElement[1].children[0].children[1].text : ''
-      }
-      return label.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
   },
 }

@@ -101,6 +101,9 @@ export default {
     doAdd(jobs) {
       this.getTagsOptions()
       this.mode = 'add'
+      this.formModel = {
+        tags: [],
+      }
       this.jobs = jobs
       this.title = this.$t('JobManager.Add.Tags')
       return this.$refs.innerDialog.popup(this.submitForm)

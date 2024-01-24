@@ -80,8 +80,10 @@ export default {
               return valA - valB
             },
             sortOrder: sortedInfo.columnKey === n && sortedInfo.order,
-            customRender: ({ text }) =>
-              `${Format.formatNumber(text[i] + text[i + 2], 2)}${this.dataMap[this.mode + '_unit']}`,
+            customRender: ({ text }) => {
+              if (text[i] === null || text[i + 2] === null) return '-'
+              return `${Format.formatNumber(text[i] + text[i + 2], 2)}${this.dataMap[this.mode + '_unit']}`
+            },
           })
         })
       } else if (this.mode === 'common') {

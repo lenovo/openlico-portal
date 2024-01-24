@@ -27,6 +27,7 @@ export default {
 }
 .step-item {
   padding: 10px;
+  box-sizing: border-box;
 }
 .step-container {
   margin-top: 10px;

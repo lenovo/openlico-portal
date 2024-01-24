@@ -93,14 +93,14 @@ import AuthService from '@/service/auth'
 import UserService from '@/service/user'
 import AccessService from '@/service/access'
 import UserBatchImportService from '@/service/user-batch-import'
+import { useKeepAlive, clearKeepAliveByRoute } from '@/keep-alive/set-keep-alive'
 import CompositeTable from '@/component/composite-table.vue'
 import UserDialog from './user-manage/user-dialog.vue'
 import UserBatchImportDialog from './user-manage/user-batch-import-dialog.vue'
 import UserBatchImportResultTable from './user-manage/user-batch-import-result-table.vue'
 import UserPasswordDialog from './user-manage/user-password-dialog.vue'
-import Mixins from '@/mixins/set-keep-alive-pages'
 import UserDataTooltip from '@/component/user-data-tooltip.vue'
-import { use } from 'echarts/core'
+
 const name = 'user-manage'
 export default {
   name,
@@ -112,7 +112,14 @@ export default {
     'user-batch-import-result-table': UserBatchImportResultTable,
     'user-data-tooltip': UserDataTooltip,
   },
-  mixins: [Mixins(name)],
+  beforeRouteEnter(to, from, next) {
+    clearKeepAliveByRoute(to, from, to.name).then(res => {
+      next()
+    })
+  },
+  setup() {
+    useKeepAlive()
+  },
   data() {
     return {
       tableDataFetcher: UserService.getUsersTableDataFetcher(),

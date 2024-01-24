@@ -1,8 +1,7 @@
 <template>
   <a-popover
     id="node-gpu-card-popover"
-    v-model:open="tooltipVisible"
-    placement="bottom"
+    :open="tooltipVisible"
     :destroy-tooltip-on-hide="true"
     :get-popup-container="n => n.ownerDocument.body">
     <template #content>
@@ -49,7 +48,7 @@ export default {
       tooltipVisible: false,
       access: this.$store.state.auth.access,
       arch: Access.getScheduler(),
-      gpuId: 0,
+      gpuId: null,
     }
   },
   computed: {
@@ -88,6 +87,7 @@ export default {
       }
     },
     tooltipHeight() {
+      if (this.gpuId === null) return 210
       const dev = MonitorService.VendorMap[this.node.vendors[this.gpuId]]
       const devHeight = !this.node.devList[this.gpuId].length
         ? 0
@@ -280,12 +280,14 @@ export default {
     mouseoverEvent(params, index) {
       if (this.access !== 'staff' || this.node.used[(index - 1) * 4 + params.dataIndex] === 2) {
         this.gpuId = this.node.gpuIndex[(index - 1) * 4 + params.dataIndex]
-        this.tooltipVisible = true
+        if (this.gpuId !== null) {
+          this.tooltipVisible = true
+        }
       }
     },
     mouseoutEvent(params) {
       this.tooltipVisible = false
-      this.gpuId = 0
+      this.gpuId = null
     },
     modifyGapData(values) {
       const arr = []

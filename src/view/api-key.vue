@@ -23,12 +23,15 @@
           class="m-t-20 m-b-20"
           style="border-bottom: 1px solid #eee">
           <a-form-item :label="$t('APIKey.Value')" class="input_align">
+            <!-- eslint-disable -->
             <a-textarea
               v-model:value="item.value"
               class="input_width"
-              read-only
+              readOnly
+              title="api key"
               :auto-size="{ minRows: 2, maxRows: 4 }"
               style="resize: none" />
+            <!-- eslint-enable -->
           </a-form-item>
           <a-form-item v-if="item.ultimate" :label="$t('APIKey.ExpireTime')" class="input_align">
             <a-checkbox v-model:checked="item.ultimate" disabled>
@@ -214,7 +217,7 @@ export default {
 }
 
 .input_width {
-  width: 300px;
+  width: 300px !important;
 }
 
 .input_align {

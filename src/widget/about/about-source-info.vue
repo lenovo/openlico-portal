@@ -31,14 +31,14 @@ export default {
               {
                 title: this.$t('Core'),
                 version: resp.version,
-                gitHubLink: 'https://github.com/lenovo/openlico-core',
-                licenseLink: 'https://github.com/lenovo/openlico-core/LICENSE',
+                gitHubLink: 'https://github.com/lenovo/openlico',
+                licenseLink: 'https://github.com/lenovo/openlico/blob/main/LICENSE',
               },
               {
                 title: this.$t('Portal'),
                 version: res.version,
                 gitHubLink: 'https://github.com/lenovo/openlico-portal',
-                licenseLink: 'https://github.com/lenovo/openlico-portal/LICENSE',
+                licenseLink: 'https://github.com/lenovo/openlico-portal/blob/main/LICENSE',
               },
             ]
           },

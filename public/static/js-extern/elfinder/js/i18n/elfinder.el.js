@@ -5,11 +5,11 @@
  */
 (function(root, factory) {
 	if (typeof define === 'function' && define.amd) {
-		define(['elfinder'], factory);
+		define(['elfinder'], factory)
 	} else if (typeof exports !== 'undefined') {
-		module.exports = factory(require('elfinder'));
+		module.exports = factory(require('elfinder'))
 	} else {
-		factory(root.elFinder);
+		factory(root.elFinder)
 	}
 }(this, function(elFinder) {
 	elFinder.prototype.i18.el = {
@@ -368,7 +368,7 @@
 			'kindVideoWM'     : 'Ταινία Windows Media',
 			'kindVideoFlash'  : 'Ταινία flash',
 			'kindVideoMKV'    : 'Ταινία matroska',
-			'kindVideoOGG'    : 'Ταινία ogg'
-		}
-	};
-}));
+			'kindVideoOGG'    : 'Ταινία ogg',
+		},
+	}
+}))

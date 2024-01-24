@@ -1,8 +1,8 @@
 ace.define("ace/mode/fsharp_highlight_rules",[], function (require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 var FSharpHighlightRules = function () {
 
     var keywordMapper = this.createKeywordMapper({
@@ -14,29 +14,29 @@ var FSharpHighlightRules = function () {
 |as|asr|land|lor|lsl|lsr|lxor|mod|sig|atomic|break|checked|component|const|constraint|constructor|continue\
 |eager|event|external|fixed|functor|include|method|mixin|object|parallel|process|protected|pure|sealed|tailcall\
 |trait|virtual|volatile|and|do|end|for|fun|if|in|let|let!|new|not|null|of|endif',
-        "constant": "true|false"
-    }, "identifier");
+        "constant": "true|false",
+    }, "identifier")
 
-    var floatNumber = "(?:(?:(?:(?:(?:(?:\\d+)?(?:\\.\\d+))|(?:(?:\\d+)\\.))|(?:\\d+))(?:[eE][+-]?\\d+))|(?:(?:(?:\\d+)?(?:\\.\\d+))|(?:(?:\\d+)\\.)))";
+    var floatNumber = "(?:(?:(?:(?:(?:(?:\\d+)?(?:\\.\\d+))|(?:(?:\\d+)\\.))|(?:\\d+))(?:[eE][+-]?\\d+))|(?:(?:(?:\\d+)?(?:\\.\\d+))|(?:(?:\\d+)\\.)))"
 
     this.$rules = {
         "start": [
             {
               token: "variable.classes",
-              regex: '\\[\\<[.]*\\>\\]'
+              regex: '\\[\\<[.]*\\>\\]',
             },
             {
                 token: "comment",
-                regex: '//.*$'
+                regex: '//.*$',
             },
             {
                 token: "comment.start",
                 regex: /\(\*(?!\))/,
-                push: "blockComment"
+                push: "blockComment",
             },
             {
                 token: "string",
-                regex: "'.'"
+                regex: "'.'",
             },
             {
                 token: "string",
@@ -44,14 +44,14 @@ var FSharpHighlightRules = function () {
                 next  : [{
                     token : "constant.language.escape",
                     regex : /\\./,
-                    next  : "qqstring"
+                    next  : "qqstring",
                 }, {
                     token : "string",
                     regex : '"""',
-                    next  : "start"
+                    next  : "start",
                 }, {
-                    defaultToken: "string"
-                }]
+                    defaultToken: "string",
+                }],
             },
             {
                 token: "string",
@@ -59,14 +59,14 @@ var FSharpHighlightRules = function () {
                 next  : [{
                     token : "constant.language.escape",
                     regex : /\\./,
-                    next  : "qqstring"
+                    next  : "qqstring",
                 }, {
                     token : "string",
                     regex : '"',
-                    next  : "start"
+                    next  : "start",
                 }, {
-                    defaultToken: "string"
-                }]
+                    defaultToken: "string",
+                }],
             },
             {
                 token: ["verbatim.string", "string"],
@@ -74,243 +74,243 @@ var FSharpHighlightRules = function () {
                 stateName : "qqstring",
                 next  : [{
                     token : "constant.language.escape",
-                    regex : '""'
+                    regex : '""',
                 }, {
                     token : "string",
                     regex : '"',
-                    next  : "start"
+                    next  : "start",
                 }, {
-                    defaultToken: "string"
-                }]
+                    defaultToken: "string",
+                }],
             },
             {
                 token: "constant.float",
-                regex: "(?:" + floatNumber + "|\\d+)[jJ]\\b"
+                regex: "(?:" + floatNumber + "|\\d+)[jJ]\\b",
             },
             {
                 token: "constant.float",
-                regex: floatNumber
+                regex: floatNumber,
             },
             {
                 token: "constant.integer",
-                regex: "(?:(?:(?:[1-9]\\d*)|(?:0))|(?:0[oO]?[0-7]+)|(?:0[xX][\\dA-Fa-f]+)|(?:0[bB][01]+))\\b"
+                regex: "(?:(?:(?:[1-9]\\d*)|(?:0))|(?:0[oO]?[0-7]+)|(?:0[xX][\\dA-Fa-f]+)|(?:0[bB][01]+))\\b",
             },
             {
                 token: ["keyword.type", "variable"],
-                regex: "(type\\s)([a-zA-Z0-9_$\-]*\\b)"
+                regex: "(type\\s)([a-zA-Z0-9_$\-]*\\b)",
             },
             {
                 token: keywordMapper,
-                regex: "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+                regex: "[a-zA-Z_$][a-zA-Z0-9_$]*\\b",
             },
             {
                 token: "keyword.operator",
-                regex: "\\+\\.|\\-\\.|\\*\\.|\\/\\.|#|;;|\\+|\\-|\\*|\\*\\*\\/|\\/\\/|%|<<|>>|&|\\||\\^|~|<|>|<=|=>|==|!=|<>|<-|=|\\(\\*\\)"
+                regex: "\\+\\.|\\-\\.|\\*\\.|\\/\\.|#|;;|\\+|\\-|\\*|\\*\\*\\/|\\/\\/|%|<<|>>|&|\\||\\^|~|<|>|<=|=>|==|!=|<>|<-|=|\\(\\*\\)",
             },
             {
                 token: "paren.lparen",
-                regex: "[[({]"
+                regex: "[[({]",
             },
             {
                 token: "paren.rparen",
-                regex: "[\\])}]"
-            }
+                regex: "[\\])}]",
+            },
         ],
         blockComment: [{
             regex: /\(\*\)/,
-            token: "comment"
+            token: "comment",
         }, {
             regex: /\(\*(?!\))/,
             token: "comment.start",
-            push: "blockComment"
+            push: "blockComment",
         }, {
             regex: /\*\)/,
             token: "comment.end",
-            next: "pop"
+            next: "pop",
         }, {
-            defaultToken: "comment"
-        }]
-    };
-    this.normalizeRules();
-};
+            defaultToken: "comment",
+        }],
+    }
+    this.normalizeRules()
+}
 
 
-oop.inherits(FSharpHighlightRules, TextHighlightRules);
+oop.inherits(FSharpHighlightRules, TextHighlightRules)
 
-exports.FSharpHighlightRules = FSharpHighlightRules;
-});
+exports.FSharpHighlightRules = FSharpHighlightRules
+})
 
 ace.define("ace/mode/folding/cstyle",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../../lib/oop");
-var Range = require("../../range").Range;
-var BaseFoldMode = require("./fold_mode").FoldMode;
+var oop = require("../../lib/oop")
+var Range = require("../../range").Range
+var BaseFoldMode = require("./fold_mode").FoldMode
 
 var FoldMode = exports.FoldMode = function(commentRegex) {
     if (commentRegex) {
         this.foldingStartMarker = new RegExp(
-            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start)
-        );
+            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start),
+        )
         this.foldingStopMarker = new RegExp(
-            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end)
-        );
+            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end),
+        )
     }
-};
+}
 oop.inherits(FoldMode, BaseFoldMode);
 
 (function() {
     
-    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/;
-    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/;
-    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/;
-    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/;
-    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/;
-    this._getFoldWidgetBase = this.getFoldWidget;
+    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/
+    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/
+    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/
+    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/
+    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/
+    this._getFoldWidgetBase = this.getFoldWidget
     this.getFoldWidget = function(session, foldStyle, row) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
     
         if (this.singleLineBlockCommentRe.test(line)) {
             if (!this.startRegionRe.test(line) && !this.tripleStarBlockCommentRe.test(line))
-                return "";
+                return ""
         }
     
-        var fw = this._getFoldWidgetBase(session, foldStyle, row);
+        var fw = this._getFoldWidgetBase(session, foldStyle, row)
     
         if (!fw && this.startRegionRe.test(line))
-            return "start"; // lineCommentRegionStart
+            return "start" // lineCommentRegionStart
     
-        return fw;
-    };
+        return fw
+    }
 
     this.getFoldWidgetRange = function(session, foldStyle, row, forceMultiline) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
         
         if (this.startRegionRe.test(line))
-            return this.getCommentRegionBlock(session, line, row);
+            return this.getCommentRegionBlock(session, line, row)
         
-        var match = line.match(this.foldingStartMarker);
+        var match = line.match(this.foldingStartMarker)
         if (match) {
-            var i = match.index;
+            var i = match.index
 
             if (match[1])
-                return this.openingBracketBlock(session, match[1], row, i);
+                return this.openingBracketBlock(session, match[1], row, i)
                 
-            var range = session.getCommentFoldRange(row, i + match[0].length, 1);
+            var range = session.getCommentFoldRange(row, i + match[0].length, 1)
             
             if (range && !range.isMultiLine()) {
                 if (forceMultiline) {
-                    range = this.getSectionRange(session, row);
+                    range = this.getSectionRange(session, row)
                 } else if (foldStyle != "all")
-                    range = null;
+                    range = null
             }
             
-            return range;
+            return range
         }
 
         if (foldStyle === "markbegin")
-            return;
+            return
 
-        var match = line.match(this.foldingStopMarker);
+        var match = line.match(this.foldingStopMarker)
         if (match) {
-            var i = match.index + match[0].length;
+            var i = match.index + match[0].length
 
             if (match[1])
-                return this.closingBracketBlock(session, match[1], row, i);
+                return this.closingBracketBlock(session, match[1], row, i)
 
-            return session.getCommentFoldRange(row, i, -1);
+            return session.getCommentFoldRange(row, i, -1)
         }
-    };
+    }
     
     this.getSectionRange = function(session, row) {
-        var line = session.getLine(row);
-        var startIndent = line.search(/\S/);
-        var startRow = row;
-        var startColumn = line.length;
-        row = row + 1;
-        var endRow = row;
-        var maxRow = session.getLength();
+        var line = session.getLine(row)
+        var startIndent = line.search(/\S/)
+        var startRow = row
+        var startColumn = line.length
+        row = row + 1
+        var endRow = row
+        var maxRow = session.getLength()
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var indent = line.search(/\S/);
+            line = session.getLine(row)
+            var indent = line.search(/\S/)
             if (indent === -1)
-                continue;
+                continue
             if  (startIndent > indent)
-                break;
-            var subRange = this.getFoldWidgetRange(session, "all", row);
+                break
+            var subRange = this.getFoldWidgetRange(session, "all", row)
             
             if (subRange) {
                 if (subRange.start.row <= startRow) {
-                    break;
+                    break
                 } else if (subRange.isMultiLine()) {
-                    row = subRange.end.row;
+                    row = subRange.end.row
                 } else if (startIndent == indent) {
-                    break;
+                    break
                 }
             }
-            endRow = row;
+            endRow = row
         }
         
-        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length);
-    };
+        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length)
+    }
     this.getCommentRegionBlock = function(session, line, row) {
-        var startColumn = line.search(/\s*$/);
-        var maxRow = session.getLength();
-        var startRow = row;
+        var startColumn = line.search(/\s*$/)
+        var maxRow = session.getLength()
+        var startRow = row
         
-        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/;
-        var depth = 1;
+        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/
+        var depth = 1
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var m = re.exec(line);
-            if (!m) continue;
-            if (m[1]) depth--;
-            else depth++;
+            line = session.getLine(row)
+            var m = re.exec(line)
+            if (!m) continue
+            if (m[1]) depth--
+            else depth++
 
-            if (!depth) break;
+            if (!depth) break
         }
 
-        var endRow = row;
+        var endRow = row
         if (endRow > startRow) {
-            return new Range(startRow, startColumn, endRow, line.length);
+            return new Range(startRow, startColumn, endRow, line.length)
         }
-    };
+    }
 
-}).call(FoldMode.prototype);
+}).call(FoldMode.prototype)
 
-});
+})
 
 ace.define("ace/mode/fsharp",[], function (require, exports, module) {
-    "use strict";
+    "use strict"
 
-    var oop = require("../lib/oop");
-    var TextMode = require("./text").Mode;
-    var FSharpHighlightRules = require("./fsharp_highlight_rules").FSharpHighlightRules;
-    var CStyleFoldMode = require("./folding/cstyle").FoldMode;
+    var oop = require("../lib/oop")
+    var TextMode = require("./text").Mode
+    var FSharpHighlightRules = require("./fsharp_highlight_rules").FSharpHighlightRules
+    var CStyleFoldMode = require("./folding/cstyle").FoldMode
 
     var Mode = function () {
-        TextMode.call(this);
-        this.HighlightRules = FSharpHighlightRules;
-        this.foldingRules = new CStyleFoldMode();
-    };
+        TextMode.call(this)
+        this.HighlightRules = FSharpHighlightRules
+        this.foldingRules = new CStyleFoldMode()
+    }
 
     oop.inherits(Mode, TextMode);
 
 
     (function () {
-        this.lineCommentStart = "//";
-        this.blockComment = {start: "(*", end: "*)", nestable: true};
+        this.lineCommentStart = "//"
+        this.blockComment = {start: "(*", end: "*)", nestable: true}
 
 
-        this.$id = "ace/mode/fsharp";
-    }).call(Mode.prototype);
+        this.$id = "ace/mode/fsharp"
+    }).call(Mode.prototype)
 
-    exports.Mode = Mode;
+    exports.Mode = Mode
 });                (function() {
                     ace.require(["ace/mode/fsharp"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

@@ -1,5 +1,5 @@
 ace.define("ace/snippets/jsp",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "snippet @page\n\
 	<%@page contentType=\"text/html\" pageEncoding=\"UTF-8\"%>\n\
@@ -100,14 +100,14 @@ snippet uc\n\
 	${fn:toUpperCase(${1:string})}\n\
 snippet trim\n\
 	${fn:trim(${1:string})}\n\
-";
-exports.scope = "jsp";
+"
+exports.scope = "jsp"
 
 });                (function() {
                     ace.require(["ace/snippets/jsp"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

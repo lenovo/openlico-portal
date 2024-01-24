@@ -1,86 +1,86 @@
 ace.define("ace/mode/tex_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var lang = require("../lib/lang");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var lang = require("../lib/lang")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var TexHighlightRules = function(textClass) {
 
     if (!textClass)
-        textClass = "text";
+        textClass = "text"
 
     this.$rules = {
         "start" : [
             {
                 token : "comment",
-                regex : "%.*$"
+                regex : "%.*$",
             }, {
                 token : textClass, // non-command
-                regex : "\\\\[$&%#\\{\\}]"
+                regex : "\\\\[$&%#\\{\\}]",
             }, {
                 token : "keyword", // command
                 regex : "\\\\(?:documentclass|usepackage|newcounter|setcounter|addtocounter|value|arabic|stepcounter|newenvironment|renewenvironment|ref|vref|eqref|pageref|label|cite[a-zA-Z]*|tag|begin|end|bibitem)\\b",
-               next : "nospell"
+               next : "nospell",
             }, {
                 token : "keyword", // command
-                regex : "\\\\(?:[a-zA-Z0-9]+|[^a-zA-Z0-9])"
+                regex : "\\\\(?:[a-zA-Z0-9]+|[^a-zA-Z0-9])",
             }, {
                token : "paren.keyword.operator",
-                regex : "[[({]"
+                regex : "[[({]",
             }, {
                token : "paren.keyword.operator",
-                regex : "[\\])}]"
+                regex : "[\\])}]",
             }, {
                 token : textClass,
-                regex : "\\s+"
-            }
+                regex : "\\s+",
+            },
         ],
         "nospell" : [
            {
                token : "comment",
                regex : "%.*$",
-               next : "start"
+               next : "start",
            }, {
                token : "nospell." + textClass, // non-command
-               regex : "\\\\[$&%#\\{\\}]"
+               regex : "\\\\[$&%#\\{\\}]",
            }, {
                token : "keyword", // command
-               regex : "\\\\(?:documentclass|usepackage|newcounter|setcounter|addtocounter|value|arabic|stepcounter|newenvironment|renewenvironment|ref|vref|eqref|pageref|label|cite[a-zA-Z]*|tag|begin|end|bibitem)\\b"
+               regex : "\\\\(?:documentclass|usepackage|newcounter|setcounter|addtocounter|value|arabic|stepcounter|newenvironment|renewenvironment|ref|vref|eqref|pageref|label|cite[a-zA-Z]*|tag|begin|end|bibitem)\\b",
            }, {
                token : "keyword", // command
                regex : "\\\\(?:[a-zA-Z0-9]+|[^a-zA-Z0-9])",
-               next : "start"
+               next : "start",
            }, {
                token : "paren.keyword.operator",
-               regex : "[[({]"
+               regex : "[[({]",
            }, {
                token : "paren.keyword.operator",
-               regex : "[\\])]"
+               regex : "[\\])]",
            }, {
                token : "paren.keyword.operator",
                regex : "}",
-               next : "start"
+               next : "start",
            }, {
                token : "nospell." + textClass,
-               regex : "\\s+"
+               regex : "\\s+",
            }, {
                token : "nospell." + textClass,
-               regex : "\\w+"
-           }
-        ]
-    };
-};
+               regex : "\\w+",
+           },
+        ],
+    }
+}
 
-oop.inherits(TexHighlightRules, TextHighlightRules);
+oop.inherits(TexHighlightRules, TextHighlightRules)
 
-exports.TexHighlightRules = TexHighlightRules;
-});
+exports.TexHighlightRules = TexHighlightRules
+})
 
 ace.define("ace/mode/matching_brace_outdent",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var Range = require("../range").Range;
+var Range = require("../range").Range
 
 var MatchingBraceOutdent = function() {};
 
@@ -88,73 +88,73 @@ var MatchingBraceOutdent = function() {};
 
     this.checkOutdent = function(line, input) {
         if (! /^\s+$/.test(line))
-            return false;
+            return false
 
-        return /^\s*\}/.test(input);
-    };
+        return /^\s*\}/.test(input)
+    }
 
     this.autoOutdent = function(doc, row) {
-        var line = doc.getLine(row);
-        var match = line.match(/^(\s*\})/);
+        var line = doc.getLine(row)
+        var match = line.match(/^(\s*\})/)
 
-        if (!match) return 0;
+        if (!match) return 0
 
-        var column = match[1].length;
-        var openBracePos = doc.findMatchingBracket({row: row, column: column});
+        var column = match[1].length
+        var openBracePos = doc.findMatchingBracket({row: row, column: column})
 
-        if (!openBracePos || openBracePos.row == row) return 0;
+        if (!openBracePos || openBracePos.row == row) return 0
 
-        var indent = this.$getIndent(doc.getLine(openBracePos.row));
-        doc.replace(new Range(row, 0, row, column-1), indent);
-    };
+        var indent = this.$getIndent(doc.getLine(openBracePos.row))
+        doc.replace(new Range(row, 0, row, column-1), indent)
+    }
 
     this.$getIndent = function(line) {
-        return line.match(/^\s*/)[0];
-    };
+        return line.match(/^\s*/)[0]
+    }
 
-}).call(MatchingBraceOutdent.prototype);
+}).call(MatchingBraceOutdent.prototype)
 
-exports.MatchingBraceOutdent = MatchingBraceOutdent;
-});
+exports.MatchingBraceOutdent = MatchingBraceOutdent
+})
 
 ace.define("ace/mode/tex",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
-var TexHighlightRules = require("./tex_highlight_rules").TexHighlightRules;
-var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
+var TexHighlightRules = require("./tex_highlight_rules").TexHighlightRules
+var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent
 
 var Mode = function(suppressHighlighting) {
     if (suppressHighlighting)
-        this.HighlightRules = TextHighlightRules;
+        this.HighlightRules = TextHighlightRules
     else
-        this.HighlightRules = TexHighlightRules;
-    this.$outdent = new MatchingBraceOutdent();
-    this.$behaviour = this.$defaultBehaviour;
-};
+        this.HighlightRules = TexHighlightRules
+    this.$outdent = new MatchingBraceOutdent()
+    this.$behaviour = this.$defaultBehaviour
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
-   this.lineCommentStart = "%";
+   this.lineCommentStart = "%"
    this.getNextLineIndent = function(state, line, tab) {
-      return this.$getIndent(line);
-   };
+      return this.$getIndent(line)
+   }
 
    this.allowAutoInsert = function() {
-      return false;
-   };
-    this.$id = "ace/mode/tex";
-    this.snippetFileId = "ace/snippets/tex";
-}).call(Mode.prototype);
+      return false
+   }
+    this.$id = "ace/mode/tex"
+    this.snippetFileId = "ace/snippets/tex"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     ace.require(["ace/mode/tex"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

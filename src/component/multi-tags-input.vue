@@ -10,7 +10,6 @@
     </a-tag>
     <a-input-group v-show="inputVisible && !disabled" compact :size="size || null">
       <a-input
-        id="tid_multi-tags-input"
         ref="newTagInput"
         v-model:value="inputValue"
         class="new-tag-input"
@@ -23,7 +22,6 @@
     </a-input-group>
     <a-button
       v-show="!inputVisible && !disabled"
-      id="tid_multi-tags-new"
       class="new-tag-button m-r-10"
       :size="size || 'small'"
       @click="showInput">

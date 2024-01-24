@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="node-job-list">
     <composite-table
       id="tid_nodel-job-table"
       ref="jobTable"
@@ -145,9 +145,14 @@ export default {
 }
 </script>
 <style scoped>
+.node-job-list :deep(.ant-table-cell) {
+  overflow: unset;
+  overflow-wrap: unset;
+}
+
 .job-name {
   max-width: 260px;
-  word-break: break-all;
+  /* word-break: break-all; */
   font-size: 14px;
   color: #333;
 }

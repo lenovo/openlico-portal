@@ -1,5 +1,5 @@
 define("ace/snippets/velocity",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "# macro\n\
 snippet #macro\n\
@@ -29,15 +29,15 @@ snippet #import\n\
 # set\n\
 snippet #set\n\
 	#set ( $${1:var} = ${0} )\n\
-";
-exports.scope = "velocity";
-exports.includeScopes = ["html", "javascript", "css"];
+"
+exports.scope = "velocity"
+exports.includeScopes = ["html", "javascript", "css"]
 
 });                (function() {
                     window.require(["ace/snippets/velocity"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

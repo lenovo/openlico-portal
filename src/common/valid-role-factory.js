@@ -631,15 +631,16 @@ function getValidUsersName(allable, maxValue) {
       // eslint-disable-next-line no-useless-escape
       const Reg = /^[a-zA-Z0-9_,-\.]*$/
       const errors = []
-      if (!allable) {
-        if (value === '') {
+      if (value === '' || !value) {
+        if (!allable) {
           errors.push(new Error(window.gApp.$T('Multi.User.Required')))
-        } else if (!value.match(Reg)) {
-          errors.push(new Error(window.gApp.$T('Multi.User.FormatError')))
-        } else if (value.split(',').length > maxValue) {
-          errors.push(new Error(window.gApp.$T('Multi.User.tooLong', { value: maxValue })))
         }
+      } else if (!value.match(Reg)) {
+        errors.push(new Error(window.gApp.$T('Multi.User.FormatError')))
+      } else if (value.split(',').length > maxValue) {
+        errors.push(new Error(window.gApp.$T('Multi.User.tooLong', { value: maxValue })))
       }
+
       return Promise[errors.length ? 'reject' : 'resolve'](errors)
     },
     trigger: 'change',

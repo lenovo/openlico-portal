@@ -1,262 +1,262 @@
 ace.define("ace/keyboard/vscode",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var HashHandler = require("../keyboard/hash_handler").HashHandler;
-var config = require("../config");
+var HashHandler = require("../keyboard/hash_handler").HashHandler
+var config = require("../config")
 
-exports.handler = new HashHandler();
-exports.handler.$id = "ace/keyboard/vscode";
+exports.handler = new HashHandler()
+exports.handler.$id = "ace/keyboard/vscode"
 
 exports.handler.addCommands([{
     name: "toggleWordWrap",
     exec: function(editor) {
-        var wrapUsed = editor.session.getUseWrapMode();
-        editor.session.setUseWrapMode(!wrapUsed);
+        var wrapUsed = editor.session.getUseWrapMode()
+        editor.session.setUseWrapMode(!wrapUsed)
     },
-    readOnly: true
+    readOnly: true,
 }, {
     name: "navigateToLastEditLocation",
     exec: function(editor) {
-        var lastDelta = editor.session.getUndoManager().$lastDelta;
-        var range = (lastDelta.action  == "remove")? lastDelta.start: lastDelta.end;
-        editor.moveCursorTo(range.row, range.column);
-        editor.clearSelection();
-    }
+        var lastDelta = editor.session.getUndoManager().$lastDelta
+        var range = (lastDelta.action  == "remove")? lastDelta.start: lastDelta.end
+        editor.moveCursorTo(range.row, range.column)
+        editor.clearSelection()
+    },
 }, {
     name: "replaceAll",
     exec: function (editor) {
         if (!editor.searchBox) {
             config.loadModule("ace/ext/searchbox", function(e) {
-                e.Search(editor, true);
-            });
+                e.Search(editor, true)
+            })
         } else {
             if (editor.searchBox.active === true && editor.searchBox.replaceOption.checked === true) {
-                editor.searchBox.replaceAll();
+                editor.searchBox.replaceAll()
             }
         }
-    }
+    },
 }, {
     name: "replaceOne",
     exec: function (editor) {
         if (!editor.searchBox) {
             config.loadModule("ace/ext/searchbox", function(e) {
-                e.Search(editor, true);
-            });
+                e.Search(editor, true)
+            })
         } else {
             if (editor.searchBox.active === true && editor.searchBox.replaceOption.checked === true) {
-                editor.searchBox.replace();
+                editor.searchBox.replace()
             }
         }
-    }
+    },
 }, {
     name: "selectAllMatches",
     exec: function (editor) {
         if (!editor.searchBox) {
             config.loadModule("ace/ext/searchbox", function(e) {
-                e.Search(editor, false);
-            });
+                e.Search(editor, false)
+            })
         } else {
             if (editor.searchBox.active === true) {
-                editor.searchBox.findAll();
+                editor.searchBox.findAll()
             }
         }
-    }
+    },
 }, {
     name: "toggleFindCaseSensitive",
     exec: function (editor) {
         config.loadModule("ace/ext/searchbox", function(e) {
-            e.Search(editor, false);
-            var sb = editor.searchBox;
-            sb.caseSensitiveOption.checked = !sb.caseSensitiveOption.checked;
-            sb.$syncOptions();
-        });
+            e.Search(editor, false)
+            var sb = editor.searchBox
+            sb.caseSensitiveOption.checked = !sb.caseSensitiveOption.checked
+            sb.$syncOptions()
+        })
 
-    }
+    },
 }, {
     name: "toggleFindInSelection",
     exec: function (editor) {
         config.loadModule("ace/ext/searchbox", function(e) {
-            e.Search(editor, false);
-            var sb = editor.searchBox;
-            sb.searchOption.checked = !sb.searchRange;
-            sb.setSearchRange(sb.searchOption.checked && sb.editor.getSelectionRange());
-            sb.$syncOptions();
-        });
-    }
+            e.Search(editor, false)
+            var sb = editor.searchBox
+            sb.searchOption.checked = !sb.searchRange
+            sb.setSearchRange(sb.searchOption.checked && sb.editor.getSelectionRange())
+            sb.$syncOptions()
+        })
+    },
 }, {
     name: "toggleFindRegex",
     exec: function (editor) {
         config.loadModule("ace/ext/searchbox", function(e) {
-            e.Search(editor, false);
-            var sb = editor.searchBox;
-            sb.regExpOption.checked = !sb.regExpOption.checked;
-            sb.$syncOptions();
-        });
-    }
+            e.Search(editor, false)
+            var sb = editor.searchBox
+            sb.regExpOption.checked = !sb.regExpOption.checked
+            sb.$syncOptions()
+        })
+    },
 }, {
     name: "toggleFindWholeWord",
     exec: function (editor) {
         config.loadModule("ace/ext/searchbox", function(e) {
-            e.Search(editor, false);
-            var sb = editor.searchBox;
-            sb.wholeWordOption.checked = !sb.wholeWordOption.checked;
-            sb.$syncOptions();
-        });
-    }
+            e.Search(editor, false)
+            var sb = editor.searchBox
+            sb.wholeWordOption.checked = !sb.wholeWordOption.checked
+            sb.$syncOptions()
+        })
+    },
 }, {
     name: "removeSecondaryCursors",
     exec: function (editor) {
-        var ranges = editor.selection.ranges;
+        var ranges = editor.selection.ranges
         if (ranges && ranges.length > 1)
-            editor.selection.toSingleRange(ranges[ranges.length - 1]);
+            editor.selection.toSingleRange(ranges[ranges.length - 1])
         else
-            editor.selection.clearSelection();
-    }
+            editor.selection.clearSelection()
+    },
 }]);
 
 
 [{
     bindKey: {mac: "Ctrl-G", win: "Ctrl-G"},
-    name: "gotoline"
+    name: "gotoline",
 }, {
     bindKey: {mac: "Command-Shift-L|Command-F2", win: "Ctrl-Shift-L|Ctrl-F2"},
-    name: "findAll"
+    name: "findAll",
 }, {
     bindKey: {mac: "Shift-F8|Shift-Option-F8", win: "Shift-F8|Shift-Alt-F8"},
-    name: "goToPreviousError"
+    name: "goToPreviousError",
 }, {
     bindKey: {mac: "F8|Option-F8", win: "F8|Alt-F8"},
-    name: "goToNextError"
+    name: "goToNextError",
 }, {
     bindKey: {mac: "Command-Shift-P|F1", win: "Ctrl-Shift-P|F1"},
-    name: "openCommandPallete"
+    name: "openCommandPallete",
 }, {
     bindKey: {mac: "Command-K|Command-S", win: "Ctrl-K|Ctrl-S"},
-    name: "showKeyboardShortcuts"
+    name: "showKeyboardShortcuts",
 }, {
     bindKey: {mac: "Shift-Option-Up", win: "Alt-Shift-Up"},
-    name: "copylinesup"
+    name: "copylinesup",
 }, {
     bindKey: {mac: "Shift-Option-Down", win: "Alt-Shift-Down"},
-    name: "copylinesdown"
+    name: "copylinesdown",
 }, {
     bindKey: {mac: "Command-Shift-K", win: "Ctrl-Shift-K"},
-    name: "removeline"
+    name: "removeline",
 }, {
     bindKey: {mac: "Command-Enter", win: "Ctrl-Enter"},
-    name: "addLineAfter"
+    name: "addLineAfter",
 }, {
     bindKey: {mac: "Command-Shift-Enter", win: "Ctrl-Shift-Enter"},
-    name: "addLineBefore"
+    name: "addLineBefore",
 }, {
     bindKey: {mac: "Command-Shift-\\", win: "Ctrl-Shift-\\"},
-    name: "jumptomatching"
+    name: "jumptomatching",
 }, {
     bindKey: {mac: "Command-]", win: "Ctrl-]"},
-    name: "blockindent"
+    name: "blockindent",
 }, {
     bindKey: {mac: "Command-[", win: "Ctrl-["},
-    name: "blockoutdent"
+    name: "blockoutdent",
 }, {
     bindKey: {mac: "Ctrl-PageDown", win: "Alt-PageDown"},
-    name: "pagedown"
+    name: "pagedown",
 }, {
     bindKey: {mac: "Ctrl-PageUp", win: "Alt-PageUp"},
-    name: "pageup"
+    name: "pageup",
 }, {
     bindKey: {mac: "Shift-Option-A", win: "Shift-Alt-A"},
-    name: "toggleBlockComment"
+    name: "toggleBlockComment",
 }, {
     bindKey: {mac: "Option-Z", win: "Alt-Z"},
-    name: "toggleWordWrap"
+    name: "toggleWordWrap",
 }, {
     bindKey: {mac: "Command-G", win: "F3|Ctrl-K Ctrl-D"},
-    name: "findnext"
+    name: "findnext",
 }, {
     bindKey: {mac: "Command-Shift-G", win: "Shift-F3"},
-    name: "findprevious"
+    name: "findprevious",
 }, {
     bindKey: {mac: "Option-Enter", win: "Alt-Enter"},
-    name: "selectAllMatches"
+    name: "selectAllMatches",
 }, {
     bindKey: {mac: "Command-D", win: "Ctrl-D"},
-    name: "selectMoreAfter"
+    name: "selectMoreAfter",
 }, {
     bindKey: {mac: "Command-K Command-D", win: "Ctrl-K Ctrl-D"},
-    name: "selectOrFindNext"
+    name: "selectOrFindNext",
 }, {
     bindKey: {mac: "Shift-Option-I", win: "Shift-Alt-I"},
-    name: "splitSelectionIntoLines"
+    name: "splitSelectionIntoLines",
 }, {
     bindKey: {mac: "Command-K M", win: "Ctrl-K M"},
-    name: "modeSelect"
+    name: "modeSelect",
 }, {
     bindKey: {mac: "Command-Option-[", win: "Ctrl-Shift-["},
-    name: "toggleFoldWidget"
+    name: "toggleFoldWidget",
 }, {
     bindKey: {mac: "Command-Option-]", win: "Ctrl-Shift-]"},
-    name: "toggleFoldWidget"
+    name: "toggleFoldWidget",
 }, {
     bindKey: {mac: "Command-K Command-0", win: "Ctrl-K Ctrl-0"},
-    name: "foldall"
+    name: "foldall",
 }, {
     bindKey: {mac: "Command-K Command-J", win: "Ctrl-K Ctrl-J"},
-    name: "unfoldall"
+    name: "unfoldall",
 }, {
     bindKey: { mac: "Command-K Command-1", win: "Ctrl-K Ctrl-1" },
-    name: "foldOther"
+    name: "foldOther",
 }, {
     bindKey: { mac: "Command-K Command-Q", win: "Ctrl-K Ctrl-Q" },
-    name: "navigateToLastEditLocation"
+    name: "navigateToLastEditLocation",
 }, {
     bindKey: { mac: "Command-K Command-R|Command-K Command-S", win: "Ctrl-K Ctrl-R|Ctrl-K Ctrl-S" },
-    name: "showKeyboardShortcuts"
+    name: "showKeyboardShortcuts",
 }, {
     bindKey: { mac: "Command-K Command-X", win: "Ctrl-K Ctrl-X" },
-    name: "trimTrailingSpace"
+    name: "trimTrailingSpace",
 }, {
     bindKey: {mac: "Shift-Down|Command-Shift-Down", win: "Shift-Down|Ctrl-Shift-Down"},
-    name: "selectdown"
+    name: "selectdown",
 }, {
     bindKey: {mac: "Shift-Up|Command-Shift-Up", win: "Shift-Up|Ctrl-Shift-Up"},
-    name: "selectup"
+    name: "selectup",
 }, {
     bindKey: {mac: "Command-Alt-Enter", win: "Ctrl-Alt-Enter"},
-    name: "replaceAll"
+    name: "replaceAll",
 }, {
     bindKey: {mac: "Command-Shift-1", win: "Ctrl-Shift-1"},
-    name: "replaceOne"
+    name: "replaceOne",
 }, {
     bindKey: {mac: "Option-C", win: "Alt-C"},
-    name: "toggleFindCaseSensitive"
+    name: "toggleFindCaseSensitive",
 }, {
     bindKey: {mac: "Option-L", win: "Alt-L"},
-    name: "toggleFindInSelection"
+    name: "toggleFindInSelection",
 }, {
     bindKey: {mac: "Option-R", win: "Alt-R"},
-    name: "toggleFindRegex"
+    name: "toggleFindRegex",
 }, {
     bindKey: {mac: "Option-W", win: "Alt-W"},
-    name: "toggleFindWholeWord"
+    name: "toggleFindWholeWord",
 }, {
     bindKey: {mac: "Command-L", win: "Ctrl-L"},
-    name: "expandtoline"
+    name: "expandtoline",
 }, {
     bindKey: {mac: "Shift-Esc", win: "Shift-Esc"},
-    name: "removeSecondaryCursors"
-} 
+    name: "removeSecondaryCursors",
+}, 
 ].forEach(function(binding) {
-    var command = exports.handler.commands[binding.name];
+    var command = exports.handler.commands[binding.name]
     if (command)
-        command.bindKey = binding.bindKey;
-    exports.handler.bindKey(binding.bindKey, command || binding.name);
-});
+        command.bindKey = binding.bindKey
+    exports.handler.bindKey(binding.bindKey, command || binding.name)
+})
 
 });                (function() {
                     ace.require(["ace/keyboard/vscode"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

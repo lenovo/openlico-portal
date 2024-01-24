@@ -8,6 +8,7 @@
             <a-select
               v-model:value="defaultValue"
               class="antionsButton"
+              :title="$t('CloudTools.Project')"
               :options="workspaceType.map(item => ({ value: item.name, id: item.id }))"
               @change="selectValue">
               <template #dropdownRender="{ menuNode: menu }">
@@ -730,6 +731,7 @@ export default {
   padding: 5px 10px;
   margin: 10px 0;
   word-break: break-all;
+  box-sizing: border-box;
 }
 .totalStyle {
   overflow: hidden;

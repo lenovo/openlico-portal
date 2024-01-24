@@ -1,5 +1,5 @@
 define("ace/snippets/dart",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "snippet lib\n\
 	library ${1};\n\
@@ -84,14 +84,14 @@ snippet tryf\n\
 	} catch (${1:Exception e}) {\n\
 	} finally {\n\
 	}\n\
-";
-exports.scope = "dart";
+"
+exports.scope = "dart"
 
 });                (function() {
                     window.require(["ace/snippets/dart"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

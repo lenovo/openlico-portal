@@ -1,8 +1,8 @@
 ace.define("ace/mode/verilog_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var VerilogHighlightRules = function() {
 var keywords = "always|and|assign|automatic|begin|buf|bufif0|bufif1|case|casex|casez|cell|cmos|config|" +
@@ -16,103 +16,103 @@ var keywords = "always|and|assign|automatic|begin|buf|bufif0|bufif1|case|casex|c
     "unsigned|use|vectored|wait|wand|weak0|weak1|while|wire|wor|xnor|xor" +
     "begin|bufif0|bufif1|case|casex|casez|config|else|end|endcase|endconfig|endfunction|" +
     "endgenerate|endmodule|endprimitive|endspecify|endtable|endtask|for|forever|function|generate|if|ifnone|" +
-    "macromodule|module|primitive|repeat|specify|table|task|while";
+    "macromodule|module|primitive|repeat|specify|table|task|while"
 
     var builtinConstants = (
         "true|false|null"
-    );
+    )
 
     var builtinFunctions = (
         "count|min|max|avg|sum|rank|now|coalesce|main"
-    );
+    )
 
     var keywordMapper = this.createKeywordMapper({
         "support.function": builtinFunctions,
         "keyword": keywords,
-        "constant.language": builtinConstants
-    }, "identifier", true);
+        "constant.language": builtinConstants,
+    }, "identifier", true)
 
     this.$rules = {
         "start" : [ {
             token : "comment",
-            regex : "//.*$"
+            regex : "//.*$",
         }, {
             token : "comment.start",
             regex : "/\\*",
             next : [
                 { token : "comment.end", regex : "\\*/", next: "start" },
-                { defaultToken : "comment" }
-            ]
+                { defaultToken : "comment" },
+            ],
         }, {
             token : "string.start",
             regex : '"',
             next : [
                 { token : "constant.language.escape", regex : /\\(?:[ntvfa\\"]|[0-7]{1,3}|\x[a-fA-F\d]{1,2}|)/, consumeLineEnd : true },
                 { token : "string.end", regex : '"|$', next: "start" },
-                { defaultToken : "string" }
-            ]
+                { defaultToken : "string" },
+            ],
         }, {
             token : "string",
-            regex : "'^[']'"
+            regex : "'^[']'",
         }, {
             token : "constant.numeric", // float
-            regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b"
+            regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b",
         }, {
             token : keywordMapper,
-            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b",
         }, {
             token : "keyword.operator",
-            regex : "\\+|\\-|\\/|\\/\\/|%|<@>|@>|<@|&|\\^|~|<|>|<=|=>|==|!=|<>|="
+            regex : "\\+|\\-|\\/|\\/\\/|%|<@>|@>|<@|&|\\^|~|<|>|<=|=>|==|!=|<>|=",
         }, {
             token : "paren.lparen",
-            regex : "[\\(]"
+            regex : "[\\(]",
         }, {
             token : "paren.rparen",
-            regex : "[\\)]"
+            regex : "[\\)]",
         }, {
             token : "text",
-            regex : "\\s+"
-        } ]
-    };
-    this.normalizeRules();
-};
+            regex : "\\s+",
+        } ],
+    }
+    this.normalizeRules()
+}
 
-oop.inherits(VerilogHighlightRules, TextHighlightRules);
+oop.inherits(VerilogHighlightRules, TextHighlightRules)
 
-exports.VerilogHighlightRules = VerilogHighlightRules;
-});
+exports.VerilogHighlightRules = VerilogHighlightRules
+})
 
 ace.define("ace/mode/verilog",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var VerilogHighlightRules = require("./verilog_highlight_rules").VerilogHighlightRules;
-var Range = require("../range").Range;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var VerilogHighlightRules = require("./verilog_highlight_rules").VerilogHighlightRules
+var Range = require("../range").Range
 
 var Mode = function() {
-    this.HighlightRules = VerilogHighlightRules;
-    this.$behaviour = this.$defaultBehaviour;
-};
+    this.HighlightRules = VerilogHighlightRules
+    this.$behaviour = this.$defaultBehaviour
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
 
-    this.lineCommentStart = "//";
-    this.blockComment = {start: "/*", end: "*/"};
-    this.$quotes = { '"': '"' };
+    this.lineCommentStart = "//"
+    this.blockComment = {start: "/*", end: "*/"}
+    this.$quotes = { '"': '"' }
 
 
-    this.$id = "ace/mode/verilog";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/verilog"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 
 });                (function() {
                     ace.require(["ace/mode/verilog"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

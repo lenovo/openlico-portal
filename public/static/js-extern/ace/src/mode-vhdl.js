@@ -1,8 +1,8 @@
 define("ace/mode/vhdl_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var VHDLHighlightRules = function() {
 
@@ -15,20 +15,20 @@ var VHDLHighlightRules = function() {
                    "label|linkage|literal|loop|mapnew|next|of|on|open|others|"+
                    "out|port|process|pure|range|record|reject|report|return|"+
                    "select|severity|shared|signal|subtype|then|to|transport|"+
-                   "type|unaffected|united|until|wait|when|while|with";
+                   "type|unaffected|united|until|wait|when|while|with"
     
     var storageType = "bit|bit_vector|boolean|character|integer|line|natural|"+
                       "positive|real|register|signed|std_logic|"+
-                      "std_logic_vector|string||text|time|unsigned|variable";
+                      "std_logic_vector|string||text|time|unsigned|variable"
     
-    var storageModifiers = "array|constant";
+    var storageModifiers = "array|constant"
     
     var keywordOperators = "abs|and|mod|nand|nor|not|rem|rol|ror|sla|sll|sra"+
-                           "srl|xnor|xor";
+                           "srl|xnor|xor"
     
     var builtinConstants = (
         "true|false|null"
-    );
+    )
 
 
     var keywordMapper = this.createKeywordMapper({
@@ -36,81 +36,81 @@ var VHDLHighlightRules = function() {
         "keyword": keywords,
         "constant.language": builtinConstants,
         "storage.modifier": storageModifiers,
-        "storage.type": storageType
-    }, "identifier", true);
+        "storage.type": storageType,
+    }, "identifier", true)
 
     this.$rules = {
         "start" : [ {
             token : "comment",
-            regex : "--.*$"
+            regex : "--.*$",
         }, {
             token : "string",           // " string
-            regex : '".*?"'
+            regex : '".*?"',
         }, {
             token : "string",           // ' string
-            regex : "'.*?'"
+            regex : "'.*?'",
         }, {
             token : "constant.numeric", // float
-            regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b"
+            regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b",
         }, {
             token : "keyword", // pre-compiler directives
-            regex : "\\s*(?:library|package|use)\\b"
+            regex : "\\s*(?:library|package|use)\\b",
         }, {
             token : keywordMapper,
-            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b",
         }, {
             token : "keyword.operator",
-            regex : "&|\\*|\\+|\\-|\\/|<|=|>|\\||=>|\\*\\*|:=|\\/=|>=|<=|<>" 
+            regex : "&|\\*|\\+|\\-|\\/|<|=|>|\\||=>|\\*\\*|:=|\\/=|>=|<=|<>", 
         }, {
               token : "punctuation.operator",
-              regex : "\\'|\\:|\\,|\\;|\\."
+              regex : "\\'|\\:|\\,|\\;|\\.",
         },{
             token : "paren.lparen",
-            regex : "[[(]"
+            regex : "[[(]",
         }, {
             token : "paren.rparen",
-            regex : "[\\])]"
+            regex : "[\\])]",
         }, {
             token : "text",
-            regex : "\\s+"
-        } ]
+            regex : "\\s+",
+        } ],
 
        
-    };
-};
+    }
+}
 
-oop.inherits(VHDLHighlightRules, TextHighlightRules);
+oop.inherits(VHDLHighlightRules, TextHighlightRules)
 
-exports.VHDLHighlightRules = VHDLHighlightRules;
-});
+exports.VHDLHighlightRules = VHDLHighlightRules
+})
 
 define("ace/mode/vhdl",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/vhdl_highlight_rules"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var VHDLHighlightRules = require("./vhdl_highlight_rules").VHDLHighlightRules;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var VHDLHighlightRules = require("./vhdl_highlight_rules").VHDLHighlightRules
 
 var Mode = function() {
-    this.HighlightRules = VHDLHighlightRules;
-    this.$behaviour = this.$defaultBehaviour;
-};
+    this.HighlightRules = VHDLHighlightRules
+    this.$behaviour = this.$defaultBehaviour
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
 
-    this.lineCommentStart = "--";
+    this.lineCommentStart = "--"
 
-    this.$id = "ace/mode/vhdl";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/vhdl"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 
 });                (function() {
                     window.require(["ace/mode/vhdl"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

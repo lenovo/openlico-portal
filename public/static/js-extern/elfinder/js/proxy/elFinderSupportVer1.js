@@ -10,38 +10,38 @@
  * @author Dmitry (dio) Levashov
  **/
 window.elFinderSupportVer1 = function(upload) {
-	"use strict";
+	"use strict"
 	var self = this,
 		dateObj, today, yesterday,
 		getDateString = function(date) {
-			return date.replace('Today', today).replace('Yesterday', yesterday);
-		};
+			return date.replace('Today', today).replace('Yesterday', yesterday)
+		}
 	
-	dateObj = new Date();
-	today = dateObj.getFullYear() + '/' + (dateObj.getMonth() + 1) + '/' + dateObj.getDate();
-	dateObj = new Date(Date.now() - 86400000);
-	yesterday = dateObj.getFullYear() + '/' + (dateObj.getMonth() + 1) + '/' + dateObj.getDate();
+	dateObj = new Date()
+	today = dateObj.getFullYear() + '/' + (dateObj.getMonth() + 1) + '/' + dateObj.getDate()
+	dateObj = new Date(Date.now() - 86400000)
+	yesterday = dateObj.getFullYear() + '/' + (dateObj.getMonth() + 1) + '/' + dateObj.getDate()
 	
-	this.upload = upload || 'auto';
+	this.upload = upload || 'auto'
 	
 	this.init = function(fm) {
-		this.fm = fm;
+		this.fm = fm
 		this.fm.parseUploadData = function(text) {
-			var data;
+			var data
 
 			if (!$.trim(text)) {
-				return {error : ['errResponse', 'errDataEmpty']};
+				return {error : ['errResponse', 'errDataEmpty']}
 			}
 
 			try {
-				data = JSON.parse(text);
+				data = JSON.parse(text)
 			} catch (e) {
-				return {error : ['errResponse', 'errDataNotJSON']};
+				return {error : ['errResponse', 'errDataNotJSON']}
 			}
 			
-			return self.normalize('upload', data);
-		};
-	};
+			return self.normalize('upload', data)
+		}
+	}
 	
 	
 	this.send = function(opts) {
@@ -52,97 +52,97 @@ window.elFinderSupportVer1 = function(upload) {
 			args = [],
 			_opts = {},
 			data,
-			xhr;
+			xhr
 			
 		dfrd.abort = function() {
 			if (xhr.state() == 'pending') {
-				xhr.quiet = true;
-				xhr.abort();
+				xhr.quiet = true
+				xhr.abort()
 			}
-		};
+		}
 		
 		switch (cmd) {
 			case 'open':
-				opts.data.tree = 1;
-				break;
+				opts.data.tree = 1
+				break
 			case 'parents':
 			case 'tree':
-				return dfrd.resolve({tree : []});
+				return dfrd.resolve({tree : []})
 			case 'get':
-				opts.data.cmd = 'read';
-				opts.data.current = fm.file(opts.data.target).phash;
-				break;
+				opts.data.cmd = 'read'
+				opts.data.current = fm.file(opts.data.target).phash
+				break
 			case 'put':
-				opts.data.cmd = 'edit';
-				opts.data.current = fm.file(opts.data.target).phash;
-				break;
+				opts.data.cmd = 'edit'
+				opts.data.current = fm.file(opts.data.target).phash
+				break
 			case 'archive':
 			case 'rm':
-				opts.data.current = fm.file(opts.data.targets[0]).phash;
-				break;
+				opts.data.current = fm.file(opts.data.targets[0]).phash
+				break
 			case 'extract':
 			case 'rename':
 			case 'resize':
-				opts.data.current = fm.file(opts.data.target).phash;
-				break;
+				opts.data.current = fm.file(opts.data.target).phash
+				break
 			case 'duplicate':
-				_opts = $.extend(true, {}, opts);
+				_opts = $.extend(true, {}, opts)
 
 				$.each(opts.data.targets, function(i, hash) {
 					$.ajax(Object.assign(_opts, {data : {cmd : 'duplicate', target : hash, current : fm.file(hash).phash}}))
 						.fail(function(error) {
-							fm.error(fm.res('error', 'connect'));
+							fm.error(fm.res('error', 'connect'))
 						})
 						.done(function(data) {
-							data = self.normalize('duplicate', data);
+							data = self.normalize('duplicate', data)
 							if (data.error) {
-								fm.error(data.error);
+								fm.error(data.error)
 							} else if (data.added) {
-								fm.trigger('add', {added : data.added});
+								fm.trigger('add', {added : data.added})
 							}
-						});
-				});
-				return dfrd.resolve({});
+						})
+				})
+				return dfrd.resolve({})
 				
 			case 'mkdir':
 			case 'mkfile':
-				opts.data.current = opts.data.target;
-				break;
+				opts.data.current = opts.data.target
+				break
 			case 'paste':
-				opts.data.current = opts.data.dst;
+				opts.data.current = opts.data.dst
 				if (! opts.data.tree) {
 					$.each(opts.data.targets, function(i, h) {
 						if (fm.file(h) && fm.file(h).mime === 'directory') {
-							opts.data.tree = '1';
-							return false;
+							opts.data.tree = '1'
+							return false
 						}
-					});
+					})
 				}
-				break;
+				break
 				
 			case 'size':
-				return dfrd.resolve({error : fm.res('error', 'cmdsupport')});
+				return dfrd.resolve({error : fm.res('error', 'cmdsupport')})
 			case 'search':
-				return dfrd.resolve({error : fm.res('error', 'cmdsupport')});
+				return dfrd.resolve({error : fm.res('error', 'cmdsupport')})
 				
 			case 'file':
-				opts.data.cmd = 'open';
-				opts.data.current = fm.file(opts.data.target).phash;
-				break;
+				opts.data.cmd = 'open'
+				opts.data.current = fm.file(opts.data.target).phash
+				break
 		}
 		// cmd = opts.data.cmd
 		
 		xhr = $.ajax(opts)
 			.fail(function(error) {
-				dfrd.reject(error);
+				dfrd.reject(error)
 			})
 			.done(function(raw) {
-				data = self.normalize(cmd, raw);
-				dfrd.resolve(data);
-			});
+				data = self.normalize(cmd, raw)
+				dfrd.resolve(data)
+			})
 			
-		return dfrd;
-	};
+		return dfrd
+	}
 	
 	// fix old connectors errors messages as possible
 	// this.errors = {
@@ -164,37 +164,37 @@ window.elFinderSupportVer1 = function(upload) {
 		var self = this,
 			fm   = this.fm,
 			files = {}, 
-			filter = function(file) { return file && file.hash && file.name && file.mime ? file : null; },
+			filter = function(file) { return file && file.hash && file.name && file.mime ? file : null },
 			getDirs = function(items) {
 				return $.grep(items, function(i) {
-					return i && i.mime && i.mime === 'directory'? true : false;
-				});
+					return i && i.mime && i.mime === 'directory'? true : false
+				})
 			},
 			getTreeDiff = function(files) {
-				var dirs = getDirs(files);
-				treeDiff = fm.diff(dirs, null, ['date', 'ts']);
+				var dirs = getDirs(files)
+				treeDiff = fm.diff(dirs, null, ['date', 'ts'])
 				if (treeDiff.added.length) {
-					treeDiff.added = getDirs(treeDiff.added);
+					treeDiff.added = getDirs(treeDiff.added)
 				}
 				if (treeDiff.changed.length) {
-					treeDiff.changed = getDirs(treeDiff.changed);
+					treeDiff.changed = getDirs(treeDiff.changed)
 				}
 				if (treeDiff.removed.length) {
-					var removed = [];
+					var removed = []
 					$.each(treeDiff.removed, function(i, h) {
-						var item;
+						var item
 						if ((item = fm.file(h)) && item.mime === 'directory') {
-							removed.push(h);
+							removed.push(h)
 						}
-					});
-					treeDiff.removed = removed;
+					})
+					treeDiff.removed = removed
 				}
-				return treeDiff;
+				return treeDiff
 			},
-			phash, diff, isCwd, treeDiff;
+			phash, diff, isCwd, treeDiff
 
 		if ((cmd == 'tmb' || cmd == 'get')) {
-			return data;
+			return data
 		}
 		
 		// if (data.error) {
@@ -206,81 +206,81 @@ window.elFinderSupportVer1 = function(upload) {
 		// }
 		
 		if (cmd == 'upload' && data.error && data.cwd) {
-			data.warning = Object.assign({}, data.error);
-			data.error = false;
+			data.warning = Object.assign({}, data.error)
+			data.error = false
 		}
 		
 		
 		if (data.error) {
-			return data;
+			return data
 		}
 		
 		if (cmd == 'put') {
 
-			phash = fm.file(data.target.hash).phash;
-			return {changed : [this.normalizeFile(data.target, phash)]};
+			phash = fm.file(data.target.hash).phash
+			return {changed : [this.normalizeFile(data.target, phash)]}
 		}
 		
-		phash = data.cwd.hash;
+		phash = data.cwd.hash
 
-		isCwd = (phash == fm.cwd().hash);
+		isCwd = (phash == fm.cwd().hash)
 		
 		if (data.tree) {
 			$.each(this.normalizeTree(data.tree), function(i, file) {
-				files[file.hash] = file;
-			});
+				files[file.hash] = file
+			})
 		}
 		
 		$.each(data.cdc||[], function(i, file) {
 			var hash = file.hash,
-				mcts;
+				mcts
 
 			if (files[hash]) {
 				if (file.date) {
-					mcts = Date.parse(getDateString(file.date));
+					mcts = Date.parse(getDateString(file.date))
 					if (mcts && !isNaN(mcts)) {
-						files[hash].ts = Math.floor(mcts / 1000);
+						files[hash].ts = Math.floor(mcts / 1000)
 					} else {
-						files[hash].date = file.date || fm.formatDate(file);
+						files[hash].date = file.date || fm.formatDate(file)
 					}
 				}
-				files[hash].locked = file.hash == phash ? true : file.rm === void(0) ? false : !file.rm;
+				files[hash].locked = file.hash == phash ? true : file.rm === void(0) ? false : !file.rm
 			} else {
-				files[hash] = self.normalizeFile(file, phash, data.tmb);
+				files[hash] = self.normalizeFile(file, phash, data.tmb)
 			}
-		});
+		})
 		
 		if (!data.tree) {
 			$.each(fm.files(), function(hash, file) {
 				if (!files[hash] && file.phash != phash && file.mime == 'directory') {
-					files[hash] = file;
+					files[hash] = file
 				}
-			});
+			})
 		}
 		
 		if (cmd == 'open') {
 			return {
 					cwd     : files[phash] || this.normalizeFile(data.cwd),
-					files   : $.map(files, function(f) { return f; }),
+					files   : $.map(files, function(f) { return f }),
 					options : self.normalizeOptions(data),
 					init    : !!data.params,
-					debug   : data.debug
-				};
+					debug   : data.debug,
+				}
 		}
 		
 		if (isCwd) {
-			diff = fm.diff($.map(files, filter));
+			diff = fm.diff($.map(files, filter))
 		} else {
 			if (data.tree && cmd !== 'paste') {
-				diff = getTreeDiff(files);
+				diff = getTreeDiff(files)
 			} else {
 				diff = {
 					added   : [],
 					removed : [],
-					changed : []
-				};
+					changed : [],
+				}
 				if (cmd === 'paste') {
-					diff.sync = true;
+					diff.sync = true
 				}
 			}
 		}
@@ -289,10 +289,10 @@ window.elFinderSupportVer1 = function(upload) {
 			current : data.cwd.hash,
 			error   : data.error,
 			warning : data.warning,
-			options : {tmb : !!data.tmb}
-		}, diff);
+			options : {tmb : !!data.tmb},
+		}, diff)
 		
-	};
+	}
 	
 	/**
 	 * Convert old api tree into plain array of dirs
@@ -304,19 +304,19 @@ window.elFinderSupportVer1 = function(upload) {
 		var self     = this,
 			result   = [],
 			traverse = function(dirs, phash) {
-				var i, dir;
+				var i, dir
 				
 				for (i = 0; i < dirs.length; i++) {
-					dir = dirs[i];
-					result.push(self.normalizeFile(dir, phash));
-					dir.dirs.length && traverse(dir.dirs, dir.hash);
+					dir = dirs[i]
+					result.push(self.normalizeFile(dir, phash))
+					dir.dirs.length && traverse(dir.dirs, dir.hash)
 				}
-			};
+			}
 
-		traverse([root]);
+		traverse([root])
 
-		return result;
-	};
+		return result
+	}
 	
 	/**
 	 * Convert file info from old api format into new one
@@ -339,70 +339,70 @@ window.elFinderSupportVer1 = function(upload) {
 				size   : size,
 				read   : file.read,
 				write  : file.write,
-				locked : !phash ? true : file.rm === void(0) ? false : !file.rm
-			};
+				locked : !phash ? true : file.rm === void(0) ? false : !file.rm,
+			}
 		
 		if (! info.ts) {
 			if (mcts && !isNaN(mcts)) {
-				info.ts = Math.floor(mcts / 1000);
+				info.ts = Math.floor(mcts / 1000)
 			} else {
-				info.date = file.date || this.fm.formatDate(file);
+				info.date = file.date || this.fm.formatDate(file)
 			}
 		}
 		
 		if (file.mime == 'application/x-empty' || file.mime == 'inode/x-empty') {
-			info.mime = 'text/plain';
+			info.mime = 'text/plain'
 		}
 		
 		if (file.linkTo) {
-			info.alias = file.linkTo;
+			info.alias = file.linkTo
 		}
 
 		if (file.linkTo) {
-			info.linkTo = file.linkTo;
+			info.linkTo = file.linkTo
 		}
 		
 		if (file.tmb) {
-			info.tmb = file.tmb;
+			info.tmb = file.tmb
 		} else if (info.mime.indexOf('image/') === 0 && tmb) {
-			info.tmb = 1;
+			info.tmb = 1
 			
 		}
 
 		if (file.dirs && file.dirs.length) {
-			info.dirs = true;
+			info.dirs = true
 		}
 		if (file.dim) {
-			info.dim = file.dim;
+			info.dim = file.dim
 		}
 		if (file.resize) {
-			info.resize = file.resize;
+			info.resize = file.resize
 		}
-		return info;
-	};
+		return info
+	}
 	
 	this.normalizeOptions = function(data) {
 		var opts = {
 				path          : data.cwd.rel,
 				disabled      : $.merge((data.disabled || []), [ 'search', 'netmount', 'zipdl' ]),
 				tmb           : !!data.tmb,
-				copyOverwrite : true
-			};
+				copyOverwrite : true,
+			}
 		
 		if (data.params) {
-			opts.api      = 1;
-			opts.url      = data.params.url;
+			opts.api      = 1
+			opts.url      = data.params.url
 			opts.archivers = {
 				create  : data.params.archives || [],
-				extract : data.params.extract || []
-			};
+				extract : data.params.extract || [],
+			}
 		}
 		
 		if (opts.path.indexOf('/') !== -1) {
-			opts.separator = '/';
+			opts.separator = '/'
 		} else if (opts.path.indexOf('\\') !== -1) {
-			opts.separator = '\\';
+			opts.separator = '\\'
 		}
-		return opts;
-	};
-};
+		return opts
+	}
+}

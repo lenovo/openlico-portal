@@ -1,7 +1,7 @@
 ace.define("ace/theme/ambiance",[], function(require, exports, module) {
 
-exports.isDark = true;
-exports.cssClass = "ace-ambiance";
+exports.isDark = true
+exports.cssClass = "ace-ambiance"
 exports.cssText = ".ace-ambiance .ace_gutter {\
 background-color: #3d3d3d;\
 background-image: linear-gradient(left, #3D3D3D, #333);\
@@ -170,16 +170,16 @@ background-image: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICA
 .ace-ambiance .ace_indent-guide {\
 background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNQUFD4z6Crq/sfAAuYAuYl+7lfAAAAAElFTkSuQmCC\") right repeat-y;\
 }\
-";
+"
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+var dom = require("../lib/dom")
+dom.importCssString(exports.cssText, exports.cssClass)
 
 });                (function() {
                     ace.require(["ace/theme/ambiance"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

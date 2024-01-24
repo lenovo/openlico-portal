@@ -62,7 +62,7 @@ var commands = 'B|BREAK|'       +
                'U|USE|'         +
                'V|VIEW|'        +  
                'W|WRITE|'       +
-               'X|XECUTE';
+               'X|XECUTE'
 
 var intrinsicVariables = 'D|DEVICE|'       +
                          'EC|ECODE|'       +  
@@ -82,7 +82,7 @@ var intrinsicVariables = 'D|DEVICE|'       +
                          'TR|TRESTART|'    +
                          'X|'              +
                          'Y|'              +
-                         'Z[A-Z]*|';    
+                         'Z[A-Z]*|'    
 
 var intrinsicFunctions = 'A|ASCII|'        +
                          'C|CHAR|'         +
@@ -106,17 +106,17 @@ var intrinsicFunctions = 'A|ASCII|'        +
                          'T|TEXT|'         +
                          'TR|TRANSLATE|'   +
                          'V|VIEW|'         * 
-                         'Z[A-Z]*|';   
+                         'Z[A-Z]*|'   
 
-var intrinsic = intrinsicVariables + intrinsicFunctions;                  
+var intrinsic = intrinsicVariables + intrinsicFunctions                  
 
 
 var shortcutStylePatterns = [
          // Whitespace
          [PR['PR_PLAIN'],       /^[\t\n\r \xA0]+/, null, '\t\n\r \xA0'],
          // A double or single quoted, possibly multi-line, string.
-         [PR['PR_STRING'],      /^(?:"(?:[^"]|\\.)*")/, null, '"']
-  ];
+         [PR['PR_STRING'],      /^(?:"(?:[^"]|\\.)*")/, null, '"'],
+  ]
 
 var fallthroughStylePatterns = [
          // A line comment that starts with ;
@@ -132,8 +132,8 @@ var fallthroughStylePatterns = [
          // An identifier
          [PR['PR_PLAIN'], /^[a-z][a-zA-Z0-9]*/i],
          // Exclude $ % and ^
-         [PR['PR_PUNCTUATION'], /^[^\w\t\n\r\xA0\"\$;%\^]|_/]
-  ];
+         [PR['PR_PUNCTUATION'], /^[^\w\t\n\r\xA0\"\$;%\^]|_/],
+  ]
 // Can't use m as its already used for MatLab
-PR.registerLangHandler(PR.createSimpleLexer(shortcutStylePatterns, fallthroughStylePatterns), ['mumps']);
-})();
+PR.registerLangHandler(PR.createSimpleLexer(shortcutStylePatterns, fallthroughStylePatterns), ['mumps'])
+})()

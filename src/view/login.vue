@@ -1,4 +1,4 @@
-<template>
+<template lang="">
   <div class="login-wrapper">
     <div class="login-action-wrapper">
       <div class="login-logo-input">
@@ -10,7 +10,6 @@
         <a-form ref="loginForm" :model="loginForm" :rules="loginRules" layout="vertical" auto-complete="off">
           <a-form-item :label="$t('Login.Username')" name="username" class="login-input">
             <a-input
-              id="Login_Username"
               ref="username"
               v-model:value="loginForm.username"
               v-focus
@@ -22,7 +21,6 @@
           </a-form-item>
           <a-form-item :label="$t('Login.Password')" name="password" class="login-input">
             <a-input
-              id="Login_Password"
               v-model:value="loginForm.password"
               type="password"
               auto-complete="off"

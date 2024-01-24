@@ -1,18 +1,18 @@
 ace.define("ace/mode/hjson_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var HjsonHighlightRules = function() {
 
     this.$rules = {
         start: [{
-            include: "#comments"
+            include: "#comments",
         }, {
-            include: "#rootObject"
+            include: "#rootObject",
         }, {
-            include: "#value"
+            include: "#value",
         }],
         "#array": [{
             token: "paren.lparen",
@@ -20,51 +20,51 @@ var HjsonHighlightRules = function() {
             push: [{
                 token: "paren.rparen",
                 regex: /\]/,
-                next: "pop"
+                next: "pop",
             }, {
-                include: "#value"
+                include: "#value",
             }, {
-                include: "#comments"
+                include: "#comments",
             }, {
                 token: "text",
-                regex: /,|$/
+                regex: /,|$/,
             }, {
                 token: "invalid.illegal",
-                regex: /[^\s\]]/
+                regex: /[^\s\]]/,
             }, {
-                defaultToken: "array"
-            }]
+                defaultToken: "array",
+            }],
         }],
         "#comments": [{
             token: [
                 "comment.punctuation",
-                "comment.line"
+                "comment.line",
             ],
-            regex: /(#)(.*$)/
+            regex: /(#)(.*$)/,
         }, {
             token: "comment.punctuation",
             regex: /\/\*/,
             push: [{
                 token: "comment.punctuation",
                 regex: /\*\//,
-                next: "pop"
+                next: "pop",
             }, {
-                defaultToken: "comment.block"
-            }]
+                defaultToken: "comment.block",
+            }],
         }, {
             token: [
                 "comment.punctuation",
-                "comment.line"
+                "comment.line",
             ],
-            regex: /(\/\/)(.*$)/
+            regex: /(\/\/)(.*$)/,
         }],
         "#constant": [{
             token: "constant",
-            regex: /\b(?:true|false|null)\b/
+            regex: /\b(?:true|false|null)\b/,
         }],
         "#keyname": [{
             token: "keyword",
-            regex: /(?:[^,\{\[\}\]\s]+|"(?:[^"\\]|\\.)*")\s*(?=:)/
+            regex: /(?:[^,\{\[\}\]\s]+|"(?:[^"\\]|\\.)*")\s*(?=:)/,
         }],
         "#mstring": [{
             token: "string",
@@ -72,15 +72,15 @@ var HjsonHighlightRules = function() {
             push: [{
                 token: "string",
                 regex: /'''/,
-                next: "pop"
+                next: "pop",
             }, {
-                defaultToken: "string"
-            }]
+                defaultToken: "string",
+            }],
         }],
         "#number": [{
             token: "constant.numeric",
             regex: /-?(?:0|[1-9]\d*)(?:(?:\.\d+)?(?:[eE][+-]?\d+)?)?/,
-            comment: "handles integer and decimal numbers"
+            comment: "handles integer and decimal numbers",
         }],
         "#object": [{
             token: "paren.lparen",
@@ -88,20 +88,20 @@ var HjsonHighlightRules = function() {
             push: [{
                 token: "paren.rparen",
                 regex: /\}/,
-                next: "pop"
+                next: "pop",
             }, {
-                include: "#keyname"
+                include: "#keyname",
             }, {
-                include: "#value"
-            }, {
-                token: "text",
-                regex: /:/
+                include: "#value",
             }, {
                 token: "text",
-                regex: /,/
+                regex: /:/,
             }, {
-                defaultToken: "paren"
-            }]
+                token: "text",
+                regex: /,/,
+            }, {
+                defaultToken: "paren",
+            }],
         }],
         "#rootObject": [{
             token: "paren",
@@ -109,20 +109,20 @@ var HjsonHighlightRules = function() {
             push: [{
                 token: "paren.rparen",
                 regex: /---none---/,
-                next: "pop"
+                next: "pop",
             }, {
-                include: "#keyname"
+                include: "#keyname",
             }, {
-                include: "#value"
-            }, {
-                token: "text",
-                regex: /:/
+                include: "#value",
             }, {
                 token: "text",
-                regex: /,/
+                regex: /:/,
             }, {
-                defaultToken: "paren"
-            }]
+                token: "text",
+                regex: /,/,
+            }, {
+                defaultToken: "paren",
+            }],
         }],
         "#string": [{
             token: "string",
@@ -130,42 +130,42 @@ var HjsonHighlightRules = function() {
             push: [{
                 token: "string",
                 regex: /"/,
-                next: "pop"
+                next: "pop",
             }, {
                 token: "constant.language.escape",
-                regex: /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/
+                regex: /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/,
             }, {
                 token: "invalid.illegal",
-                regex: /\\./
+                regex: /\\./,
             }, {
-                defaultToken: "string"
-            }]
+                defaultToken: "string",
+            }],
         }],
         "#ustring": [{
             token: "string",
-            regex: /\b[^:,0-9\-\{\[\}\]\s].*$/
+            regex: /\b[^:,0-9\-\{\[\}\]\s].*$/,
         }],
         "#value": [{
-            include: "#constant"
+            include: "#constant",
         }, {
-            include: "#number"
+            include: "#number",
         }, {
-            include: "#string"
+            include: "#string",
         }, {
-            include: "#array"
+            include: "#array",
         }, {
-            include: "#object"
+            include: "#object",
         }, {
-            include: "#comments"
+            include: "#comments",
         }, {
-            include: "#mstring"
+            include: "#mstring",
         }, {
-            include: "#ustring"
-        }]
-    };
+            include: "#ustring",
+        }],
+    }
 
-    this.normalizeRules();
-};
+    this.normalizeRules()
+}
 
 HjsonHighlightRules.metaData = {
     fileTypes: ["hjson"],
@@ -173,181 +173,181 @@ HjsonHighlightRules.metaData = {
     foldingStopMarker: "(?x:   # turn on extended mode\n             ^    # a line beginning with\n             \\s*  # some optional space\n             [}\\]]  # and the close of an object or array\n             )",
     keyEquivalent: "^~J",
     name: "Hjson",
-    scopeName: "source.hjson"
-};
+    scopeName: "source.hjson",
+}
 
 
-oop.inherits(HjsonHighlightRules, TextHighlightRules);
+oop.inherits(HjsonHighlightRules, TextHighlightRules)
 
-exports.HjsonHighlightRules = HjsonHighlightRules;
-});
+exports.HjsonHighlightRules = HjsonHighlightRules
+})
 
 ace.define("ace/mode/folding/cstyle",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../../lib/oop");
-var Range = require("../../range").Range;
-var BaseFoldMode = require("./fold_mode").FoldMode;
+var oop = require("../../lib/oop")
+var Range = require("../../range").Range
+var BaseFoldMode = require("./fold_mode").FoldMode
 
 var FoldMode = exports.FoldMode = function(commentRegex) {
     if (commentRegex) {
         this.foldingStartMarker = new RegExp(
-            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start)
-        );
+            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start),
+        )
         this.foldingStopMarker = new RegExp(
-            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end)
-        );
+            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end),
+        )
     }
-};
+}
 oop.inherits(FoldMode, BaseFoldMode);
 
 (function() {
     
-    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/;
-    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/;
-    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/;
-    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/;
-    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/;
-    this._getFoldWidgetBase = this.getFoldWidget;
+    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/
+    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/
+    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/
+    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/
+    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/
+    this._getFoldWidgetBase = this.getFoldWidget
     this.getFoldWidget = function(session, foldStyle, row) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
     
         if (this.singleLineBlockCommentRe.test(line)) {
             if (!this.startRegionRe.test(line) && !this.tripleStarBlockCommentRe.test(line))
-                return "";
+                return ""
         }
     
-        var fw = this._getFoldWidgetBase(session, foldStyle, row);
+        var fw = this._getFoldWidgetBase(session, foldStyle, row)
     
         if (!fw && this.startRegionRe.test(line))
-            return "start"; // lineCommentRegionStart
+            return "start" // lineCommentRegionStart
     
-        return fw;
-    };
+        return fw
+    }
 
     this.getFoldWidgetRange = function(session, foldStyle, row, forceMultiline) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
         
         if (this.startRegionRe.test(line))
-            return this.getCommentRegionBlock(session, line, row);
+            return this.getCommentRegionBlock(session, line, row)
         
-        var match = line.match(this.foldingStartMarker);
+        var match = line.match(this.foldingStartMarker)
         if (match) {
-            var i = match.index;
+            var i = match.index
 
             if (match[1])
-                return this.openingBracketBlock(session, match[1], row, i);
+                return this.openingBracketBlock(session, match[1], row, i)
                 
-            var range = session.getCommentFoldRange(row, i + match[0].length, 1);
+            var range = session.getCommentFoldRange(row, i + match[0].length, 1)
             
             if (range && !range.isMultiLine()) {
                 if (forceMultiline) {
-                    range = this.getSectionRange(session, row);
+                    range = this.getSectionRange(session, row)
                 } else if (foldStyle != "all")
-                    range = null;
+                    range = null
             }
             
-            return range;
+            return range
         }
 
         if (foldStyle === "markbegin")
-            return;
+            return
 
-        var match = line.match(this.foldingStopMarker);
+        var match = line.match(this.foldingStopMarker)
         if (match) {
-            var i = match.index + match[0].length;
+            var i = match.index + match[0].length
 
             if (match[1])
-                return this.closingBracketBlock(session, match[1], row, i);
+                return this.closingBracketBlock(session, match[1], row, i)
 
-            return session.getCommentFoldRange(row, i, -1);
+            return session.getCommentFoldRange(row, i, -1)
         }
-    };
+    }
     
     this.getSectionRange = function(session, row) {
-        var line = session.getLine(row);
-        var startIndent = line.search(/\S/);
-        var startRow = row;
-        var startColumn = line.length;
-        row = row + 1;
-        var endRow = row;
-        var maxRow = session.getLength();
+        var line = session.getLine(row)
+        var startIndent = line.search(/\S/)
+        var startRow = row
+        var startColumn = line.length
+        row = row + 1
+        var endRow = row
+        var maxRow = session.getLength()
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var indent = line.search(/\S/);
+            line = session.getLine(row)
+            var indent = line.search(/\S/)
             if (indent === -1)
-                continue;
+                continue
             if  (startIndent > indent)
-                break;
-            var subRange = this.getFoldWidgetRange(session, "all", row);
+                break
+            var subRange = this.getFoldWidgetRange(session, "all", row)
             
             if (subRange) {
                 if (subRange.start.row <= startRow) {
-                    break;
+                    break
                 } else if (subRange.isMultiLine()) {
-                    row = subRange.end.row;
+                    row = subRange.end.row
                 } else if (startIndent == indent) {
-                    break;
+                    break
                 }
             }
-            endRow = row;
+            endRow = row
         }
         
-        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length);
-    };
+        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length)
+    }
     this.getCommentRegionBlock = function(session, line, row) {
-        var startColumn = line.search(/\s*$/);
-        var maxRow = session.getLength();
-        var startRow = row;
+        var startColumn = line.search(/\s*$/)
+        var maxRow = session.getLength()
+        var startRow = row
         
-        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/;
-        var depth = 1;
+        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/
+        var depth = 1
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var m = re.exec(line);
-            if (!m) continue;
-            if (m[1]) depth--;
-            else depth++;
+            line = session.getLine(row)
+            var m = re.exec(line)
+            if (!m) continue
+            if (m[1]) depth--
+            else depth++
 
-            if (!depth) break;
+            if (!depth) break
         }
 
-        var endRow = row;
+        var endRow = row
         if (endRow > startRow) {
-            return new Range(startRow, startColumn, endRow, line.length);
+            return new Range(startRow, startColumn, endRow, line.length)
         }
-    };
+    }
 
-}).call(FoldMode.prototype);
+}).call(FoldMode.prototype)
 
-});
+})
 
 ace.define("ace/mode/hjson",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var HjsonHighlightRules = require("./hjson_highlight_rules").HjsonHighlightRules;
-var FoldMode = require("./folding/cstyle").FoldMode;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var HjsonHighlightRules = require("./hjson_highlight_rules").HjsonHighlightRules
+var FoldMode = require("./folding/cstyle").FoldMode
 
 var Mode = function() {
-    this.HighlightRules = HjsonHighlightRules;
-    this.foldingRules = new FoldMode();
-};
+    this.HighlightRules = HjsonHighlightRules
+    this.foldingRules = new FoldMode()
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
-    this.lineCommentStart = "//";
-    this.blockComment = { start: "/*", end: "*/" };
-    this.$id = "ace/mode/hjson";
-}).call(Mode.prototype);
+    this.lineCommentStart = "//"
+    this.blockComment = { start: "/*", end: "*/" }
+    this.$id = "ace/mode/hjson"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     ace.require(["ace/mode/hjson"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

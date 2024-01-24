@@ -1,7 +1,7 @@
 ace.define("ace/theme/katzenmilch",[], function(require, exports, module) {
 
-exports.isDark = false;
-exports.cssClass = "ace-katzenmilch";
+exports.isDark = false
+exports.cssClass = "ace-katzenmilch"
 exports.cssText = ".ace-katzenmilch .ace_gutter,\
 .ace-katzenmilch .ace_gutter {\
 background: #e8e8e8;\
@@ -114,15 +114,15 @@ rbackground-color: rgba(73, 134, 194, 0.035)\
 .ace-katzenmilch .ace_entity.ace_name.ace_tag {\
 color: #3976a2;\
 rbackground-color: rgba(73, 166, 210, 0.039)\
-}";
+}"
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+var dom = require("../lib/dom")
+dom.importCssString(exports.cssText, exports.cssClass)
 });                (function() {
                     ace.require(["ace/theme/katzenmilch"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

@@ -22,7 +22,7 @@ export default [
       auth: true,
       access: ['admin'],
       ldap: 'optional',
-      // keepAlive: true,
+      keepAlive: true,
     },
     component: _ => import('@/view/user-manage.vue'),
   },
@@ -41,7 +41,7 @@ export default [
     meta: {
       auth: true,
       access: ['admin'],
-      // keepAlive: true,
+      keepAlive: true,
     },
     component: _ => import('@/view/bill-group-manage.vue'),
   },
@@ -304,7 +304,7 @@ export default [
     name: 'job-manage',
     meta: {
       auth: true,
-      // keepAlive: true,
+      keepAlive: 'staff',
       access: ['admin', 'operator', 'staff'],
     },
     component: _ => import('@/view/job-manage.vue'),

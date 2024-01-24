@@ -1,7 +1,7 @@
 ace.define("ace/theme/chaos",[], function(require, exports, module) {
 
-exports.isDark = true;
-exports.cssClass = "ace-chaos";
+exports.isDark = true
+exports.cssClass = "ace-chaos"
 exports.cssText = ".ace-chaos .ace_gutter {\
 background: #141414;\
 color: #595959;\
@@ -148,16 +148,16 @@ border: none; \
 background: #CCC; \
 color: #000;\
 }\
-";
+"
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+var dom = require("../lib/dom")
+dom.importCssString(exports.cssText, exports.cssClass)
 
 });                (function() {
                     ace.require(["ace/theme/chaos"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

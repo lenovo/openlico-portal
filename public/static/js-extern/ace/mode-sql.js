@@ -1,8 +1,8 @@
 ace.define("ace/mode/sql_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var SqlHighlightRules = function() {
 
@@ -10,102 +10,102 @@ var SqlHighlightRules = function() {
         "select|insert|update|delete|from|where|and|or|group|by|order|limit|offset|having|as|case|" +
         "when|then|else|end|type|left|right|join|on|outer|desc|asc|union|create|table|primary|key|if|" +
         "foreign|not|references|default|null|inner|cross|natural|database|drop|grant"
-    );
+    )
 
     var builtinConstants = (
         "true|false"
-    );
+    )
 
     var builtinFunctions = (
         "avg|count|first|last|max|min|sum|ucase|lcase|mid|len|round|rank|now|format|" + 
         "coalesce|ifnull|isnull|nvl"
-    );
+    )
 
     var dataTypes = (
         "int|numeric|decimal|date|varchar|char|bigint|float|double|bit|binary|text|set|timestamp|" +
         "money|real|number|integer"
-    );
+    )
 
     var keywordMapper = this.createKeywordMapper({
         "support.function": builtinFunctions,
         "keyword": keywords,
         "constant.language": builtinConstants,
-        "storage.type": dataTypes
-    }, "identifier", true);
+        "storage.type": dataTypes,
+    }, "identifier", true)
 
     this.$rules = {
         "start" : [ {
             token : "comment",
-            regex : "--.*$"
+            regex : "--.*$",
         },  {
             token : "comment",
             start : "/\\*",
-            end : "\\*/"
+            end : "\\*/",
         }, {
             token : "string",           // " string
-            regex : '".*?"'
+            regex : '".*?"',
         }, {
             token : "string",           // ' string
-            regex : "'.*?'"
+            regex : "'.*?'",
         }, {
             token : "string",           // ` string (apache drill)
-            regex : "`.*?`"
+            regex : "`.*?`",
         }, {
             token : "constant.numeric", // float
-            regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b"
+            regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b",
         }, {
             token : keywordMapper,
-            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b",
         }, {
             token : "keyword.operator",
-            regex : "\\+|\\-|\\/|\\/\\/|%|<@>|@>|<@|&|\\^|~|<|>|<=|=>|==|!=|<>|="
+            regex : "\\+|\\-|\\/|\\/\\/|%|<@>|@>|<@|&|\\^|~|<|>|<=|=>|==|!=|<>|=",
         }, {
             token : "paren.lparen",
-            regex : "[\\(]"
+            regex : "[\\(]",
         }, {
             token : "paren.rparen",
-            regex : "[\\)]"
+            regex : "[\\)]",
         }, {
             token : "text",
-            regex : "\\s+"
-        } ]
-    };
-    this.normalizeRules();
-};
+            regex : "\\s+",
+        } ],
+    }
+    this.normalizeRules()
+}
 
-oop.inherits(SqlHighlightRules, TextHighlightRules);
+oop.inherits(SqlHighlightRules, TextHighlightRules)
 
-exports.SqlHighlightRules = SqlHighlightRules;
-});
+exports.SqlHighlightRules = SqlHighlightRules
+})
 
 ace.define("ace/mode/sql",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var SqlHighlightRules = require("./sql_highlight_rules").SqlHighlightRules;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var SqlHighlightRules = require("./sql_highlight_rules").SqlHighlightRules
 
 var Mode = function() {
-    this.HighlightRules = SqlHighlightRules;
-    this.$behaviour = this.$defaultBehaviour;
-};
+    this.HighlightRules = SqlHighlightRules
+    this.$behaviour = this.$defaultBehaviour
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
 
-    this.lineCommentStart = "--";
+    this.lineCommentStart = "--"
 
-    this.$id = "ace/mode/sql";
-    this.snippetFileId = "ace/snippets/sql";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/sql"
+    this.snippetFileId = "ace/snippets/sql"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 
 });                (function() {
                     ace.require(["ace/mode/sql"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

@@ -28,15 +28,15 @@
  */
 
 // Falls back to plain for stylesheets that don't style fun.
-var PR_FUNCTION = 'fun pln';
+var PR_FUNCTION = 'fun pln'
 // Falls back to plaiin for stylesheets that don't style var.
-var PR_VARIABLE = 'var pln';
+var PR_VARIABLE = 'var pln'
 
 PR['registerLangHandler'](
     PR['createSimpleLexer'](
         [
          // Matching $var-ia_bles
-         [PR_VARIABLE, /^\$[A-Za-z0-9_\-]+/, null, "$"]
+         [PR_VARIABLE, /^\$[A-Za-z0-9_\-]+/, null, "$"],
         ],
         [
          // Matching lt and gt operators
@@ -62,6 +62,6 @@ PR['registerLangHandler'](
          // Matching normal words if none of the previous regular expressions matched
          [PR['PR_PLAIN'], /^[A-Za-z0-9_\-\:]+/],
          // Matching whitespaces
-         [PR['PR_PLAIN'], /^[\t\n\r \xA0]+/]
+         [PR['PR_PLAIN'], /^[\t\n\r \xA0]+/],
          ]),
-    ['xq', 'xquery']);
+    ['xq', 'xquery'])

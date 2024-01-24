@@ -31,5 +31,5 @@ PR['registerLangHandler'](PR['sourceDecorator']({
             + 'optional,package,repeated,required,returns,rpc,service,'
             + 'syntax,to,true'),
         'types': /^(bool|(double|s?fixed|[su]?int)(32|64)|float|string)\b/,
-        'cStyleComments': true
-      }), ['proto']);
+        'cStyleComments': true,
+      }), ['proto'])

@@ -1,5 +1,5 @@
 ace.define("ace/snippets/coffee",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "# Closure loop\n\
 snippet forindo\n\
@@ -96,14 +96,14 @@ snippet req\n\
 # Export\n\
 snippet exp\n\
 	${1:root} = exports ? this\n\
-";
-exports.scope = "coffee";
+"
+exports.scope = "coffee"
 
 });                (function() {
                     ace.require(["ace/snippets/coffee"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

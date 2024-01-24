@@ -1,7 +1,7 @@
 ace.define("ace/theme/tomorrow_night",[], function(require, exports, module) {
 
-exports.isDark = true;
-exports.cssClass = "ace-tomorrow-night";
+exports.isDark = true
+exports.cssClass = "ace-tomorrow-night"
 exports.cssText = ".ace-tomorrow-night .ace_gutter {\
 background: #25282c;\
 color: #C5C8C6\
@@ -101,15 +101,15 @@ color: #969896\
 }\
 .ace-tomorrow-night .ace_indent-guide {\
 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNgYGBgYHB3d/8PAAOIAdULw8qMAAAAAElFTkSuQmCC) right repeat-y\
-}";
+}"
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+var dom = require("../lib/dom")
+dom.importCssString(exports.cssText, exports.cssClass)
 });                (function() {
                     ace.require(["ace/theme/tomorrow_night"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

@@ -1,5 +1,5 @@
 ace.define("ace/snippets/sql",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "snippet tbl\n\
 	create table ${1:table} (\n\
@@ -27,14 +27,14 @@ snippet seq\n\
 	create sequence ${1:name} start with ${2:1} increment by ${3:1} minvalue ${4:1};\n\
 snippet s*\n\
 	select * from ${1:table}\n\
-";
-exports.scope = "sql";
+"
+exports.scope = "sql"
 
 });                (function() {
                     ace.require(["ace/snippets/sql"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

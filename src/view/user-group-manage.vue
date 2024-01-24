@@ -11,11 +11,9 @@
         :search-enable="true"
         :search-props="['name']">
         <template #controller>
-          <ul class="user-group-controller">
-            <a-button v-show="isLDAPManaged" id="tid_user-group-create" type="primary" @click="onCreateClick">
-              {{ $t('UserGroup.Create') }}
-            </a-button>
-          </ul>
+          <a-button v-show="isLDAPManaged" id="tid_user-group-create" type="primary" @click="onCreateClick">
+            {{ $t('UserGroup.Create') }}
+          </a-button>
         </template>
         <template #action="{ row }">
           <a-dropdown placement="bottomLeft" :trigger="['click']">

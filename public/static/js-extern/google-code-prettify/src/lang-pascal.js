@@ -17,7 +17,7 @@ PR.registerLangHandler(
           // 'single-line-string'
           [PR.PR_STRING,        /^(?:\'(?:[^\\\'\r\n]|\\.)*(?:\'|$))/, null, '\''],
           // Whitespace
-          [PR.PR_PLAIN,         /^\s+/, null, ' \r\n\t\xA0']
+          [PR.PR_PLAIN,         /^\s+/, null, ' \r\n\t\xA0'],
         ],
         [ // fallthroughStylePatterns
           // A cStyleComments comment (* *) or {}
@@ -27,6 +27,6 @@ PR.registerLangHandler(
           [PR.PR_PLAIN,         /^[a-z][a-z0-9]*/i, null],
           // Literals .0, 0, 0.0 0E13
           [PR.PR_LITERAL,       /^(?:\$[a-f0-9]+|(?:\d+(?:\.\d*)?|\.\d+)(?:e[+\-]?\d+)?)/i,  null, '0123456789'],
-          [PR.PR_PUNCTUATION,   /^.[^\s\w\.$@\'\/]*/, null]
+          [PR.PR_PUNCTUATION,   /^.[^\s\w\.$@\'\/]*/, null],
         ]),
-    ['pascal']);
+    ['pascal'])

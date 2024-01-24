@@ -1,5 +1,5 @@
 ace.define("ace/snippets/gobstones",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "# scope: gobstones\n\
 \n\
@@ -1705,14 +1705,14 @@ snippet docs (función con parámetros)\n\
 				* ${3:nombreDelParámetro} : ${4:Tipo} - ${5:descripción}\n\
 		@TIPO: ${6:...}\n\
 	*/\n\
-";
-exports.scope = "gobstones";
+"
+exports.scope = "gobstones"
 
 });                (function() {
                     ace.require(["ace/snippets/gobstones"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

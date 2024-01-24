@@ -1,5 +1,5 @@
 define("ace/snippets/abc",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "\n\
 snippet zupfnoter.print\n\
@@ -32,14 +32,14 @@ snippet zupfnoter.annotation\n\
 	\"^!${1:text}@${2:x_offset},${3:y_offset}\"\n\
 \n\
 \n\
-";
-exports.scope = "abc";
+"
+exports.scope = "abc"
 
 });                (function() {
                     window.require(["ace/snippets/abc"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

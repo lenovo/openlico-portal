@@ -57,7 +57,7 @@ const ModuleEnums = [
   {
     value: 'billgroup',
     featureCode: ['sc.host.*'],
-    children: [{ value: 'create' }, { value: 'update' }, { value: 'delete' }],
+    children: [{ value: 'create' }, { value: 'update' }, { value: 'delete' }, { value: 'low_balance' }],
   },
   {
     value: 'deposit',
@@ -125,6 +125,7 @@ function getOperationEnums(operation) {
     requeue: 'requeue',
     suspend: 'suspend',
     resume: 'resume',
+    low_balance: 'low_balance',
   }
   return operations[operation]
 }

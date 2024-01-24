@@ -17,11 +17,11 @@ PR['registerLangHandler'](
       [PR['PR_STRING'], /^"(?:[^\\"]|\\.)*(?:"|$)/, null, '"'],
       [PR['PR_STRING'], /^'(?:[^']|'')*(?:'|$)/, null, "'"],
       [PR['PR_COMMENT'], /^#[^\r\n]*/, null, '#'],
-      [PR['PR_PLAIN'], /^\s+/, null, ' \t\r\n']
+      [PR['PR_PLAIN'], /^\s+/, null, ' \t\r\n'],
     ],
     [
       [PR['PR_DECLARATION'], /^(?:---|\.\.\.)(?:[\r\n]|$)/],
       [PR['PR_PUNCTUATION'], /^-/],
       [PR['PR_KEYWORD'], /^\w+:[ \r\n]/],
-      [PR['PR_PLAIN'], /^\w+/]
-    ]), ['yaml', 'yml']);
+      [PR['PR_PLAIN'], /^\w+/],
+    ]), ['yaml', 'yml'])

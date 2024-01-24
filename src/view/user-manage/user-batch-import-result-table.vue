@@ -1,5 +1,6 @@
 <template>
   <a-modal
+    destroy-on-close
     :open="dialogFormVisible"
     :title="$t('User.Import.Detail.Title')"
     width="70%"
@@ -99,7 +100,7 @@ export default {
         customRender: ({ text, record }) => {
           if (text === true) return this.$t('Status.Success')
           if (text === false) return record.errorMessage
-          return this.$t('Status.CanCeled')
+          return this.$t('Status.Cancelled')
         },
       },
     ]
@@ -144,6 +145,7 @@ export default {
   },
   methods: {
     show() {
+      this.dataFilter = {}
       this.dialogFormVisible = true
     },
     shouFailedUsers() {

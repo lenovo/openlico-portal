@@ -1,7 +1,7 @@
 ace.define("ace/theme/dawn",[], function(require, exports, module) {
 
-exports.isDark = false;
-exports.cssClass = "ace-dawn";
+exports.isDark = false
+exports.cssClass = "ace-dawn"
 exports.cssText = ".ace-dawn .ace_gutter {\
 background: #ebebeb;\
 color: #333\
@@ -101,15 +101,15 @@ color: #234A97\
 }\
 .ace-dawn .ace_indent-guide {\
 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNgYGBgYLh/5+x/AAizA4hxNNsZAAAAAElFTkSuQmCC) right repeat-y\
-}";
+}"
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+var dom = require("../lib/dom")
+dom.importCssString(exports.cssText, exports.cssClass)
 });                (function() {
                     ace.require(["ace/theme/dawn"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

@@ -74,7 +74,7 @@
           <a-textarea
             v-if="param.type == 'text'"
             v-model:value="formModel[param.id]"
-            style="width: 600px"
+            style="width: 600px !important"
             :auto-size="{ minRows: 10 }" />
           <file-select
             v-if="param.type == 'file'"
@@ -241,8 +241,6 @@ export default {
   },
   methods: {
     async initContext(context = this.context) {
-      if (this.syncContext) return
-      this.syncContext = true
       // chenjun19 2021/9/8
       // bug 239421
       // filter need display params
@@ -299,7 +297,6 @@ export default {
       }
 
       this.displayParams = this.innerParams.filter(param => this.paramVisible[param.id])
-      this.syncContext = false
     },
     init() {
       const formModel = {}

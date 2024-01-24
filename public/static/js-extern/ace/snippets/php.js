@@ -1,5 +1,5 @@
 ace.define("ace/snippets/php",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "snippet ec\n\
 	echo ${1};\n\
@@ -384,14 +384,14 @@ snippet ifil\\n\\\n\
 	<?php if (${1:true}): ?>${2:code}<?php endif; ?>\n\
 snippet ifeil\\n\\\n\
 	<?php if (${1:true}): ?>${2:code}<?php else: ?>${3:code}<?php endif; ?>${4}\n\
-";
-exports.scope = "php";
+"
+exports.scope = "php"
 
 });                (function() {
                     ace.require(["ace/snippets/php"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

@@ -1,8 +1,8 @@
 ace.define("ace/mode/ocaml_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var OcamlHighlightRules = function() {
 
@@ -12,9 +12,9 @@ var OcamlHighlightRules = function() {
         "inherit|initializer|lazy|let|match|method|module|mutable|new|"  +
         "object|of|open|or|private|rec|sig|struct|then|to|try|type|val|" +
         "virtual|when|while|with"
-    );
+    )
 
-    var builtinConstants = ("true|false");
+    var builtinConstants = ("true|false")
 
     var builtinFunctions = (
         "abs|abs_big_int|abs_float|abs_num|abstract_tag|accept|access|acos|add|" +
@@ -197,118 +197,118 @@ var OcamlHighlightRules = function() {
         "MoreLabels|Mutex|Nativeint|Num|Obj|Oo|Parsing|Pervasives|Printexc|" +
         "Printf|Queue|Random|Scanf|Scanning|Set|Sort|Stack|State|StdLabels|Str|" +
         "Stream|String|StringLabels|Sys|Thread|ThreadUnix|Tk|Unix|UnixLabels|Weak"
-    );
+    )
 
     var keywordMapper = this.createKeywordMapper({
         "variable.language": "this",
         "keyword": keywords,
         "constant.language": builtinConstants,
-        "support.function": builtinFunctions
-    }, "identifier");
+        "support.function": builtinFunctions,
+    }, "identifier")
 
-    var decimalInteger = "(?:(?:[1-9]\\d*)|(?:0))";
-    var octInteger = "(?:0[oO]?[0-7]+)";
-    var hexInteger = "(?:0[xX][\\dA-Fa-f]+)";
-    var binInteger = "(?:0[bB][01]+)";
-    var integer = "(?:" + decimalInteger + "|" + octInteger + "|" + hexInteger + "|" + binInteger + ")";
+    var decimalInteger = "(?:(?:[1-9]\\d*)|(?:0))"
+    var octInteger = "(?:0[oO]?[0-7]+)"
+    var hexInteger = "(?:0[xX][\\dA-Fa-f]+)"
+    var binInteger = "(?:0[bB][01]+)"
+    var integer = "(?:" + decimalInteger + "|" + octInteger + "|" + hexInteger + "|" + binInteger + ")"
 
-    var exponent = "(?:[eE][+-]?\\d+)";
-    var fraction = "(?:\\.\\d+)";
-    var intPart = "(?:\\d+)";
-    var pointFloat = "(?:(?:" + intPart + "?" + fraction + ")|(?:" + intPart + "\\.))";
-    var exponentFloat = "(?:(?:" + pointFloat + "|" +  intPart + ")" + exponent + ")";
-    var floatNumber = "(?:" + exponentFloat + "|" + pointFloat + ")";
+    var exponent = "(?:[eE][+-]?\\d+)"
+    var fraction = "(?:\\.\\d+)"
+    var intPart = "(?:\\d+)"
+    var pointFloat = "(?:(?:" + intPart + "?" + fraction + ")|(?:" + intPart + "\\.))"
+    var exponentFloat = "(?:(?:" + pointFloat + "|" +  intPart + ")" + exponent + ")"
+    var floatNumber = "(?:" + exponentFloat + "|" + pointFloat + ")"
 
     this.$rules = {
         "start" : [
             {
                 token : "comment",
-                regex : '\\(\\*.*?\\*\\)\\s*?$'
+                regex : '\\(\\*.*?\\*\\)\\s*?$',
             },
             {
                 token : "comment",
                 regex : '\\(\\*.*',
-                next : "comment"
+                next : "comment",
             },
             {
                 token : "string", // single line
-                regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'
+                regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]',
             },
             {
                 token : "string", // single char
-                regex : "'.'"
+                regex : "'.'",
             },
             {
                 token : "string", // " string
                 regex : '"',
-                next  : "qstring"
+                next  : "qstring",
             },
             {
                 token : "constant.numeric", // imaginary
-                regex : "(?:" + floatNumber + "|\\d+)[jJ]\\b"
+                regex : "(?:" + floatNumber + "|\\d+)[jJ]\\b",
             },
             {
                 token : "constant.numeric", // float
-                regex : floatNumber
+                regex : floatNumber,
             },
             {
                 token : "constant.numeric", // integer
-                regex : integer + "\\b"
+                regex : integer + "\\b",
             },
             {
                 token : keywordMapper,
-                regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+                regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b",
             },
             {
                 token : "keyword.operator",
-                regex : "\\+\\.|\\-\\.|\\*\\.|\\/\\.|#|;;|\\+|\\-|\\*|\\*\\*\\/|\\/\\/|%|<<|>>|&|\\||\\^|~|<|>|<=|=>|==|!=|<>|<-|="
+                regex : "\\+\\.|\\-\\.|\\*\\.|\\/\\.|#|;;|\\+|\\-|\\*|\\*\\*\\/|\\/\\/|%|<<|>>|&|\\||\\^|~|<|>|<=|=>|==|!=|<>|<-|=",
             },
             {
                 token : "paren.lparen",
-                regex : "[[({]"
+                regex : "[[({]",
             },
             {
                 token : "paren.rparen",
-                regex : "[\\])}]"
+                regex : "[\\])}]",
             },
             {
                 token : "text",
-                regex : "\\s+"
-            }
+                regex : "\\s+",
+            },
         ],
         "comment" : [
             {
                 token : "comment", // closing comment
                 regex : "\\*\\)",
-                next : "start"
+                next : "start",
             },
             {
-                defaultToken : "comment"
-            }
+                defaultToken : "comment",
+            },
         ],
 
         "qstring" : [
             {
                 token : "string",
                 regex : '"',
-                next : "start"
+                next : "start",
             }, {
                 token : "string",
-                regex : '.+'
-            }
-        ]
-    };
-};
+                regex : '.+',
+            },
+        ],
+    }
+}
 
-oop.inherits(OcamlHighlightRules, TextHighlightRules);
+oop.inherits(OcamlHighlightRules, TextHighlightRules)
 
-exports.OcamlHighlightRules = OcamlHighlightRules;
-});
+exports.OcamlHighlightRules = OcamlHighlightRules
+})
 
 ace.define("ace/mode/matching_brace_outdent",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var Range = require("../range").Range;
+var Range = require("../range").Range
 
 var MatchingBraceOutdent = function() {};
 
@@ -316,106 +316,106 @@ var MatchingBraceOutdent = function() {};
 
     this.checkOutdent = function(line, input) {
         if (! /^\s+$/.test(line))
-            return false;
+            return false
 
-        return /^\s*\}/.test(input);
-    };
+        return /^\s*\}/.test(input)
+    }
 
     this.autoOutdent = function(doc, row) {
-        var line = doc.getLine(row);
-        var match = line.match(/^(\s*\})/);
+        var line = doc.getLine(row)
+        var match = line.match(/^(\s*\})/)
 
-        if (!match) return 0;
+        if (!match) return 0
 
-        var column = match[1].length;
-        var openBracePos = doc.findMatchingBracket({row: row, column: column});
+        var column = match[1].length
+        var openBracePos = doc.findMatchingBracket({row: row, column: column})
 
-        if (!openBracePos || openBracePos.row == row) return 0;
+        if (!openBracePos || openBracePos.row == row) return 0
 
-        var indent = this.$getIndent(doc.getLine(openBracePos.row));
-        doc.replace(new Range(row, 0, row, column-1), indent);
-    };
+        var indent = this.$getIndent(doc.getLine(openBracePos.row))
+        doc.replace(new Range(row, 0, row, column-1), indent)
+    }
 
     this.$getIndent = function(line) {
-        return line.match(/^\s*/)[0];
-    };
+        return line.match(/^\s*/)[0]
+    }
 
-}).call(MatchingBraceOutdent.prototype);
+}).call(MatchingBraceOutdent.prototype)
 
-exports.MatchingBraceOutdent = MatchingBraceOutdent;
-});
+exports.MatchingBraceOutdent = MatchingBraceOutdent
+})
 
 ace.define("ace/mode/ocaml",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var OcamlHighlightRules = require("./ocaml_highlight_rules").OcamlHighlightRules;
-var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent;
-var Range = require("../range").Range;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var OcamlHighlightRules = require("./ocaml_highlight_rules").OcamlHighlightRules
+var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent
+var Range = require("../range").Range
 
 var Mode = function() {
-    this.HighlightRules = OcamlHighlightRules;
-    this.$behaviour = this.$defaultBehaviour;
+    this.HighlightRules = OcamlHighlightRules
+    this.$behaviour = this.$defaultBehaviour
     
-    this.$outdent   = new MatchingBraceOutdent();
-};
-oop.inherits(Mode, TextMode);
+    this.$outdent   = new MatchingBraceOutdent()
+}
+oop.inherits(Mode, TextMode)
 
 var indenter = /(?:[({[=:]|[-=]>|\b(?:else|try|with))\s*$/;
 
 (function() {
 
     this.toggleCommentLines = function(state, doc, startRow, endRow) {
-        var i, line;
-        var outdent = true;
-        var re = /^\s*\(\*(.*)\*\)/;
+        var i, line
+        var outdent = true
+        var re = /^\s*\(\*(.*)\*\)/
 
         for (i=startRow; i<= endRow; i++) {
             if (!re.test(doc.getLine(i))) {
-                outdent = false;
-                break;
+                outdent = false
+                break
             }
         }
 
-        var range = new Range(0, 0, 0, 0);
+        var range = new Range(0, 0, 0, 0)
         for (i=startRow; i<= endRow; i++) {
-            line = doc.getLine(i);
-            range.start.row  = i;
-            range.end.row    = i;
-            range.end.column = line.length;
+            line = doc.getLine(i)
+            range.start.row  = i
+            range.end.row    = i
+            range.end.column = line.length
 
-            doc.replace(range, outdent ? line.match(re)[1] : "(*" + line + "*)");
+            doc.replace(range, outdent ? line.match(re)[1] : "(*" + line + "*)")
         }
-    };
+    }
 
     this.getNextLineIndent = function(state, line, tab) {
-        var indent = this.$getIndent(line);
-        var tokens = this.getTokenizer().getLineTokens(line, state).tokens;
+        var indent = this.$getIndent(line)
+        var tokens = this.getTokenizer().getLineTokens(line, state).tokens
 
         if (!(tokens.length && tokens[tokens.length - 1].type === 'comment') &&
             state === 'start' && indenter.test(line))
-            indent += tab;
-        return indent;
-    };
+            indent += tab
+        return indent
+    }
 
     this.checkOutdent = function(state, line, input) {
-        return this.$outdent.checkOutdent(line, input);
-    };
+        return this.$outdent.checkOutdent(line, input)
+    }
 
     this.autoOutdent = function(state, doc, row) {
-        this.$outdent.autoOutdent(doc, row);
-    };
+        this.$outdent.autoOutdent(doc, row)
+    }
 
-    this.$id = "ace/mode/ocaml";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/ocaml"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     ace.require(["ace/mode/ocaml"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

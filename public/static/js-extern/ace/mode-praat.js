@@ -1,8 +1,8 @@
 ace.define("ace/mode/praat_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var PraatHighlightRules = function() {
 
@@ -13,7 +13,7 @@ var PraatHighlightRules = function() {
         "repeat|until|" +
         "select|plus|minus|" +
         "assert|asserterror"
-    );
+    )
 
     var predefinedVariables = (
         "macintosh|windows|unix|" +
@@ -22,10 +22,10 @@ var PraatHighlightRules = function() {
         "newline\\$|tab\\$|" +
         "shellDirectory\\$|homeDirectory\\$|preferencesDirectory\\$|" +
         "temporaryDirectory\\$|defaultDirectory\\$"
-    );
+    )
     var directives = (
         "clearinfo|endSendPraat"
-    );
+    )
 
     var functions = (
         "writeInfo|writeInfoLine|appendInfo|appendInfoLine|info\\$|" +
@@ -67,7 +67,7 @@ var PraatHighlightRules = function() {
         "runScript|exitScript|" +
         "beginSendPraat|endSendPraat|" +
         "objectsAreIdentical"
-    );
+    )
 
     var objectTypes = (
         "Activation|AffineTransform|AmplitudeTier|Art|Artword|Autosegment|"  +
@@ -92,153 +92,153 @@ var PraatHighlightRules = function() {
         "SpeechSynthesizer|SpellingChecker|Strings|StringsIndex|Table|"      +
         "TableOfReal|TextGrid|TextInterval|TextPoint|TextTier|Tier|"         +
         "Transition|VocalTract|Weight|WordList"
-    );
+    )
 
     this.$rules = {
         "start" : [
             {
                 token : "string.interpolated",
-                regex : /'((?:\.?[a-z][a-zA-Z0-9_.]*)(?:\$|#|:[0-9]+)?)'/
+                regex : /'((?:\.?[a-z][a-zA-Z0-9_.]*)(?:\$|#|:[0-9]+)?)'/,
             }, {
                 token : ["text", "text", "keyword.operator", "text", "keyword"],
-                regex : /(^\s*)(?:(\.?[a-z][a-zA-Z0-9_.]*\$?\s+)(=)(\s+))?(stopwatch)/
+                regex : /(^\s*)(?:(\.?[a-z][a-zA-Z0-9_.]*\$?\s+)(=)(\s+))?(stopwatch)/,
             }, {
                 token : ["text", "keyword", "text", "string"],
-                regex : /(^\s*)(print(?:line|tab)?|echo|exit|pause|send(?:praat|socket)|include|execute|system(?:_nocheck)?)(\s+)(.*)/
+                regex : /(^\s*)(print(?:line|tab)?|echo|exit|pause|send(?:praat|socket)|include|execute|system(?:_nocheck)?)(\s+)(.*)/,
             }, {
                 token : ["text", "keyword"],
-                regex : "(^\\s*)(" + directives + ")$"
+                regex : "(^\\s*)(" + directives + ")$",
             }, {
                 token : ["text", "keyword.operator", "text"],
-                regex : /(\s+)((?:\+|-|\/|\*|<|>)=?|==?|!=|%|\^|\||and|or|not)(\s+)/
+                regex : /(\s+)((?:\+|-|\/|\*|<|>)=?|==?|!=|%|\^|\||and|or|not)(\s+)/,
             }, {
                 token : ["text", "text", "keyword.operator", "text", "keyword", "text", "keyword"],
-                regex : /(^\s*)(?:(\.?[a-z][a-zA-Z0-9_.]*\$?\s+)(=)(\s+))?(?:((?:no)?warn|(?:unix_)?nocheck|noprogress)(\s+))?((?:[A-Z][^.:"]+)(?:$|(?:\.{3}|:)))/
+                regex : /(^\s*)(?:(\.?[a-z][a-zA-Z0-9_.]*\$?\s+)(=)(\s+))?(?:((?:no)?warn|(?:unix_)?nocheck|noprogress)(\s+))?((?:[A-Z][^.:"]+)(?:$|(?:\.{3}|:)))/,
             }, {
                 token : ["text", "keyword", "text", "keyword"],
-                regex : /(^\s*)((?:no(?:warn|check))?)(\s*)(\b(?:editor(?::?)|endeditor)\b)/
+                regex : /(^\s*)((?:no(?:warn|check))?)(\s*)(\b(?:editor(?::?)|endeditor)\b)/,
             }, {
                 token : ["text", "keyword", "text", "keyword"],
-                regex : /(^\s*)(?:(demo)?(\s+))((?:[A-Z][^.:"]+)(?:$|(?:\.{3}|:)))/
+                regex : /(^\s*)(?:(demo)?(\s+))((?:[A-Z][^.:"]+)(?:$|(?:\.{3}|:)))/,
             }, {
                 token : ["text", "keyword", "text", "keyword"],
-                regex : /^(\s*)(?:(demo)(\s+))?(10|12|14|16|24)$/
+                regex : /^(\s*)(?:(demo)(\s+))?(10|12|14|16|24)$/,
             }, {
                 token : ["text", "support.function", "text"],
-                regex : /(\s*)(do\$?)(\s*:\s*|\s*\(\s*)/
+                regex : /(\s*)(do\$?)(\s*:\s*|\s*\(\s*)/,
             }, {
                 token : "entity.name.type",
-                regex : "(" + objectTypes + ")"
+                regex : "(" + objectTypes + ")",
             }, {
                 token : "variable.language",
-                regex : "(" + predefinedVariables + ")"
+                regex : "(" + predefinedVariables + ")",
             }, {
                 token : ["support.function", "text"],
-                regex : "((?:" + functions + ")\\$?)(\\s*(?::|\\())"
+                regex : "((?:" + functions + ")\\$?)(\\s*(?::|\\())",
             }, {
                 token : "keyword",
                 regex : /(\bfor\b)/,
-                next : "for"
+                next : "for",
             }, {
                 token : "keyword",
-                regex : "(\\b(?:" + keywords + ")\\b)"
+                regex : "(\\b(?:" + keywords + ")\\b)",
             }, {
                 token : "string",
-                regex : /"[^"]*"/
+                regex : /"[^"]*"/,
             }, {
                 token : "string",
                 regex : /"[^"]*$/,
-                next : "brokenstring"
+                next : "brokenstring",
             }, {
                 token : ["text", "keyword", "text", "entity.name.section"],
                 regex : /(^\s*)(\bform\b)(\s+)(.*)/,
-                next : "form"
+                next : "form",
             }, {
                 token : "constant.numeric",
-                regex : /\b[+-]?\d+(?:(?:\.\d*)?(?:[eE][+-]?\d+)?)?\b/
+                regex : /\b[+-]?\d+(?:(?:\.\d*)?(?:[eE][+-]?\d+)?)?\b/,
             }, {
                 token : ["keyword", "text", "entity.name.function"],
-                regex : /(procedure)(\s+)([^:\s]+)/
+                regex : /(procedure)(\s+)([^:\s]+)/,
             }, {
                 token : ["entity.name.function", "text"],
-                regex : /(@\S+)(:|\s*\()/
+                regex : /(@\S+)(:|\s*\()/,
             }, {
                 token : ["text", "keyword", "text", "entity.name.function"],
-                regex : /(^\s*)(call)(\s+)(\S+)/
+                regex : /(^\s*)(call)(\s+)(\S+)/,
             }, {
                 token : "comment",
-                regex : /(^\s*#|;).*$/
+                regex : /(^\s*#|;).*$/,
             }, {
                 token : "text",
-                regex : /\s+/
-            }
+                regex : /\s+/,
+            },
         ],
         "form" : [
             {
                 token : ["keyword", "text", "constant.numeric"],
-                regex : /((?:optionmenu|choice)\s+)(\S+:\s+)([0-9]+)/
+                regex : /((?:optionmenu|choice)\s+)(\S+:\s+)([0-9]+)/,
             }, {
                 token : ["keyword", "constant.numeric"],
-                regex : /((?:option|button)\s+)([+-]?\d+(?:(?:\.\d*)?(?:[eE][+-]?\d+)?)?\b)/
+                regex : /((?:option|button)\s+)([+-]?\d+(?:(?:\.\d*)?(?:[eE][+-]?\d+)?)?\b)/,
             }, {
                 token : ["keyword", "string"],
-                regex : /((?:option|button)\s+)(.*)/
+                regex : /((?:option|button)\s+)(.*)/,
             }, {
                 token : ["keyword", "text", "string"],
-                regex : /((?:sentence|text)\s+)(\S+\s*)(.*)/
+                regex : /((?:sentence|text)\s+)(\S+\s*)(.*)/,
             }, {
                 token : ["keyword", "text", "string", "invalid.illegal"],
-                regex : /(word\s+)(\S+\s*)(\S+)?(\s.*)?/
+                regex : /(word\s+)(\S+\s*)(\S+)?(\s.*)?/,
             }, {
                 token : ["keyword", "text", "constant.language"],
-                regex : /(boolean\s+)(\S+\s*)(0|1|"?(?:yes|no)"?)/
+                regex : /(boolean\s+)(\S+\s*)(0|1|"?(?:yes|no)"?)/,
             }, {
                 token : ["keyword", "text", "constant.numeric"],
-                regex : /((?:real|natural|positive|integer)\s+)(\S+\s*)([+-]?\d+(?:(?:\.\d*)?(?:[eE][+-]?\d+)?)?\b)/
+                regex : /((?:real|natural|positive|integer)\s+)(\S+\s*)([+-]?\d+(?:(?:\.\d*)?(?:[eE][+-]?\d+)?)?\b)/,
             }, {
                 token : ["keyword", "string"],
-                regex : /(comment\s+)(.*)/
+                regex : /(comment\s+)(.*)/,
             }, {
                 token : "keyword",
                 regex : 'endform',
-                next : "start"
-            }
+                next : "start",
+            },
         ],
         "for" : [
             {
                 token : ["keyword", "text", "constant.numeric", "text"],
-                regex : /(from|to)(\s+)([+-]?\d+(?:(?:\.\d*)?(?:[eE][+-]?\d+)?)?)(\s*)/
+                regex : /(from|to)(\s+)([+-]?\d+(?:(?:\.\d*)?(?:[eE][+-]?\d+)?)?)(\s*)/,
             }, {
                 token : ["keyword", "text"],
-                regex : /(from|to)(\s+\S+\s*)/
+                regex : /(from|to)(\s+\S+\s*)/,
             }, {
                 token : "text",
                 regex : /$/,
-                next : "start"
-            }
+                next : "start",
+            },
         ],
         "brokenstring" : [
             {
                 token : ["text", "string"],
-                regex : /(\s*\.{3})([^"]*)/
+                regex : /(\s*\.{3})([^"]*)/,
             }, {
                 token : "string",
                 regex : /"/,
-                next : "start"
-            }
-        ]
-    };
-};
+                next : "start",
+            },
+        ],
+    }
+}
 
-oop.inherits(PraatHighlightRules, TextHighlightRules);
+oop.inherits(PraatHighlightRules, TextHighlightRules)
 
-exports.PraatHighlightRules = PraatHighlightRules;
-});
+exports.PraatHighlightRules = PraatHighlightRules
+})
 
 ace.define("ace/mode/matching_brace_outdent",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var Range = require("../range").Range;
+var Range = require("../range").Range
 
 var MatchingBraceOutdent = function() {};
 
@@ -246,233 +246,233 @@ var MatchingBraceOutdent = function() {};
 
     this.checkOutdent = function(line, input) {
         if (! /^\s+$/.test(line))
-            return false;
+            return false
 
-        return /^\s*\}/.test(input);
-    };
+        return /^\s*\}/.test(input)
+    }
 
     this.autoOutdent = function(doc, row) {
-        var line = doc.getLine(row);
-        var match = line.match(/^(\s*\})/);
+        var line = doc.getLine(row)
+        var match = line.match(/^(\s*\})/)
 
-        if (!match) return 0;
+        if (!match) return 0
 
-        var column = match[1].length;
-        var openBracePos = doc.findMatchingBracket({row: row, column: column});
+        var column = match[1].length
+        var openBracePos = doc.findMatchingBracket({row: row, column: column})
 
-        if (!openBracePos || openBracePos.row == row) return 0;
+        if (!openBracePos || openBracePos.row == row) return 0
 
-        var indent = this.$getIndent(doc.getLine(openBracePos.row));
-        doc.replace(new Range(row, 0, row, column-1), indent);
-    };
+        var indent = this.$getIndent(doc.getLine(openBracePos.row))
+        doc.replace(new Range(row, 0, row, column-1), indent)
+    }
 
     this.$getIndent = function(line) {
-        return line.match(/^\s*/)[0];
-    };
+        return line.match(/^\s*/)[0]
+    }
 
-}).call(MatchingBraceOutdent.prototype);
+}).call(MatchingBraceOutdent.prototype)
 
-exports.MatchingBraceOutdent = MatchingBraceOutdent;
-});
+exports.MatchingBraceOutdent = MatchingBraceOutdent
+})
 
 ace.define("ace/mode/folding/cstyle",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../../lib/oop");
-var Range = require("../../range").Range;
-var BaseFoldMode = require("./fold_mode").FoldMode;
+var oop = require("../../lib/oop")
+var Range = require("../../range").Range
+var BaseFoldMode = require("./fold_mode").FoldMode
 
 var FoldMode = exports.FoldMode = function(commentRegex) {
     if (commentRegex) {
         this.foldingStartMarker = new RegExp(
-            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start)
-        );
+            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start),
+        )
         this.foldingStopMarker = new RegExp(
-            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end)
-        );
+            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end),
+        )
     }
-};
+}
 oop.inherits(FoldMode, BaseFoldMode);
 
 (function() {
     
-    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/;
-    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/;
-    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/;
-    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/;
-    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/;
-    this._getFoldWidgetBase = this.getFoldWidget;
+    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/
+    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/
+    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/
+    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/
+    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/
+    this._getFoldWidgetBase = this.getFoldWidget
     this.getFoldWidget = function(session, foldStyle, row) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
     
         if (this.singleLineBlockCommentRe.test(line)) {
             if (!this.startRegionRe.test(line) && !this.tripleStarBlockCommentRe.test(line))
-                return "";
+                return ""
         }
     
-        var fw = this._getFoldWidgetBase(session, foldStyle, row);
+        var fw = this._getFoldWidgetBase(session, foldStyle, row)
     
         if (!fw && this.startRegionRe.test(line))
-            return "start"; // lineCommentRegionStart
+            return "start" // lineCommentRegionStart
     
-        return fw;
-    };
+        return fw
+    }
 
     this.getFoldWidgetRange = function(session, foldStyle, row, forceMultiline) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
         
         if (this.startRegionRe.test(line))
-            return this.getCommentRegionBlock(session, line, row);
+            return this.getCommentRegionBlock(session, line, row)
         
-        var match = line.match(this.foldingStartMarker);
+        var match = line.match(this.foldingStartMarker)
         if (match) {
-            var i = match.index;
+            var i = match.index
 
             if (match[1])
-                return this.openingBracketBlock(session, match[1], row, i);
+                return this.openingBracketBlock(session, match[1], row, i)
                 
-            var range = session.getCommentFoldRange(row, i + match[0].length, 1);
+            var range = session.getCommentFoldRange(row, i + match[0].length, 1)
             
             if (range && !range.isMultiLine()) {
                 if (forceMultiline) {
-                    range = this.getSectionRange(session, row);
+                    range = this.getSectionRange(session, row)
                 } else if (foldStyle != "all")
-                    range = null;
+                    range = null
             }
             
-            return range;
+            return range
         }
 
         if (foldStyle === "markbegin")
-            return;
+            return
 
-        var match = line.match(this.foldingStopMarker);
+        var match = line.match(this.foldingStopMarker)
         if (match) {
-            var i = match.index + match[0].length;
+            var i = match.index + match[0].length
 
             if (match[1])
-                return this.closingBracketBlock(session, match[1], row, i);
+                return this.closingBracketBlock(session, match[1], row, i)
 
-            return session.getCommentFoldRange(row, i, -1);
+            return session.getCommentFoldRange(row, i, -1)
         }
-    };
+    }
     
     this.getSectionRange = function(session, row) {
-        var line = session.getLine(row);
-        var startIndent = line.search(/\S/);
-        var startRow = row;
-        var startColumn = line.length;
-        row = row + 1;
-        var endRow = row;
-        var maxRow = session.getLength();
+        var line = session.getLine(row)
+        var startIndent = line.search(/\S/)
+        var startRow = row
+        var startColumn = line.length
+        row = row + 1
+        var endRow = row
+        var maxRow = session.getLength()
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var indent = line.search(/\S/);
+            line = session.getLine(row)
+            var indent = line.search(/\S/)
             if (indent === -1)
-                continue;
+                continue
             if  (startIndent > indent)
-                break;
-            var subRange = this.getFoldWidgetRange(session, "all", row);
+                break
+            var subRange = this.getFoldWidgetRange(session, "all", row)
             
             if (subRange) {
                 if (subRange.start.row <= startRow) {
-                    break;
+                    break
                 } else if (subRange.isMultiLine()) {
-                    row = subRange.end.row;
+                    row = subRange.end.row
                 } else if (startIndent == indent) {
-                    break;
+                    break
                 }
             }
-            endRow = row;
+            endRow = row
         }
         
-        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length);
-    };
+        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length)
+    }
     this.getCommentRegionBlock = function(session, line, row) {
-        var startColumn = line.search(/\s*$/);
-        var maxRow = session.getLength();
-        var startRow = row;
+        var startColumn = line.search(/\s*$/)
+        var maxRow = session.getLength()
+        var startRow = row
         
-        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/;
-        var depth = 1;
+        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/
+        var depth = 1
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var m = re.exec(line);
-            if (!m) continue;
-            if (m[1]) depth--;
-            else depth++;
+            line = session.getLine(row)
+            var m = re.exec(line)
+            if (!m) continue
+            if (m[1]) depth--
+            else depth++
 
-            if (!depth) break;
+            if (!depth) break
         }
 
-        var endRow = row;
+        var endRow = row
         if (endRow > startRow) {
-            return new Range(startRow, startColumn, endRow, line.length);
+            return new Range(startRow, startColumn, endRow, line.length)
         }
-    };
+    }
 
-}).call(FoldMode.prototype);
+}).call(FoldMode.prototype)
 
-});
+})
 
 ace.define("ace/mode/praat",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var PraatHighlightRules = require("./praat_highlight_rules").PraatHighlightRules;
-var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent;
-var CStyleFoldMode = require("./folding/cstyle").FoldMode;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var PraatHighlightRules = require("./praat_highlight_rules").PraatHighlightRules
+var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent
+var CStyleFoldMode = require("./folding/cstyle").FoldMode
 
 var Mode = function() {
-    this.HighlightRules = PraatHighlightRules;
-    this.$outdent = new MatchingBraceOutdent();
-    this.foldingRules = new CStyleFoldMode();
-    this.$behaviour = this.$defaultBehaviour;
-};
+    this.HighlightRules = PraatHighlightRules
+    this.$outdent = new MatchingBraceOutdent()
+    this.foldingRules = new CStyleFoldMode()
+    this.$behaviour = this.$defaultBehaviour
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
 
-    this.lineCommentStart = "#";
+    this.lineCommentStart = "#"
 
     this.getNextLineIndent = function(state, line, tab) {
-        var indent = this.$getIndent(line);
+        var indent = this.$getIndent(line)
 
-        var tokenizedLine = this.getTokenizer().getLineTokens(line, state);
-        var tokens = tokenizedLine.tokens;
+        var tokenizedLine = this.getTokenizer().getLineTokens(line, state)
+        var tokens = tokenizedLine.tokens
 
         if (tokens.length && tokens[tokens.length-1].type == "comment") {
-            return indent;
+            return indent
         }
 
         if (state == "start") {
-            var match = line.match(/^.*[\{\(\[:]\s*$/);
+            var match = line.match(/^.*[\{\(\[:]\s*$/)
             if (match) {
-                indent += tab;
+                indent += tab
             }
         }
 
-        return indent;
-    };
+        return indent
+    }
 
     this.checkOutdent = function(state, line, input) {
-        return this.$outdent.checkOutdent(line, input);
-    };
+        return this.$outdent.checkOutdent(line, input)
+    }
 
     this.autoOutdent = function(state, doc, row) {
-        this.$outdent.autoOutdent(doc, row);
-    };
+        this.$outdent.autoOutdent(doc, row)
+    }
 
-    this.$id = "ace/mode/praat";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/praat"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     ace.require(["ace/mode/praat"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

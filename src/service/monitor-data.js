@@ -410,7 +410,7 @@ function getNodesByGroup(groupname, offset) {
         sort: { prop: 'hostname', order: 'ascend' },
       },
     }
-    Request.get('/api/cluster/node/', { params }).then(
+    Request.get('/api/monitor/node/gpu/', { params }).then(
       res => {
         resolve(res.body)
       },
@@ -426,7 +426,7 @@ function getNodeGpuDataByhostnames(hostnames, category, offset) {
     const api = `/api/monitor/gpu/heat/latest/${category}/`
     const req = {
       offset: offset.pageSize,
-      currentPage: offset.currentPage,
+      currentPage: 1,
       hostnames,
     }
     Request.post(api, req).then(

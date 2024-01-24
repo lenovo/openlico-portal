@@ -151,18 +151,14 @@ export default {
       this.runningParams = []
       this.paramValues = {}
       JobTemplate.getJobTemplate(res.job_template).then(
-        templateRes => {
-          const tempArr1 = res.setting_params
-          const tempArr2 = templateRes.params
-          const tempArr3 = []
-          tempArr1.forEach(item => {
-            tempArr2.forEach(element => {
-              if (item === element.id) {
-                tempArr3.push(element)
-              }
-            })
-          })
-          this.runningParams = tempArr3
+        async templateRes => {
+          // for some reason, if we set the default value in runningParams it will not be displayed so we need to change it before
+          const wallTimeParam = templateRes.params.find(param => param.id === 'run_time')
+          if (wallTimeParam) {
+            wallTimeParam.defaultValue = await JobTemplate.getCloudDefaultRuntime()
+          }
+          // we use map and not filter so the order in res.setting_params is preserved
+          this.runningParams = res.setting_params.map(param => templateRes.params.find(obj => obj.id === param))
           this.is_initialized = res.settings.is_initialized
           if (res.settings.is_initialized) {
             this.okText = this.$t('CloudTools.Apply')
@@ -191,46 +187,60 @@ export default {
 .setdl :deep(.job-parameters-editor-form) {
   padding-left: 0px;
 }
+
 .setdl :deep(.queue-selector) {
   width: 100% !important;
 }
+
 .setdl :deep(.container) {
   display: block !important;
 }
+
 .setdl :deep(.maxresourse) {
   margin-top: 5px;
 }
+
 .setdl :deep(.ant-form-item .ant-form-item-control-input) {
   display: block;
   width: 100% !important;
 }
+
 .setdl :deep(.ant-form .ant-input) {
   width: 100% !important;
 }
+
 .setdl :deep(.jobtempalte-mig-select) {
   width: 100% !important;
 }
+
 .setdl :deep(.ant-select-show-search) {
   width: 83% !important;
 }
+
 .setdl :deep(.ant-input-password) {
   width: 100% !important;
 }
+
 .setdl :deep(.load-module-editor) {
   width: 100% !important;
 }
+
 .setdl :deep(.file-select-container) {
   width: 100% !important;
 }
+
 .setdl :deep(.image-selection) {
   display: block;
 }
+
 .setdl :deep(.ant-input-group-compact) {
   width: 100% !important;
 }
+
 .setdl :deep(.image-version-tag) {
   margin-top: 5px;
 }
+
 .setdl :deep(.ant-input-group.ant-input-group-compact) {
   display: flex;
 }

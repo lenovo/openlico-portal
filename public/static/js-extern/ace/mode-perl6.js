@@ -1,8 +1,8 @@
 ace.define("ace/mode/perl6_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var Perl6HighlightRules = function() {
 
@@ -13,7 +13,7 @@ var Perl6HighlightRules = function() {
         "constant|enum|multi|return|has|token|rule|make|made|proto|state|augment|" +
         "but|anon|supersede|let|subset|gather|returns|return-rw|temp|" +
         "BEGIN|CHECK|INIT|END|CLOSE|ENTER|LEAVE|KEEP|UNDO|PRE|POST|FIRST|NEXT|LAST|CATCH|CONTROL|QUIT|DOC"
-    );
+    )
 
     var types = (
         "Any|Array|Associative|AST|atomicint|Attribute|Backtrace|Backtrace::Frame|" +
@@ -68,7 +68,7 @@ var Perl6HighlightRules = function() {
 		"X::Syntax::Variable::Match|X::Syntax::Variable::Numeric|X::Syntax::Variable::Twigil|X::Temporal|"+
 		"X::Temporal::InvalidFormat|X::TypeCheck|X::TypeCheck::Assignment|X::TypeCheck::Binding|"+
 		"X::TypeCheck::Return|X::TypeCheck::Splice|X::Undeclared"
-		);
+		)
 
     var builtinFunctions = (
         "abs|abs2rel|absolute|accept|ACCEPTS|accessed|acos|acosec|acosech|acosh|"+
@@ -149,73 +149,73 @@ var Perl6HighlightRules = function() {
         "nok|cmp-ok|is-deeply|isnt|is-approx|like|unlike|use-ok|isa-ok|does-ok|"+
         "can-ok|dies-ok|lives-ok|eval-dies-ok|eval-lives-ok|throws-like|fails-like|"+
 		"rw|required|native|repr|export|symbol"
-	);
-	var constants_ascii = ("pi|Inf|tau|time");
+	)
+	var constants_ascii = ("pi|Inf|tau|time")
 	
 	var ops_txt = ("eq|ne|gt|lt|le|ge|div|gcd|lcm|leg|cmp|ff|fff|"+
 		"x|before|after|Z|X|and|or|andthen|notandthen|orelse|xor"
-	);
+	)
 
 	var keywordMapper = this.createKeywordMapper({
 		"keyword": keywords,
 		"storage.type" : types,
 		"constant.language": constants_ascii,
 		"support.function": builtinFunctions,
-		"keyword.operator": ops_txt
-	}, "identifier");
+		"keyword.operator": ops_txt,
+	}, "identifier")
 	
-	var moduleName = "[a-zA-Z_][a-zA-Z_0-9:-]*\\b";
-	var hex = {	token : "constant.numeric", regex : "0x[0-9a-fA-F]+\\b" };
-	var num_rat = { token : "constant.numeric", regex : "[+-.]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b" };
-	var num_with_ = { token : "constant.numeric", regex : "(?:\\d+_?\\d+)+\\b" };
-	var complex_numbers = { token : "constant.numeric", regex : "\\+?\\d+i\\b" };
-	var booleans = { token : "constant.language.boolean", regex : "(?:True|False)\\b" };
-	var versions = { token : "constant.other", regex : "v[0-9](?:\\.[a-zA-Z0-9*])*\\b" };
-	var lang_keywords = { token : keywordMapper, regex : "[a-zA-Z][\\:a-zA-Z0-9_-]*\\b" };
-	var variables = { token : "variable.language", regex : "[$@%&][?*!.]?[a-zA-Z0-9_-]+\\b" };
-	var vars_special = { token: "variable.language", regex : "\\$[/|!]?|@\\$/" };
+	var moduleName = "[a-zA-Z_][a-zA-Z_0-9:-]*\\b"
+	var hex = {	token : "constant.numeric", regex : "0x[0-9a-fA-F]+\\b" }
+	var num_rat = { token : "constant.numeric", regex : "[+-.]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b" }
+	var num_with_ = { token : "constant.numeric", regex : "(?:\\d+_?\\d+)+\\b" }
+	var complex_numbers = { token : "constant.numeric", regex : "\\+?\\d+i\\b" }
+	var booleans = { token : "constant.language.boolean", regex : "(?:True|False)\\b" }
+	var versions = { token : "constant.other", regex : "v[0-9](?:\\.[a-zA-Z0-9*])*\\b" }
+	var lang_keywords = { token : keywordMapper, regex : "[a-zA-Z][\\:a-zA-Z0-9_-]*\\b" }
+	var variables = { token : "variable.language", regex : "[$@%&][?*!.]?[a-zA-Z0-9_-]+\\b" }
+	var vars_special = { token: "variable.language", regex : "\\$[/|!]?|@\\$/" }
 	var ops_char = { token : "keyword.operator", regex : "=|<|>|\\+|\\*|-|/|~|%|\\?|!|\\^|\\.|\\:|\\,|"+
-	"»|«|\\||\\&|⚛|∘" };
-	var constants_unicode = { token : "constant.language", regex : "𝑒|π|τ|∞" };
-	var qstrings = { token : "string.quoted.single", regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']" };
-	var word_quoting = { token : "string.quoted.single", regex : "[<](?:[a-zA-Z0-9 ])*[>]"};
+	"»|«|\\||\\&|⚛|∘" }
+	var constants_unicode = { token : "constant.language", regex : "𝑒|π|τ|∞" }
+	var qstrings = { token : "string.quoted.single", regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']" }
+	var word_quoting = { token : "string.quoted.single", regex : "[<](?:[a-zA-Z0-9 ])*[>]"}
 	var regexp = {
 				token : "string.regexp",
-				regex : "[m|rx]?[/](?:(?:\\[(?:\\\\]|[^\\]])+\\])|(?:\\\\/|[^\\]/]))*[/]\\w*\\s*(?=[).,;]|$)" };
+				regex : "[m|rx]?[/](?:(?:\\[(?:\\\\]|[^\\]])+\\])|(?:\\\\/|[^\\]/]))*[/]\\w*\\s*(?=[).,;]|$)" }
 	
 	
 	this.$rules = {
 		"start" : [
 			{
 				token : "comment.block", // Embedded Comments - Parentheses
-				regex : "#[`|=]\\(.*\\)"
+				regex : "#[`|=]\\(.*\\)",
 			}, {
 				token : "comment.block", // Embedded Comments - Brackets
-				regex : "#[`|=]\\[.*\\]"
+				regex : "#[`|=]\\[.*\\]",
 			}, {
 				token : "comment.doc", // Multiline Comments
 				regex : "^=(?:begin)\\b",
-				next : "block_comment"
+				next : "block_comment",
 			}, {
 				token : "string.unquoted", // q Heredocs
 				regex : "q[x|w]?\\:to/END/;",
-				next : "qheredoc"
+				next : "qheredoc",
 			}, {
 				token : "string.unquoted", // qq Heredocs
 				regex : "qq[x|w]?\\:to/END/;",
-				next : "qqheredoc"
+				next : "qqheredoc",
 			},
 			regexp,
 			qstrings
 			, {
 				token : "string.quoted.double", // Double Quoted String
 				regex : '"',
-				next : "qqstring"
+				next : "qqstring",
 			},
 			word_quoting
 			, {
 				token: ["keyword", "text", "variable.module"], // use - Module Names, Pragmas, etc.
-				regex: "(use)(\\s+)((?:"+moduleName+"\\.?)*)"
+				regex: "(use)(\\s+)((?:"+moduleName+"\\.?)*)",
 			},
 			hex,
 			num_rat,
@@ -230,36 +230,36 @@ var Perl6HighlightRules = function() {
 			constants_unicode
 			, {
 				token : "comment", // Sigle Line Comments
-				regex : "#.*$"
+				regex : "#.*$",
 			}, {
 				token : "lparen",
-				regex : "[[({]"
+				regex : "[[({]",
 			}, {
 				token : "rparen",
-				regex : "[\\])}]"
+				regex : "[\\])}]",
 			}, {
 				token : "text",
-				regex : "\\s+"
-			}
+				regex : "\\s+",
+			},
 		],
 		"qqstring" : [
 			{
 				token : "constant.language.escape",
-				regex : '\\\\(?:[nrtef\\\\"$]|[0-7]{1,3}|x[0-9A-Fa-f]{1,2})'
+				regex : '\\\\(?:[nrtef\\\\"$]|[0-7]{1,3}|x[0-9A-Fa-f]{1,2})',
 			}, 
 			variables,
 			vars_special
 			, {
 				token : "lparen",
 				regex : "{",
-				next : "qqinterpolation"
+				next : "qqinterpolation",
 			}, {
 				token : "string.quoted.double", 
 				regex : '"', 
-				next : "start"
+				next : "start",
 			}, {
-				defaultToken : "string.quoted.double"
-			}
+				defaultToken : "string.quoted.double",
+			},
 		],
 		"qqinterpolation" : [
 			hex,
@@ -279,27 +279,27 @@ var Perl6HighlightRules = function() {
 			{
 				token: "rparen",
 				regex: "}",
-				next : "qqstring"
-			}
+				next : "qqstring",
+			},
 		],
 		"block_comment": [
 			{
 				token: "comment.doc",
 				regex: "^=end +[a-zA-Z_0-9]*",
-				next: "start"
+				next: "start",
 			},
 			{
-				defaultToken: "comment.doc"
-			}
+				defaultToken: "comment.doc",
+			},
 		],
 		"qheredoc": [
 			{
 				token: "string.unquoted",
 				regex: "END$",
-				next: "start"
+				next: "start",
 			}, {
-				defaultToken: "string.unquoted"
-			}
+				defaultToken: "string.unquoted",
+			},
 		],
 		"qqheredoc": [
 			variables,
@@ -307,14 +307,14 @@ var Perl6HighlightRules = function() {
 			{
 				token : "lparen",
 				regex : "{",
-				next : "qqheredocinterpolation"
+				next : "qqheredocinterpolation",
 			}, {
 				token: "string.unquoted",
 				regex: "END$",
-				next: "start"
+				next: "start",
 			}, {
-				defaultToken: "string.unquoted"
-			}
+				defaultToken: "string.unquoted",
+			},
 		],
 		"qqheredocinterpolation" : [
 			hex,
@@ -333,21 +333,21 @@ var Perl6HighlightRules = function() {
 			{
 				token: "rparen",
 				regex: "}",
-				next : "qqheredoc"
-			}
-		]
-	};
-};
+				next : "qqheredoc",
+			},
+		],
+	}
+}
 
-oop.inherits(Perl6HighlightRules, TextHighlightRules);
+oop.inherits(Perl6HighlightRules, TextHighlightRules)
 
-exports.Perl6HighlightRules = Perl6HighlightRules;
-});
+exports.Perl6HighlightRules = Perl6HighlightRules
+})
 
 ace.define("ace/mode/matching_brace_outdent",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var Range = require("../range").Range;
+var Range = require("../range").Range
 
 var MatchingBraceOutdent = function() {};
 
@@ -355,239 +355,239 @@ var MatchingBraceOutdent = function() {};
 
     this.checkOutdent = function(line, input) {
         if (! /^\s+$/.test(line))
-            return false;
+            return false
 
-        return /^\s*\}/.test(input);
-    };
+        return /^\s*\}/.test(input)
+    }
 
     this.autoOutdent = function(doc, row) {
-        var line = doc.getLine(row);
-        var match = line.match(/^(\s*\})/);
+        var line = doc.getLine(row)
+        var match = line.match(/^(\s*\})/)
 
-        if (!match) return 0;
+        if (!match) return 0
 
-        var column = match[1].length;
-        var openBracePos = doc.findMatchingBracket({row: row, column: column});
+        var column = match[1].length
+        var openBracePos = doc.findMatchingBracket({row: row, column: column})
 
-        if (!openBracePos || openBracePos.row == row) return 0;
+        if (!openBracePos || openBracePos.row == row) return 0
 
-        var indent = this.$getIndent(doc.getLine(openBracePos.row));
-        doc.replace(new Range(row, 0, row, column-1), indent);
-    };
+        var indent = this.$getIndent(doc.getLine(openBracePos.row))
+        doc.replace(new Range(row, 0, row, column-1), indent)
+    }
 
     this.$getIndent = function(line) {
-        return line.match(/^\s*/)[0];
-    };
+        return line.match(/^\s*/)[0]
+    }
 
-}).call(MatchingBraceOutdent.prototype);
+}).call(MatchingBraceOutdent.prototype)
 
-exports.MatchingBraceOutdent = MatchingBraceOutdent;
-});
+exports.MatchingBraceOutdent = MatchingBraceOutdent
+})
 
 ace.define("ace/mode/folding/cstyle",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../../lib/oop");
-var Range = require("../../range").Range;
-var BaseFoldMode = require("./fold_mode").FoldMode;
+var oop = require("../../lib/oop")
+var Range = require("../../range").Range
+var BaseFoldMode = require("./fold_mode").FoldMode
 
 var FoldMode = exports.FoldMode = function(commentRegex) {
     if (commentRegex) {
         this.foldingStartMarker = new RegExp(
-            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start)
-        );
+            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start),
+        )
         this.foldingStopMarker = new RegExp(
-            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end)
-        );
+            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end),
+        )
     }
-};
+}
 oop.inherits(FoldMode, BaseFoldMode);
 
 (function() {
     
-    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/;
-    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/;
-    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/;
-    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/;
-    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/;
-    this._getFoldWidgetBase = this.getFoldWidget;
+    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/
+    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/
+    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/
+    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/
+    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/
+    this._getFoldWidgetBase = this.getFoldWidget
     this.getFoldWidget = function(session, foldStyle, row) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
     
         if (this.singleLineBlockCommentRe.test(line)) {
             if (!this.startRegionRe.test(line) && !this.tripleStarBlockCommentRe.test(line))
-                return "";
+                return ""
         }
     
-        var fw = this._getFoldWidgetBase(session, foldStyle, row);
+        var fw = this._getFoldWidgetBase(session, foldStyle, row)
     
         if (!fw && this.startRegionRe.test(line))
-            return "start"; // lineCommentRegionStart
+            return "start" // lineCommentRegionStart
     
-        return fw;
-    };
+        return fw
+    }
 
     this.getFoldWidgetRange = function(session, foldStyle, row, forceMultiline) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
         
         if (this.startRegionRe.test(line))
-            return this.getCommentRegionBlock(session, line, row);
+            return this.getCommentRegionBlock(session, line, row)
         
-        var match = line.match(this.foldingStartMarker);
+        var match = line.match(this.foldingStartMarker)
         if (match) {
-            var i = match.index;
+            var i = match.index
 
             if (match[1])
-                return this.openingBracketBlock(session, match[1], row, i);
+                return this.openingBracketBlock(session, match[1], row, i)
                 
-            var range = session.getCommentFoldRange(row, i + match[0].length, 1);
+            var range = session.getCommentFoldRange(row, i + match[0].length, 1)
             
             if (range && !range.isMultiLine()) {
                 if (forceMultiline) {
-                    range = this.getSectionRange(session, row);
+                    range = this.getSectionRange(session, row)
                 } else if (foldStyle != "all")
-                    range = null;
+                    range = null
             }
             
-            return range;
+            return range
         }
 
         if (foldStyle === "markbegin")
-            return;
+            return
 
-        var match = line.match(this.foldingStopMarker);
+        var match = line.match(this.foldingStopMarker)
         if (match) {
-            var i = match.index + match[0].length;
+            var i = match.index + match[0].length
 
             if (match[1])
-                return this.closingBracketBlock(session, match[1], row, i);
+                return this.closingBracketBlock(session, match[1], row, i)
 
-            return session.getCommentFoldRange(row, i, -1);
+            return session.getCommentFoldRange(row, i, -1)
         }
-    };
+    }
     
     this.getSectionRange = function(session, row) {
-        var line = session.getLine(row);
-        var startIndent = line.search(/\S/);
-        var startRow = row;
-        var startColumn = line.length;
-        row = row + 1;
-        var endRow = row;
-        var maxRow = session.getLength();
+        var line = session.getLine(row)
+        var startIndent = line.search(/\S/)
+        var startRow = row
+        var startColumn = line.length
+        row = row + 1
+        var endRow = row
+        var maxRow = session.getLength()
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var indent = line.search(/\S/);
+            line = session.getLine(row)
+            var indent = line.search(/\S/)
             if (indent === -1)
-                continue;
+                continue
             if  (startIndent > indent)
-                break;
-            var subRange = this.getFoldWidgetRange(session, "all", row);
+                break
+            var subRange = this.getFoldWidgetRange(session, "all", row)
             
             if (subRange) {
                 if (subRange.start.row <= startRow) {
-                    break;
+                    break
                 } else if (subRange.isMultiLine()) {
-                    row = subRange.end.row;
+                    row = subRange.end.row
                 } else if (startIndent == indent) {
-                    break;
+                    break
                 }
             }
-            endRow = row;
+            endRow = row
         }
         
-        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length);
-    };
+        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length)
+    }
     this.getCommentRegionBlock = function(session, line, row) {
-        var startColumn = line.search(/\s*$/);
-        var maxRow = session.getLength();
-        var startRow = row;
+        var startColumn = line.search(/\s*$/)
+        var maxRow = session.getLength()
+        var startRow = row
         
-        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/;
-        var depth = 1;
+        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/
+        var depth = 1
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var m = re.exec(line);
-            if (!m) continue;
-            if (m[1]) depth--;
-            else depth++;
+            line = session.getLine(row)
+            var m = re.exec(line)
+            if (!m) continue
+            if (m[1]) depth--
+            else depth++
 
-            if (!depth) break;
+            if (!depth) break
         }
 
-        var endRow = row;
+        var endRow = row
         if (endRow > startRow) {
-            return new Range(startRow, startColumn, endRow, line.length);
+            return new Range(startRow, startColumn, endRow, line.length)
         }
-    };
+    }
 
-}).call(FoldMode.prototype);
+}).call(FoldMode.prototype)
 
-});
+})
 
 ace.define("ace/mode/perl6",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var Perl6HighlightRules = require("./perl6_highlight_rules").Perl6HighlightRules;
-var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent;
-var CStyleFoldMode = require("./folding/cstyle").FoldMode;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var Perl6HighlightRules = require("./perl6_highlight_rules").Perl6HighlightRules
+var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent
+var CStyleFoldMode = require("./folding/cstyle").FoldMode
 
 var Mode = function() {
-    this.HighlightRules = Perl6HighlightRules;
+    this.HighlightRules = Perl6HighlightRules
 
-    this.$outdent = new MatchingBraceOutdent();
-    this.foldingRules = new CStyleFoldMode({start: "^=(begin)\\b", end: "^=(end)\\b"});
-    this.$behaviour = this.$defaultBehaviour;
-};
+    this.$outdent = new MatchingBraceOutdent()
+    this.foldingRules = new CStyleFoldMode({start: "^=(begin)\\b", end: "^=(end)\\b"})
+    this.$behaviour = this.$defaultBehaviour
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
 
-    this.lineCommentStart = "#";
+    this.lineCommentStart = "#"
     this.blockComment = [
         {start: "=begin", end: "=end", lineStartOnly: true},
-        {start: "=item", end: "=end", lineStartOnly: true}
-    ];
+        {start: "=item", end: "=end", lineStartOnly: true},
+    ]
 
 
     this.getNextLineIndent = function(state, line, tab) {
-        var indent = this.$getIndent(line);
+        var indent = this.$getIndent(line)
 
-        var tokenizedLine = this.getTokenizer().getLineTokens(line, state);
-        var tokens = tokenizedLine.tokens;
+        var tokenizedLine = this.getTokenizer().getLineTokens(line, state)
+        var tokens = tokenizedLine.tokens
 
         if (tokens.length && tokens[tokens.length-1].type == "comment") {
-            return indent;
+            return indent
         }
 
         if (state == "start") {
-            var match = line.match(/^.*[\{\(\[:]\s*$/);
+            var match = line.match(/^.*[\{\(\[:]\s*$/)
             if (match) {
-                indent += tab;
+                indent += tab
             }
         }
 
-        return indent;
-    };
+        return indent
+    }
 
     this.checkOutdent = function(state, line, input) {
-        return this.$outdent.checkOutdent(line, input);
-    };
+        return this.$outdent.checkOutdent(line, input)
+    }
 
     this.autoOutdent = function(state, doc, row) {
-        this.$outdent.autoOutdent(doc, row);
-    };
+        this.$outdent.autoOutdent(doc, row)
+    }
 
-    this.$id = "ace/mode/perl6";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/perl6"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     ace.require(["ace/mode/perl6"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

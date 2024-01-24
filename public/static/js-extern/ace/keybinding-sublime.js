@@ -1,422 +1,422 @@
 ace.define("ace/keyboard/sublime",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var HashHandler = require("../keyboard/hash_handler").HashHandler;
+var HashHandler = require("../keyboard/hash_handler").HashHandler
 
 function moveBySubWords(editor, direction, extend) {
-    var selection = editor.selection;
-    var row = selection.lead.row;
-    var column = selection.lead.column;
+    var selection = editor.selection
+    var row = selection.lead.row
+    var column = selection.lead.column
 
-    var line = editor.session.getLine(row);
+    var line = editor.session.getLine(row)
     if (!line[column + direction]) {
         var method = (extend ? "selectWord" : "moveCursorShortWord")
-            + (direction == 1 ? "Right" : "Left");
-        return editor.selection[method]();
+            + (direction == 1 ? "Right" : "Left")
+        return editor.selection[method]()
     }
-    if (direction == -1) column--;
+    if (direction == -1) column--
     while (line[column]) {
-        var type = getType(line[column]) + getType(line[column + direction]);
-        column += direction;
+        var type = getType(line[column]) + getType(line[column + direction])
+        column += direction
         if (direction == 1) {
             if (type == "WW" && getType(line[column + 1]) == "w")
-                break;
+                break
         }
         else {
             if (type == "wW") {
                 if (getType(line[column - 1]) == "W") {
-                    column -= 1;
-                    break;
+                    column -= 1
+                    break
                 } else {
-                    continue;
+                    continue
                 }
             }
             if (type == "Ww")
-                break;
+                break
         }
         if (/w[s_oW]|_[sWo]|o[s_wW]|s[W]|W[so]/.test(type))
-            break;
+            break
     }
-    if (direction == -1) column++;
+    if (direction == -1) column++
     if (extend)
-        editor.selection.moveCursorTo(row, column);
+        editor.selection.moveCursorTo(row, column)
     else
-        editor.selection.moveTo(row, column);
+        editor.selection.moveTo(row, column)
     
     function getType(x) {
-        if (!x) return "-";
-        if (/\s/.test(x)) return "s";
-        if (x == "_") return "_";
-        if (x.toUpperCase() == x && x.toLowerCase() != x) return "W";
-        if (x.toUpperCase() != x && x.toLowerCase() == x) return "w";
-        return "o";
+        if (!x) return "-"
+        if (/\s/.test(x)) return "s"
+        if (x == "_") return "_"
+        if (x.toUpperCase() == x && x.toLowerCase() != x) return "W"
+        if (x.toUpperCase() != x && x.toLowerCase() == x) return "w"
+        return "o"
     }
 }
 
-exports.handler = new HashHandler();
+exports.handler = new HashHandler()
  
 exports.handler.addCommands([{
     name: "find_all_under",
     exec: function(editor) {
         if (editor.selection.isEmpty())
-            editor.selection.selectWord();
-        editor.findAll();
+            editor.selection.selectWord()
+        editor.findAll()
     },
-    readOnly: true
+    readOnly: true,
 }, {
     name: "find_under",
     exec: function(editor) {
         if (editor.selection.isEmpty())
-            editor.selection.selectWord();
-        editor.findNext();
+            editor.selection.selectWord()
+        editor.findNext()
     },
-    readOnly: true
+    readOnly: true,
 }, {
     name: "find_under_prev",
     exec: function(editor) {
         if (editor.selection.isEmpty())
-            editor.selection.selectWord();
-        editor.findPrevious();
+            editor.selection.selectWord()
+        editor.findPrevious()
     },
-    readOnly: true
+    readOnly: true,
 }, {
     name: "find_under_expand",
     exec: function(editor) {
-        editor.selectMore(1, false, true);
+        editor.selectMore(1, false, true)
     },
     scrollIntoView: "animate",
-    readOnly: true
+    readOnly: true,
 }, {
     name: "find_under_expand_skip",
     exec: function(editor) {
-        editor.selectMore(1, true, true);
+        editor.selectMore(1, true, true)
     },
     scrollIntoView: "animate",
-    readOnly: true
+    readOnly: true,
 }, {
     name: "delete_to_hard_bol",
     exec: function(editor) {
-        var pos = editor.selection.getCursor();
+        var pos = editor.selection.getCursor()
         editor.session.remove({
             start: { row: pos.row, column: 0 },
-            end: pos
-        });
+            end: pos,
+        })
     },
     multiSelectAction: "forEach",
-    scrollIntoView: "cursor"
+    scrollIntoView: "cursor",
 }, {
     name: "delete_to_hard_eol",
     exec: function(editor) {
-        var pos = editor.selection.getCursor();
+        var pos = editor.selection.getCursor()
         editor.session.remove({
             start: pos,
-            end: { row: pos.row, column: Infinity }
-        });
+            end: { row: pos.row, column: Infinity },
+        })
     },
     multiSelectAction: "forEach",
-    scrollIntoView: "cursor"
+    scrollIntoView: "cursor",
 }, {
     name: "moveToWordStartLeft",
     exec: function(editor) {
-        editor.selection.moveCursorLongWordLeft();
-        editor.clearSelection();
+        editor.selection.moveCursorLongWordLeft()
+        editor.clearSelection()
     },
     multiSelectAction: "forEach",
-    scrollIntoView: "cursor"
+    scrollIntoView: "cursor",
 }, {
     name: "moveToWordEndRight",
     exec: function(editor) {
-        editor.selection.moveCursorLongWordRight();
-        editor.clearSelection();
+        editor.selection.moveCursorLongWordRight()
+        editor.clearSelection()
     },
     multiSelectAction: "forEach",
-    scrollIntoView: "cursor"
+    scrollIntoView: "cursor",
 }, {
     name: "selectToWordStartLeft",
     exec: function(editor) {
-        var sel = editor.selection;
-        sel.$moveSelection(sel.moveCursorLongWordLeft);
+        var sel = editor.selection
+        sel.$moveSelection(sel.moveCursorLongWordLeft)
     },
     multiSelectAction: "forEach",
-    scrollIntoView: "cursor"
+    scrollIntoView: "cursor",
 }, {
     name: "selectToWordEndRight",
     exec: function(editor) {
-        var sel = editor.selection;
-        sel.$moveSelection(sel.moveCursorLongWordRight);
+        var sel = editor.selection
+        sel.$moveSelection(sel.moveCursorLongWordRight)
     },
     multiSelectAction: "forEach",
-    scrollIntoView: "cursor"
+    scrollIntoView: "cursor",
 }, {
     name: "selectSubWordRight",
     exec: function(editor) {
-        moveBySubWords(editor, 1, true);
+        moveBySubWords(editor, 1, true)
     },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor",
-    readOnly: true
+    readOnly: true,
 }, {
     name: "selectSubWordLeft",
     exec: function(editor) {
-        moveBySubWords(editor, -1, true);
+        moveBySubWords(editor, -1, true)
     },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor",
-    readOnly: true
+    readOnly: true,
 }, {
     name: "moveSubWordRight",
     exec: function(editor) {
-        moveBySubWords(editor, 1);
+        moveBySubWords(editor, 1)
     },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor",
-    readOnly: true
+    readOnly: true,
 }, {
     name: "moveSubWordLeft",
     exec: function(editor) {
-        moveBySubWords(editor, -1);
+        moveBySubWords(editor, -1)
     },
     multiSelectAction: "forEach",
     scrollIntoView: "cursor",
-    readOnly: true
+    readOnly: true,
 }]);
 
 
 [{
     bindKey: { mac: "cmd-k cmd-backspace|cmd-backspace", win: "ctrl-shift-backspace|ctrl-k ctrl-backspace" },
-    name: "removetolinestarthard"
+    name: "removetolinestarthard",
 }, {
     bindKey: { mac: "cmd-k cmd-k|cmd-delete|ctrl-k", win: "ctrl-shift-delete|ctrl-k ctrl-k" },
-    name: "removetolineendhard"
+    name: "removetolineendhard",
 }, {
     bindKey: { mac: "cmd-shift-d", win: "ctrl-shift-d" },
-    name: "duplicateSelection"
+    name: "duplicateSelection",
 }, {
     bindKey: { mac: "cmd-l", win: "ctrl-l" },
-    name: "expandtoline"
+    name: "expandtoline",
 }, 
 {
     bindKey: {mac: "cmd-shift-a", win: "ctrl-shift-a"},
     name: "expandSelection",
-    args: {to: "tag"}
+    args: {to: "tag"},
 }, {
     bindKey: {mac: "cmd-shift-j", win: "ctrl-shift-j"},
     name: "expandSelection",
-    args: {to: "indentation"}
+    args: {to: "indentation"},
 }, {
     bindKey: {mac: "ctrl-shift-m", win: "ctrl-shift-m"},
     name: "expandSelection",
-    args: {to: "brackets"}
+    args: {to: "brackets"},
 }, {
     bindKey: {mac: "cmd-shift-space", win: "ctrl-shift-space"},
     name: "expandSelection",
-    args: {to: "scope"}
+    args: {to: "scope"},
 },
 {
     bindKey: { mac: "ctrl-cmd-g", win: "alt-f3" },
-    name: "find_all_under"
+    name: "find_all_under",
 }, {
     bindKey: { mac: "alt-cmd-g", win: "ctrl-f3" },
-    name: "find_under"
+    name: "find_under",
 }, {
     bindKey: { mac: "shift-alt-cmd-g", win: "ctrl-shift-f3" },
-    name: "find_under_prev"
+    name: "find_under_prev",
 }, {
     bindKey: { mac: "cmd-g", win: "f3" },
-    name: "findnext"
+    name: "findnext",
 }, {
     bindKey: { mac: "shift-cmd-g", win: "shift-f3" },
-    name: "findprevious"
+    name: "findprevious",
 }, {
     bindKey: { mac: "cmd-d", win: "ctrl-d" },
-    name: "find_under_expand"
+    name: "find_under_expand",
 }, {
     bindKey: { mac: "cmd-k cmd-d", win: "ctrl-k ctrl-d" },
-    name: "find_under_expand_skip"
+    name: "find_under_expand_skip",
 }, 
 {
     bindKey: { mac: "cmd-alt-[", win: "ctrl-shift-[" },
-    name: "toggleFoldWidget"
+    name: "toggleFoldWidget",
 }, {
     bindKey: { mac: "cmd-alt-]", win: "ctrl-shift-]" },
-    name: "unfold"
+    name: "unfold",
 }, {
     bindKey: { mac: "cmd-k cmd-0|cmd-k cmd-j", win: "ctrl-k ctrl-0|ctrl-k ctrl-j" },
-    name: "unfoldall"
+    name: "unfoldall",
 }, {
     bindKey: { mac: "cmd-k cmd-1", win: "ctrl-k ctrl-1" },
     name: "foldOther",
-    args: { level: 1 }
+    args: { level: 1 },
 },
 {
     bindKey: { win: "ctrl-left", mac: "alt-left" },
-    name: "moveToWordStartLeft"
+    name: "moveToWordStartLeft",
 }, {
     bindKey: { win: "ctrl-right", mac: "alt-right" },
-    name: "moveToWordEndRight"
+    name: "moveToWordEndRight",
 }, {
     bindKey: { win: "ctrl-shift-left", mac: "alt-shift-left" },
-    name: "selectToWordStartLeft"
+    name: "selectToWordStartLeft",
 }, {
     bindKey: { win: "ctrl-shift-right", mac: "alt-shift-right" },
-    name: "selectToWordEndRight"
+    name: "selectToWordEndRight",
 }, 
 {
     bindKey: {mac: "ctrl-alt-shift-right|ctrl-shift-right", win: "alt-shift-right"},
-    name: "selectSubWordRight"
+    name: "selectSubWordRight",
 }, {
     bindKey: {mac: "ctrl-alt-shift-left|ctrl-shift-left", win: "alt-shift-left"},
-    name: "selectSubWordLeft"
+    name: "selectSubWordLeft",
 }, {
     bindKey: {mac: "ctrl-alt-right|ctrl-right", win: "alt-right"},
-    name: "moveSubWordRight"
+    name: "moveSubWordRight",
 }, {
     bindKey: {mac: "ctrl-alt-left|ctrl-left", win: "alt-left"},
-    name: "moveSubWordLeft"
+    name: "moveSubWordLeft",
 }, 
 {
     bindKey: { mac: "ctrl-m", win: "ctrl-m" },
     name: "jumptomatching",
-    args: { to: "brackets" }
+    args: { to: "brackets" },
 }, 
 {
     bindKey: { mac: "ctrl-f6", win: "ctrl-f6" },
-    name: "goToNextError"
+    name: "goToNextError",
 }, {
     bindKey: { mac: "ctrl-shift-f6", win: "ctrl-shift-f6" },
-    name: "goToPreviousError"
+    name: "goToPreviousError",
 },
 
 {
     bindKey: { mac: "ctrl-o" },
-    name: "splitline"
+    name: "splitline",
 }, 
 {
     bindKey: {mac: "ctrl-shift-w", win: "alt-shift-w"},
-    name: "surrowndWithTag"
+    name: "surrowndWithTag",
 },{
     bindKey: {mac: "cmd-alt-.", win: "alt-."},
-    name: "close_tag"
+    name: "close_tag",
 }, 
 {
     bindKey: { mac: "cmd-j", win: "ctrl-j" },
-    name: "joinlines"
+    name: "joinlines",
 }, 
 
 {
     bindKey: {mac: "ctrl--", win: "alt--"},
-    name: "jumpBack"
+    name: "jumpBack",
 }, {
     bindKey: {mac: "ctrl-shift--", win: "alt-shift--"},
-    name: "jumpForward"
+    name: "jumpForward",
 }, 
 
 {
     bindKey: { mac: "cmd-k cmd-l", win: "ctrl-k ctrl-l" },
-    name: "tolowercase"
+    name: "tolowercase",
 }, {
     bindKey: { mac: "cmd-k cmd-u", win: "ctrl-k ctrl-u" },
-    name: "touppercase"
+    name: "touppercase",
 }, 
 
 {
     bindKey: {mac: "cmd-shift-v", win: "ctrl-shift-v"},
-    name: "paste_and_indent"
+    name: "paste_and_indent",
 }, {
     bindKey: {mac: "cmd-k cmd-v|cmd-alt-v", win: "ctrl-k ctrl-v"},
-    name: "paste_from_history"
+    name: "paste_from_history",
 }, 
 
 {
     bindKey: { mac: "cmd-shift-enter", win: "ctrl-shift-enter" },
-    name: "addLineBefore"
+    name: "addLineBefore",
 }, {
     bindKey: { mac: "cmd-enter", win: "ctrl-enter" },
-    name: "addLineAfter"
+    name: "addLineAfter",
 }, {
     bindKey: { mac: "ctrl-shift-k", win: "ctrl-shift-k" },
-    name: "removeline"
+    name: "removeline",
 }, {
     bindKey: { mac: "ctrl-alt-up", win: "ctrl-up" },
-    name: "scrollup"
+    name: "scrollup",
 }, {
     bindKey: { mac: "ctrl-alt-down", win: "ctrl-down" },
-    name: "scrolldown"
+    name: "scrolldown",
 }, {
     bindKey: { mac: "cmd-a", win: "ctrl-a" },
-    name: "selectall"
+    name: "selectall",
 }, {
     bindKey: { linux: "alt-shift-down", mac: "ctrl-shift-down", win: "ctrl-alt-down" },
-    name: "addCursorBelow"
+    name: "addCursorBelow",
 }, {
     bindKey: { linux: "alt-shift-up", mac: "ctrl-shift-up", win: "ctrl-alt-up" },
-    name: "addCursorAbove"
+    name: "addCursorAbove",
 },
 
 
 {
     bindKey: { mac: "cmd-k cmd-c|ctrl-l", win: "ctrl-k ctrl-c" },
-    name: "centerselection"
+    name: "centerselection",
 }, 
 
 {
     bindKey: { mac: "f5", win: "f9" },
-    name: "sortlines"
+    name: "sortlines",
 }, 
 {
     bindKey: {mac: "ctrl-f5", win: "ctrl-f9"},
     name: "sortlines",
-    args: {caseSensitive: true}
+    args: {caseSensitive: true},
 },
 {
     bindKey: { mac: "cmd-shift-l", win: "ctrl-shift-l" },
-    name: "splitSelectionIntoLines"
+    name: "splitSelectionIntoLines",
 }, {
     bindKey: { mac: "ctrl-cmd-down", win: "ctrl-shift-down" },
-    name: "movelinesdown"
+    name: "movelinesdown",
 }, {
     bindKey: { mac: "ctrl-cmd-up", win: "ctrl-shift-up" },
-    name: "movelinesup"
+    name: "movelinesup",
 }, {
     bindKey: { mac: "alt-down", win: "alt-down" },
-    name: "modifyNumberDown"
+    name: "modifyNumberDown",
 }, {
     bindKey: { mac: "alt-up", win: "alt-up" },
-    name: "modifyNumberUp"
+    name: "modifyNumberUp",
 }, {
     bindKey: { mac: "cmd-/", win: "ctrl-/" },
-    name: "togglecomment"
+    name: "togglecomment",
 }, {
     bindKey: { mac: "cmd-alt-/", win: "ctrl-shift-/" },
-    name: "toggleBlockComment"
+    name: "toggleBlockComment",
 },
 
 
 {
     bindKey: { linux: "ctrl-alt-q", mac: "ctrl-q", win: "ctrl-q" },
-    name: "togglerecording"
+    name: "togglerecording",
 }, {
     bindKey: { linux: "ctrl-alt-shift-q", mac: "ctrl-shift-q", win: "ctrl-shift-q" },
-    name: "replaymacro"
+    name: "replaymacro",
 }, 
 
 {
     bindKey: { mac: "ctrl-t", win: "ctrl-t" },
-    name: "transpose"
-}
+    name: "transpose",
+},
 
 ].forEach(function(binding) {
-    var command = exports.handler.commands[binding.name];
+    var command = exports.handler.commands[binding.name]
     if (command)
-        command.bindKey = binding.bindKey;
-    exports.handler.bindKey(binding.bindKey, command || binding.name);
-});
+        command.bindKey = binding.bindKey
+    exports.handler.bindKey(binding.bindKey, command || binding.name)
+})
 
 });                (function() {
                     ace.require(["ace/keyboard/sublime"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

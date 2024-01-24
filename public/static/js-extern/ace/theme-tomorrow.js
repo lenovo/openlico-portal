@@ -1,7 +1,7 @@
 ace.define("ace/theme/tomorrow",[], function(require, exports, module) {
 
-exports.isDark = false;
-exports.cssClass = "ace-tomorrow";
+exports.isDark = false
+exports.cssClass = "ace-tomorrow"
 exports.cssText = ".ace-tomorrow .ace_gutter {\
 background: #f6f6f6;\
 color: #4D4D4C\
@@ -101,15 +101,15 @@ color: #8E908C\
 }\
 .ace-tomorrow .ace_indent-guide {\
 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bdu3f/BwAlfgctduB85QAAAABJRU5ErkJggg==) right repeat-y\
-}";
+}"
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+var dom = require("../lib/dom")
+dom.importCssString(exports.cssText, exports.cssClass)
 });                (function() {
                     ace.require(["ace/theme/tomorrow"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

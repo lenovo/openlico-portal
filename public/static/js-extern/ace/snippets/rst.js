@@ -1,5 +1,5 @@
 ace.define("ace/snippets/rst",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "# rst\n\
 \n\
@@ -23,14 +23,14 @@ snippet -\n\
 snippet cont:\n\
 	.. contents::\n\
 	\n\
-";
-exports.scope = "rst";
+"
+exports.scope = "rst"
 
 });                (function() {
                     ace.require(["ace/snippets/rst"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

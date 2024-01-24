@@ -1,5 +1,5 @@
 ace.define("ace/snippets/python",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "snippet #!\n\
 	#!/usr/bin/env python\n\
@@ -159,14 +159,14 @@ snippet getopt\n\
 			${4}\n\
 		elif option in (\"-v\", \"--verbose\"):\n\
 			verbose = argument\n\
-";
-exports.scope = "python";
+"
+exports.scope = "python"
 
 });                (function() {
                     ace.require(["ace/snippets/python"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

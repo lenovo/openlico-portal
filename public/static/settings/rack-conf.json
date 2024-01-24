@@ -50,6 +50,24 @@
     }
   },
   {
+    "code": "DA240",
+    "aliasCodes": ["7D1J"],
+    "type": "chassis",
+    "frontimage": "4slot.png",
+    "padding": [3, 2, 3, 2],
+    "width_height": [254, 44],
+    "uheight": [18],
+    "gap": [2, 2],
+    "location": {
+      "height": 2,
+      "width": 1
+    },
+    "capacity": {
+      "height": 2,
+      "width": 1
+    }
+  },
+  {
     "code": "n1200",
     "aliasCodes": ["5456", "5468", "5469"],
     "type": "chassis",
@@ -336,6 +354,16 @@
     }
   },
   {
+    "code": "sd630v2",
+    "aliasCodes": ["7D1K"],
+    "type": "node",
+    "frontimage": "SD630_V2.png",
+    "location": {
+      "height": 1,
+      "width": 0.5
+    }
+  },
+  {
     "code": "sd530",
     "aliasCodes": ["7X21"],
     "type": "node",
@@ -366,12 +394,32 @@
     }
   },
   {
+    "code": "sr860v3",
+    "aliasCodes": ["7D94", "7D93", "7D95"],
+    "type": "node",
+    "frontimage": "SR860_V3.png",
+    "location": {
+      "height": 4,
+      "width": 1
+    }
+  },
+  {
     "code": "sr860",
     "aliasCodes": ["7X69", "7X70"],
     "type": "node",
     "frontimage": "SR860.png",
     "location": {
       "height": 4,
+      "width": 1
+    }
+  },
+  {
+    "code": "sr850v3",
+    "aliasCodes": ["7D97", "7D96", "7D98"],
+    "type": "node",
+    "frontimage": "SR850_V3.png",
+    "location": {
+      "height": 2,
       "width": 1
     }
   },
@@ -576,6 +624,16 @@
     }
   },
   {
+    "code": "sr590v2",
+    "aliasCodes": ["7D53"],
+    "type": "node",
+    "frontimage": "SR590_V2.png",
+    "location": {
+      "height": 2,
+      "width": 1
+    }
+  },
+  {
     "code": "sd650",
     "aliasCodes": ["7X58"],
     "type": "node",
@@ -633,6 +691,26 @@
     "location": {
       "height": 1,
       "width": 0.5
+    }
+  },
+  {
+    "code": "WR5220G3",
+    "aliasCodes": ["7D8Y"],
+    "type": "node",
+    "frontimage": "WR5220_G3.png",
+    "location": {
+      "height": 2,
+      "width": 1
+    }
+  },
+  {
+    "code": "P620",
+    "aliasCodes": ["p620"],
+    "type": "node",
+    "frontimage": "P620.png",
+    "location": {
+      "height": 4,
+      "width": 1
     }
   },
   {

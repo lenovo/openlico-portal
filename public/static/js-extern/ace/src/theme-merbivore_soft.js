@@ -1,7 +1,7 @@
 define("ace/theme/merbivore_soft",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
 
-exports.isDark = true;
-exports.cssClass = "ace-merbivore-soft";
+exports.isDark = true
+exports.cssClass = "ace-merbivore-soft"
 exports.cssText = ".ace-merbivore-soft .ace_gutter {\
 background: #262424;\
 color: #E6E1DC\
@@ -89,15 +89,15 @@ color: #EAF1A3\
 }\
 .ace-merbivore-soft .ace_indent-guide {\
 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWOQkpLyZfD09PwPAAfYAnaStpHRAAAAAElFTkSuQmCC) right repeat-y\
-}";
+}"
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+var dom = require("../lib/dom")
+dom.importCssString(exports.cssText, exports.cssClass)
 });                (function() {
                     window.require(["ace/theme/merbivore_soft"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

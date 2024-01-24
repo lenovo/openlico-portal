@@ -74,6 +74,7 @@ export default {
       } else if (mapActions.includes(this.action)) {
         return this.$T(`JobManage.${this.action}.Success`, {
           name: this.jobName,
+          count: this.jobId[0].length,
         })
       } else if (this.action === 'Rerun') {
         if (job.schedulerId && job.schedulerId.length > 0) {

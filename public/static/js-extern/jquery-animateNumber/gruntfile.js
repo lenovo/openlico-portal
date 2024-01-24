@@ -6,29 +6,29 @@ module.exports = function(grunt) {
       options: {
         // При вызове в терминале `grunt watch`
         // сначала выполнятся все таски и потом начнётся слежение
-        atBegin: true
+        atBegin: true,
       },
       js: {
         // Все файлы в папке www/js (включая подпапки)
         files: 'jquery.animateNumber.js',
-        tasks: ['closure-compiler']
-      }
+        tasks: ['closure-compiler'],
+      },
     },
     'closure-compiler': {
       frontend: {
         js: 'jquery.animateNumber.js',
         jsOutputFile: 'jquery.animateNumber.min.js',
         noreport: true,
-        options: {}
-      }
-    }
-  });
+        options: {},
+      },
+    },
+  })
 
   // Загружаем установленные задачи
   // (офтопик: будь я разработчиком Гранта, выкинул бы этот блок)
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-closure-compiler');
+  grunt.loadNpmTasks('grunt-contrib-watch')
+  grunt.loadNpmTasks('grunt-closure-compiler')
 
   // Задача по умолчанию (`grunt` в терминале)
-  grunt.registerTask('default', ['closure-compiler']);
-};
+  grunt.registerTask('default', ['closure-compiler'])
+}

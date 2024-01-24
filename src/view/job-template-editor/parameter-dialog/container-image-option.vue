@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <a-form-item v-if="showFramework" :label="$t('JobTemplate.Parameters.framework')" name="framework">
-      <a-select id="tid_jobTemplate-parameter-framework" v-model:value="formParam.framework">
+      <a-select v-model:value="formParam.framework">
         <a-select-option v-for="item in frameworkOptions" :key="item.value" :value="item.value">
           {{ item.label }}
         </a-select-option>

@@ -27,6 +27,7 @@
       <div class="composite-table-body">
         <a-table
           ref="innerTable"
+          v-model:expandedRowKeys="expandedRowKeys"
           :columns="innerColumns"
           :data-source="innerTableData"
           :show-sorter-tooltip="false"
@@ -44,6 +45,12 @@
               : null
           "
           @change="handleTableChange">
+          <template #emptyText>
+            <div style="padding-top: 60px">
+              <img src="/static/img/system/main/nodata.png" style="height: 60px; width: 80px" :alt="$t('No.Data')" />
+            </div>
+            <span style="padding-bottom: 60px; display: block">{{ $t('No.Data') }}</span>
+          </template>
           <template #bodyCell="{ column, record }">
             <template v-if="column.customSlot">
               <slot :name="column.key" :[column.key]="record[column.key]" :row="record" :col="column"></slot>
@@ -58,6 +65,7 @@
             v-model:page-size="innerPageSize"
             size="small"
             show-size-changer
+            title="page size"
             :page-size-options="innerPageSizes"
             :show-total="total => $T('CompositeTable.Footer.Total', { total: innerTotal })"
             @show-size-change="onPageSizeChange" />
@@ -129,6 +137,7 @@ export default {
     'selection-change',
     'data-refreshed',
     'table-data-fetch-error',
+    'expanded-change',
   ],
   data() {
     return {
@@ -147,6 +156,7 @@ export default {
       keywordCache: '',
       innerSortProp: '',
       selectionIndex: [],
+      expandedRowKeys: [],
     }
   },
   computed: {
@@ -247,6 +257,7 @@ export default {
       }
     },
     onPageSizeChange(current, val) {
+      this.expandedRowKeys = []
       this.innerPageSize = val
 
       const pageSizes = PreferenceService.getPreferenceByKey('pageSizes')
@@ -274,6 +285,7 @@ export default {
       // }
     },
     onCurrentPageChange(val) {
+      this.expandedRowKeys = []
       this.innerCurrentPage = val
       this.fetchTableData(false)
       this.$emit('page-change', this.innerPageSize, this.innerCurrentPage)
@@ -424,6 +436,10 @@ export default {
     clearSelection() {
       this.selectionIndex = []
       this.$emit('selection-change', [])
+    },
+    clearExpanded() {
+      this.expandedRowKeys = []
+      this.$emit('expanded-change', [])
     },
   },
 }

@@ -12,11 +12,11 @@
  */
 (function(root, factory) {
 	if (typeof define === 'function' && define.amd) {
-		define(['elfinder'], factory);
+		define(['elfinder'], factory)
 	} else if (typeof exports !== 'undefined') {
-		module.exports = factory(require('elfinder'));
+		module.exports = factory(require('elfinder'))
 	} else {
-		factory(root.elFinder);
+		factory(root.elFinder)
 	}
 }(this, function(elFinder) {
 	elFinder.prototype.i18.REPLACE_WITH_xx_OR_xx_YY_LANG_CODE = {
@@ -579,8 +579,8 @@
 			'kindVideoWM'     : 'Windows Media movie',
 			'kindVideoFlash'  : 'Flash movie',
 			'kindVideoMKV'    : 'Matroska movie',
-			'kindVideoOGG'    : 'Ogg movie'
-		}
-	};
-}));
+			'kindVideoOGG'    : 'Ogg movie',
+		},
+	}
+}))
 

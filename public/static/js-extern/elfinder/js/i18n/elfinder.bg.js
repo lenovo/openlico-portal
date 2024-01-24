@@ -6,11 +6,11 @@
  */
 (function(root, factory) {
 	if (typeof define === 'function' && define.amd) {
-		define(['elfinder'], factory);
+		define(['elfinder'], factory)
 	} else if (typeof exports !== 'undefined') {
-		module.exports = factory(require('elfinder'));
+		module.exports = factory(require('elfinder'))
 	} else {
-		factory(root.elFinder);
+		factory(root.elFinder)
 	}
 }(this, function(elFinder) {
 	elFinder.prototype.i18.bg = {
@@ -553,7 +553,7 @@
 			'kindVideoWM'     : 'Windows Media филм',
 			'kindVideoFlash'  : 'Flash филм',
 			'kindVideoMKV'    : 'Matroska филм',
-			'kindVideoOGG'    : 'Ogg филм'
-		}
-	};
-}));
+			'kindVideoOGG'    : 'Ogg филм',
+		},
+	}
+}))

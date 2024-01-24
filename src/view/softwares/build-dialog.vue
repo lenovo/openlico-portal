@@ -10,6 +10,10 @@
       :success-message-formatter="successMessageFormatter">
       <div class="build-module-info">
         <p class="build-module-item">
+          <span class="build-module-item-label">{{ $t('Softwares.Build.Filename') }}</span>
+          <span class="build-module-item-value">{{ formModel.filename }}</span>
+        </p>
+        <p class="build-module-item">
           <span class="build-module-item-label">{{ $t('Name') }}</span>
           <span class="build-module-item-value">{{ formModel.name }}</span>
         </p>
@@ -56,6 +60,7 @@ export default {
     return {
       mode: '',
       formModel: {
+        filename: '',
         name: '',
         version: '',
         home: '',
@@ -85,8 +90,9 @@ export default {
       return this.$T('Softwares.Build.Success', { id: res.schedulerId })
     },
     doOpenBuild(data) {
-      const { name, version, home = '', path = '', description = '' } = data
+      const { filename, name, version, home = '', path = '', description = '' } = data
       this.formModel = {
+        filename,
         name,
         version,
         home,

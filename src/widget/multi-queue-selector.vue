@@ -1,5 +1,10 @@
 <template>
-  <a-select v-model:value="innerValue" :allow-clear="true" class="default-select" :placeholder="innerPlaceholder">
+  <a-select
+    v-model:value="innerValue"
+    :allow-clear="true"
+    class="default-select"
+    :title="'queue'"
+    :placeholder="innerPlaceholder">
     <a-select-option v-for="item in options" :key="item.value" :value="item.value">
       {{ item.label }}
     </a-select-option>

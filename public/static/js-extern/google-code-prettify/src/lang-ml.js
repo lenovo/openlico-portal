@@ -36,7 +36,7 @@ PR['registerLangHandler'](
           null, '#'],
          // A double or single quoted, possibly multi-line, string.
          // F# allows escaped newlines in strings.
-         [PR['PR_STRING'],      /^(?:\"(?:[^\"\\]|\\[\s\S])*(?:\"|$)|\'(?:[^\'\\]|\\[\s\S])(?:\'|$))/, null, '"\'']
+         [PR['PR_STRING'],      /^(?:\"(?:[^\"\\]|\\[\s\S])*(?:\"|$)|\'(?:[^\'\\]|\\[\s\S])(?:\'|$))/, null, '"\''],
         ],
         [
          // Block comments are delimited by (* and *) and may be
@@ -51,6 +51,6 @@ PR['registerLangHandler'](
           /^[+\-]?(?:0x[\da-f]+|(?:(?:\.\d+|\d+(?:\.\d*)?)(?:e[+\-]?\d+)?))/i],
          [PR['PR_PLAIN'],       /^(?:[a-z_][\w']*[!?#]?|``[^\r\n\t`]*(?:``|$))/i],
          // A printable non-space non-special character
-         [PR['PR_PUNCTUATION'], /^[^\t\n\r \xA0\"\'\w]+/]
+         [PR['PR_PUNCTUATION'], /^[^\t\n\r \xA0\"\'\w]+/],
         ]),
-    ['fs', 'ml']);
+    ['fs', 'ml'])

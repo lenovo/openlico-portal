@@ -1,5 +1,5 @@
 define("ace/ext/themelist",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 var themeData = [
     ["Chrome"         ],
@@ -39,28 +39,28 @@ var themeData = [
     ["Tomorrow Night Bright","tomorrow_night_bright"   ,  "dark"],
     ["Tomorrow Night 80s"   ,"tomorrow_night_eighties" ,  "dark"],
     ["Twilight"             ,"twilight"                ,  "dark"],
-    ["Vibrant Ink"          ,"vibrant_ink"             ,  "dark"]
-];
+    ["Vibrant Ink"          ,"vibrant_ink"             ,  "dark"],
+]
 
 
-exports.themesByName = {};
+exports.themesByName = {}
 exports.themes = themeData.map(function(data) {
-    var name = data[1] || data[0].replace(/ /g, "_").toLowerCase();
+    var name = data[1] || data[0].replace(/ /g, "_").toLowerCase()
     var theme = {
         caption: data[0],
         theme: "ace/theme/" + name,
         isDark: data[2] == "dark",
-        name: name
-    };
-    exports.themesByName[name] = theme;
-    return theme;
-});
+        name: name,
+    }
+    exports.themesByName[name] = theme
+    return theme
+})
 
 });                (function() {
                     window.require(["ace/ext/themelist"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

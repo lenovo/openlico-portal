@@ -5,6 +5,7 @@
         id="tid_monitor-groups-group"
         v-model:value="nodeGroupId"
         style="min-width: 100px"
+        :title="nodeGroupId"
         :disabled="loading"
         @change="onNodeGroupChange">
         <a-select-option v-for="group in nodeGroups" :key="group.id" :value="group.name">

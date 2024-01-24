@@ -1,59 +1,59 @@
 ace.define("ace/mode/doc_comment_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var DocCommentHighlightRules = function() {
     this.$rules = {
         "start" : [ {
             token : "comment.doc.tag",
-            regex : "@[\\w\\d_]+" // TODO: fix email addresses
+            regex : "@[\\w\\d_]+", // TODO: fix email addresses
         }, 
         DocCommentHighlightRules.getTagRule(),
         {
             defaultToken : "comment.doc",
-            caseInsensitive: true
-        }]
-    };
-};
+            caseInsensitive: true,
+        }],
+    }
+}
 
-oop.inherits(DocCommentHighlightRules, TextHighlightRules);
+oop.inherits(DocCommentHighlightRules, TextHighlightRules)
 
 DocCommentHighlightRules.getTagRule = function(start) {
     return {
         token : "comment.doc.tag.storage.type",
-        regex : "\\b(?:TODO|FIXME|XXX|HACK)\\b"
-    };
-};
+        regex : "\\b(?:TODO|FIXME|XXX|HACK)\\b",
+    }
+}
 
 DocCommentHighlightRules.getStartRule = function(start) {
     return {
         token : "comment.doc", // doc comment
         regex : "\\/\\*(?=\\*)",
-        next  : start
-    };
-};
+        next  : start,
+    }
+}
 
 DocCommentHighlightRules.getEndRule = function (start) {
     return {
         token : "comment.doc", // closing comment
         regex : "\\*\\/",
-        next  : start
-    };
-};
+        next  : start,
+    }
+}
 
 
-exports.DocCommentHighlightRules = DocCommentHighlightRules;
+exports.DocCommentHighlightRules = DocCommentHighlightRules
 
-});
+})
 
 ace.define("ace/mode/java_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var DocCommentHighlightRules = require("./doc_comment_highlight_rules").DocCommentHighlightRules;
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var DocCommentHighlightRules = require("./doc_comment_highlight_rules").DocCommentHighlightRules
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var JavaHighlightRules = function() {
     var keywords = (
@@ -68,9 +68,9 @@ var JavaHighlightRules = function() {
     "class|finally|long|strictfp|volatile|" +
     "const|float|native|super|while|" +
     "var"
-    );
+    )
 
-    var buildinConstants = ("null|Infinity|NaN|undefined");
+    var buildinConstants = ("null|Infinity|NaN|undefined")
 
 
     var langClasses = (
@@ -98,41 +98,41 @@ var JavaHighlightRules = function() {
         "NoClassDefFoundError|ClassNotFoundException|RuntimeException|"+
         "Exception|ThreadDeath|Error|Throwable|System|ClassLoader|"+
         "Cloneable|Class|CharSequence|Comparable|String|Object"
-    );
+    )
 
     var keywordMapper = this.createKeywordMapper({
         "variable.language": "this",
         "keyword": keywords,
         "constant.language": buildinConstants,
-        "support.function": langClasses
-    }, "identifier");
+        "support.function": langClasses,
+    }, "identifier")
 
     this.$rules = {
         "start" : [
             {
                 token : "comment",
-                regex : "\\/\\/.*$"
+                regex : "\\/\\/.*$",
             },
             DocCommentHighlightRules.getStartRule("doc-start"),
             {
                 token : "comment", // multi line comment
                 regex : "\\/\\*",
-                next : "comment"
+                next : "comment",
             }, {
                 token : "string", // single line
-                regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'
+                regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]',
             }, {
                 token : "string", // single line
-                regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']"
+                regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']",
             }, {
                 token : "constant.numeric", // hex
-                regex : /0(?:[xX][0-9a-fA-F][0-9a-fA-F_]*|[bB][01][01_]*)[LlSsDdFfYy]?\b/
+                regex : /0(?:[xX][0-9a-fA-F][0-9a-fA-F_]*|[bB][01][01_]*)[LlSsDdFfYy]?\b/,
             }, {
                 token : "constant.numeric", // float
-                regex : /[+-]?\d[\d_]*(?:(?:\.[\d_]*)?(?:[eE][+-]?[\d_]+)?)?[LlSsDdFfYy]?\b/
+                regex : /[+-]?\d[\d_]*(?:(?:\.[\d_]*)?(?:[eE][+-]?[\d_]+)?)?[LlSsDdFfYy]?\b/,
             }, {
                 token : "constant.language.boolean",
-                regex : "(?:true|false)\\b"
+                regex : "(?:true|false)\\b",
             }, {
                 regex: "(open(?:\\s+))?module(?=\\s*\\w)",
                 token: "keyword",
@@ -142,76 +142,76 @@ var JavaHighlightRules = function() {
                     next: [{
                         regex: "}",
                         token: "paren.rparen",
-                        next: "start"
+                        next: "start",
                     }, {
                         regex: "\\b(requires|transitive|exports|opens|to|uses|provides|with)\\b",
-                        token: "keyword" 
-                    }]
+                        token: "keyword", 
+                    }],
                 }, {
                     token : "text",
-                    regex : "\\s+"
+                    regex : "\\s+",
                 }, {
                     token : "identifier",
-                    regex : "\\w+"
+                    regex : "\\w+",
                 }, {
                     token : "punctuation.operator",
-                    regex : "."
+                    regex : ".",
                 }, {
                     token : "text",
-                    regex : "\\s+"
+                    regex : "\\s+",
                 }, {
                     regex: "", // exit if there is anything else
-                    next: "start"
-                }]
+                    next: "start",
+                }],
             }, {
                 token : keywordMapper,
-                regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+                regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b",
             }, {
                 token : "keyword.operator",
-                regex : "!|\\$|%|&|\\*|\\-\\-|\\-|\\+\\+|\\+|~|===|==|=|!=|!==|<=|>=|<<=|>>=|>>>=|<>|<|>|!|&&|\\|\\||\\?\\:|\\*=|%=|\\+=|\\-=|&=|\\^=|\\b(?:in|instanceof|new|delete|typeof|void)"
+                regex : "!|\\$|%|&|\\*|\\-\\-|\\-|\\+\\+|\\+|~|===|==|=|!=|!==|<=|>=|<<=|>>=|>>>=|<>|<|>|!|&&|\\|\\||\\?\\:|\\*=|%=|\\+=|\\-=|&=|\\^=|\\b(?:in|instanceof|new|delete|typeof|void)",
             }, {
                 token : "lparen",
-                regex : "[[({]"
+                regex : "[[({]",
             }, {
                 token : "rparen",
-                regex : "[\\])}]"
+                regex : "[\\])}]",
             }, {
                 token : "text",
-                regex : "\\s+"
-            }
+                regex : "\\s+",
+            },
         ],
         "comment" : [
             {
                 token : "comment", // closing comment
                 regex : "\\*\\/",
-                next : "start"
+                next : "start",
             }, {
-                defaultToken : "comment"
-            }
-        ]
-    };
+                defaultToken : "comment",
+            },
+        ],
+    }
 
     
     this.embedRules(DocCommentHighlightRules, "doc-",
-        [ DocCommentHighlightRules.getEndRule("start") ]);
-    this.normalizeRules();
-};
+        [ DocCommentHighlightRules.getEndRule("start") ])
+    this.normalizeRules()
+}
 
-oop.inherits(JavaHighlightRules, TextHighlightRules);
+oop.inherits(JavaHighlightRules, TextHighlightRules)
 
-exports.JavaHighlightRules = JavaHighlightRules;
-});
+exports.JavaHighlightRules = JavaHighlightRules
+})
 
 ace.define("ace/mode/drools_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
-var JavaHighlightRules = require("./java_highlight_rules").JavaHighlightRules;
-var DocCommentHighlightRules = require("./doc_comment_highlight_rules").DocCommentHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
+var JavaHighlightRules = require("./java_highlight_rules").JavaHighlightRules
+var DocCommentHighlightRules = require("./doc_comment_highlight_rules").DocCommentHighlightRules
 
-var identifierRe = "[a-zA-Z\\$_\u00a1-\uffff][a-zA-Z\\d\\$_\u00a1-\uffff]*";
-var packageIdentifierRe = "[a-zA-Z\\$_\u00a1-\uffff][\\.a-zA-Z\\d\\$_\u00a1-\uffff]*";
+var identifierRe = "[a-zA-Z\\$_\u00a1-\uffff][a-zA-Z\\d\\$_\u00a1-\uffff]*"
+var packageIdentifierRe = "[a-zA-Z\\$_\u00a1-\uffff][\\.a-zA-Z\\d\\$_\u00a1-\uffff]*"
 
 var DroolsHighlightRules = function() {
 
@@ -225,7 +225,7 @@ var DroolsHighlightRules = function() {
         "|default|try|catch|finally|switch|synchronized|return|throw|break|continue|assert" +
         "|modify|static|public|protected|private|abstract|native|transient|volatile" +
         "|strictfp|throws|interface|enum|implements|type|window|trait|no-loop|str"
-      );
+      )
 
       var langClasses = (
           "AbstractMethodError|AssertionError|ClassCircularityError|"+
@@ -252,247 +252,247 @@ var DroolsHighlightRules = function() {
           "NoClassDefFoundError|ClassNotFoundException|RuntimeException|"+
           "Exception|ThreadDeath|Error|Throwable|System|ClassLoader|"+
           "Cloneable|Class|CharSequence|Comparable|String|Object"
-      );
+      )
 
     var keywordMapper = this.createKeywordMapper({
         "variable.language": "this",
         "keyword": keywords,
         "constant.language": "null",
         "support.class" : langClasses,
-        "support.function" : "retract|update|modify|insert"
-    }, "identifier");
+        "support.function" : "retract|update|modify|insert",
+    }, "identifier")
 
     var stringRules = function() {
       return [{
         token : "string", // single line
-        regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'
+        regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]',
       }, {
         token : "string", // single line
-        regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']"
-      }];
-    };
+        regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']",
+      }]
+    }
 
 
       var basicPreRules = function(blockCommentRules) {
         return [{
             token : "comment",
-            regex : "\\/\\/.*$"
+            regex : "\\/\\/.*$",
         },
         DocCommentHighlightRules.getStartRule("doc-start"),
         {
             token : "comment", // multi line comment
             regex : "\\/\\*",
-            next : blockCommentRules
+            next : blockCommentRules,
         }, {
             token : "constant.numeric", // hex
-            regex : "0[xX][0-9a-fA-F]+\\b"
+            regex : "0[xX][0-9a-fA-F]+\\b",
         }, {
             token : "constant.numeric", // float
-            regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b"
+            regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b",
         }, {
             token : "constant.language.boolean",
-            regex : "(?:true|false)\\b"
-          }];
-      };
+            regex : "(?:true|false)\\b",
+          }]
+      }
 
       var blockCommentRules = function(returnRule) {
         return [
             {
                 token : "comment.block", // closing comment
                 regex : "\\*\\/",
-                next : returnRule
+                next : returnRule,
             }, {
-                defaultToken : "comment.block"
-            }
-        ];
-      };
+                defaultToken : "comment.block",
+            },
+        ]
+      }
 
       var basicPostRules = function() {
         return [{
             token : keywordMapper,
-            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b",
         }, {
             token : "keyword.operator",
-            regex : "!|\\$|%|&|\\*|\\-\\-|\\-|\\+\\+|\\+|~|===|==|=|!=|!==|<=|>=|<<=|>>=|>>>=|<>|<|>|!|&&|\\|\\||\\?\\:|\\*=|%=|\\+=|\\-=|&=|\\^=|\\b(?:in|instanceof|new|delete|typeof|void)"
+            regex : "!|\\$|%|&|\\*|\\-\\-|\\-|\\+\\+|\\+|~|===|==|=|!=|!==|<=|>=|<<=|>>=|>>>=|<>|<|>|!|&&|\\|\\||\\?\\:|\\*=|%=|\\+=|\\-=|&=|\\^=|\\b(?:in|instanceof|new|delete|typeof|void)",
         }, {
             token : "lparen",
-            regex : "[[({]"
+            regex : "[[({]",
         }, {
             token : "rparen",
-            regex : "[\\])}]"
+            regex : "[\\])}]",
         }, {
             token : "text",
-            regex : "\\s+"
-        }];
-      };
+            regex : "\\s+",
+        }]
+      }
 
 
     this.$rules = {
         "start" : [].concat(basicPreRules("block.comment"), [
               {
                 token : "entity.name.type",
-                regex : "@[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+                regex : "@[a-zA-Z_$][a-zA-Z0-9_$]*\\b",
               }, {
                 token : ["keyword","text","entity.name.type"],
-                regex : "(package)(\\s+)(" + packageIdentifierRe +")"
+                regex : "(package)(\\s+)(" + packageIdentifierRe +")",
               }, {
                 token : ["keyword","text","keyword","text","entity.name.type"],
-                regex : "(import)(\\s+)(function)(\\s+)(" + packageIdentifierRe +")"
+                regex : "(import)(\\s+)(function)(\\s+)(" + packageIdentifierRe +")",
               }, {
                 token : ["keyword","text","entity.name.type"],
-                regex : "(import)(\\s+)(" + packageIdentifierRe +")"
+                regex : "(import)(\\s+)(" + packageIdentifierRe +")",
               }, {
                 token : ["keyword","text","entity.name.type","text","variable"],
-                regex : "(global)(\\s+)(" + packageIdentifierRe +")(\\s+)(" + identifierRe +")"
+                regex : "(global)(\\s+)(" + packageIdentifierRe +")(\\s+)(" + identifierRe +")",
               }, {
                 token : ["keyword","text","keyword","text","entity.name.type"],
-                regex : "(declare)(\\s+)(trait)(\\s+)(" + identifierRe +")"
+                regex : "(declare)(\\s+)(trait)(\\s+)(" + identifierRe +")",
               }, {
                 token : ["keyword","text","entity.name.type"],
-                regex : "(declare)(\\s+)(" + identifierRe +")"
+                regex : "(declare)(\\s+)(" + identifierRe +")",
               }, {
                 token : ["keyword","text","entity.name.type"],
-                regex : "(extends)(\\s+)(" + packageIdentifierRe +")"
+                regex : "(extends)(\\s+)(" + packageIdentifierRe +")",
               }, {
                 token : ["keyword","text"],
                 regex : "(rule)(\\s+)",
-                next :  "asset.name"
+                next :  "asset.name",
               }],
               stringRules(),
               [{
                 token : ["variable.other","text","text"],
-                regex : "(" + identifierRe + ")(\\s*)(:)"
+                regex : "(" + identifierRe + ")(\\s*)(:)",
               }, {
                 token : ["keyword","text"],
                 regex : "(query)(\\s+)",
-                next :  "asset.name"
+                next :  "asset.name",
               }, {
                 token : ["keyword","text"],
-                regex : "(when)(\\s*)"
+                regex : "(when)(\\s*)",
               }, {
                 token : ["keyword","text"],
                 regex : "(then)(\\s*)",
-                next :  "java-start"
+                next :  "java-start",
               }, {
                   token : "paren.lparen",
-                  regex : /[\[({]/
+                  regex : /[\[({]/,
               }, {
                   token : "paren.rparen",
-                  regex : /[\])}]/
+                  regex : /[\])}]/,
               }], basicPostRules()),
         "block.comment" : blockCommentRules("start"),
         "asset.name" : [
             {
                 token : "entity.name",
-                regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'
+                regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]',
             }, {
                 token : "entity.name",
-                regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']"
+                regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']",
             }, {
                 token : "entity.name",
-                regex : identifierRe
+                regex : identifierRe,
             }, {
                 regex: "",
                 token: "empty",
-                next: "start"
-            }]
-    };
+                next: "start",
+            }],
+    }
     this.embedRules(DocCommentHighlightRules, "doc-",
-        [ DocCommentHighlightRules.getEndRule("start") ]);
+        [ DocCommentHighlightRules.getEndRule("start") ])
 
     this.embedRules(JavaHighlightRules, "java-", [
       {
        token : "support.function",
-       regex: "\\b(insert|modify|retract|update)\\b"
+       regex: "\\b(insert|modify|retract|update)\\b",
      }, {
        token : "keyword",
        regex: "\\bend\\b",
-       next  : "start"
-    }]);
+       next  : "start",
+    }])
 
-};
+}
 
-oop.inherits(DroolsHighlightRules, TextHighlightRules);
+oop.inherits(DroolsHighlightRules, TextHighlightRules)
 
-exports.DroolsHighlightRules = DroolsHighlightRules;
-});
+exports.DroolsHighlightRules = DroolsHighlightRules
+})
 
 ace.define("ace/mode/folding/drools",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../../lib/oop");
-var Range = require("../../range").Range;
-var BaseFoldMode = require("./fold_mode").FoldMode;
-var TokenIterator = require("../../token_iterator").TokenIterator;
+var oop = require("../../lib/oop")
+var Range = require("../../range").Range
+var BaseFoldMode = require("./fold_mode").FoldMode
+var TokenIterator = require("../../token_iterator").TokenIterator
 
-var FoldMode = exports.FoldMode = function() {};
+var FoldMode = exports.FoldMode = function() {}
 oop.inherits(FoldMode, BaseFoldMode);
 
 (function() {
-    this.foldingStartMarker = /\b(rule|declare|query|when|then)\b/; 
-    this.foldingStopMarker = /\bend\b/;
+    this.foldingStartMarker = /\b(rule|declare|query|when|then)\b/ 
+    this.foldingStopMarker = /\bend\b/
 
     this.getFoldWidgetRange = function(session, foldStyle, row) {
-        var line = session.getLine(row);
-        var match = line.match(this.foldingStartMarker);
+        var line = session.getLine(row)
+        var match = line.match(this.foldingStartMarker)
         if (match) {
-            var i = match.index;
+            var i = match.index
 
             if (match[1]) {
-                var position = {row: row, column: line.length};
-                var iterator = new TokenIterator(session, position.row, position.column);
-                var seek = "end";
-                var token = iterator.getCurrentToken();
+                var position = {row: row, column: line.length}
+                var iterator = new TokenIterator(session, position.row, position.column)
+                var seek = "end"
+                var token = iterator.getCurrentToken()
                 if (token.value == "when") {
-                    seek = "then";
+                    seek = "then"
                 }
                 while (token) {
                     if (token.value == seek) { 
                         return Range.fromPoints(position ,{
                             row: iterator.getCurrentTokenRow(),
-                            column: iterator.getCurrentTokenColumn()
-                        });
+                            column: iterator.getCurrentTokenColumn(),
+                        })
                     }
-                    token = iterator.stepForward();
+                    token = iterator.stepForward()
                 }
             }
 
         }
-    };
+    }
 
-}).call(FoldMode.prototype);
+}).call(FoldMode.prototype)
 
-});
+})
 
 ace.define("ace/mode/drools",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var DroolsHighlightRules = require("./drools_highlight_rules").DroolsHighlightRules;
-var DroolsFoldMode = require("./folding/drools").FoldMode;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var DroolsHighlightRules = require("./drools_highlight_rules").DroolsHighlightRules
+var DroolsFoldMode = require("./folding/drools").FoldMode
 
 var Mode = function() {
-    this.HighlightRules = DroolsHighlightRules;
-    this.foldingRules = new DroolsFoldMode();
-    this.$behaviour = this.$defaultBehaviour;
+    this.HighlightRules = DroolsHighlightRules
+    this.foldingRules = new DroolsFoldMode()
+    this.$behaviour = this.$defaultBehaviour
 
-};
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
-    this.lineCommentStart = "//";
-    this.$id = "ace/mode/drools";
-    this.snippetFileId = "ace/snippets/drools";
-}).call(Mode.prototype);
+    this.lineCommentStart = "//"
+    this.$id = "ace/mode/drools"
+    this.snippetFileId = "ace/snippets/drools"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 
 });                (function() {
                     ace.require(["ace/mode/drools"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

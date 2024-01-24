@@ -43,7 +43,7 @@ PR['registerLangHandler'](
          // Whitespace
          [PR['PR_PLAIN'],       /^[\t\n\r \xA0]+/, null, '\t\n\r \xA0'],
          // A double quoted, possibly multi-line, string.
-         [PR['PR_STRING'],      /^\"(?:[^\"\\]|\\[\s\S])*(?:\"|$)/, null, '"']
+         [PR['PR_STRING'],      /^\"(?:[^\"\\]|\\[\s\S])*(?:\"|$)/, null, '"'],
         ],
         [
          [PR['PR_KEYWORD'],     /^(?:after|append|apply|array|break|case|catch|continue|error|eval|exec|exit|expr|for|foreach|if|incr|info|proc|return|set|switch|trace|uplevel|upvar|while)\b/, null],
@@ -57,6 +57,6 @@ PR['registerLangHandler'](
          [PR['PR_PLAIN'],
           /^-*(?:[a-z_]|\\[\x21-\x7e])(?:[\w-]*|\\[\x21-\x7e])[=!?]?/i],
          // A printable non-space non-special character
-         [PR['PR_PUNCTUATION'], /^[^\w\t\n\r \xA0()\"\\\';]+/]
+         [PR['PR_PUNCTUATION'], /^[^\w\t\n\r \xA0()\"\\\';]+/],
         ]),
-    ['tcl']);
+    ['tcl'])

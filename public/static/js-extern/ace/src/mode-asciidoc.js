@@ -1,11 +1,11 @@
 define("ace/mode/asciidoc_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var AsciidocHighlightRules = function() {
-    var identifierRe = "[a-zA-Z\u00a1-\uffff]+\\b";
+    var identifierRe = "[a-zA-Z\u00a1-\uffff]+\\b"
 
     this.$rules = {
         "start": [
@@ -15,7 +15,7 @@ var AsciidocHighlightRules = function() {
             {token: "string",  regex: /^\+{4,}\s*$/,  next: "passthroughBlock"},
             {token: "keyword", regex: /^={4,}\s*$/},
             {token: "text",    regex: /^\s*$/},
-            {token: "empty", regex: "", next: "dissallowDelimitedBlock"}
+            {token: "empty", regex: "", next: "dissallowDelimitedBlock"},
         ],
 
         "dissallowDelimitedBlock": [
@@ -25,7 +25,7 @@ var AsciidocHighlightRules = function() {
 
             {include: "listStart"},
             {token: "literal", regex: /^\s+.+$/, next: "indentedBlock"},
-            {token: "empty",   regex: "", next: "text"}
+            {token: "empty",   regex: "", next: "text"},
         ],
 
         "paragraphEnd": [
@@ -39,14 +39,14 @@ var AsciidocHighlightRules = function() {
             {token: "singleLineTitle",   regex: /^={1,5}\s+\S.*$/, next: "start"},
 
             {token: "otherBlock",    regex: /^(?:\*{2,}|_{2,})\s*$/, next: "start"},
-            {token: "optionalTitle", regex: /^\.[^.\s].+$/,  next: "start"}
+            {token: "optionalTitle", regex: /^\.[^.\s].+$/,  next: "start"},
         ],
 
         "listStart": [
             {token: "keyword",  regex: /^\s*(?:\d+\.|[a-zA-Z]\.|[ixvmIXVM]+\)|\*{1,5}|-|\.{1,5})\s/, next: "listText"},
             {token: "meta.tag", regex: /^.+(?::{2,4}|;;)(?: |$)/, next: "listText"},
             {token: "support.function.list.callout", regex: /^(?:<\d+>|\d+>|>) /, next: "text"},
-            {token: "keyword",  regex: /^\+\s*$/, next: "start"}
+            {token: "keyword",  regex: /^\+\s*$/, next: "start"},
         ],
 
         "text": [
@@ -68,59 +68,59 @@ var AsciidocHighlightRules = function() {
             {token: "support", regex: /^\[{3}[\w\d =\-]+\]{3}/},
 
             {include: "quotes"},
-            {token: "empty", regex: /^\s*$/, next: "start"}
+            {token: "empty", regex: /^\s*$/, next: "start"},
         ],
 
         "listText": [
             {include: "listStart"},
-            {include: "text"}
+            {include: "text"},
         ],
 
         "indentedBlock": [
             {token: "literal", regex: /^[\s\w].+$/, next: "indentedBlock"},
-            {token: "literal", regex: "", next: "start"}
+            {token: "literal", regex: "", next: "start"},
         ],
 
         "listingBlock": [
             {token: "literal", regex: /^\.{4,}\s*$/, next: "dissallowDelimitedBlock"},
             {token: "constant.numeric", regex: '<\\d+>'},
             {token: "literal", regex: '[^<]+'},
-            {token: "literal", regex: '<'}
+            {token: "literal", regex: '<'},
         ],
         "literalBlock": [
             {token: "literal", regex: /^-{4,}\s*$/, next: "dissallowDelimitedBlock"},
             {token: "constant.numeric", regex: '<\\d+>'},
             {token: "literal", regex: '[^<]+'},
-            {token: "literal", regex: '<'}
+            {token: "literal", regex: '<'},
         ],
         "passthroughBlock": [
             {token: "literal", regex: /^\+{4,}\s*$/, next: "dissallowDelimitedBlock"},
             {token: "literal", regex: identifierRe + "|\\d+"},
             {include: "macros"},
-            {token: "literal", regex: "."}
+            {token: "literal", regex: "."},
         ],
 
         "smallPassthrough": [
             {token: "literal", regex: /[+]{3,}/, next: "dissallowDelimitedBlock"},
             {token: "literal", regex: /^\s*$/, next: "dissallowDelimitedBlock"},
             {token: "literal", regex: identifierRe + "|\\d+"},
-            {include: "macros"}
+            {include: "macros"},
         ],
 
         "commentBlock": [
             {token: "doc.comment", regex: /^\/{4,}\s*$/, next: "dissallowDelimitedBlock"},
-            {token: "doc.comment", regex: '^.*$'}
+            {token: "doc.comment", regex: '^.*$'},
         ],
         "tableBlock": [
             {token: "tableBlock", regex: /^\s*\|={3,}\s*$/, next: "dissallowDelimitedBlock"},
             {token: "tableBlock", regex: /^\s*!={3,}\s*$/, next: "innerTableBlock"},
             {token: "tableBlock", regex: /\|/},
-            {include: "text", noEscape: true}
+            {include: "text", noEscape: true},
         ],
         "innerTableBlock": [
             {token: "tableBlock", regex: /^\s*!={3,}\s*$/, next: "tableBlock"},
             {token: "tableBlock", regex: /^\s*|={3,}\s*$/, next: "dissallowDelimitedBlock"},
-            {token: "tableBlock", regex: /!/}
+            {token: "tableBlock", regex: /!/},
         ],
         "macros": [
             {token: "macro", regex: /{[\w\-$]+}/},
@@ -128,7 +128,7 @@ var AsciidocHighlightRules = function() {
             {token: ["text", "markup.list.macro", "keyword", "string"], regex: /(\w+)(footnote(?:ref)?::?)([^\s\[]+)?(\[.*?\])?/},
             {token: ["markup.list.macro", "keyword", "string"], regex: /([a-zA-Z\-][\w\.\/\-]*::?)([^\s\[]+)(\[.*?\])?/},
             {token: ["markup.list.macro", "keyword"], regex: /([a-zA-Z\-][\w\.\/\-]+::?)(\[.*?\])/},
-            {token: "keyword",     regex: /^:.+?:(?= |$)/}
+            {token: "keyword",     regex: /^:.+?:(?= |$)/},
         ],
 
         "quotes": [
@@ -146,14 +146,14 @@ var AsciidocHighlightRules = function() {
             {token: "keyword", regex: quoteRule("^")},
             {token: "keyword", regex: quoteRule("~")},
             {token: "keyword", regex: /##?/},
-            {token: "keyword", regex: /(?:\B|^)``|\b''/}
-        ]
+            {token: "keyword", regex: /(?:\B|^)``|\b''/},
+        ],
 
-    };
+    }
 
     function quoteRule(ch) {
-        var prefix = /\w/.test(ch) ? "\\b" : "(?:\\B|^)";
-        return prefix + ch + "[^" + ch + "].*?" + ch + "(?![\\w*])";
+        var prefix = /\w/.test(ch) ? "\\b" : "(?:\\B|^)"
+        return prefix + ch + "[^" + ch + "].*?" + ch + "(?![\\w*])"
     }
 
     var tokenMap = {
@@ -167,183 +167,183 @@ var AsciidocHighlightRules = function() {
         literal: "support.function",
         optionalTitle: "constant.numeric",
         escape: "constant.language.escape",
-        link: "markup.underline.list"
-    };
+        link: "markup.underline.list",
+    }
 
     for (var state in this.$rules) {
-        var stateRules = this.$rules[state];
+        var stateRules = this.$rules[state]
         for (var i = stateRules.length; i--; ) {
-            var rule = stateRules[i];
+            var rule = stateRules[i]
             if (rule.include || typeof rule == "string") {
-                var args = [i, 1].concat(this.$rules[rule.include || rule]);
+                var args = [i, 1].concat(this.$rules[rule.include || rule])
                 if (rule.noEscape) {
                     args = args.filter(function(x) {
-                        return !x.next;
-                    });
+                        return !x.next
+                    })
                 }
-                stateRules.splice.apply(stateRules, args);
+                stateRules.splice.apply(stateRules, args)
             } else if (rule.token in tokenMap) {
-                rule.token = tokenMap[rule.token];
+                rule.token = tokenMap[rule.token]
             }
         }
     }
-};
-oop.inherits(AsciidocHighlightRules, TextHighlightRules);
+}
+oop.inherits(AsciidocHighlightRules, TextHighlightRules)
 
-exports.AsciidocHighlightRules = AsciidocHighlightRules;
-});
+exports.AsciidocHighlightRules = AsciidocHighlightRules
+})
 
 define("ace/mode/folding/asciidoc",["require","exports","module","ace/lib/oop","ace/mode/folding/fold_mode","ace/range"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../../lib/oop");
-var BaseFoldMode = require("./fold_mode").FoldMode;
-var Range = require("../../range").Range;
+var oop = require("../../lib/oop")
+var BaseFoldMode = require("./fold_mode").FoldMode
+var Range = require("../../range").Range
 
-var FoldMode = exports.FoldMode = function() {};
+var FoldMode = exports.FoldMode = function() {}
 oop.inherits(FoldMode, BaseFoldMode);
 
 (function() {
-    this.foldingStartMarker = /^(?:\|={10,}|[\.\/=\-~^+]{4,}\s*$|={1,5} )/;
-    this.singleLineHeadingRe = /^={1,5}(?=\s+\S)/;
+    this.foldingStartMarker = /^(?:\|={10,}|[\.\/=\-~^+]{4,}\s*$|={1,5} )/
+    this.singleLineHeadingRe = /^={1,5}(?=\s+\S)/
 
     this.getFoldWidget = function(session, foldStyle, row) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
         if (!this.foldingStartMarker.test(line))
-            return "";
+            return ""
 
         if (line[0] == "=") {
             if (this.singleLineHeadingRe.test(line))
-                return "start";
+                return "start"
             if (session.getLine(row - 1).length != session.getLine(row).length)
-                return "";
-            return "start";
+                return ""
+            return "start"
         }
         if (session.bgTokenizer.getState(row) == "dissallowDelimitedBlock")
-            return "end";
-        return "start";
-    };
+            return "end"
+        return "start"
+    }
 
     this.getFoldWidgetRange = function(session, foldStyle, row) {
-        var line = session.getLine(row);
-        var startColumn = line.length;
-        var maxRow = session.getLength();
-        var startRow = row;
-        var endRow = row;
+        var line = session.getLine(row)
+        var startColumn = line.length
+        var maxRow = session.getLength()
+        var startRow = row
+        var endRow = row
         if (!line.match(this.foldingStartMarker))
-            return;
+            return
 
-        var token;
+        var token
         function getTokenType(row) {
-            token = session.getTokens(row)[0];
-            return token && token.type;
+            token = session.getTokens(row)[0]
+            return token && token.type
         }
 
-        var levels = ["=","-","~","^","+"];
-        var heading = "markup.heading";
-        var singleLineHeadingRe = this.singleLineHeadingRe;
+        var levels = ["=","-","~","^","+"]
+        var heading = "markup.heading"
+        var singleLineHeadingRe = this.singleLineHeadingRe
         function getLevel() {
-            var match = token.value.match(singleLineHeadingRe);
+            var match = token.value.match(singleLineHeadingRe)
             if (match)
-                return match[0].length;
-            var level = levels.indexOf(token.value[0]) + 1;
+                return match[0].length
+            var level = levels.indexOf(token.value[0]) + 1
             if (level == 1) {
                 if (session.getLine(row - 1).length != session.getLine(row).length)
-                    return Infinity;
+                    return Infinity
             }
-            return level;
+            return level
         }
 
         if (getTokenType(row) == heading) {
-            var startHeadingLevel = getLevel();
+            var startHeadingLevel = getLevel()
             while (++row < maxRow) {
                 if (getTokenType(row) != heading)
-                    continue;
-                var level = getLevel();
+                    continue
+                var level = getLevel()
                 if (level <= startHeadingLevel)
-                    break;
+                    break
             }
 
-            var isSingleLineHeading = token && token.value.match(this.singleLineHeadingRe);
-            endRow = isSingleLineHeading ? row - 1 : row - 2;
+            var isSingleLineHeading = token && token.value.match(this.singleLineHeadingRe)
+            endRow = isSingleLineHeading ? row - 1 : row - 2
 
             if (endRow > startRow) {
                 while (endRow > startRow && (!getTokenType(endRow) || token.value[0] == "["))
-                    endRow--;
+                    endRow--
             }
 
             if (endRow > startRow) {
-                var endColumn = session.getLine(endRow).length;
-                return new Range(startRow, startColumn, endRow, endColumn);
+                var endColumn = session.getLine(endRow).length
+                return new Range(startRow, startColumn, endRow, endColumn)
             }
         } else {
-            var state = session.bgTokenizer.getState(row);
+            var state = session.bgTokenizer.getState(row)
             if (state == "dissallowDelimitedBlock") {
                 while (row -- > 0) {
                     if (session.bgTokenizer.getState(row).lastIndexOf("Block") == -1)
-                        break;
+                        break
                 }
-                endRow = row + 1;
+                endRow = row + 1
                 if (endRow < startRow) {
-                    var endColumn = session.getLine(row).length;
-                    return new Range(endRow, 5, startRow, startColumn - 5);
+                    var endColumn = session.getLine(row).length
+                    return new Range(endRow, 5, startRow, startColumn - 5)
                 }
             } else {
                 while (++row < maxRow) {
                     if (session.bgTokenizer.getState(row) == "dissallowDelimitedBlock")
-                        break;
+                        break
                 }
-                endRow = row;
+                endRow = row
                 if (endRow > startRow) {
-                    var endColumn = session.getLine(row).length;
-                    return new Range(startRow, 5, endRow, endColumn - 5);
+                    var endColumn = session.getLine(row).length
+                    return new Range(startRow, 5, endRow, endColumn - 5)
                 }
             }
         }
-    };
+    }
 
-}).call(FoldMode.prototype);
+}).call(FoldMode.prototype)
 
-});
+})
 
 define("ace/mode/asciidoc",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/asciidoc_highlight_rules","ace/mode/folding/asciidoc"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var AsciidocHighlightRules = require("./asciidoc_highlight_rules").AsciidocHighlightRules;
-var AsciidocFoldMode = require("./folding/asciidoc").FoldMode;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var AsciidocHighlightRules = require("./asciidoc_highlight_rules").AsciidocHighlightRules
+var AsciidocFoldMode = require("./folding/asciidoc").FoldMode
 
 var Mode = function() {
-    this.HighlightRules = AsciidocHighlightRules;
+    this.HighlightRules = AsciidocHighlightRules
     
-    this.foldingRules = new AsciidocFoldMode();    
-};
+    this.foldingRules = new AsciidocFoldMode()    
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
-    this.type = "text";
+    this.type = "text"
     this.getNextLineIndent = function(state, line, tab) {
         if (state == "listblock") {
-            var match = /^((?:.+)?)([-+*][ ]+)/.exec(line);
+            var match = /^((?:.+)?)([-+*][ ]+)/.exec(line)
             if (match) {
-                return new Array(match[1].length + 1).join(" ") + match[2];
+                return new Array(match[1].length + 1).join(" ") + match[2]
             } else {
-                return "";
+                return ""
             }
         } else {
-            return this.$getIndent(line);
+            return this.$getIndent(line)
         }
-    };
-    this.$id = "ace/mode/asciidoc";
-}).call(Mode.prototype);
+    }
+    this.$id = "ace/mode/asciidoc"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     window.require(["ace/mode/asciidoc"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

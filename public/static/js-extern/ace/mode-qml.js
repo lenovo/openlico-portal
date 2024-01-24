@@ -1,8 +1,8 @@
 ace.define("ace/mode/qml_highlight_rules",[], function(require, exports, module) {
-    "use strict";
+    "use strict"
 
-    var oop = require("../lib/oop");
-    var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+    var oop = require("../lib/oop")
+    var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
     var QmlHighlightRules = function() {
         var keywordMapper = this.createKeywordMapper({
@@ -137,245 +137,245 @@ ace.define("ace/mode/qml_highlight_rules",[], function(require, exports, module)
                 "null|Infinity|NaN|undefined",
             "support.function":
                 "print|console\\.log",
-            "constant.language.boolean": "true|false"
-        }, "identifier");
+            "constant.language.boolean": "true|false",
+        }, "identifier")
         this.$rules = {
             "start" : [
                 {
                     token : "string", // single line
                     regex : '"',
-                    next  : "string"
+                    next  : "string",
                 }, {
                     token : "constant.numeric", // hex
-                    regex : "0[xX][0-9a-fA-F]+\\b"
+                    regex : "0[xX][0-9a-fA-F]+\\b",
                 }, {
                     token : "constant.numeric", // float
-                    regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b"
+                    regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b",
                 }, {
                     token : "constant.language.boolean",
-                    regex : "(?:true|false)\\b"
+                    regex : "(?:true|false)\\b",
                 }, {
                     token : "text",
-                    regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']"
+                    regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']",
                 }, {
                     token : "comment",
-                    regex : "\\/\\/.*$"
+                    regex : "\\/\\/.*$",
                 }, {
                     token : "comment.start",
                     regex : "\\/\\*",
-                    next  : "comment"
+                    next  : "comment",
                 }, {
                     token : "paren.lparen",
-                    regex : "[[({]"
+                    regex : "[[({]",
                 }, {
                     token : "paren.rparen",
-                    regex : "[\\])}]"
+                    regex : "[\\])}]",
                 }, {
                     token : "text",
-                    regex : "\\s+"
+                    regex : "\\s+",
                 }, {
                     token : keywordMapper,
-                    regex : "\\b\\w+\\b"
-                }
+                    regex : "\\b\\w+\\b",
+                },
             ],
             "string" : [
                 {
                     token : "constant.language.escape",
-                    regex : /\\(?:x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|["\\\/bfnrt])/
+                    regex : /\\(?:x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|["\\\/bfnrt])/,
                 }, {
                     token : "string",
                     regex : '"|$',
-                    next  : "start"
+                    next  : "start",
                 }, {
-                    defaultToken : "string"
-                }
+                    defaultToken : "string",
+                },
             ],
             "comment" : [
                 {
                     token : "comment.end",
                     regex : "\\*\\/",
-                    next  : "start"
+                    next  : "start",
                 }, {
-                    defaultToken: "comment"
-                }
-            ]
-        };
+                    defaultToken: "comment",
+                },
+            ],
+        }
 
-    };
+    }
 
-    oop.inherits(QmlHighlightRules, TextHighlightRules);
+    oop.inherits(QmlHighlightRules, TextHighlightRules)
 
-    exports.QmlHighlightRules = QmlHighlightRules;
-    });
+    exports.QmlHighlightRules = QmlHighlightRules
+    })
 
 ace.define("ace/mode/folding/cstyle",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../../lib/oop");
-var Range = require("../../range").Range;
-var BaseFoldMode = require("./fold_mode").FoldMode;
+var oop = require("../../lib/oop")
+var Range = require("../../range").Range
+var BaseFoldMode = require("./fold_mode").FoldMode
 
 var FoldMode = exports.FoldMode = function(commentRegex) {
     if (commentRegex) {
         this.foldingStartMarker = new RegExp(
-            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start)
-        );
+            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start),
+        )
         this.foldingStopMarker = new RegExp(
-            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end)
-        );
+            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end),
+        )
     }
-};
+}
 oop.inherits(FoldMode, BaseFoldMode);
 
 (function() {
     
-    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/;
-    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/;
-    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/;
-    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/;
-    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/;
-    this._getFoldWidgetBase = this.getFoldWidget;
+    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/
+    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/
+    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/
+    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/
+    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/
+    this._getFoldWidgetBase = this.getFoldWidget
     this.getFoldWidget = function(session, foldStyle, row) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
     
         if (this.singleLineBlockCommentRe.test(line)) {
             if (!this.startRegionRe.test(line) && !this.tripleStarBlockCommentRe.test(line))
-                return "";
+                return ""
         }
     
-        var fw = this._getFoldWidgetBase(session, foldStyle, row);
+        var fw = this._getFoldWidgetBase(session, foldStyle, row)
     
         if (!fw && this.startRegionRe.test(line))
-            return "start"; // lineCommentRegionStart
+            return "start" // lineCommentRegionStart
     
-        return fw;
-    };
+        return fw
+    }
 
     this.getFoldWidgetRange = function(session, foldStyle, row, forceMultiline) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
         
         if (this.startRegionRe.test(line))
-            return this.getCommentRegionBlock(session, line, row);
+            return this.getCommentRegionBlock(session, line, row)
         
-        var match = line.match(this.foldingStartMarker);
+        var match = line.match(this.foldingStartMarker)
         if (match) {
-            var i = match.index;
+            var i = match.index
 
             if (match[1])
-                return this.openingBracketBlock(session, match[1], row, i);
+                return this.openingBracketBlock(session, match[1], row, i)
                 
-            var range = session.getCommentFoldRange(row, i + match[0].length, 1);
+            var range = session.getCommentFoldRange(row, i + match[0].length, 1)
             
             if (range && !range.isMultiLine()) {
                 if (forceMultiline) {
-                    range = this.getSectionRange(session, row);
+                    range = this.getSectionRange(session, row)
                 } else if (foldStyle != "all")
-                    range = null;
+                    range = null
             }
             
-            return range;
+            return range
         }
 
         if (foldStyle === "markbegin")
-            return;
+            return
 
-        var match = line.match(this.foldingStopMarker);
+        var match = line.match(this.foldingStopMarker)
         if (match) {
-            var i = match.index + match[0].length;
+            var i = match.index + match[0].length
 
             if (match[1])
-                return this.closingBracketBlock(session, match[1], row, i);
+                return this.closingBracketBlock(session, match[1], row, i)
 
-            return session.getCommentFoldRange(row, i, -1);
+            return session.getCommentFoldRange(row, i, -1)
         }
-    };
+    }
     
     this.getSectionRange = function(session, row) {
-        var line = session.getLine(row);
-        var startIndent = line.search(/\S/);
-        var startRow = row;
-        var startColumn = line.length;
-        row = row + 1;
-        var endRow = row;
-        var maxRow = session.getLength();
+        var line = session.getLine(row)
+        var startIndent = line.search(/\S/)
+        var startRow = row
+        var startColumn = line.length
+        row = row + 1
+        var endRow = row
+        var maxRow = session.getLength()
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var indent = line.search(/\S/);
+            line = session.getLine(row)
+            var indent = line.search(/\S/)
             if (indent === -1)
-                continue;
+                continue
             if  (startIndent > indent)
-                break;
-            var subRange = this.getFoldWidgetRange(session, "all", row);
+                break
+            var subRange = this.getFoldWidgetRange(session, "all", row)
             
             if (subRange) {
                 if (subRange.start.row <= startRow) {
-                    break;
+                    break
                 } else if (subRange.isMultiLine()) {
-                    row = subRange.end.row;
+                    row = subRange.end.row
                 } else if (startIndent == indent) {
-                    break;
+                    break
                 }
             }
-            endRow = row;
+            endRow = row
         }
         
-        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length);
-    };
+        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length)
+    }
     this.getCommentRegionBlock = function(session, line, row) {
-        var startColumn = line.search(/\s*$/);
-        var maxRow = session.getLength();
-        var startRow = row;
+        var startColumn = line.search(/\s*$/)
+        var maxRow = session.getLength()
+        var startRow = row
         
-        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/;
-        var depth = 1;
+        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/
+        var depth = 1
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var m = re.exec(line);
-            if (!m) continue;
-            if (m[1]) depth--;
-            else depth++;
+            line = session.getLine(row)
+            var m = re.exec(line)
+            if (!m) continue
+            if (m[1]) depth--
+            else depth++
 
-            if (!depth) break;
+            if (!depth) break
         }
 
-        var endRow = row;
+        var endRow = row
         if (endRow > startRow) {
-            return new Range(startRow, startColumn, endRow, line.length);
+            return new Range(startRow, startColumn, endRow, line.length)
         }
-    };
+    }
 
-}).call(FoldMode.prototype);
+}).call(FoldMode.prototype)
 
-});
+})
 
 ace.define("ace/mode/qml",[], function(require, exports, module) {
-    "use strict";
+    "use strict"
 
-    var oop = require("../lib/oop");
-    var TextMode = require("./text").Mode;
-    var QmlHighlightRules = require("./qml_highlight_rules").QmlHighlightRules;
-    var FoldMode = require("./folding/cstyle").FoldMode;
+    var oop = require("../lib/oop")
+    var TextMode = require("./text").Mode
+    var QmlHighlightRules = require("./qml_highlight_rules").QmlHighlightRules
+    var FoldMode = require("./folding/cstyle").FoldMode
 
     var Mode = function() {
-        this.HighlightRules = QmlHighlightRules;
-        this.foldingRules = new FoldMode();
-        this.$behaviour = this.$defaultBehaviour;
-    };
+        this.HighlightRules = QmlHighlightRules
+        this.foldingRules = new FoldMode()
+        this.$behaviour = this.$defaultBehaviour
+    }
     oop.inherits(Mode, TextMode);
 
     (function() {
-        this.lineCommentStart = "//";
-        this.blockComment = {start: "/*", end: "*/"};
-        this.$quotes = { '"': '"', "'": "'" };
-        this.$id = "ace/mode/qml";
-    }).call(Mode.prototype);
+        this.lineCommentStart = "//"
+        this.blockComment = {start: "/*", end: "*/"}
+        this.$quotes = { '"': '"', "'": "'" }
+        this.$id = "ace/mode/qml"
+    }).call(Mode.prototype)
 
-    exports.Mode = Mode;
+    exports.Mode = Mode
     });                (function() {
                     ace.require(["ace/mode/qml"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

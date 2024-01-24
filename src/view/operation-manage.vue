@@ -19,6 +19,7 @@
           <a-cascader
             id="tid_opertion-module"
             v-model:value="ModuleSelectedOptions"
+            :title="$t('Multi.User.PleaseSelect')"
             :placeholder="$t('Multi.User.PleaseSelect')"
             expand-trigger="hover"
             :clearable="true"
@@ -123,25 +124,7 @@ export default {
       filterType: '',
       arch: AccessService.getSchedulerArch(),
       ModuleSelectedOptions: undefined, // Set to undefined to display placeholder
-      dataFilter: {
-        userName: {
-          value_type: 'username',
-          values: [],
-          type: 'in',
-        },
-        module: {
-          values: [],
-          type: 'in',
-        },
-        action: {
-          values: [],
-          type: 'in',
-        },
-        actionTime: {
-          values: [new Date(0), new Date()],
-          type: 'range',
-        },
-      },
+      dataFilter: {},
       dataFilterTemp: {},
       ModuleOptions: [],
       pickerSearchDate: [],
@@ -156,19 +139,20 @@ export default {
   },
   methods: {
     onScreenModuleChenge(val) {
-      if (val.length > 0) {
-        this.dataFilter.module.values = [val[0]]
-        this.dataFilter.action.values = [val[1].split('-')[1]]
-      } else {
-        this.dataFilter.module.values = []
-        this.dataFilter.action.values = []
+      this.dataFilter.module = {
+        values: val ? [val[0]] : [],
+        type: 'in',
+      }
+      this.dataFilter.action = {
+        values: val ? [val[1].split('-')[1]] : [],
+        type: 'in',
       }
     },
     onDateChange(dateRange) {
-      const newDate = []
-      newDate[0] = dateRange[0] ? dateRange[0] : new Date(0)
-      newDate[1] = dateRange[1] ? dateRange[1] : new Date()
-      this.dataFilter.actionTime.values = newDate
+      this.dataFilter.actionTime = {
+        values: dateRange,
+        type: 'range',
+      }
     },
     analyzeModule(modules, type = false) {
       const options = []
@@ -191,11 +175,25 @@ export default {
       return options
     },
     userSelectChange(val) {
-      this.dataFilter.userName.value_type = val.value_type
-      this.dataFilter.userName.values = val.values
+      this.dataFilter.userName = {
+        value_type: val.value_type,
+        values: val.values,
+        type: 'in',
+      }
     },
     Query() {
-      this.dataFilterTemp = JSON.parse(JSON.stringify(this.dataFilter))
+      const dataFilter = { ...this.dataFilter }
+      if (dataFilter.actionTime) {
+        const values = dataFilter.actionTime.values.map((e, i) => {
+          if (!e) {
+            return i === 0 ? new Date(0) : new Date()
+          } else {
+            return e
+          }
+        })
+        dataFilter.actionTime = { values, type: 'range' }
+      }
+      this.dataFilterTemp = JSON.parse(JSON.stringify(dataFilter))
     },
   },
 }

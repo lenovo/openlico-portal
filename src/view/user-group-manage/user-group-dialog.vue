@@ -7,7 +7,7 @@
     :form-rules="userGroupRules"
     :success-message-formatter="successMessageFormatter">
     <a-form-item :label="$t('UserGroup.Name')" name="name">
-      <a-input id="tid_user-group-name" v-model:value="userGroupForm.name" :disabled="mode == 'delete'" />
+      <a-input v-model:value="userGroupForm.name" :disabled="mode == 'delete'" />
     </a-form-item>
   </composite-form-dialog>
 </template>

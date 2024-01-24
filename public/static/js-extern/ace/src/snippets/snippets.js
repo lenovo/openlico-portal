@@ -1,5 +1,5 @@
 define("ace/snippets/snippets",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "# snippets for making snippets :)\n\
 snippet snip\n\
@@ -10,14 +10,14 @@ snippet msnip\n\
 		${3}\n\
 snippet v\n\
 	{VISUAL}\n\
-";
-exports.scope = "snippets";
+"
+exports.scope = "snippets"
 
 });                (function() {
                     window.require(["ace/snippets/snippets"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

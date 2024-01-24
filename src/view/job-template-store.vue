@@ -11,6 +11,7 @@
             class="job-template-store-filter-select"
             size="large"
             popup-class-name="job-template-store-filter-select-menu"
+            :title="filter"
             @change="onCategoryChange">
             <template v-for="(item, index) in filterOptions">
               <a-select-option

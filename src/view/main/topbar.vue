@@ -1,5 +1,5 @@
 <template>
-  <nav class="main-header">
+  <div class="main-header">
     <div class="main-header-left">
       <span id="Shift_Menu" style="cursor: pointer" @click="shiftMenuSize">
         <menu-unfold-outlined v-if="collapsed" />
@@ -19,7 +19,7 @@
       <alertstatus v-if="isAlert()" id="Alert_Status" />
       <userstatus id="My_Status" :user-name="userName" :user-id="userId" :user-group="userGroup" @on-change="getUser" />
     </div>
-  </nav>
+  </div>
 </template>
 <script>
 import UserService from '@/service/user'

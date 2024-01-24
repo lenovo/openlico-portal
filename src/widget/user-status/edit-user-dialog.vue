@@ -9,13 +9,13 @@
     :success-message-formatter="successMessageFormatter"
     :buttons-text="[$t('Action.Update'), $t('Action.Cancel')]">
     <a-form-item :label="$t('User.FirstName')" name="firstName">
-      <a-input id="tid_user-firstname" v-model:value="userForm.firstName" />
+      <a-input v-model:value="userForm.firstName" />
     </a-form-item>
     <a-form-item :label="$t('User.LastName')" name="lastName">
-      <a-input id="tid_user-lastname" v-model:value="userForm.lastName" />
+      <a-input v-model:value="userForm.lastName" />
     </a-form-item>
     <a-form-item :label="$t('User.Email')" name="email">
-      <a-input id="tid_user-email" v-model:value="userForm.email" />
+      <a-input v-model:value="userForm.email" />
     </a-form-item>
   </composite-form-dialog>
 </template>

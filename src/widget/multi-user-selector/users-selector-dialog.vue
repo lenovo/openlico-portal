@@ -23,7 +23,7 @@
       <a-select
         v-model:value="usersForm.usergroup"
         :placeholder="$t(allable ? 'Multi.User.All' : 'Multi.User.PleaseSelect')"
-        :filter-option="filterOption"
+        :option-filter-prop="'value'"
         mode="multiple"
         show-arrow
         @change="selectUserByUserGroup">
@@ -36,11 +36,11 @@
       <a-select
         v-model:value="usersForm.billinggroup"
         :placeholder="$t(allable ? 'Multi.User.All' : 'Multi.User.PleaseSelect')"
-        :filter-option="filterOption"
+        :option-filter-prop="'title'"
         mode="multiple"
         show-arrow
         @change="selectUserByBillGroup">
-        <a-select-option v-for="item in usersData.billinggroup" :key="item.id" :value="item.id">
+        <a-select-option v-for="item in usersData.billinggroup" :key="item.id" :value="item.id" :title="item.name">
           {{ item.name }}
         </a-select-option>
       </a-select>
@@ -181,9 +181,6 @@ export default {
         )
         this.usersForm.billinggroup = this.usersForm.billinggroup.slice(0, this.maxValue.billinggroup)
       }
-    },
-    filterOption(input, option) {
-      return option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
     },
   },
 }

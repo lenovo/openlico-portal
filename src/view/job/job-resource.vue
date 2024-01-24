@@ -37,10 +37,7 @@
             <down-outlined />
           </template>
           <div>
-            <span
-              v-for="(item, index) in filter.displayResources"
-              :key="item"
-              :class="'resource-selected' + (index + 1)">
+            <span v-for="(item, index) in displayResources" :key="item" :class="'resource-selected' + (index + 1)">
               <span class="icon"></span>
               <span class="text">{{ getLabel(item) }}</span>
             </span>
@@ -55,102 +52,57 @@
             {{ item.hostname }}
             <span v-if="'gpuIndex' in item" class="gpu-index">{{ '#' + item.gpuIndex }}</span>
           </p>
-          <a-popover
-            v-if="filter.displayResources[0] in item"
-            overlay-class-name="hover-chart"
-            destroy-tooltip-on-hide
-            :align="{ points: ['tl', 'tr'] }"
-            @open-change="popoverVisibleChange($event, item, filter.displayResources[0])">
-            <template #content>
-              <a-spin :spinning="popoverLoading">
-                <div v-if="dataType == 'cpu'">
-                  <p class="chart-title">
-                    {{ $t('Monitor.Resource.Title.' + filter.displayResources[0]) }}
-                  </p>
-                  <p class="current-value">
-                    <span><i style="background: #77c6fe"></i>{{ $t('Monitor.Resource.Title.Current.Job') }}</span>
-                    <span class="percentage">{{ formatNumber(current[0]) }}</span>
-                  </p>
-                  <p class="other-value">
-                    <span><i style="background: #0070b1"></i>{{ $t('Monitor.Resource.Title.Others') }}</span>
-                    <span class="percentage">{{ formatNumber(current[1]) }}</span>
-                  </p>
+          <template v-for="progress in resourcesOptions[dataType]" :key="progress.value">
+            <a-popover
+              v-if="displayResources.includes(progress.value)"
+              overlay-class-name="hover-chart"
+              destroy-tooltip-on-hide
+              :align="{ points: ['tl', 'tr'] }"
+              @open-change="popoverVisibleChange($event, item, progress.value)">
+              <template #content>
+                <a-spin :spinning="popoverLoading">
+                  <div v-if="dataType == 'cpu'">
+                    <p class="chart-title">
+                      {{ $t('Monitor.Resource.Title.' + progress.value) }}
+                    </p>
+                    <p class="current-value">
+                      <span
+                        ><i :style="{ background: progress.historyColor[0] }"></i
+                        >{{ $t('Monitor.Resource.Title.Current.Job') }}</span
+                      >
+                      <span class="percentage">{{ formatNumber(current[0]) }}</span>
+                    </p>
+                    <p class="other-value">
+                      <span
+                        ><i :style="{ background: progress.historyColor[1] }"></i
+                        >{{ $t('Monitor.Resource.Title.Others') }}</span
+                      >
+                      <span class="percentage">{{ formatNumber(current[1]) }}</span>
+                    </p>
+                  </div>
+                  <div v-else>
+                    <p class="current-value">
+                      <span>{{ $t('Monitor.Resource.Title.' + progress.value) }}</span>
+                      <span class="percentage">{{ formatNumber(item[progress.value]) }}</span>
+                    </p>
+                    <p style="color: #999">{{ item.type }}</p>
+                  </div>
                   <JobResourceChart
                     class="tendency-chart"
-                    :color="['#77c6fe', '#0070b1']"
+                    :color="progress.historyColor"
                     :init-data="hoverChartData"
-                    :type="filter.displayResources[0]" />
-                </div>
-                <div v-else>
-                  <p class="current-value">
-                    <span>{{ $t('Monitor.Resource.Title.' + filter.displayResources[0]) }}</span>
-                    <span class="percentage">{{ formatNumber(item[filter.displayResources[0]]) }}</span>
-                  </p>
-                  <p style="color: #999">{{ item.type }}</p>
-                  <JobResourceChart
-                    color="rgb(68,159,255)"
-                    class="tendency-chart"
-                    :init-data="hoverChartData"
-                    :type="filter.displayResources[0]" />
-                </div>
-              </a-spin>
-            </template>
-            <a-progress
-              class="square-progress"
-              stroke-linecap="square"
-              :show-info="false"
-              stroke-color="rgb(68,159,255)"
-              :percent="formatNumber(item[filter.displayResources[0]], null)" />
-          </a-popover>
-          <div v-else class="placeholder-bar"></div>
-          <a-popover
-            v-if="filter.displayResources[1] in item"
-            overlay-class-name="hover-chart"
-            destroy-tooltip-on-hide
-            :align="{ points: ['tl', 'tr'] }"
-            @open-change="popoverVisibleChange($event, item, filter.displayResources[1])">
-            <template #content>
-              <a-spin :spinning="popoverLoading">
-                <div v-if="dataType == 'cpu'">
-                  <p class="chart-title">
-                    {{ $t('Monitor.Resource.Title.' + filter.displayResources[1]) }}
-                  </p>
-                  <p class="current-value">
-                    <span><i style="background: #00d1bb"></i>{{ $t('Monitor.Resource.Title.Current.Job') }}</span>
-                    <span class="percentage">{{ formatNumber(current[0]) }}</span>
-                  </p>
-                  <p class="other-value">
-                    <span><i style="background: #00856f"></i>{{ $t('Monitor.Resource.Title.Others') }}</span>
-                    <span class="percentage">{{ formatNumber(current[1]) }}</span>
-                  </p>
-                  <JobResourceChart
-                    class="tendency-chart"
-                    :color="['#00d1bb', '#00856f']"
-                    :init-data="hoverChartData"
-                    :type="filter.displayResources[1]" />
-                </div>
-                <div v-else>
-                  <p class="current-value">
-                    <span>{{ $t('Monitor.Resource.Title.' + filter.displayResources[1]) }}</span>
-                    <span class="percentage">{{ formatNumber(item[filter.displayResources[1]]) }}</span>
-                  </p>
-                  <p style="color: #999">{{ item.type }}</p>
-                  <JobResourceChart
-                    color="rgb(26,188,156)"
-                    class="tendency-chart"
-                    :init-data="hoverChartData"
-                    :type="filter.displayResources[1]" />
-                </div>
-              </a-spin>
-            </template>
-            <a-progress
-              class="square-progress"
-              stroke-linecap="square"
-              :show-info="false"
-              stroke-color="rgb(26,188,156)"
-              :percent="formatNumber(item[filter.displayResources[1]], null)" />
-          </a-popover>
-          <div v-else class="placeholder-bar"></div>
+                    :type="progress.value" />
+                </a-spin>
+              </template>
+              <a-progress
+                class="square-progress"
+                stroke-linecap="square"
+                :show-info="false"
+                :stroke-color="progress.progressColor"
+                :percent="formatNumber(item[progress.value], null)" />
+            </a-popover>
+            <div v-else class="placeholder-bar"></div>
+          </template>
         </div>
       </div>
       <a-pagination :page-size="offset" class="pagination" size="small" :total="total" @change="pageChange" />
@@ -178,26 +130,32 @@ export default {
           {
             label: this.$t('Monitor.Cluster.CPU'),
             value: 'cpu',
+            progressColor: 'rgb(68,159,255)',
+            historyColor: ['#77c6fe', '#0070b1'],
           },
           {
             label: this.$t('Monitor.Cluster.Memory'),
             value: 'memory',
+            progressColor: 'rgb(26,188,156)',
+            historyColor: ['#00d1bb', '#00856f'],
           },
         ],
         gpu: [
           {
             label: this.$t('Monitor.Resource.GPU'),
             value: 'gpu',
+            progressColor: 'rgb(68,159,255)',
+            historyColor: 'rgb(68,159,255)',
           },
           {
             label: this.$t('Monitor.Resource.GPU.Memory'),
             value: 'gmemory',
+            progressColor: 'rgb(26,188,156)',
+            historyColor: 'rgb(26,188,156)',
           },
         ],
       },
-      filter: {
-        displayResources: ['cpu', 'memory'],
-      },
+      displayResources: ['cpu', 'memory'],
       data: [],
       popoverLoading: false,
       loadTimer: null,
@@ -224,9 +182,9 @@ export default {
     resource_select_visible(val, oldVal) {
       if (!val) {
         if (this.selectedResource.length) {
-          this.filter.displayResources = [...this.selectedResource]
+          this.displayResources = [...this.selectedResource]
         } else {
-          this.selectedResource = [...this.filter.displayResources]
+          this.selectedResource = [...this.displayResources]
         }
       }
     },
@@ -253,11 +211,11 @@ export default {
       )
     },
     selectResource() {
-      this.filter.displayResources = [...this.selectedResource]
+      this.displayResources = [...this.selectedResource]
       this.resource_select_visible = false
     },
     cancelSelectResource() {
-      this.selectedResource = [...this.filter.displayResources]
+      this.selectedResource = [...this.displayResources]
       this.resource_select_visible = false
     },
     getLabel(val) {
@@ -272,10 +230,10 @@ export default {
     setOptions(val) {
       if (val === 'gpu') {
         this.selectedResource = ['gpu', 'gmemory']
-        this.filter.displayResources = ['gpu', 'gmemory']
+        this.displayResources = ['gpu', 'gmemory']
       } else {
         this.selectedResource = ['cpu', 'memory']
-        this.filter.displayResources = ['cpu', 'memory']
+        this.displayResources = ['cpu', 'memory']
       }
       this.getData()
     },

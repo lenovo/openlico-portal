@@ -1,7 +1,7 @@
 ace.define("ace/theme/github",[], function(require, exports, module) {
 
-exports.isDark = false;
-exports.cssClass = "ace-github";
+exports.isDark = false
+exports.cssClass = "ace-github"
 exports.cssText = "\
 .ace-github .ace_gutter {\
 background: #e8e8e8;\
@@ -96,15 +96,15 @@ background: #e8e8e8;\
 }\
 .ace-github .ace_indent-guide {\
 background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==\") right repeat-y;\
-}";
+}"
 
-    var dom = require("../lib/dom");
-    dom.importCssString(exports.cssText, exports.cssClass);
+    var dom = require("../lib/dom")
+    dom.importCssString(exports.cssText, exports.cssClass)
 });                (function() {
                     ace.require(["ace/theme/github"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

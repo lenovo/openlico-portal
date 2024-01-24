@@ -1,6 +1,6 @@
 ace.define("ace/ext/menu_tools/overlay_page",[], function(require, exports, module) {
-'use strict';
-var dom = require("../../lib/dom");
+'use strict'
+var dom = require("../../lib/dom")
 var cssText = "#ace_settingsmenu, #kbshortcutmenu {\
 background-color: #F7F7F7;\
 color: black;\
@@ -60,134 +60,134 @@ margin: 0px;\
 }\
 .ace_optionsMenuEntry button:hover{\
 background: #f0f0f0;\
-}";
-dom.importCssString(cssText);
+}"
+dom.importCssString(cssText)
 
 module.exports.overlayPage = function overlayPage(editor, contentElement, callback) {
-    var closer = document.createElement('div');
-    var ignoreFocusOut = false;
+    var closer = document.createElement('div')
+    var ignoreFocusOut = false
 
     function documentEscListener(e) {
         if (e.keyCode === 27) {
-            close();
+            close()
         }
     }
 
     function close() {
-        if (!closer) return;
-        document.removeEventListener('keydown', documentEscListener);
-        closer.parentNode.removeChild(closer);
+        if (!closer) return
+        document.removeEventListener('keydown', documentEscListener)
+        closer.parentNode.removeChild(closer)
         if (editor) {
-            editor.focus();
+            editor.focus()
         }
-        closer = null;
-        callback && callback();
+        closer = null
+        callback && callback()
     }
     function setIgnoreFocusOut(ignore) {
-        ignoreFocusOut = ignore;
+        ignoreFocusOut = ignore
         if (ignore) {
-            closer.style.pointerEvents = "none";
-            contentElement.style.pointerEvents = "auto";
+            closer.style.pointerEvents = "none"
+            contentElement.style.pointerEvents = "auto"
         }
     }
 
     closer.style.cssText = 'margin: 0; padding: 0; ' +
         'position: fixed; top:0; bottom:0; left:0; right:0;' +
         'z-index: 9990; ' +
-        (editor ? 'background-color: rgba(0, 0, 0, 0.3);' : '');
+        (editor ? 'background-color: rgba(0, 0, 0, 0.3);' : '')
     closer.addEventListener('click', function(e) {
         if (!ignoreFocusOut) {
-            close();
+            close()
         }
-    });
-    document.addEventListener('keydown', documentEscListener);
+    })
+    document.addEventListener('keydown', documentEscListener)
 
     contentElement.addEventListener('click', function (e) {
-        e.stopPropagation();
-    });
+        e.stopPropagation()
+    })
 
-    closer.appendChild(contentElement);
-    document.body.appendChild(closer);
+    closer.appendChild(contentElement)
+    document.body.appendChild(closer)
     if (editor) {
-        editor.blur();
+        editor.blur()
     }
     return {
         close: close,
-        setIgnoreFocusOut: setIgnoreFocusOut
-    };
-};
+        setIgnoreFocusOut: setIgnoreFocusOut,
+    }
+}
 
-});
+})
 
 ace.define("ace/ext/menu_tools/get_editor_keyboard_shortcuts",[], function(require, exports, module) {
-"use strict";
-var keys = require("../../lib/keys");
+"use strict"
+var keys = require("../../lib/keys")
 module.exports.getEditorKeybordShortcuts = function(editor) {
-    var KEY_MODS = keys.KEY_MODS;
-    var keybindings = [];
-    var commandMap = {};
+    var KEY_MODS = keys.KEY_MODS
+    var keybindings = []
+    var commandMap = {}
     editor.keyBinding.$handlers.forEach(function(handler) {
-        var ckb = handler.commandKeyBinding;
+        var ckb = handler.commandKeyBinding
         for (var i in ckb) {
-            var key = i.replace(/(^|-)\w/g, function(x) { return x.toUpperCase(); });
-            var commands = ckb[i];
+            var key = i.replace(/(^|-)\w/g, function(x) { return x.toUpperCase() })
+            var commands = ckb[i]
             if (!Array.isArray(commands))
-                commands = [commands];
+                commands = [commands]
             commands.forEach(function(command) {
                 if (typeof command != "string")
-                    command  = command.name;
+                    command  = command.name
                 if (commandMap[command]) {
-                    commandMap[command].key += "|" + key;
+                    commandMap[command].key += "|" + key
                 } else {
-                    commandMap[command] = {key: key, command: command};
-                    keybindings.push(commandMap[command]);
+                    commandMap[command] = {key: key, command: command}
+                    keybindings.push(commandMap[command])
                 }         
-            });
+            })
         }
-    });
-    return keybindings;
-};
+    })
+    return keybindings
+}
 
-});
+})
 
 ace.define("ace/ext/keybinding_menu",[], function(require, exports, module) {
-    "use strict";
-    var Editor = require("../editor").Editor;
+    "use strict"
+    var Editor = require("../editor").Editor
     function showKeyboardShortcuts (editor) {
         if(!document.getElementById('kbshortcutmenu')) {
-            var overlayPage = require('./menu_tools/overlay_page').overlayPage;
-            var getEditorKeybordShortcuts = require('./menu_tools/get_editor_keyboard_shortcuts').getEditorKeybordShortcuts;
-            var kb = getEditorKeybordShortcuts(editor);
-            var el = document.createElement('div');
+            var overlayPage = require('./menu_tools/overlay_page').overlayPage
+            var getEditorKeybordShortcuts = require('./menu_tools/get_editor_keyboard_shortcuts').getEditorKeybordShortcuts
+            var kb = getEditorKeybordShortcuts(editor)
+            var el = document.createElement('div')
             var commands = kb.reduce(function(previous, current) {
                 return previous + '<div class="ace_optionsMenuEntry"><span class="ace_optionsMenuCommand">' 
                     + current.command + '</span> : '
-                    + '<span class="ace_optionsMenuKey">' + current.key + '</span></div>';
-            }, '');
+                    + '<span class="ace_optionsMenuKey">' + current.key + '</span></div>'
+            }, '')
 
-            el.id = 'kbshortcutmenu';
-            el.innerHTML = '<h1>Keyboard Shortcuts</h1>' + commands + '</div>';
-            overlayPage(editor, el);
+            el.id = 'kbshortcutmenu'
+            el.innerHTML = '<h1>Keyboard Shortcuts</h1>' + commands + '</div>'
+            overlayPage(editor, el)
         }
     }
     module.exports.init = function(editor) {
         Editor.prototype.showKeyboardShortcuts = function() {
-            showKeyboardShortcuts(this);
-        };
+            showKeyboardShortcuts(this)
+        }
         editor.commands.addCommands([{
             name: "showKeyboardShortcuts",
             bindKey: {win: "Ctrl-Alt-h", mac: "Command-Alt-h"},
             exec: function(editor, line) {
-                editor.showKeyboardShortcuts();
-            }
-        }]);
-    };
+                editor.showKeyboardShortcuts()
+            },
+        }])
+    }
 
 });                (function() {
                     ace.require(["ace/ext/keybinding_menu"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

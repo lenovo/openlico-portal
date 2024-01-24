@@ -1,6 +1,6 @@
 define("ace/ext/menu_tools/overlay_page",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
-'use strict';
-var dom = require("../../lib/dom");
+'use strict'
+var dom = require("../../lib/dom")
 var cssText = "#ace_settingsmenu, #kbshortcutmenu {\
 background-color: #F7F7F7;\
 color: black;\
@@ -60,101 +60,101 @@ margin: 0px;\
 }\
 .ace_optionsMenuEntry button:hover{\
 background: #f0f0f0;\
-}";
-dom.importCssString(cssText);
+}"
+dom.importCssString(cssText)
 
 module.exports.overlayPage = function overlayPage(editor, contentElement, callback) {
-    var closer = document.createElement('div');
-    var ignoreFocusOut = false;
+    var closer = document.createElement('div')
+    var ignoreFocusOut = false
 
     function documentEscListener(e) {
         if (e.keyCode === 27) {
-            close();
+            close()
         }
     }
 
     function close() {
-        if (!closer) return;
-        document.removeEventListener('keydown', documentEscListener);
-        closer.parentNode.removeChild(closer);
+        if (!closer) return
+        document.removeEventListener('keydown', documentEscListener)
+        closer.parentNode.removeChild(closer)
         if (editor) {
-            editor.focus();
+            editor.focus()
         }
-        closer = null;
-        callback && callback();
+        closer = null
+        callback && callback()
     }
     function setIgnoreFocusOut(ignore) {
-        ignoreFocusOut = ignore;
+        ignoreFocusOut = ignore
         if (ignore) {
-            closer.style.pointerEvents = "none";
-            contentElement.style.pointerEvents = "auto";
+            closer.style.pointerEvents = "none"
+            contentElement.style.pointerEvents = "auto"
         }
     }
 
     closer.style.cssText = 'margin: 0; padding: 0; ' +
         'position: fixed; top:0; bottom:0; left:0; right:0;' +
         'z-index: 9990; ' +
-        (editor ? 'background-color: rgba(0, 0, 0, 0.3);' : '');
+        (editor ? 'background-color: rgba(0, 0, 0, 0.3);' : '')
     closer.addEventListener('click', function(e) {
         if (!ignoreFocusOut) {
-            close();
+            close()
         }
-    });
-    document.addEventListener('keydown', documentEscListener);
+    })
+    document.addEventListener('keydown', documentEscListener)
 
     contentElement.addEventListener('click', function (e) {
-        e.stopPropagation();
-    });
+        e.stopPropagation()
+    })
 
-    closer.appendChild(contentElement);
-    document.body.appendChild(closer);
+    closer.appendChild(contentElement)
+    document.body.appendChild(closer)
     if (editor) {
-        editor.blur();
+        editor.blur()
     }
     return {
         close: close,
-        setIgnoreFocusOut: setIgnoreFocusOut
-    };
-};
+        setIgnoreFocusOut: setIgnoreFocusOut,
+    }
+}
 
-});
+})
 
 define("ace/ext/modelist",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var modes = [];
+var modes = []
 function getModeForPath(path) {
-    var mode = modesByName.text;
-    var fileName = path.split(/[\/\\]/).pop();
+    var mode = modesByName.text
+    var fileName = path.split(/[\/\\]/).pop()
     for (var i = 0; i < modes.length; i++) {
         if (modes[i].supportsFile(fileName)) {
-            mode = modes[i];
-            break;
+            mode = modes[i]
+            break
         }
     }
-    return mode;
+    return mode
 }
 
 var Mode = function(name, caption, extensions) {
-    this.name = name;
-    this.caption = caption;
-    this.mode = "ace/mode/" + name;
-    this.extensions = extensions;
-    var re;
+    this.name = name
+    this.caption = caption
+    this.mode = "ace/mode/" + name
+    this.extensions = extensions
+    var re
     if (/\^/.test(extensions)) {
         re = extensions.replace(/\|(\^)?/g, function(a, b){
-            return "$|" + (b ? "^" : "^.*\\.");
-        }) + "$";
+            return "$|" + (b ? "^" : "^.*\\.")
+        }) + "$"
     } else {
-        re = "^.*\\.(" + extensions + ")$";
+        re = "^.*\\.(" + extensions + ")$"
     }
 
-    this.extRe = new RegExp(re, "gi");
-};
+    this.extRe = new RegExp(re, "gi")
+}
 
 Mode.prototype.supportsFile = function(filename) {
-    return filename.match(this.extRe);
-};
+    return filename.match(this.extRe)
+}
 var supportedModes = {
     ABAP:        ["abap"],
     ABC:         ["abc"],
@@ -319,8 +319,8 @@ var supportedModes = {
     XQuery:      ["xq"],
     YAML:        ["yaml|yml"],
     Zeek:        ["zeek|bro"],
-    Django:      ["html"]
-};
+    Django:      ["html"],
+}
 
 var nameOverrides = {
     ObjectiveC: "Objective-C",
@@ -336,28 +336,28 @@ var nameOverrides = {
     FTL: "FreeMarker",
     PHP_Laravel_blade: "PHP (Blade Template)",
     Perl6: "Perl 6",
-    AutoHotKey: "AutoHotkey / AutoIt"
-};
-var modesByName = {};
+    AutoHotKey: "AutoHotkey / AutoIt",
+}
+var modesByName = {}
 for (var name in supportedModes) {
-    var data = supportedModes[name];
-    var displayName = (nameOverrides[name] || name).replace(/_/g, " ");
-    var filename = name.toLowerCase();
-    var mode = new Mode(filename, displayName, data[0]);
-    modesByName[filename] = mode;
-    modes.push(mode);
+    var data = supportedModes[name]
+    var displayName = (nameOverrides[name] || name).replace(/_/g, " ")
+    var filename = name.toLowerCase()
+    var mode = new Mode(filename, displayName, data[0])
+    modesByName[filename] = mode
+    modes.push(mode)
 }
 
 module.exports = {
     getModeForPath: getModeForPath,
     modes: modes,
-    modesByName: modesByName
-};
+    modesByName: modesByName,
+}
 
-});
+})
 
 define("ace/ext/themelist",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 var themeData = [
     ["Chrome"         ],
@@ -397,47 +397,47 @@ var themeData = [
     ["Tomorrow Night Bright","tomorrow_night_bright"   ,  "dark"],
     ["Tomorrow Night 80s"   ,"tomorrow_night_eighties" ,  "dark"],
     ["Twilight"             ,"twilight"                ,  "dark"],
-    ["Vibrant Ink"          ,"vibrant_ink"             ,  "dark"]
-];
+    ["Vibrant Ink"          ,"vibrant_ink"             ,  "dark"],
+]
 
 
-exports.themesByName = {};
+exports.themesByName = {}
 exports.themes = themeData.map(function(data) {
-    var name = data[1] || data[0].replace(/ /g, "_").toLowerCase();
+    var name = data[1] || data[0].replace(/ /g, "_").toLowerCase()
     var theme = {
         caption: data[0],
         theme: "ace/theme/" + name,
         isDark: data[2] == "dark",
-        name: name
-    };
-    exports.themesByName[name] = theme;
-    return theme;
-});
+        name: name,
+    }
+    exports.themesByName[name] = theme
+    return theme
+})
 
-});
+})
 
 define("ace/ext/options",["require","exports","module","ace/ext/menu_tools/overlay_page","ace/lib/dom","ace/lib/oop","ace/config","ace/lib/event_emitter","ace/ext/modelist","ace/ext/themelist"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-require("./menu_tools/overlay_page");
+require("./menu_tools/overlay_page")
 
-var dom = require("../lib/dom");
-var oop = require("../lib/oop");
-var config = require("../config");
-var EventEmitter = require("../lib/event_emitter").EventEmitter;
-var buildDom = dom.buildDom;
+var dom = require("../lib/dom")
+var oop = require("../lib/oop")
+var config = require("../config")
+var EventEmitter = require("../lib/event_emitter").EventEmitter
+var buildDom = dom.buildDom
 
-var modelist = require("./modelist");
-var themelist = require("./themelist");
+var modelist = require("./modelist")
+var themelist = require("./themelist")
 
-var themes = { Bright: [], Dark: [] };
+var themes = { Bright: [], Dark: [] }
 themelist.themes.forEach(function(x) {
-    themes[x.isDark ? "Dark" : "Bright"].push({ caption: x.caption, value: x.theme });
-});
+    themes[x.isDark ? "Dark" : "Bright"].push({ caption: x.caption, value: x.theme })
+})
 
 var modes = modelist.modes.map(function(x){ 
-    return { caption: x.caption, value: x.mode }; 
-});
+    return { caption: x.caption, value: x.mode } 
+})
 
 
 var optionGroups = {
@@ -445,12 +445,12 @@ var optionGroups = {
         Mode: {
             path: "mode",
             type: "select",
-            items: modes
+            items: modes,
         },
         Theme: {
             path: "theme",
             type: "select",
-            items: themes
+            items: themes,
         },
         "Keybinding": {
             type: "buttonBar",
@@ -460,8 +460,8 @@ var optionGroups = {
                 { caption : "Vim", value : "ace/keyboard/vim" },
                 { caption : "Emacs", value : "ace/keyboard/emacs" },
                 { caption : "Sublime", value : "ace/keyboard/sublime" },
-                { caption : "VSCode", value : "ace/keyboard/vscode" }
-            ]
+                { caption : "VSCode", value : "ace/keyboard/vscode" },
+            ],
         },
         "Font Size": {
             path: "fontSize",
@@ -469,8 +469,8 @@ var optionGroups = {
             defaultValue: 12,
             defaults: [
                 {caption: "12px", value: 12},
-                {caption: "24px", value: 24}
-            ]
+                {caption: "24px", value: 24},
+            ],
         },
         "Soft Wrap": {
             type: "buttonBar",
@@ -479,8 +479,8 @@ var optionGroups = {
                { caption : "Off",  value : "off" },
                { caption : "View", value : "free" },
                { caption : "margin", value : "printMargin" },
-               { caption : "40",   value : "40" }
-            ]
+               { caption : "40",   value : "40" },
+            ],
         },
         "Cursor Style": {
             path: "cursorStyle",
@@ -489,24 +489,24 @@ var optionGroups = {
                { caption : "Slim",   value : "slim" },
                { caption : "Smooth", value : "smooth" },
                { caption : "Smooth And Slim", value : "smooth slim" },
-               { caption : "Wide",   value : "wide" }
-            ]
+               { caption : "Wide",   value : "wide" },
+            ],
         },
         "Folding": {
             path: "foldStyle",
             items: [
                 { caption : "Manual", value : "manual" },
                 { caption : "Mark begin", value : "markbegin" },
-                { caption : "Mark begin and end", value : "markbeginend" }
-            ]
+                { caption : "Mark begin and end", value : "markbeginend" },
+            ],
         },
         "Soft Tabs": [{
-            path: "useSoftTabs"
+            path: "useSoftTabs",
         }, {
             ariaLabel: "Tab Size",
             path: "tabSize",
             type: "number",
-            values: [2, 3, 4, 8, 16]
+            values: [2, 3, 4, 8, 16],
         }],
         "Overscroll": {
             type: "buttonBar",
@@ -514,167 +514,167 @@ var optionGroups = {
             items: [
                { caption : "None",  value : 0 },
                { caption : "Half",   value : 0.5 },
-               { caption : "Full",   value : 1 }
-            ]
-        }
+               { caption : "Full",   value : 1 },
+            ],
+        },
     },
     More: {
         "Atomic soft tabs": {
-            path: "navigateWithinSoftTabs"
+            path: "navigateWithinSoftTabs",
         },
         "Enable Behaviours": {
-            path: "behavioursEnabled"
+            path: "behavioursEnabled",
         },
         "Wrap with quotes": {
-            path: "wrapBehavioursEnabled"
+            path: "wrapBehavioursEnabled",
         },
         "Enable Auto Indent": {
-            path: "enableAutoIndent"
+            path: "enableAutoIndent",
         },
         "Full Line Selection": {
             type: "checkbox",
             values: "text|line",
-            path: "selectionStyle"
+            path: "selectionStyle",
         },
         "Highlight Active Line": {
-            path: "highlightActiveLine"
+            path: "highlightActiveLine",
         },
         "Show Invisibles": {
-            path: "showInvisibles"
+            path: "showInvisibles",
         },
         "Show Indent Guides": {
-            path: "displayIndentGuides"
+            path: "displayIndentGuides",
         },
         "Persistent HScrollbar": {
-            path: "hScrollBarAlwaysVisible"
+            path: "hScrollBarAlwaysVisible",
         },
         "Persistent VScrollbar": {
-            path: "vScrollBarAlwaysVisible"
+            path: "vScrollBarAlwaysVisible",
         },
         "Animate scrolling": {
-            path: "animatedScroll"
+            path: "animatedScroll",
         },
         "Show Gutter": {
-            path: "showGutter"
+            path: "showGutter",
         },
         "Show Line Numbers": {
-            path: "showLineNumbers"
+            path: "showLineNumbers",
         },
         "Relative Line Numbers": {
-            path: "relativeLineNumbers"
+            path: "relativeLineNumbers",
         },
         "Fixed Gutter Width": {
-            path: "fixedWidthGutter"
+            path: "fixedWidthGutter",
         },
         "Show Print Margin": [{
-            path: "showPrintMargin"
+            path: "showPrintMargin",
         }, {
             ariaLabel: "Print Margin",
             type: "number",
-            path: "printMarginColumn"
+            path: "printMarginColumn",
         }],
         "Indented Soft Wrap": {
-            path: "indentedSoftWrap"
+            path: "indentedSoftWrap",
         },
         "Highlight selected word": {
-            path: "highlightSelectedWord"
+            path: "highlightSelectedWord",
         },
         "Fade Fold Widgets": {
-            path: "fadeFoldWidgets"
+            path: "fadeFoldWidgets",
         },
         "Use textarea for IME": {
-            path: "useTextareaForIME"
+            path: "useTextareaForIME",
         },
         "Merge Undo Deltas": {
             path: "mergeUndoDeltas",
             items: [
                { caption : "Always",  value : "always" },
                { caption : "Never",   value : "false" },
-               { caption : "Timed",   value : "true" }
-            ]
+               { caption : "Timed",   value : "true" },
+            ],
         },
         "Elastic Tabstops": {
-            path: "useElasticTabstops"
+            path: "useElasticTabstops",
         },
         "Incremental Search": {
-            path: "useIncrementalSearch"
+            path: "useIncrementalSearch",
         },
         "Read-only": {
-            path: "readOnly"
+            path: "readOnly",
         },
         "Copy without selection": {
-            path: "copyWithEmptySelection"
+            path: "copyWithEmptySelection",
         },
         "Live Autocompletion": {
-            path: "enableLiveAutocompletion"
-        }
-    }
-};
+            path: "enableLiveAutocompletion",
+        },
+    },
+}
 
 
 var OptionPanel = function(editor, element) {
-    this.editor = editor;
-    this.container = element || document.createElement("div");
-    this.groups = [];
-    this.options = {};
+    this.editor = editor
+    this.container = element || document.createElement("div")
+    this.groups = []
+    this.options = {}
 };
 
 (function() {
     
-    oop.implement(this, EventEmitter);
+    oop.implement(this, EventEmitter)
     
     this.add = function(config) {
         if (config.Main)
-            oop.mixin(optionGroups.Main, config.Main);
+            oop.mixin(optionGroups.Main, config.Main)
         if (config.More)
-            oop.mixin(optionGroups.More, config.More);
-    };
+            oop.mixin(optionGroups.More, config.More)
+    }
     
     this.render = function() {
-        this.container.innerHTML = "";
+        this.container.innerHTML = ""
         buildDom(["table", {role: "presentation", id: "controls"}, 
             this.renderOptionGroup(optionGroups.Main),
             ["tr", null, ["td", {colspan: 2},
                 ["table", {role: "presentation", id: "more-controls"}, 
-                    this.renderOptionGroup(optionGroups.More)
-                ]
+                    this.renderOptionGroup(optionGroups.More),
+                ],
             ]],
-            ["tr", null, ["td", {colspan: 2}, "version " + config.version]]
-        ], this.container);
-    };
+            ["tr", null, ["td", {colspan: 2}, "version " + config.version]],
+        ], this.container)
+    }
     
     this.renderOptionGroup = function(group) {
         return Object.keys(group).map(function(key, i) {
-            var item = group[key];
+            var item = group[key]
             if (!item.position)
-                item.position = i / 10000;
+                item.position = i / 10000
             if (!item.label)
-                item.label = key;
-            return item;
+                item.label = key
+            return item
         }).sort(function(a, b) {
-            return a.position - b.position;
+            return a.position - b.position
         }).map(function(item) {
-            return this.renderOption(item.label, item);
-        }, this);
-    };
+            return this.renderOption(item.label, item)
+        }, this)
+    }
     
     this.renderOptionControl = function(key, option) {
-        var self = this;
+        var self = this
         if (Array.isArray(option)) {
             return option.map(function(x) {
-                return self.renderOptionControl(key, x);
-            });
+                return self.renderOptionControl(key, x)
+            })
         }
-        var control;
+        var control
         
-        var value = self.getOption(option);
+        var value = self.getOption(option)
         
         if (option.values && option.type != "checkbox") {
             if (typeof option.values == "string")
-                option.values = option.values.split("|");
+                option.values = option.values.split("|")
             option.items = option.values.map(function(v) {
-                return { value: v, name: v };
-            });
+                return { value: v, name: v }
+            })
         }
         
         if (option.type == "buttonBar") {
@@ -684,131 +684,131 @@ var OptionPanel = function(editor, element) {
                     ace_selected_button: value == item.value, 
                     'aria-pressed': value == item.value, 
                     onclick: function() {
-                        self.setOption(option, item.value);
-                        var nodes = this.parentNode.querySelectorAll("[ace_selected_button]");
+                        self.setOption(option, item.value)
+                        var nodes = this.parentNode.querySelectorAll("[ace_selected_button]")
                         for (var i = 0; i < nodes.length; i++) {
-                            nodes[i].removeAttribute("ace_selected_button");
-                            nodes[i].setAttribute("aria-pressed", false);
+                            nodes[i].removeAttribute("ace_selected_button")
+                            nodes[i].setAttribute("aria-pressed", false)
                         }
-                        this.setAttribute("ace_selected_button", true);
-                        this.setAttribute("aria-pressed", true);
-                    } 
-                }, item.desc || item.caption || item.name];
-            })];
+                        this.setAttribute("ace_selected_button", true)
+                        this.setAttribute("aria-pressed", true)
+                    }, 
+                }, item.desc || item.caption || item.name]
+            })]
         } else if (option.type == "number") {
             control = ["input", {type: "number", value: value || option.defaultValue, style:"width:3em", oninput: function() {
-                self.setOption(option, parseInt(this.value));
-            }}];
+                self.setOption(option, parseInt(this.value))
+            }}]
             if (option.ariaLabel) {
-                control[1]["aria-label"] = option.ariaLabel;
+                control[1]["aria-label"] = option.ariaLabel
             } else {
-                control[1].id = key;
+                control[1].id = key
             }
             if (option.defaults) {
                 control = [control, option.defaults.map(function(item) {
                     return ["button", {onclick: function() {
-                        var input = this.parentNode.firstChild;
-                        input.value = item.value;
-                        input.oninput();
-                    }}, item.caption];
-                })];
+                        var input = this.parentNode.firstChild
+                        input.value = item.value
+                        input.oninput()
+                    }}, item.caption]
+                })]
             }
         } else if (option.items) {
             var buildItems = function(items) {
                 return items.map(function(item) {
-                    return ["option", { value: item.value || item.name }, item.desc || item.caption || item.name];
-                });
-            };
+                    return ["option", { value: item.value || item.name }, item.desc || item.caption || item.name]
+                })
+            }
             
             var items = Array.isArray(option.items) 
                 ? buildItems(option.items)
                 : Object.keys(option.items).map(function(key) {
-                    return ["optgroup", {"label": key}, buildItems(option.items[key])];
-                });
+                    return ["optgroup", {"label": key}, buildItems(option.items[key])]
+                })
             control = ["select", { id: key, value: value, onchange: function() {
-                self.setOption(option, this.value);
-            } }, items];
+                self.setOption(option, this.value)
+            } }, items]
         } else {
             if (typeof option.values == "string")
-                option.values = option.values.split("|");
-            if (option.values) value = value == option.values[1];
+                option.values = option.values.split("|")
+            if (option.values) value = value == option.values[1]
             control = ["input", { type: "checkbox", id: key, checked: value || null, onchange: function() {
-                var value = this.checked;
-                if (option.values) value = option.values[value ? 1 : 0];
-                self.setOption(option, value);
-            }}];
+                var value = this.checked
+                if (option.values) value = option.values[value ? 1 : 0]
+                self.setOption(option, value)
+            }}]
             if (option.type == "checkedNumber") {
-                control = [control, []];
+                control = [control, []]
             }
         }
-        return control;
-    };
+        return control
+    }
     
     this.renderOption = function(key, option) {
         if (option.path && !option.onchange && !this.editor.$options[option.path])
-            return;
-        var path = Array.isArray(option) ? option[0].path : option.path;
-        this.options[path] = option;
-        var safeKey = "-" + path;
-        var safeId = path + "-label";
-        var control = this.renderOptionControl(safeKey, option);
+            return
+        var path = Array.isArray(option) ? option[0].path : option.path
+        this.options[path] = option
+        var safeKey = "-" + path
+        var safeId = path + "-label"
+        var control = this.renderOptionControl(safeKey, option)
         return ["tr", {class: "ace_optionsMenuEntry"}, ["td",
-            ["label", {for: safeKey, id: safeId}, key]
-        ], ["td", control]];
-    };
+            ["label", {for: safeKey, id: safeId}, key],
+        ], ["td", control]]
+    }
     
     this.setOption = function(option, value) {
         if (typeof option == "string")
-            option = this.options[option];
-        if (value == "false") value = false;
-        if (value == "true") value = true;
-        if (value == "null") value = null;
-        if (value == "undefined") value = undefined;
+            option = this.options[option]
+        if (value == "false") value = false
+        if (value == "true") value = true
+        if (value == "null") value = null
+        if (value == "undefined") value = undefined
         if (typeof value == "string" && parseFloat(value).toString() == value)
-            value = parseFloat(value);
+            value = parseFloat(value)
         if (option.onchange)
-            option.onchange(value);
+            option.onchange(value)
         else if (option.path)
-            this.editor.setOption(option.path, value);
-        this._signal("setOption", {name: option.path, value: value});
-    };
+            this.editor.setOption(option.path, value)
+        this._signal("setOption", {name: option.path, value: value})
+    }
     
     this.getOption = function(option) {
         if (option.getValue)
-            return option.getValue();
-        return this.editor.getOption(option.path);
-    };
+            return option.getValue()
+        return this.editor.getOption(option.path)
+    }
     
-}).call(OptionPanel.prototype);
+}).call(OptionPanel.prototype)
 
-exports.OptionPanel = OptionPanel;
+exports.OptionPanel = OptionPanel
 
-});
+})
 
 define("ace/ext/settings_menu",["require","exports","module","ace/ext/options","ace/ext/menu_tools/overlay_page","ace/editor"], function(require, exports, module) {
-"use strict";
-var OptionPanel = require("./options").OptionPanel;
-var overlayPage = require('./menu_tools/overlay_page').overlayPage;
+"use strict"
+var OptionPanel = require("./options").OptionPanel
+var overlayPage = require('./menu_tools/overlay_page').overlayPage
 function showSettingsMenu(editor) {
     if (!document.getElementById('ace_settingsmenu')) {
-        var options = new OptionPanel(editor);
-        options.render();
-        options.container.id = "ace_settingsmenu";
-        overlayPage(editor, options.container);
-        options.container.querySelector("select,input,button,checkbox").focus();
+        var options = new OptionPanel(editor)
+        options.render()
+        options.container.id = "ace_settingsmenu"
+        overlayPage(editor, options.container)
+        options.container.querySelector("select,input,button,checkbox").focus()
     }
 }
 module.exports.init = function() {
-    var Editor = require("../editor").Editor;
+    var Editor = require("../editor").Editor
     Editor.prototype.showSettingsMenu = function() {
-        showSettingsMenu(this);
-    };
-};
+        showSettingsMenu(this)
+    }
+}
 });                (function() {
                     window.require(["ace/ext/settings_menu"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

@@ -1,5 +1,5 @@
 define("ace/snippets/diff",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "# DEP-3 (http://dep.debian.net/deps/dep3/) style patch header\n\
 snippet header DEP-3 style header\n\
@@ -12,14 +12,14 @@ snippet header DEP-3 style header\n\
 	Last-Update: ${8:`strftime(\"%Y-%m-%d\")`}\n\
 	Applied-Upstream: ${9:upstream version|url|commit}\n\
 \n\
-";
-exports.scope = "diff";
+"
+exports.scope = "diff"
 
 });                (function() {
                     window.require(["ace/snippets/diff"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

@@ -30,7 +30,7 @@ PR['registerLangHandler'](
   PR['createSimpleLexer'](
     [
       // Whitespace.
-      [PR['PR_PLAIN'], /^[\t\n\r \xA0]+/, null, '\t\n\r \xA0']
+      [PR['PR_PLAIN'], /^[\t\n\r \xA0]+/, null, '\t\n\r \xA0'],
     ],
     [
       // Script tag.
@@ -83,6 +83,6 @@ PR['registerLangHandler'](
       [PR['PR_LITERAL'], /^\b\.\d+(?:e[+-]?\d+)?/i],
 
       // Punctuation.
-      [PR['PR_PUNCTUATION'], /^[(){}\[\],.;]/]
+      [PR['PR_PUNCTUATION'], /^[(){}\[\],.;]/],
     ]),
-  ['dart']);
+  ['dart'])
