@@ -142,11 +142,7 @@ class Wrokflow {
         return dayjs(this.periodic_task.next_run_at).tz(tz).format('YYYY-MM-DD HH:mm') + ' ' + short
       } else if (this.periodic_task.crontab) {
         const short = Utils.getTimezoneShortByLang(this.periodic_task.crontab.timezone)
-        return (
-          dayjs.tz(this.periodic_task.next_run_at, this.periodic_task.crontab.timezone).format('YYYY-MM-DD HH:mm') +
-          ' ' +
-          short
-        )
+        return dayjs(this.periodic_task.next_run_at).format('YYYY-MM-DD HH:mm') + ' ' + short
       }
     }
     return null

@@ -1,5 +1,5 @@
 define("ace/snippets/lsl",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "snippet @\n\
 	@${1:label};\n\
@@ -1233,14 +1233,14 @@ snippet while\n\
 	{\n\
 		$0\n\
 	}\n\
-";
-exports.scope = "lsl";
+"
+exports.scope = "lsl"
 
 });                (function() {
                     window.require(["ace/snippets/lsl"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

@@ -39,7 +39,7 @@ PR['registerLangHandler'](
          // A double quoted, possibly multi-line, string.
          [PR['PR_STRING'],      /^!?\"(?:[^\"\\]|\\[\s\S])*(?:\"|$)/, null, '"'],
          // comment.llvm
-         [PR['PR_COMMENT'],     /^;[^\r\n]*/, null, ';']
+         [PR['PR_COMMENT'],     /^;[^\r\n]*/, null, ';'],
         ],
         [
          // variable.llvm
@@ -56,6 +56,6 @@ PR['registerLangHandler'](
          [PR['PR_LITERAL'],     /^(?:\d+|0[xX][a-fA-F0-9]+)/],
 
          // punctuation
-         [PR['PR_PUNCTUATION'], /^[()\[\]{},=*<>:]|\.\.\.$/]
+         [PR['PR_PUNCTUATION'], /^[()\[\]{},=*<>:]|\.\.\.$/],
         ]),
-    ['llvm', 'll']);
+    ['llvm', 'll'])

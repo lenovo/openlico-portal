@@ -26,7 +26,7 @@ PR['registerLangHandler'](
          // whitespace
          [PR['PR_PLAIN'],   /^[\t\n\r \xA0]+/, null, '\t\n\r \xA0'],
          // all comments begin with '%'
-         [PR['PR_COMMENT'], /^%[^\r\n]*/, null, '%']
+         [PR['PR_COMMENT'], /^%[^\r\n]*/, null, '%'],
         ],
         [
          //[PR['PR_DECLARATION'], /^\\([egx]?def|(new|renew|provide)(command|environment))\b/],
@@ -41,6 +41,6 @@ PR['registerLangHandler'](
          [PR['PR_LITERAL'],
           /[+-]?(?:\.\d+|\d+(?:\.\d*)?)(cm|em|ex|in|pc|pt|bp|mm)/i],
          // punctuation usually occurring within commands
-         [PR['PR_PUNCTUATION'], /^[{}()\[\]=]+/]
+         [PR['PR_PUNCTUATION'], /^[{}()\[\]=]+/],
         ]),
-    ['latex', 'tex']);
+    ['latex', 'tex'])

@@ -10,7 +10,7 @@
     :external-validate="externalValidate"
     class="billing-group-create-dialog">
     <a-form-item :label="$t('BillGroup.Name')" name="name">
-      <a-input id="tid_billgroup-name" v-model:value="billGroupForm.name" :disabled="mode == 'delete'" />
+      <a-input v-model:value="billGroupForm.name" :disabled="mode == 'delete'" />
     </a-form-item>
     <a-form-item
       v-if="mode != 'copy'"
@@ -55,14 +55,10 @@
       v-if="mode == 'create' || mode == 'copy'"
       :label="$t('BillGroup.AccountInitAmount')"
       name="accountInitAmount">
-      <a-input id="tid_billgroup-init-amount" v-model:value="billGroupForm.accountInitAmount" :addon-before="currency">
-      </a-input>
+      <a-input v-model:value="billGroupForm.accountInitAmount" :addon-before="currency"> </a-input>
     </a-form-item>
     <a-form-item v-if="mode != 'copy'" :label="$t('BillGroup.Description')" name="description">
-      <a-textarea
-        id="tid_billgroup-description"
-        v-model:value="billGroupForm.description"
-        :disabled="mode == 'delete'" />
+      <a-textarea v-model:value="billGroupForm.description" :disabled="mode == 'delete'" />
     </a-form-item>
   </composite-form-dialog>
 </template>

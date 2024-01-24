@@ -28,13 +28,13 @@
       </div>
       <div>
         <div :style="{ marginTop: isAdmin ? '100px' : '30px' }">
-          <img src="/static/img/system/report/billing.svg" class="placeholder-img" />
+          <img src="/static/img/system/report/billing.svg" class="placeholder-img" alt="billing.svg" />
         </div>
         <div class="report-billing-tilte" style="">
           {{ $t('Report.Billing') }}
         </div>
         <a-input-group compact>
-          <a-select v-model:value="period" style="width: 120px" @change="onSelectedChange">
+          <a-select v-model:value="period" style="width: 120px" :show-search="false" @change="onSelectedChange">
             <a-select-option value="daily">
               {{ $t('Report.Billing.Daily') }}
             </a-select-option>

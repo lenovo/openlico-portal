@@ -1,8 +1,8 @@
 ace.define("ace/mode/zeek_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var ZeekHighlightRules = function() {
 
@@ -10,164 +10,164 @@ var ZeekHighlightRules = function() {
         "start": [
             {
             token: "comment.line",
-            regex: "#.*$"
+            regex: "#.*$",
             },
             {
             token: "string.double",
             regex: /"/,
-            next: "string-state"
+            next: "string-state",
             },
             {
             token: "string.regexp",
             regex: "(/)(?=.*/)",
-            next: "pattern-state"
+            next: "pattern-state",
             },
             {
             token: ["keyword.other", "meta.preprocessor"],
-            regex: /(@(?:load-plugin|load-sigs|load|unload))(.*$)/
+            regex: /(@(?:load-plugin|load-sigs|load|unload))(.*$)/,
             },
             {
             token: "keyword.other",
-            regex: /@(?:DEBUG|DIR|FILENAME|deprecated|if|ifdef|ifndef|else|endif)/
+            regex: /@(?:DEBUG|DIR|FILENAME|deprecated|if|ifdef|ifndef|else|endif)/,
             },
             {
             token: [
                 "keyword.other",
                 "meta.preprocessor",
                 "keyword.operator",
-                "meta.preprocessor"
+                "meta.preprocessor",
             ],
-            regex: /(@prefixes)(\s*)(\+?=)(.*$)/
+            regex: /(@prefixes)(\s*)(\+?=)(.*$)/,
             },
             {
             token: "storage.modifier.attribute",
-            regex: /\&\b(?:redef|priority|log|optional|default|add_func|delete_func|expire_func|read_expire|write_expire|create_expire|synchronized|persistent|rotate_interval|rotate_size|encrypt|raw_output|mergeable|error_handler|type_column|deprecated)\b/
+            regex: /\&\b(?:redef|priority|log|optional|default|add_func|delete_func|expire_func|read_expire|write_expire|create_expire|synchronized|persistent|rotate_interval|rotate_size|encrypt|raw_output|mergeable|error_handler|type_column|deprecated)\b/,
             },
             {
             token: "constant.language",
-            regex: /\b(?:T|F)\b/
+            regex: /\b(?:T|F)\b/,
             },
             {
             token: "constant.numeric.port",
-            regex: /\b\d{1,5}\/(?:udp|tcp|icmp|unknown)\b/
+            regex: /\b\d{1,5}\/(?:udp|tcp|icmp|unknown)\b/,
             },
             {
             token: "constant.numeric.addr",
             regex: /\b(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[0-9]{1,2})\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[0-9]{1,2})\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[0-9]{1,2})\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[0-9]{1,2})\b/,
-            comment: "IPv4 address"
+            comment: "IPv4 address",
             },
             {
             token: "constant.numeric.addr",
             regex: /\[(?:[0-9a-fA-F]{0,4}:){2,7}(?:[0-9a-fA-F]{0,4})?(?:(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[0-9]{1,2})\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[0-9]{1,2})\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[0-9]{1,2})\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[0-9]{1,2}))?\]/,
-            comment: "IPv6 address"
+            comment: "IPv6 address",
             },
             {
             token: "constant.numeric.float.decimal.interval",
-            regex: /(?:(?:\d*\.\d*(?:[eE][+-]?\d+)?|\d*[eE][+-]?\d+|\d*\.\d*)|\d+)\s*(?:day|hr|min|msec|usec|sec)s?/
+            regex: /(?:(?:\d*\.\d*(?:[eE][+-]?\d+)?|\d*[eE][+-]?\d+|\d*\.\d*)|\d+)\s*(?:day|hr|min|msec|usec|sec)s?/,
             },
             {
             token: "constant.numeric.float.decimal",
-            regex: /\d*\.\d*(?:[eE][+-]?\d+)?|\d*[eE][+-]?\d+|\d*\.\d*/
+            regex: /\d*\.\d*(?:[eE][+-]?\d+)?|\d*[eE][+-]?\d+|\d*\.\d*/,
             },
             {
             token: "constant.numeric.hostname",
-            regex: /\b[A-Za-z0-9][A-Za-z0-9\-]*(?:\.[A-Za-z0-9][A-Za-z0-9\-]*)+\b/
+            regex: /\b[A-Za-z0-9][A-Za-z0-9\-]*(?:\.[A-Za-z0-9][A-Za-z0-9\-]*)+\b/,
             },
             {
             token: "constant.numeric.integer.hexadecimal",
-            regex: /\b0x[0-9a-fA-F]+\b/
+            regex: /\b0x[0-9a-fA-F]+\b/,
             },
             {
             token: "constant.numeric.integer.decimal",
-            regex: /\b\d+\b/
+            regex: /\b\d+\b/,
             },
             {
             token: "keyword.operator",
-            regex: /==|!=|<=|<|>=|>/
+            regex: /==|!=|<=|<|>=|>/,
             },
             {
             token: "keyword.operator",
-            regex: /(&&)|(\|\|)|(!)/
+            regex: /(&&)|(\|\|)|(!)/,
             },
             {
             token: "keyword.operator",
-            regex: /=|\+=|-=/
+            regex: /=|\+=|-=/,
             },
             {
             token: "keyword.operator",
-            regex: /\+\+|\+|--|-|\*|\/|%/
+            regex: /\+\+|\+|--|-|\*|\/|%/,
             },
             {
             token: "keyword.operator",
-            regex: /&|\||\^|~/
+            regex: /&|\||\^|~/,
             },
             {
             token: "keyword.operator",
-            regex: /\b(?:in|as|is)\b/
+            regex: /\b(?:in|as|is)\b/,
             },
             {
             token: "punctuation.terminator",
-            regex: /;/
+            regex: /;/,
             },
             {
             token: "punctuation.accessor",
-            regex: /\??\$/
+            regex: /\??\$/,
             },
             {
             token: "punctuation.accessor",
-            regex: /::/
+            regex: /::/,
             },
             {
             token: "keyword.operator",
-            regex: /\?/
+            regex: /\?/,
             },
             {
             token: "punctuation.separator",
-            regex: /:/
+            regex: /:/,
             },
             {
             token: "punctuation.separator",
-            regex: /,/
+            regex: /,/,
             },
             {
             token: [
                 "keyword.other",
                 "meta.namespace",
-                "entity.name.namespace"
+                "entity.name.namespace",
             ],
-            regex: /(module)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)/
+            regex: /(module)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)/,
             },
             {
             token: "keyword.other",
-            regex: /\bexport\b/
+            regex: /\bexport\b/,
             },
             {
             token: "keyword.control.conditional",
-            regex: /\b(?:if|else)\b/
+            regex: /\b(?:if|else)\b/,
             },
             {
             token: "keyword.control",
-            regex: /\b(?:for|while)\b/
+            regex: /\b(?:for|while)\b/,
             },
             {
             token: "keyword.control",
-            regex: /\b(?:return|break|next|continue|fallthrough)\b/
+            regex: /\b(?:return|break|next|continue|fallthrough)\b/,
             },
             {
             token: "keyword.control",
-            regex: /\b(?:switch|default|case)\b/
+            regex: /\b(?:switch|default|case)\b/,
             },
             {
             token: "keyword.other",
-            regex: /\b(?:add|delete)\b/
+            regex: /\b(?:add|delete)\b/,
             },
             {
             token: "keyword.other",
-            regex: /\bprint\b/
+            regex: /\bprint\b/,
             },
             {
             token: "keyword.control",
-            regex: /\b(?:when|timeout|schedule)\b/
+            regex: /\b(?:when|timeout|schedule)\b/,
             },
             {
             token: [
@@ -177,9 +177,9 @@ var ZeekHighlightRules = function() {
                 "meta.struct.record",
                 "punctuation.separator",
                 "meta.struct.record",
-                "storage.type.struct.record"
+                "storage.type.struct.record",
             ],
-            regex: /\b(type)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)(\s*)(:)(\s*\b)(record)\b/
+            regex: /\b(type)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)(\s*)(:)(\s*\b)(record)\b/,
             },
             {
             token: [
@@ -189,9 +189,9 @@ var ZeekHighlightRules = function() {
                 "meta.enum",
                 "punctuation.separator",
                 "meta.enum",
-                "storage.type.enum"
+                "storage.type.enum",
             ],
-            regex: /\b(type)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)(\s*)(:)(\s*\b)(enum)\b/
+            regex: /\b(type)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)(\s*)(:)(\s*\b)(enum)\b/,
             },
             {
             token: [
@@ -199,9 +199,9 @@ var ZeekHighlightRules = function() {
                 "meta.type",
                 "entity.name.type",
                 "meta.type",
-                "punctuation.separator"
+                "punctuation.separator",
             ],
-            regex: /\b(type)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)(\s*)(:)/
+            regex: /\b(type)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)(\s*)(:)/,
             },
             {
             token: [
@@ -209,9 +209,9 @@ var ZeekHighlightRules = function() {
                 "meta.struct.record",
                 "storage.type.struct.record",
                 "meta.struct.record",
-                "entity.name.struct.record"
+                "entity.name.struct.record",
             ],
-            regex: /\b(redef)(\s+)(record)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)\b/
+            regex: /\b(redef)(\s+)(record)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)\b/,
             },
             {
             token: [
@@ -219,45 +219,45 @@ var ZeekHighlightRules = function() {
                 "meta.enum",
                 "storage.type.enum",
                 "meta.enum",
-                "entity.name.enum"
+                "entity.name.enum",
             ],
-            regex: /\b(redef)(\s+)(enum)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)\b/
+            regex: /\b(redef)(\s+)(enum)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)\b/,
             },
             {
             token: [
                 "storage.type",
                 "text",
-                "entity.name.function.event"
+                "entity.name.function.event",
             ],
-            regex: /\b(event)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)(?=s*\()/
+            regex: /\b(event)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)(?=s*\()/,
             },
             {
             token: [
                 "storage.type",
                 "text",
-                "entity.name.function.hook"
+                "entity.name.function.hook",
             ],
-            regex: /\b(hook)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)(?=s*\()/
+            regex: /\b(hook)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)(?=s*\()/,
             },
             {
             token: [
                 "storage.type",
                 "text",
-                "entity.name.function"
+                "entity.name.function",
             ],
-            regex: /\b(function)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)(?=s*\()/
+            regex: /\b(function)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)(?=s*\()/,
             },
             {
             token: "keyword.other",
-            regex: /\bredef\b/
+            regex: /\bredef\b/,
             },
             {
             token: "storage.type",
-            regex: /\bany\b/
+            regex: /\bany\b/,
             },
             {
             token: "storage.type",
-            regex: /\b(?:enum|record|set|table|vector)\b/
+            regex: /\b(?:enum|record|set|table|vector)\b/,
             },
             {
             token: [
@@ -265,275 +265,275 @@ var ZeekHighlightRules = function() {
                 "text",
                 "keyword.operator",
                 "text",
-                "storage.type"
+                "storage.type",
             ],
-            regex: /\b(opaque)(\s+)(of)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)\b/
+            regex: /\b(opaque)(\s+)(of)(\s+)([A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*)\b/,
             },
             {
             token: "keyword.operator",
-            regex: /\bof\b/
+            regex: /\bof\b/,
             },
             {
             token: "storage.type",
-            regex: /\b(?:addr|bool|count|double|file|int|interval|pattern|port|string|subnet|time)\b/
+            regex: /\b(?:addr|bool|count|double|file|int|interval|pattern|port|string|subnet|time)\b/,
             },
             {
             token: "storage.type",
-            regex: /\b(?:function|hook|event)\b/
+            regex: /\b(?:function|hook|event)\b/,
             },
             {
             token: "storage.modifier",
-            regex: /\b(?:global|local|const|option)\b/
+            regex: /\b(?:global|local|const|option)\b/,
             },
             {
             token: "entity.name.function.call",
-            regex: /\b[A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*(?=s*\()/
+            regex: /\b[A-Za-z_][A-Za-z_0-9]*(?:::[A-Za-z_][A-Za-z_0-9]*)*(?=s*\()/,
             },
             {
             token: "punctuation.section.block.begin",
-            regex: /\{/
+            regex: /\{/,
             },
             {
             token: "punctuation.section.block.end",
-            regex: /\}/
+            regex: /\}/,
             },
             {
             token: "punctuation.section.brackets.begin",
-            regex: /\[/
+            regex: /\[/,
             },
             {
             token: "punctuation.section.brackets.end",
-            regex: /\]/
+            regex: /\]/,
             },
             {
             token: "punctuation.section.parens.begin",
-            regex: /\(/
+            regex: /\(/,
             },
             {
             token: "punctuation.section.parens.end",
-            regex: /\)/
-            }
+            regex: /\)/,
+            },
 
         ], // state: start
 
         "string-state": [
             {
             token: "constant.character.escape",
-            regex: /\\./
+            regex: /\\./,
             },
             {
             token: "string.double",
             regex: /"/,
-            next: "start"
+            next: "start",
             },
             {
             token: "constant.other.placeholder",
-            regex: /%-?[0-9]*(\.[0-9]+)?[DTdxsefg]/
+            regex: /%-?[0-9]*(\.[0-9]+)?[DTdxsefg]/,
             },
             {
             token: "string.double",
-            regex: "."
-            }
+            regex: ".",
+            },
         ], // state: string-state
 
         "pattern-state": [
             {
             token: "constant.character.escape",
-            regex: /\\./
+            regex: /\\./,
             },
             {
             token: "string.regexp",
             regex: "/",
-            next: "start"
+            next: "start",
             },
             {
             token: "string.regexp",
-            regex: "."
-            }
-        ] // state: pattern-state
+            regex: ".",
+            },
+        ], // state: pattern-state
 
-    };
+    }
 
-    this.normalizeRules();
-};
+    this.normalizeRules()
+}
 
 ZeekHighlightRules.metaData = {
     fileTypes: ["bro", "zeek"],
     name: "Zeek",
-    scopeName: "source.zeek"
-};
+    scopeName: "source.zeek",
+}
 
 
-oop.inherits(ZeekHighlightRules, TextHighlightRules);
+oop.inherits(ZeekHighlightRules, TextHighlightRules)
 
-exports.ZeekHighlightRules = ZeekHighlightRules;
-});
+exports.ZeekHighlightRules = ZeekHighlightRules
+})
 
 ace.define("ace/mode/folding/cstyle",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../../lib/oop");
-var Range = require("../../range").Range;
-var BaseFoldMode = require("./fold_mode").FoldMode;
+var oop = require("../../lib/oop")
+var Range = require("../../range").Range
+var BaseFoldMode = require("./fold_mode").FoldMode
 
 var FoldMode = exports.FoldMode = function(commentRegex) {
     if (commentRegex) {
         this.foldingStartMarker = new RegExp(
-            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start)
-        );
+            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start),
+        )
         this.foldingStopMarker = new RegExp(
-            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end)
-        );
+            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end),
+        )
     }
-};
+}
 oop.inherits(FoldMode, BaseFoldMode);
 
 (function() {
     
-    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/;
-    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/;
-    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/;
-    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/;
-    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/;
-    this._getFoldWidgetBase = this.getFoldWidget;
+    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/
+    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/
+    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/
+    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/
+    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/
+    this._getFoldWidgetBase = this.getFoldWidget
     this.getFoldWidget = function(session, foldStyle, row) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
     
         if (this.singleLineBlockCommentRe.test(line)) {
             if (!this.startRegionRe.test(line) && !this.tripleStarBlockCommentRe.test(line))
-                return "";
+                return ""
         }
     
-        var fw = this._getFoldWidgetBase(session, foldStyle, row);
+        var fw = this._getFoldWidgetBase(session, foldStyle, row)
     
         if (!fw && this.startRegionRe.test(line))
-            return "start"; // lineCommentRegionStart
+            return "start" // lineCommentRegionStart
     
-        return fw;
-    };
+        return fw
+    }
 
     this.getFoldWidgetRange = function(session, foldStyle, row, forceMultiline) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
         
         if (this.startRegionRe.test(line))
-            return this.getCommentRegionBlock(session, line, row);
+            return this.getCommentRegionBlock(session, line, row)
         
-        var match = line.match(this.foldingStartMarker);
+        var match = line.match(this.foldingStartMarker)
         if (match) {
-            var i = match.index;
+            var i = match.index
 
             if (match[1])
-                return this.openingBracketBlock(session, match[1], row, i);
+                return this.openingBracketBlock(session, match[1], row, i)
                 
-            var range = session.getCommentFoldRange(row, i + match[0].length, 1);
+            var range = session.getCommentFoldRange(row, i + match[0].length, 1)
             
             if (range && !range.isMultiLine()) {
                 if (forceMultiline) {
-                    range = this.getSectionRange(session, row);
+                    range = this.getSectionRange(session, row)
                 } else if (foldStyle != "all")
-                    range = null;
+                    range = null
             }
             
-            return range;
+            return range
         }
 
         if (foldStyle === "markbegin")
-            return;
+            return
 
-        var match = line.match(this.foldingStopMarker);
+        var match = line.match(this.foldingStopMarker)
         if (match) {
-            var i = match.index + match[0].length;
+            var i = match.index + match[0].length
 
             if (match[1])
-                return this.closingBracketBlock(session, match[1], row, i);
+                return this.closingBracketBlock(session, match[1], row, i)
 
-            return session.getCommentFoldRange(row, i, -1);
+            return session.getCommentFoldRange(row, i, -1)
         }
-    };
+    }
     
     this.getSectionRange = function(session, row) {
-        var line = session.getLine(row);
-        var startIndent = line.search(/\S/);
-        var startRow = row;
-        var startColumn = line.length;
-        row = row + 1;
-        var endRow = row;
-        var maxRow = session.getLength();
+        var line = session.getLine(row)
+        var startIndent = line.search(/\S/)
+        var startRow = row
+        var startColumn = line.length
+        row = row + 1
+        var endRow = row
+        var maxRow = session.getLength()
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var indent = line.search(/\S/);
+            line = session.getLine(row)
+            var indent = line.search(/\S/)
             if (indent === -1)
-                continue;
+                continue
             if  (startIndent > indent)
-                break;
-            var subRange = this.getFoldWidgetRange(session, "all", row);
+                break
+            var subRange = this.getFoldWidgetRange(session, "all", row)
             
             if (subRange) {
                 if (subRange.start.row <= startRow) {
-                    break;
+                    break
                 } else if (subRange.isMultiLine()) {
-                    row = subRange.end.row;
+                    row = subRange.end.row
                 } else if (startIndent == indent) {
-                    break;
+                    break
                 }
             }
-            endRow = row;
+            endRow = row
         }
         
-        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length);
-    };
+        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length)
+    }
     this.getCommentRegionBlock = function(session, line, row) {
-        var startColumn = line.search(/\s*$/);
-        var maxRow = session.getLength();
-        var startRow = row;
+        var startColumn = line.search(/\s*$/)
+        var maxRow = session.getLength()
+        var startRow = row
         
-        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/;
-        var depth = 1;
+        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/
+        var depth = 1
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var m = re.exec(line);
-            if (!m) continue;
-            if (m[1]) depth--;
-            else depth++;
+            line = session.getLine(row)
+            var m = re.exec(line)
+            if (!m) continue
+            if (m[1]) depth--
+            else depth++
 
-            if (!depth) break;
+            if (!depth) break
         }
 
-        var endRow = row;
+        var endRow = row
         if (endRow > startRow) {
-            return new Range(startRow, startColumn, endRow, line.length);
+            return new Range(startRow, startColumn, endRow, line.length)
         }
-    };
+    }
 
-}).call(FoldMode.prototype);
+}).call(FoldMode.prototype)
 
-});
+})
 
 ace.define("ace/mode/zeek",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var ZeekHighlightRules = require("./zeek_highlight_rules").ZeekHighlightRules;
-var FoldMode = require("./folding/cstyle").FoldMode;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var ZeekHighlightRules = require("./zeek_highlight_rules").ZeekHighlightRules
+var FoldMode = require("./folding/cstyle").FoldMode
 
 var Mode = function() {
-    this.HighlightRules = ZeekHighlightRules;
-    this.foldingRules = new FoldMode();
-};
+    this.HighlightRules = ZeekHighlightRules
+    this.foldingRules = new FoldMode()
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
-    this.lineCommentStart = "#";
-    this.$id = "ace/mode/zeek";
-}).call(Mode.prototype);
+    this.lineCommentStart = "#"
+    this.$id = "ace/mode/zeek"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     ace.require(["ace/mode/zeek"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

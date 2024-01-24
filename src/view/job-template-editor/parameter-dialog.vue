@@ -10,32 +10,20 @@
     :error-message-formatter="errorMessageFormatter"
     :external-validate="externalValidate">
     <a-form-item v-if="mode != 'delete'" :label="$t('JobTemplate.Parameters.Id')" name="id">
-      <a-input
-        id="tid_jobTemplate-parameter-id"
-        v-model:value="formParameter.id"
-        :disabled="getDisabledStatus('id')"></a-input>
+      <a-input v-model:value="formParameter.id" :disabled="getDisabledStatus('id')"></a-input>
     </a-form-item>
     <a-form-item v-if="mode != 'delete'" :label="$t('JobTemplate.Parameters.Name')" name="name">
-      <a-input
-        id="tid_jobTemplate-parameter-name"
-        v-model:value="formParameter.name"
-        :disabled="getDisabledStatus('name')"></a-input>
+      <a-input v-model:value="formParameter.name" :disabled="getDisabledStatus('name')"></a-input>
     </a-form-item>
     <a-form-item v-if="mode != 'delete'" :label="$t('JobTemplate.Parameters.Class')" name="class">
-      <a-select
-        id="tid_jobTemplate-parameter-class"
-        v-model:value="formParameter.class"
-        :disabled="getDisabledStatus('class')">
+      <a-select v-model:value="formParameter.class" :disabled="getDisabledStatus('class')">
         <a-select-option v-for="item in classOptions" :key="item.value" :value="item.value"
           >{{ item.label }}
         </a-select-option>
       </a-select>
     </a-form-item>
     <a-form-item v-if="mode != 'delete'" :label="$t('JobTemplate.Parameters.DataType')" name="dataType">
-      <a-select
-        id="tid_jobTemplate-parameter-dataType"
-        v-model:value="formParameter.dataType"
-        :disabled="getDisabledStatus('dataType')">
+      <a-select v-model:value="formParameter.dataType" :disabled="getDisabledStatus('dataType')">
         <a-select-option v-for="item in dataTypeOptions" :key="item.value" :value="item.value"
           >{{ item.label }}
         </a-select-option>
@@ -45,10 +33,7 @@
       v-if="mode != 'delete' && (formParameter.dataType == 'string' || formParameter.dataType == 'number')"
       :label="$t('JobTemplate.Parameters.Input')"
       name="input">
-      <a-select
-        id="tid_jobTemplate-parameter-input"
-        v-model:value="formParameter.input"
-        :disabled="getDisabledStatus('input')">
+      <a-select v-model:value="formParameter.input" :disabled="getDisabledStatus('input')">
         <a-select-option v-for="item in inputOptions" :key="item.value" :value="item.value"
           >{{ item.label }}
         </a-select-option>
@@ -89,15 +74,12 @@
       v-if="mode != 'delete' && (formParameter.dataType == 'string' || formParameter.dataType == 'number')"
       :label="$t('JobTemplate.Parameters.Default.Value')"
       name="defaultValue">
-      <a-input id="tid_jobTemplate-parameter-default-value" v-model:value="formParameter.defaultValue"></a-input>
+      <a-input v-model:value="formParameter.defaultValue"></a-input>
     </a-form-item>
     <a-form-item
       v-if="mode != 'delete' && formParameter.dataType != 'runtime'"
       :label="$t('JobTemplate.Parameters.Must')">
-      <a-checkbox
-        id="tid_jobTemplate-parameter-must"
-        v-model:checked="formParameter.must"
-        :disabled="getDisabledStatus('must')"></a-checkbox>
+      <a-checkbox v-model:checked="formParameter.must" :disabled="getDisabledStatus('must')"></a-checkbox>
     </a-form-item>
     <div v-if="mode == 'delete'" class="">
       <p>

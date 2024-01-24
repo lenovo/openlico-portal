@@ -1,65 +1,65 @@
 ace.define("ace/mode/doc_comment_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var DocCommentHighlightRules = function() {
     this.$rules = {
         "start" : [ {
             token : "comment.doc.tag",
-            regex : "@[\\w\\d_]+" // TODO: fix email addresses
+            regex : "@[\\w\\d_]+", // TODO: fix email addresses
         }, 
         DocCommentHighlightRules.getTagRule(),
         {
             defaultToken : "comment.doc",
-            caseInsensitive: true
-        }]
-    };
-};
+            caseInsensitive: true,
+        }],
+    }
+}
 
-oop.inherits(DocCommentHighlightRules, TextHighlightRules);
+oop.inherits(DocCommentHighlightRules, TextHighlightRules)
 
 DocCommentHighlightRules.getTagRule = function(start) {
     return {
         token : "comment.doc.tag.storage.type",
-        regex : "\\b(?:TODO|FIXME|XXX|HACK)\\b"
-    };
-};
+        regex : "\\b(?:TODO|FIXME|XXX|HACK)\\b",
+    }
+}
 
 DocCommentHighlightRules.getStartRule = function(start) {
     return {
         token : "comment.doc", // doc comment
         regex : "\\/\\*(?=\\*)",
-        next  : start
-    };
-};
+        next  : start,
+    }
+}
 
 DocCommentHighlightRules.getEndRule = function (start) {
     return {
         token : "comment.doc", // closing comment
         regex : "\\*\\/",
-        next  : start
-    };
-};
+        next  : start,
+    }
+}
 
 
-exports.DocCommentHighlightRules = DocCommentHighlightRules;
+exports.DocCommentHighlightRules = DocCommentHighlightRules
 
-});
+})
 
 ace.define("ace/mode/edifact_highlight_rules",[], function(require, exports, module) {
-    "use strict";
+    "use strict"
     
-    var oop = require("../lib/oop");
-    var DocCommentHighlightRules = require("./doc_comment_highlight_rules").DocCommentHighlightRules;
-    var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+    var oop = require("../lib/oop")
+    var DocCommentHighlightRules = require("./doc_comment_highlight_rules").DocCommentHighlightRules
+    var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
     
     var EdifactHighlightRules = function() {
     
         var header = (
             "UNH"
-        );
+        )
         var segment = (
             "ADR|AGR|AJT|ALC|ALI|APP|APR|ARD|ARR|ASI|ATT|AUT|"+
             "BAS|BGM|BII|BUS|"+
@@ -75,20 +75,20 @@ ace.define("ace/mode/edifact_highlight_rules",[], function(require, exports, mod
             "TAX|TCC|TDT|TEM|TMD|TMP|TOD|TPL|TRU|TSR|"+
             "UNB|UNZ|UNT|UGH|UGT|UNS|"+
             "VLI"
-        );
+        )
     
         var header = (
             "UNH"
-        );
+        )
     
-        var buildinConstants = ("null|Infinity|NaN|undefined");
+        var buildinConstants = ("null|Infinity|NaN|undefined")
         var langClasses = (
             ""
-        );
+        )
     
         var keywords = (
             "BY|SE|ON|INV|JP|UNOA"
-        );
+        )
     
         var keywordMapper = this.createKeywordMapper({
             "variable.language": "this",
@@ -96,71 +96,71 @@ ace.define("ace/mode/edifact_highlight_rules",[], function(require, exports, mod
             "entity.name.segment":segment,
             "entity.name.header":header,
             "constant.language": buildinConstants,
-            "support.function": langClasses
-        }, "identifier");
+            "support.function": langClasses,
+        }, "identifier")
     
         this.$rules = {
             "start" : [
                 {
                     token : "punctuation.operator",
-                    regex : "\\+.\\+"
+                    regex : "\\+.\\+",
                 }, {
                     token : "constant.language.boolean",
-                    regex : "(?:true|false)\\b"
+                    regex : "(?:true|false)\\b",
                 }, {
                     token : keywordMapper,
-                    regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+                    regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b",
                 }, {
                     token : "keyword.operator",
-                    regex : "\\+"
+                    regex : "\\+",
                 }, {
                     token : "punctuation.operator",
-                    regex : "\\:|'"
+                    regex : "\\:|'",
                 },{
                     token : "identifier",
-                    regex : "\\:D\\:"
-                }
-            ]
-        };
+                    regex : "\\:D\\:",
+                },
+            ],
+        }
     
         this.embedRules(DocCommentHighlightRules, "doc-",
-            [ DocCommentHighlightRules.getEndRule("start") ]);
-    };
+            [ DocCommentHighlightRules.getEndRule("start") ])
+    }
     
     EdifactHighlightRules.metaData = { fileTypes: [ 'edi' ],
           keyEquivalent: '^~E',
           name: 'Edifact',
-          scopeName: 'source.edifact' };
+          scopeName: 'source.edifact' }
     
-    oop.inherits(EdifactHighlightRules, TextHighlightRules);
+    oop.inherits(EdifactHighlightRules, TextHighlightRules)
     
-    exports.EdifactHighlightRules = EdifactHighlightRules;
-    });
+    exports.EdifactHighlightRules = EdifactHighlightRules
+    })
 
 ace.define("ace/mode/edifact",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var EdifactHighlightRules = require("./edifact_highlight_rules").EdifactHighlightRules;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var EdifactHighlightRules = require("./edifact_highlight_rules").EdifactHighlightRules
 
 var Mode = function() {
    
-    this.HighlightRules = EdifactHighlightRules;
-};
+    this.HighlightRules = EdifactHighlightRules
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
-    this.$id = "ace/mode/edifact";
-    this.snippetFileId = "ace/snippets/edifact";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/edifact"
+    this.snippetFileId = "ace/snippets/edifact"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     ace.require(["ace/mode/edifact"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

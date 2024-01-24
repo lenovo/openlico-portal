@@ -1,93 +1,93 @@
 ace.define("ace/mode/scheme_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var SchemeHighlightRules = function() {
-    var keywordControl = "case|do|let|loop|if|else|when";
-    var keywordOperator = "eq?|eqv?|equal?|and|or|not|null?";
-    var constantLanguage = "#t|#f";
-    var supportFunctions = "cons|car|cdr|cond|lambda|lambda*|syntax-rules|format|set!|quote|eval|append|list|list?|member?|load";
+    var keywordControl = "case|do|let|loop|if|else|when"
+    var keywordOperator = "eq?|eqv?|equal?|and|or|not|null?"
+    var constantLanguage = "#t|#f"
+    var supportFunctions = "cons|car|cdr|cond|lambda|lambda*|syntax-rules|format|set!|quote|eval|append|list|list?|member?|load"
 
     var keywordMapper = this.createKeywordMapper({
         "keyword.control": keywordControl,
         "keyword.operator": keywordOperator,
         "constant.language": constantLanguage,
-        "support.function": supportFunctions
-    }, "identifier", true);
+        "support.function": supportFunctions,
+    }, "identifier", true)
 
     this.$rules = 
         {
     "start": [
         {
             token : "comment",
-            regex : ";.*$"
+            regex : ";.*$",
         },
         {
             "token": ["storage.type.function-type.scheme", "text", "entity.name.function.scheme"],
-            "regex": "(?:\\b(?:(define|define-syntax|define-macro))\\b)(\\s+)((?:\\w|\\-|\\!|\\?)*)"
+            "regex": "(?:\\b(?:(define|define-syntax|define-macro))\\b)(\\s+)((?:\\w|\\-|\\!|\\?)*)",
         },
         {
             "token": "punctuation.definition.constant.character.scheme",
-            "regex": "#:\\S+"
+            "regex": "#:\\S+",
         },
         {
             "token": ["punctuation.definition.variable.scheme", "variable.other.global.scheme", "punctuation.definition.variable.scheme"],
-            "regex": "(\\*)(\\S*)(\\*)"
+            "regex": "(\\*)(\\S*)(\\*)",
         },
         {
             "token" : "constant.numeric", // hex
-            "regex" : "#[xXoObB][0-9a-fA-F]+"
+            "regex" : "#[xXoObB][0-9a-fA-F]+",
         }, 
         {
             "token" : "constant.numeric", // float
-            "regex" : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?"
+            "regex" : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?",
         },
         {
                 "token" : keywordMapper,
-                "regex" : "[a-zA-Z_#][a-zA-Z0-9_\\-\\?\\!\\*]*"
+                "regex" : "[a-zA-Z_#][a-zA-Z0-9_\\-\\?\\!\\*]*",
         },
         {
             "token" : "string",
             "regex" : '"(?=.)',
-            "next"  : "qqstring"
-        }
+            "next"  : "qqstring",
+        },
     ],
     "qqstring": [
         {
             "token": "constant.character.escape.scheme",
-            "regex": "\\\\."
+            "regex": "\\\\.",
         },
         {
             "token" : "string",
             "regex" : '[^"\\\\]+',
-            "merge" : true
+            "merge" : true,
         }, {
             "token" : "string",
             "regex" : "\\\\$",
             "next"  : "qqstring",
-            "merge" : true
+            "merge" : true,
         }, {
             "token" : "string",
             "regex" : '"|$',
             "next"  : "start",
-            "merge" : true
-        }
-    ]
-};
+            "merge" : true,
+        },
+    ],
+}
 
-};
+}
 
-oop.inherits(SchemeHighlightRules, TextHighlightRules);
+oop.inherits(SchemeHighlightRules, TextHighlightRules)
 
-exports.SchemeHighlightRules = SchemeHighlightRules;
-});
+exports.SchemeHighlightRules = SchemeHighlightRules
+})
 
 ace.define("ace/mode/matching_parens_outdent",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var Range = require("../range").Range;
+var Range = require("../range").Range
 
 var MatchingParensOutdent = function() {};
 
@@ -95,138 +95,138 @@ var MatchingParensOutdent = function() {};
 
     this.checkOutdent = function(line, input) {
         if (! /^\s+$/.test(line))
-            return false;
+            return false
 
-        return /^\s*\)/.test(input);
-    };
+        return /^\s*\)/.test(input)
+    }
 
     this.autoOutdent = function(doc, row) {
-        var line = doc.getLine(row);
-        var match = line.match(/^(\s*\))/);
+        var line = doc.getLine(row)
+        var match = line.match(/^(\s*\))/)
 
-        if (!match) return 0;
+        if (!match) return 0
 
-        var column = match[1].length;
-        var openBracePos = doc.findMatchingBracket({row: row, column: column});
+        var column = match[1].length
+        var openBracePos = doc.findMatchingBracket({row: row, column: column})
 
-        if (!openBracePos || openBracePos.row == row) return 0;
+        if (!openBracePos || openBracePos.row == row) return 0
 
-        var indent = this.$getIndent(doc.getLine(openBracePos.row));
-        doc.replace(new Range(row, 0, row, column-1), indent);
-    };
+        var indent = this.$getIndent(doc.getLine(openBracePos.row))
+        doc.replace(new Range(row, 0, row, column-1), indent)
+    }
 
     this.$getIndent = function(line) {
-        var match = line.match(/^(\s+)/);
+        var match = line.match(/^(\s+)/)
         if (match) {
-            return match[1];
+            return match[1]
         }
 
-        return "";
-    };
+        return ""
+    }
 
-}).call(MatchingParensOutdent.prototype);
+}).call(MatchingParensOutdent.prototype)
 
-exports.MatchingParensOutdent = MatchingParensOutdent;
-});
+exports.MatchingParensOutdent = MatchingParensOutdent
+})
 
 ace.define("ace/mode/scheme",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var SchemeHighlightRules = require("./scheme_highlight_rules").SchemeHighlightRules;
-var MatchingParensOutdent = require("./matching_parens_outdent").MatchingParensOutdent;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var SchemeHighlightRules = require("./scheme_highlight_rules").SchemeHighlightRules
+var MatchingParensOutdent = require("./matching_parens_outdent").MatchingParensOutdent
 
 var Mode = function() {
-    this.HighlightRules = SchemeHighlightRules;
-	this.$outdent = new MatchingParensOutdent();
-    this.$behaviour = this.$defaultBehaviour;
-};
+    this.HighlightRules = SchemeHighlightRules
+	this.$outdent = new MatchingParensOutdent()
+    this.$behaviour = this.$defaultBehaviour
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
        
-    this.lineCommentStart = ";";
-    this.minorIndentFunctions = ["define", "lambda", "define-macro", "define-syntax", "syntax-rules", "define-record-type", "define-structure"];
+    this.lineCommentStart = ";"
+    this.minorIndentFunctions = ["define", "lambda", "define-macro", "define-syntax", "syntax-rules", "define-record-type", "define-structure"]
 
     this.$toIndent = function(str) {
         return str.split('').map(function(ch) {
             if (/\s/.exec(ch)) {
-                return ch;
+                return ch
             } else {
-                return ' ';
+                return ' '
             }
-        }).join('');
-    };
+        }).join('')
+    }
 
     this.$calculateIndent = function(line, tab) {
-        var baseIndent = this.$getIndent(line);
-        var delta = 0;
-        var isParen, ch;
+        var baseIndent = this.$getIndent(line)
+        var delta = 0
+        var isParen, ch
         for (var i = line.length - 1; i >= 0; i--) {
-            ch = line[i];
+            ch = line[i]
             if (ch === '(') {
-                delta--;
-                isParen = true;
+                delta--
+                isParen = true
             } else if (ch === '(' || ch === '[' || ch === '{') {
-                delta--;
-                isParen = false;
+                delta--
+                isParen = false
             } else if (ch === ')' || ch === ']' || ch === '}') {
-                delta++;
+                delta++
             }
             if (delta < 0) {
-                break;
+                break
             }
         }
         if (delta < 0 && isParen) {
-            i += 1;
-            var iBefore = i;
-            var fn = '';
+            i += 1
+            var iBefore = i
+            var fn = ''
             while (true) {
-                ch = line[i];
+                ch = line[i]
                 if (ch === ' ' || ch === '\t') {
                     if(this.minorIndentFunctions.indexOf(fn) !== -1) {
-                        return this.$toIndent(line.substring(0, iBefore - 1) + tab);
+                        return this.$toIndent(line.substring(0, iBefore - 1) + tab)
                     } else {
-                        return this.$toIndent(line.substring(0, i + 1));
+                        return this.$toIndent(line.substring(0, i + 1))
                     }
                 } else if (ch === undefined) {
-                    return this.$toIndent(line.substring(0, iBefore - 1) + tab);
+                    return this.$toIndent(line.substring(0, iBefore - 1) + tab)
                 }
-                fn += line[i];
-                i++;
+                fn += line[i]
+                i++
             }
         } else if(delta < 0 && !isParen) {
-            return this.$toIndent(line.substring(0, i+1));
+            return this.$toIndent(line.substring(0, i+1))
         } else if(delta > 0) {
-            baseIndent = baseIndent.substring(0, baseIndent.length - tab.length);
-            return baseIndent;
+            baseIndent = baseIndent.substring(0, baseIndent.length - tab.length)
+            return baseIndent
         } else {
-            return baseIndent;
+            return baseIndent
         }
-    };
+    }
 
     this.getNextLineIndent = function(state, line, tab) {
-        return this.$calculateIndent(line, tab);
-    };
+        return this.$calculateIndent(line, tab)
+    }
 
     this.checkOutdent = function(state, line, input) {
-        return this.$outdent.checkOutdent(line, input);
-    };
+        return this.$outdent.checkOutdent(line, input)
+    }
 
     this.autoOutdent = function(state, doc, row) {
-        this.$outdent.autoOutdent(doc, row);
-    };
+        this.$outdent.autoOutdent(doc, row)
+    }
     
-    this.$id = "ace/mode/scheme";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/scheme"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     ace.require(["ace/mode/scheme"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

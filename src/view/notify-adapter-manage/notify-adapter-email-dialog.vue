@@ -8,7 +8,7 @@
     :form-rules="mailRules"
     :success-message-formatter="successMessageFormatter">
     <a-form-item v-if="show" :label="$t('AlertSetting.Mail.Mailbox.Sender')" :name="show ? 'address' : ''">
-      <a-input id="tid_notify-adapter-email-sender" v-model:value="mail.address" />
+      <a-input v-model:value="mail.address" />
     </a-form-item>
     <p v-if="!show">
       {{ $t('AlertSetting.Confirm.Message') }}

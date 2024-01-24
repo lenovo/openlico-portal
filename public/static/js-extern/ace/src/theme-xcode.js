@@ -1,7 +1,7 @@
 define("ace/theme/xcode",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
 
-exports.isDark = false;
-exports.cssClass = "ace-xcode";
+exports.isDark = false
+exports.cssClass = "ace-xcode"
 exports.cssText = "\
 .ace-xcode .ace_gutter {\
 background: #e8e8e8;\
@@ -81,15 +81,15 @@ color: #008E00\
 }\
 .ace-xcode .ace_indent-guide {\
 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==) right repeat-y\
-}";
+}"
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+var dom = require("../lib/dom")
+dom.importCssString(exports.cssText, exports.cssClass)
 });                (function() {
                     window.require(["ace/theme/xcode"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

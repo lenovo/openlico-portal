@@ -8,15 +8,18 @@
       theme="dark"
       :open-keys="defaultOpenKeys"
       :inline-collapsed="collapsed"
-      :force-sub-menu-render="true"
       @open-change="onOpenChange"
       @select="handleSelect"
       @click="selectMenu">
       <template v-for="item in filterDisplayMenu(menu.concat(quickLinkMenu))">
-        <a-sub-menu v-if="item.children.length > 0" :id="'Menu_' + item.label" :key="item.label">
+        <a-sub-menu
+          v-if="item.children.length > 0"
+          :id="'Menu_' + item.label"
+          :key="item.label"
+          popup-class-name="menu-sub-popup">
           <template #title>
             <li class="menu-item-content" role="list">
-              <icon class="menu-item-content">
+              <icon class="menu-item-content" :alt="formatLabel(item)">
                 <template #component>
                   <span :class="`el-erp-${item.icon}`"></span>
                 </template>
@@ -25,7 +28,7 @@
             </li>
           </template>
           <a-menu-item v-for="child in filterDisplayMenu(item.children)" :id="'Menu_' + child.label" :key="child.path">
-            <icon class="menu-item-content">
+            <icon class="menu-item-content" :alt="formatLabel(child)">
               <template #component>
                 <span :class="`el-erp-${child.icon}`"></span>
               </template>
@@ -33,8 +36,8 @@
             <span class="menu-item-content">{{ formatLabel(child) }}</span>
           </a-menu-item>
         </a-sub-menu>
-        <a-menu-item v-else :id="'Menu_' + item.label" :key="item.path">
-          <icon class="menu-item-content">
+        <a-menu-item v-else :id="'Menu_' + item.label" :key="item.path" :title="formatLabel(item)">
+          <icon class="menu-item-content" :alt="formatLabel(item)">
             <template #component>
               <span :class="`el-erp-${item.icon}`"></span>
             </template>
@@ -212,6 +215,9 @@ export default {
 .sidebar {
   display: flex;
   flex-direction: column;
+}
+.menu-sub-popup {
+  width: 200px;
 }
 .menu-item-content {
   display: inline-block;

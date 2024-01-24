@@ -1,5 +1,5 @@
 define("ace/snippets/xquery",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "snippet for\n\
 	for $${1:item} in ${2:expr}\n\
@@ -62,14 +62,14 @@ snippet fn\n\
 	};\n\
 snippet module\n\
 	module namespace ${1:ns} = \"${2:http://www.example.com}\";\n\
-";
-exports.scope = "xquery";
+"
+exports.scope = "xquery"
 
 });                (function() {
                     window.require(["ace/snippets/xquery"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

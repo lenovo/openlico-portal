@@ -51,7 +51,7 @@
             </a-collapse-panel>
 
             <a-collapse-panel key="param" :header="$t('JobTemplate.Parameters')">
-              <parameters-editor :parameters="formModel.parameters" style="width: 1200px" />
+              <parameters-editor :parameters="formModel.parameters" />
             </a-collapse-panel>
             <a-collapse-panel key="file" :header="$t('JobTemplate.TemplateFile')">
               <template-file-editor ref="templateFileEditor" :content="formModel.fileTemplate" />

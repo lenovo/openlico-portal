@@ -18,6 +18,8 @@ import Request from '../request/https'
 import ErrorHandler from '../common/error-handler'
 
 function handleMathOperations(x, y, decimalPlaces) {
+  if (x === null || y === null) return null
+
   decimalPlaces = decimalPlaces || 2
   if (!isNaN(y) && y > 0) {
     const result = (x / y) * 100
@@ -157,7 +159,7 @@ class Node {
     node.location = NodeLocation.parseFromRestApi(jsonObj.location)
     node.energy = isNaN(jsonObj.energy) ? 0 : jsonObj.energy
     node.temperature = isNaN(jsonObj.temperature) ? 0 : jsonObj.temperature
-    node.network = [jsonObj.eth_in || 0, jsonObj.eth_out || 0, jsonObj.ib_in || 0, jsonObj.ib_out || 0]
+    node.network = [jsonObj.eth_in, jsonObj.eth_out, jsonObj.ib_in, jsonObj.ib_out]
     node.load = isNaN(jsonObj.load) ? 0 : jsonObj.load
     node.diskUsed = handleMathOperations(jsonObj.disk_used, jsonObj.disk_total, 2)
 

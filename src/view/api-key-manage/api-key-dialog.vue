@@ -94,7 +94,7 @@ export default {
         ultimate: apiKey.ultimate,
         expireTime: apiKey.expireTime,
         newUltimate: !apiKey.ultimate,
-        newExpireTime: null,
+        newExpireTime: dayjs().endOf('day'),
       }
       this.title = this.$t('APIKey.EditDialog.Title')
       return this.$refs.innerDialog.popup(this.submitForm)

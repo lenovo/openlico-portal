@@ -5,6 +5,7 @@
         <a-col :span="12">
           <a-select
             v-model:value="topLevelValue"
+            :title="topLevelValue"
             :placeholder="$t('Monitor.Cluster.All')"
             class="selector-cluster"
             @change="topLevelChange">
@@ -15,6 +16,7 @@
           <a-select
             v-if="topLevelValue == 'group'"
             v-model:value="subLevelValue"
+            :title="subLevelValue"
             :placeholder="subLevelPlaceholder"
             class="selector-sub-cluster">
             <a-select-option v-for="item in groupOption" :key="item.value" :value="item.value">
@@ -113,7 +115,7 @@
       <div class="nodata">
         <div v-if="!loading">
           <div style="margin-top: 160px">
-            <img src="/static/img/system/main/nodata.png" style="height: 60px; width: 80px" />
+            <img src="/static/img/system/main/nodata.png" style="height: 60px; width: 80px" :alt="$t('No.Data')" />
           </div>
           <div style="margin-top: 20px; color: #ccc; font-size: 16px">
             {{ $t('No.Data') }}

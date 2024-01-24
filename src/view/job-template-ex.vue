@@ -85,7 +85,7 @@
       <!-- <job-action-dialog id="tid_job-manange-action-dialog" ref="jobActionDialog" /> -->
 
       <!-- preview job modal -->
-      <a-modal v-model:open="preview.modal" title="Preview Job">
+      <a-modal v-model:open="preview.modal" :title="$t('JobTemplate.Preview')">
         <a-textarea
           v-model:value="preview.content"
           :rows="20"
@@ -260,11 +260,6 @@ export default {
       const paramValueTypes = {}
       JobTemplateService.getJobTemplate(this.code).then(
         res => {
-          const index = res.params.findIndex(p => p.id === 'run_time')
-          if (index !== -1) {
-            res.params[index].defaultValue = this.defaultRunTime
-          }
-
           res.params.forEach(param => {
             paramValues[param.id] = this.getInitParamValue(param.id)
             paramValueTypes[param.id] = param.dataType
@@ -289,6 +284,15 @@ export default {
           this.paramValues = paramValues
           this.paramValueTypes = paramValueTypes
           this.jobTemplate = res
+
+          // check if there is a default value for the resource run_time
+          const group = this.paramGroups.find(g => g.name === 'resource')
+          if (group) {
+            const runTime = group.params.find(p => p.id === 'run_time')
+            if (runTime && !runTime.defaultValue) {
+              runTime.defaultValue = this.defaultRunTime
+            }
+          }
         },
         res => {
           this.$message.error(res)
@@ -523,7 +527,7 @@ export default {
               this.preview.content = response.data
             },
             err => {
-              this.$message.error(this.$t(`Error.${err.body.errid}`))
+              this.$message.error(this.$t(`Error.${err.status === 400 ? err.body.errid : 'Unknown'}`))
               this.preview.loading = false
             },
           )

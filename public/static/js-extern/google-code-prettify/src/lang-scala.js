@@ -34,7 +34,7 @@ PR['registerLangHandler'](
           null, '"'],
          [PR['PR_LITERAL'],     /^`(?:[^\r\n\\`]|\\.)*`?/, null, '`'],
          [PR['PR_PUNCTUATION'], /^[!#%&()*+,\-:;<=>?@\[\\\]^{|}~]+/, null,
-          '!#%&()*+,-:;<=>?@[\\]^{|}~']
+          '!#%&()*+,-:;<=>?@[\\]^{|}~'],
         ],
         [
          // A symbol literal is a single quote followed by an identifier with no
@@ -49,6 +49,6 @@ PR['registerLangHandler'](
          [PR['PR_TYPE'],        /^[$_]*[A-Z][_$A-Z0-9]*[a-z][\w$]*/],
          [PR['PR_PLAIN'],       /^[$a-zA-Z_][\w$]*/],
          [PR['PR_COMMENT'],     /^\/(?:\/.*|\*(?:\/|\**[^*/])*(?:\*+\/?)?)/],
-         [PR['PR_PUNCTUATION'], /^(?:\.+|\/)/]
+         [PR['PR_PUNCTUATION'], /^(?:\.+|\/)/],
         ]),
-    ['scala']);
+    ['scala'])

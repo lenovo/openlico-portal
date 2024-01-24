@@ -9,7 +9,7 @@
       <a-table
         id="Job_template_Parameters_Table"
         ref="parameterTable"
-        style="width: 1200px"
+        style="width: 100%; max-width: 1200px"
         class="job-template-parameters-table"
         row-key="id"
         :columns="columns"

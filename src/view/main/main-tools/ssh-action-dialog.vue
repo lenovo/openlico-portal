@@ -4,6 +4,7 @@
     :title="title"
     size="530px"
     form-label-width="180px"
+    :z-index="3000"
     :form-model="formModel"
     :form-rules="formRules"
     :buttons-text="[$t('Action.Connect')]">
@@ -61,11 +62,11 @@ export default {
       const nodeType = this.access === 'staff' ? 'login' : ''
       NodeService.getAllNodes(nodeType).then(
         res => {
-          this.nodeOptions = res
+          this.nodeOptions = res.filter(node => !node.disabled)
           if (nodeType && !res.length) {
             NodeService.getAllNodes('head').then(
               res => {
-                this.nodeOptions = res
+                this.nodeOptions = res.filter(node => !node.disabled)
               },
               err => {
                 this.$message.error(err)

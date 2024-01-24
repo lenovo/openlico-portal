@@ -90,7 +90,8 @@ export default {
   methods: {
     onFilterChange() {
       this.$nextTick(() => {
-        this.$refs.softwaresTable.fetchTableData()
+        this.$refs.softwaresTable.clearExpanded()
+        this.$refs.softwaresTable.fetchTableData(true)
       })
     },
     onViewLoaction(row) {

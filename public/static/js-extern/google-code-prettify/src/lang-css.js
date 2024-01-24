@@ -109,7 +109,7 @@ PR['registerLangHandler'](
         // Shortcut patterns.
         [
          // The space production <s>
-         [PR['PR_PLAIN'],       /^[ \t\r\n\f]+/, null, ' \t\r\n\f']
+         [PR['PR_PLAIN'],       /^[ \t\r\n\f]+/, null, ' \t\r\n\f'],
         ],
         // Fall-through patterns.
         [
@@ -136,24 +136,24 @@ PR['registerLangHandler'](
          [PR['PR_PLAIN'],
           /^-?(?:[_a-z]|(?:\\[\da-f]+ ?))(?:[_a-z\d\-]|\\(?:\\[\da-f]+ ?))*/i],
          // A run of punctuation
-         [PR['PR_PUNCTUATION'], /^[^\s\w\'\"]+/]
+         [PR['PR_PUNCTUATION'], /^[^\s\w\'\"]+/],
         ]),
-    ['css']);
+    ['css'])
 // Above we use embedded languages to highlight property names (identifiers
 // followed by a colon) differently from identifiers in values.
 PR['registerLangHandler'](
     PR['createSimpleLexer']([],
         [
          [PR['PR_KEYWORD'],
-          /^-?(?:[_a-z]|(?:\\[\da-f]+ ?))(?:[_a-z\d\-]|\\(?:\\[\da-f]+ ?))*/i]
+          /^-?(?:[_a-z]|(?:\\[\da-f]+ ?))(?:[_a-z\d\-]|\\(?:\\[\da-f]+ ?))*/i],
         ]),
-    ['css-kw']);
+    ['css-kw'])
 // The content of an unquoted URL literal like url(http://foo/img.png) should
 // be colored as string content.  This language handler is used above in the
 // URL production to do so.
 PR['registerLangHandler'](
     PR['createSimpleLexer']([],
         [
-         [PR['PR_STRING'], /^[^\)\"\']+/]
+         [PR['PR_STRING'], /^[^\)\"\']+/],
         ]),
-    ['css-str']);
+    ['css-str'])

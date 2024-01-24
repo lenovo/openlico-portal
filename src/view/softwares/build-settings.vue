@@ -138,7 +138,19 @@ export default {
       })
     },
     onBuildClick(row) {
-      this.openBuildDialog(row)
+      SoftwaresService.getBuildingSoftwareByPath(row.path).then(
+        res => {
+          this.openBuildDialog({
+            ...row,
+            path: row.path,
+            home: res.home,
+            description: res.description,
+          })
+        },
+        err => {
+          this.$message.error(err)
+        },
+      )
     },
     onVaildDate() {
       this.$refs.innerForm.validate().then(
@@ -165,7 +177,7 @@ export default {
       this.$refs.buildDialog.doOpenBuild(data).then(
         res => {
           this.showJobs = true
-          this.$refs.buildJobMonitoring.fetchBuildingJob()
+          this.$refs.buildJobMonitoring.fetchBuildingJob(true)
         },
         _ => {},
       )

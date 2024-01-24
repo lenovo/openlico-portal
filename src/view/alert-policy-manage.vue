@@ -10,11 +10,9 @@
         :search-enable="true"
         :search-props="['id', 'name']">
         <template #controller>
-          <ul class="composite-table-controller">
-            <a-button id="tid_alert-policy-create" type="primary" @click="onCreateClick">
-              {{ $t('Action.Create') }}
-            </a-button>
-          </ul>
+          <a-button id="tid_alert-policy-create" type="primary" @click="onCreateClick">
+            {{ $t('Action.Create') }}
+          </a-button>
         </template>
         <template #level="{ level }">
           <alert-table-level :level="level" />

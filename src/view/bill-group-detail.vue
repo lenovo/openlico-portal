@@ -49,6 +49,7 @@ import BillGroupQueues from './bill-group-manage/bill-group-queues.vue'
 import BillGroupStorage from './bill-group-manage/bill-group-storage.vue'
 
 export default {
+  name: 'BillGroup',
   components: {
     'billgroup-queue': BillGroupQueues,
     'billgroup-storage': BillGroupStorage,

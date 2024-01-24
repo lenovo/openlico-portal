@@ -13,18 +13,18 @@
         </a-row>
         <a-row style="margin-top: 20px">
           <a-col id="tid_monitor-racks-location" class="room-top-monitor" :span="8">
-            <img src="/static/img/system/physical/monitor_house.png" />
+            <img src="/static/img/system/physical/monitor_house.png" alt="" />
             <span>{{ room.location }}</span>
           </a-col>
           <a-col id="tid_monitor-racks-nodes" class="room-top-monitor" :span="8">
-            <img src="/static/img/system/physical/monitor_node.png" />
+            <img src="/static/img/system/physical/monitor_node.png" alt="" />
             <span>{{ room.nodeNumber || '-' }}</span>
             <span style="padding-left: 5px">
               {{ $t('Physical.Room.Node.Unit') }}
             </span>
           </a-col>
           <a-col id="tid_monitor-racks-energy" class="room-top-monitor" :span="8">
-            <img src="/static/img/system/physical/monitor_power.png" />
+            <img src="/static/img/system/physical/monitor_power.png" alt="" />
             <span>{{ roomEnergy || '-' }}</span>
             <span style="padding-left: 5px">
               {{ $t('Monitor.Group.Ene.Unit') }}

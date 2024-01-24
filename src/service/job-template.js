@@ -618,6 +618,15 @@ function getLadlBussiness() {
   })
 }
 
+async function getCloudDefaultRuntime() {
+  try {
+    const { data } = await Request.get('/api/template/default-run-time/')
+    return data
+  } catch (err) {
+    ErrorHandler.restApiErrorHandler(err)
+  }
+}
+
 export default {
   CategoryEnums,
   getAllJobTemplates,
@@ -637,4 +646,5 @@ export default {
   getTemplatesByFilter,
   getJobLicenseFeature,
   getLadlBussiness,
+  getCloudDefaultRuntime,
 }

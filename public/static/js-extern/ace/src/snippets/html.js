@@ -1,5 +1,5 @@
 define("ace/snippets/html",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "# Some useful Unicode entities\n\
 # Non-Breaking Space\n\
@@ -856,14 +856,14 @@ snippet video\n\
 	<video src=\"${1} height=\"${2}\" width=\"${3}\" preload=\"${5:none}\" autoplay=\"${6:autoplay}>${7}</video>${8}\n\
 snippet wbr\n\
 	<wbr />${1}\n\
-";
-exports.scope = "html";
+"
+exports.scope = "html"
 
 });                (function() {
                     window.require(["ace/snippets/html"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

@@ -7,13 +7,13 @@
     :form-rules="operateRules"
     :success-message-formatter="successMessageFormatter">
     <a-form-item :label="$t('BillGroup.Name')" name="billGroupName">
-      <form-value-displayer id="tid_account-operate-billgroup-name" :value="operateForm.billGroupName" />
+      <form-value-displayer :value="operateForm.billGroupName" />
     </a-form-item>
     <a-form-item :label="$t('BillGroup.AccountBalance')" name="balance">
-      <form-value-displayer id="tid_account-operate-billgroup-balance" :value="formatMoney(operateForm.balance)" />
+      <form-value-displayer :value="formatMoney(operateForm.balance)" />
     </a-form-item>
     <a-form-item :label="$t('BillGroup.AccountOperate')" name="operate">
-      <a-select id="tid_account-operate-operate" v-model:value="operateForm.operate">
+      <a-select v-model:value="operateForm.operate">
         <a-select-option key="deposit" value="deposit">
           {{ $t('BillGroup.AccountOperate.Deposit') }}
         </a-select-option>
@@ -23,7 +23,7 @@
       </a-select>
     </a-form-item>
     <a-form-item :label="$t('BillGroup.AccountOperate.Amount')" name="amount">
-      <a-input id="tid_account-operate-amount" v-model:value="operateForm.amount" :prefix="currency" />
+      <a-input v-model:value="operateForm.amount" :prefix="currency" />
     </a-form-item>
   </composite-form-dialog>
 </template>

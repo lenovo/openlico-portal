@@ -1,154 +1,154 @@
 ace.define("ace/mode/yaml_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var YamlHighlightRules = function() {
     this.$rules = {
         "start" : [
             {
                 token : "comment",
-                regex : "#.*$"
+                regex : "#.*$",
             }, {
                 token : "list.markup",
-                regex : /^(?:-{3}|\.{3})\s*(?=#|$)/
+                regex : /^(?:-{3}|\.{3})\s*(?=#|$)/,
             },  {
                 token : "list.markup",
-                regex : /^\s*[\-?](?:$|\s)/
+                regex : /^\s*[\-?](?:$|\s)/,
             }, {
                 token: "constant",
-                regex: "!![\\w//]+"
+                regex: "!![\\w//]+",
             }, {
                 token: "constant.language",
-                regex: "[&\\*][a-zA-Z0-9-_]+"
+                regex: "[&\\*][a-zA-Z0-9-_]+",
             }, {
                 token: ["meta.tag", "keyword"],
-                regex: /^(\s*\w.*?)(:(?=\s|$))/
+                regex: /^(\s*\w.*?)(:(?=\s|$))/,
             },{
                 token: ["meta.tag", "keyword"],
-                regex: /(\w+?)(\s*:(?=\s|$))/
+                regex: /(\w+?)(\s*:(?=\s|$))/,
             }, {
                 token : "keyword.operator",
-                regex : "<<\\w*:\\w*"
+                regex : "<<\\w*:\\w*",
             }, {
                 token : "keyword.operator",
-                regex : "-\\s*(?=[{])"
+                regex : "-\\s*(?=[{])",
             }, {
                 token : "string", // single line
-                regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'
+                regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]',
             }, {
                 token : "string", // multi line string start
                 regex : /[|>][-+\d]*(?:$|\s+(?:$|#))/,
                 onMatch: function(val, state, stack, line) {
-                    line = line.replace(/ #.*/, "");
+                    line = line.replace(/ #.*/, "")
                     var indent = /^ *((:\s*)?-(\s*[^|>])?)?/.exec(line)[0]
-                        .replace(/\S\s*$/, "").length;
-                    var indentationIndicator = parseInt(/\d+[\s+-]*$/.exec(line));
+                        .replace(/\S\s*$/, "").length
+                    var indentationIndicator = parseInt(/\d+[\s+-]*$/.exec(line))
                     
                     if (indentationIndicator) {
-                        indent += indentationIndicator - 1;
-                        this.next = "mlString";
+                        indent += indentationIndicator - 1
+                        this.next = "mlString"
                     } else {
-                        this.next = "mlStringPre";
+                        this.next = "mlStringPre"
                     }
                     if (!stack.length) {
-                        stack.push(this.next);
-                        stack.push(indent);
+                        stack.push(this.next)
+                        stack.push(indent)
                     } else {
-                        stack[0] = this.next;
-                        stack[1] = indent;
+                        stack[0] = this.next
+                        stack[1] = indent
                     }
-                    return this.token;
+                    return this.token
                 },
-                next : "mlString"
+                next : "mlString",
             }, {
                 token : "string", // single quoted string
-                regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']"
+                regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']",
             }, {
                 token : "constant.numeric", // float
-                regex : /(\b|[+\-\.])[\d_]+(?:(?:\.[\d_]*)?(?:[eE][+\-]?[\d_]+)?)(?=[^\d-\w]|$)/
+                regex : /(\b|[+\-\.])[\d_]+(?:(?:\.[\d_]*)?(?:[eE][+\-]?[\d_]+)?)(?=[^\d-\w]|$)/,
             }, {
                 token : "constant.numeric", // other number
-                regex : /[+\-]?\.inf\b|NaN\b|0x[\dA-Fa-f_]+|0b[10_]+/
+                regex : /[+\-]?\.inf\b|NaN\b|0x[\dA-Fa-f_]+|0b[10_]+/,
             }, {
                 token : "constant.language.boolean",
-                regex : "\\b(?:true|false|TRUE|FALSE|True|False|yes|no)\\b"
+                regex : "\\b(?:true|false|TRUE|FALSE|True|False|yes|no)\\b",
             }, {
                 token : "paren.lparen",
-                regex : "[[({]"
+                regex : "[[({]",
             }, {
                 token : "paren.rparen",
-                regex : "[\\])}]"
+                regex : "[\\])}]",
             }, {
                 token : "text",
-                regex : /[^\s,:\[\]\{\}]+/
-            }
+                regex : /[^\s,:\[\]\{\}]+/,
+            },
         ],
         "mlStringPre" : [
             {
                 token : "indent",
-                regex : /^ *$/
+                regex : /^ *$/,
             }, {
                 token : "indent",
                 regex : /^ */,
                 onMatch: function(val, state, stack) {
-                    var curIndent = stack[1];
+                    var curIndent = stack[1]
 
                     if (curIndent >= val.length) {
-                        this.next = "start";
-                        stack.shift();
-                        stack.shift();
+                        this.next = "start"
+                        stack.shift()
+                        stack.shift()
                     }
                     else {
-                        stack[1] = val.length - 1;
-                        this.next = stack[0] = "mlString";
+                        stack[1] = val.length - 1
+                        this.next = stack[0] = "mlString"
                     }
-                    return this.token;
+                    return this.token
                 },
-                next : "mlString"
+                next : "mlString",
             }, {
-                defaultToken : "string"
-            }
+                defaultToken : "string",
+            },
         ],
         "mlString" : [
             {
                 token : "indent",
-                regex : /^ *$/
+                regex : /^ *$/,
             }, {
                 token : "indent",
                 regex : /^ */,
                 onMatch: function(val, state, stack) {
-                    var curIndent = stack[1];
+                    var curIndent = stack[1]
 
                     if (curIndent >= val.length) {
-                        this.next = "start";
-                        stack.splice(0);
+                        this.next = "start"
+                        stack.splice(0)
                     }
                     else {
-                        this.next = "mlString";
+                        this.next = "mlString"
                     }
-                    return this.token;
+                    return this.token
                 },
-                next : "mlString"
+                next : "mlString",
             }, {
                 token : "string",
-                regex : '.+'
-            }
-        ]};
-    this.normalizeRules();
+                regex : '.+',
+            },
+        ]}
+    this.normalizeRules()
 
-};
+}
 
-oop.inherits(YamlHighlightRules, TextHighlightRules);
+oop.inherits(YamlHighlightRules, TextHighlightRules)
 
-exports.YamlHighlightRules = YamlHighlightRules;
-});
+exports.YamlHighlightRules = YamlHighlightRules
+})
 
 ace.define("ace/mode/matching_brace_outdent",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var Range = require("../range").Range;
+var Range = require("../range").Range
 
 var MatchingBraceOutdent = function() {};
 
@@ -156,175 +156,175 @@ var MatchingBraceOutdent = function() {};
 
     this.checkOutdent = function(line, input) {
         if (! /^\s+$/.test(line))
-            return false;
+            return false
 
-        return /^\s*\}/.test(input);
-    };
+        return /^\s*\}/.test(input)
+    }
 
     this.autoOutdent = function(doc, row) {
-        var line = doc.getLine(row);
-        var match = line.match(/^(\s*\})/);
+        var line = doc.getLine(row)
+        var match = line.match(/^(\s*\})/)
 
-        if (!match) return 0;
+        if (!match) return 0
 
-        var column = match[1].length;
-        var openBracePos = doc.findMatchingBracket({row: row, column: column});
+        var column = match[1].length
+        var openBracePos = doc.findMatchingBracket({row: row, column: column})
 
-        if (!openBracePos || openBracePos.row == row) return 0;
+        if (!openBracePos || openBracePos.row == row) return 0
 
-        var indent = this.$getIndent(doc.getLine(openBracePos.row));
-        doc.replace(new Range(row, 0, row, column-1), indent);
-    };
+        var indent = this.$getIndent(doc.getLine(openBracePos.row))
+        doc.replace(new Range(row, 0, row, column-1), indent)
+    }
 
     this.$getIndent = function(line) {
-        return line.match(/^\s*/)[0];
-    };
+        return line.match(/^\s*/)[0]
+    }
 
-}).call(MatchingBraceOutdent.prototype);
+}).call(MatchingBraceOutdent.prototype)
 
-exports.MatchingBraceOutdent = MatchingBraceOutdent;
-});
+exports.MatchingBraceOutdent = MatchingBraceOutdent
+})
 
 ace.define("ace/mode/folding/coffee",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../../lib/oop");
-var BaseFoldMode = require("./fold_mode").FoldMode;
-var Range = require("../../range").Range;
+var oop = require("../../lib/oop")
+var BaseFoldMode = require("./fold_mode").FoldMode
+var Range = require("../../range").Range
 
-var FoldMode = exports.FoldMode = function() {};
+var FoldMode = exports.FoldMode = function() {}
 oop.inherits(FoldMode, BaseFoldMode);
 
 (function() {
 
     this.getFoldWidgetRange = function(session, foldStyle, row) {
-        var range = this.indentationBlock(session, row);
+        var range = this.indentationBlock(session, row)
         if (range)
-            return range;
+            return range
 
-        var re = /\S/;
-        var line = session.getLine(row);
-        var startLevel = line.search(re);
+        var re = /\S/
+        var line = session.getLine(row)
+        var startLevel = line.search(re)
         if (startLevel == -1 || line[startLevel] != "#")
-            return;
+            return
 
-        var startColumn = line.length;
-        var maxRow = session.getLength();
-        var startRow = row;
-        var endRow = row;
+        var startColumn = line.length
+        var maxRow = session.getLength()
+        var startRow = row
+        var endRow = row
 
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var level = line.search(re);
+            line = session.getLine(row)
+            var level = line.search(re)
 
             if (level == -1)
-                continue;
+                continue
 
             if (line[level] != "#")
-                break;
+                break
 
-            endRow = row;
+            endRow = row
         }
 
         if (endRow > startRow) {
-            var endColumn = session.getLine(endRow).length;
-            return new Range(startRow, startColumn, endRow, endColumn);
+            var endColumn = session.getLine(endRow).length
+            return new Range(startRow, startColumn, endRow, endColumn)
         }
-    };
+    }
     this.getFoldWidget = function(session, foldStyle, row) {
-        var line = session.getLine(row);
-        var indent = line.search(/\S/);
-        var next = session.getLine(row + 1);
-        var prev = session.getLine(row - 1);
-        var prevIndent = prev.search(/\S/);
-        var nextIndent = next.search(/\S/);
+        var line = session.getLine(row)
+        var indent = line.search(/\S/)
+        var next = session.getLine(row + 1)
+        var prev = session.getLine(row - 1)
+        var prevIndent = prev.search(/\S/)
+        var nextIndent = next.search(/\S/)
 
         if (indent == -1) {
-            session.foldWidgets[row - 1] = prevIndent!= -1 && prevIndent < nextIndent ? "start" : "";
-            return "";
+            session.foldWidgets[row - 1] = prevIndent!= -1 && prevIndent < nextIndent ? "start" : ""
+            return ""
         }
         if (prevIndent == -1) {
             if (indent == nextIndent && line[indent] == "#" && next[indent] == "#") {
-                session.foldWidgets[row - 1] = "";
-                session.foldWidgets[row + 1] = "";
-                return "start";
+                session.foldWidgets[row - 1] = ""
+                session.foldWidgets[row + 1] = ""
+                return "start"
             }
         } else if (prevIndent == indent && line[indent] == "#" && prev[indent] == "#") {
             if (session.getLine(row - 2).search(/\S/) == -1) {
-                session.foldWidgets[row - 1] = "start";
-                session.foldWidgets[row + 1] = "";
-                return "";
+                session.foldWidgets[row - 1] = "start"
+                session.foldWidgets[row + 1] = ""
+                return ""
             }
         }
 
         if (prevIndent!= -1 && prevIndent < indent)
-            session.foldWidgets[row - 1] = "start";
+            session.foldWidgets[row - 1] = "start"
         else
-            session.foldWidgets[row - 1] = "";
+            session.foldWidgets[row - 1] = ""
 
         if (indent < nextIndent)
-            return "start";
+            return "start"
         else
-            return "";
-    };
+            return ""
+    }
 
-}).call(FoldMode.prototype);
+}).call(FoldMode.prototype)
 
-});
+})
 
 ace.define("ace/mode/yaml",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var YamlHighlightRules = require("./yaml_highlight_rules").YamlHighlightRules;
-var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent;
-var FoldMode = require("./folding/coffee").FoldMode;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var YamlHighlightRules = require("./yaml_highlight_rules").YamlHighlightRules
+var MatchingBraceOutdent = require("./matching_brace_outdent").MatchingBraceOutdent
+var FoldMode = require("./folding/coffee").FoldMode
 
 var Mode = function() {
-    this.HighlightRules = YamlHighlightRules;
-    this.$outdent = new MatchingBraceOutdent();
-    this.foldingRules = new FoldMode();
-    this.$behaviour = this.$defaultBehaviour;
-};
+    this.HighlightRules = YamlHighlightRules
+    this.$outdent = new MatchingBraceOutdent()
+    this.foldingRules = new FoldMode()
+    this.$behaviour = this.$defaultBehaviour
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
 
-    this.lineCommentStart = ["#"];
+    this.lineCommentStart = ["#"]
     
     this.getNextLineIndent = function(state, line, tab) {
-        var indent = this.$getIndent(line);
+        var indent = this.$getIndent(line)
 
         if (state == "start") {
-            var match = line.match(/^.*[\{\(\[]\s*$/);
+            var match = line.match(/^.*[\{\(\[]\s*$/)
             if (match) {
-                indent += tab;
+                indent += tab
             }
         }
 
-        return indent;
-    };
+        return indent
+    }
 
     this.checkOutdent = function(state, line, input) {
-        return this.$outdent.checkOutdent(line, input);
-    };
+        return this.$outdent.checkOutdent(line, input)
+    }
 
     this.autoOutdent = function(state, doc, row) {
-        this.$outdent.autoOutdent(doc, row);
-    };
+        this.$outdent.autoOutdent(doc, row)
+    }
 
 
-    this.$id = "ace/mode/yaml";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/yaml"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 
 });                (function() {
                     ace.require(["ace/mode/yaml"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

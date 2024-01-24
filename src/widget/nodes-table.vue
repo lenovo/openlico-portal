@@ -93,7 +93,7 @@
         </a-popover>
       </template>
       <template #action="{ row }">
-        <a-dropdown :disabled="row.onCloud" placement="bottomLeft" :trigger="['click']">
+        <a-dropdown :disabled="row.disabled" placement="bottomLeft" :trigger="['click']">
           <a-button>
             {{ $t('Action') }}
             <down-outlined />
@@ -349,10 +349,10 @@ export default {
         _this.terminalData.push({
           hostname: node.hostname,
           number: index,
-          onCloud: node.onCloud,
+          disabled: node.disabled,
         })
       })
-      if (_this.selectedNodeId.length > 0 && this.terminalData.filter(n => n.onCloud).length === 0) {
+      if (_this.selectedNodeId.length > 0 && this.terminalData.filter(n => n.disabled).length === 0) {
         _this.hasNoSelectedNode = false
       } else {
         _this.hasNoSelectedNode = true

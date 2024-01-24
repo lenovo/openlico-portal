@@ -18,7 +18,6 @@
     </a-form-item>
     <a-form-item :label="$t('BillGroup.StorageChargeRate')" name="storageChargeRate">
       <a-input
-        id="tid_billgroup-memory-charge-rate"
         v-model:value="billGroupForm.storageChargeRate"
         :disabled="mode == 'delete'"
         :addon-before="currency"

@@ -67,7 +67,7 @@ PR['registerLangHandler'](
          // exponent     ->    (e | E) [+ | -] decimal
          [PR['PR_LITERAL'],
           /^(?:0o[0-7]+|0x[\da-f]+|\d+(?:\.\d+)?(?:e[+\-]?\d+)?)/i,
-          null, '0123456789']
+          null, '0123456789'],
         ],
         [
          // Haskell does not have a regular lexical grammar due to the nested
@@ -96,6 +96,6 @@ PR['registerLangHandler'](
          // uniLarge     ->    any uppercase or titlecase Unicode letter
          [PR['PR_PLAIN'],  /^(?:[A-Z][\w\']*\.)*[a-zA-Z][\w\']*/],
          // matches the symbol production
-         [PR['PR_PUNCTUATION'], /^[^\t\n\x0B\x0C\r a-zA-Z0-9\'\"]+/]
+         [PR['PR_PUNCTUATION'], /^[^\t\n\x0B\x0C\r a-zA-Z0-9\'\"]+/],
         ]),
-    ['hs']);
+    ['hs'])

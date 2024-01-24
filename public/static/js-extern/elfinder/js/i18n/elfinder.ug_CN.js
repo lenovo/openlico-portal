@@ -5,11 +5,11 @@
  */
 (function(root, factory) {
 	if (typeof define === 'function' && define.amd) {
-		define(['elfinder'], factory);
+		define(['elfinder'], factory)
 	} else if (typeof exports !== 'undefined') {
-		module.exports = factory(require('elfinder'));
+		module.exports = factory(require('elfinder'))
 	} else {
-		factory(root.elFinder);
+		factory(root.elFinder)
 	}
 }(this, function(elFinder) {
 	elFinder.prototype.i18.ug_CN = {
@@ -368,7 +368,7 @@
 			'kindVideoWM'     : 'Windows Media سىن',
 			'kindVideoFlash'  : 'Flash سىن',
 			'kindVideoMKV'    : 'Matroska سىن',
-			'kindVideoOGG'    : 'Ogg سىن'
-		}
-	};
-}));
+			'kindVideoOGG'    : 'Ogg سىن',
+		},
+	}
+}))

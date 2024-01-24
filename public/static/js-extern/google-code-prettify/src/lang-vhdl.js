@@ -12,7 +12,7 @@ PR['registerLangHandler'](
     PR['createSimpleLexer'](
         [
          // Whitespace
-         [PR['PR_PLAIN'], /^[\t\n\r \xA0]+/, null, '\t\n\r \xA0']
+         [PR['PR_PLAIN'], /^[\t\n\r \xA0]+/, null, '\t\n\r \xA0'],
         ],
         [
          // String, character or bit string
@@ -29,6 +29,6 @@ PR['registerLangHandler'](
          // Identifier, basic or extended
          [PR['PR_PLAIN'], /^(?:[a-z]\w*|\\[^\\]*\\)/i],
          // Punctuation
-         [PR['PR_PUNCTUATION'], /^[^\w\t\n\r \xA0\"\'][^\w\t\n\r \xA0\-\"\']*/]
+         [PR['PR_PUNCTUATION'], /^[^\w\t\n\r \xA0\"\'][^\w\t\n\r \xA0\-\"\']*/],
         ]),
-    ['vhdl', 'vhd']);
+    ['vhdl', 'vhd'])

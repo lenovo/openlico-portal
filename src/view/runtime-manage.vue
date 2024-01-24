@@ -20,7 +20,11 @@
         </template>
         <template #name="{ name, row }">
           <div class="runtime-table-name" @click="onDetailClick(row)">
-            <img :src="getSrc(row.tag.includes('sys:intel'))" class="rcicon" style="width: 15px; height: 15px" />
+            <img
+              alt="icon"
+              :src="getSrc(row.tag.includes('sys:intel'))"
+              class="rcicon"
+              style="width: 15px; height: 15px" />
             {{ name }}
           </div>
         </template>

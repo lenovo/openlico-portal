@@ -1,5 +1,5 @@
 define("ace/snippets/perl",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "# #!/usr/bin/perl\n\
 snippet #!\n\
@@ -348,14 +348,14 @@ snippet debug_trace\n\
 		require Carp; Carp::confess\n\
 	};\n\
 \n\
-";
-exports.scope = "perl";
+"
+exports.scope = "perl"
 
 });                (function() {
                     window.require(["ace/snippets/perl"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

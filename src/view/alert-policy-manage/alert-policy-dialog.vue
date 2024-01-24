@@ -7,12 +7,11 @@
     :form-rules="alertPolicyRules"
     :success-message-formatter="successMessageFormatter">
     <a-form-item :label="$t('Alert.Policy.Name')" name="name">
-      <a-input id="tid_alert-policy-name" v-model:value="alertPolicyForm.name" :disabled="mode == 'delete'" />
+      <a-input v-model:value="alertPolicyForm.name" :disabled="mode == 'delete'" />
     </a-form-item>
     <div v-if="mode != 'delete'">
       <a-form-item :label="$t('Alert.Policy.Monitor')" name="monitor">
         <a-select
-          id="tid_alert-policy-monitor"
           v-model:value="alertPolicyForm.monitor"
           :get-popup-container="trigger => trigger.parentNode"
           @change="monitorChange()">
@@ -44,7 +43,6 @@
 
           <a-input
             v-if="alertPolicyForm.AlertInputRole.value"
-            id="tid_alert-policy-condition-value"
             v-model:value="alertPolicyForm.value"
             style="width: 80%"
             :suffix="alertPolicyForm.AlertInputRole.unit" />
@@ -52,25 +50,19 @@
       </a-form-item>
       <a-form-item :label="$t('Alert.Policy.Duration')" :name="mode != 'delete' ? 'duration' : ''">
         <a-input
-          id="tid_alert-policy-duration"
           v-model:value="alertPolicyForm.duration"
           :disabled="!alertPolicyForm.AlertInputRole.duration"
           suffix="S" />
       </a-form-item>
       <a-form-item :label="$t('Alert.Policy.Level')" :name="mode != 'delete' ? 'level' : ''">
         <a-radio-group v-model:value="alertPolicyForm.level">
-          <a-radio
-            v-for="item in AlertLevelList"
-            id="tid_alert-policy-level-fatal"
-            :key="item"
-            class="radio"
-            :value="item">
+          <a-radio v-for="item in AlertLevelList" :key="item" class="radio" :value="item">
             {{ $t(`Alert.PolicyLevel.${item}`) }}
           </a-radio>
         </a-radio-group>
       </a-form-item>
       <a-form-item :label="$t('Alert.Policy.Nogify')">
-        <a-select id="tid_alert-policy-notify" v-model:value="alertPolicyForm.nogify" allow-clear mode="multiple">
+        <a-select v-model:value="alertPolicyForm.nogify" allow-clear mode="multiple">
           <a-select-option v-for="item in AlertNotifyList" :key="item.id" :value="item.id" :label="item.name">
             {{ item.name }}
           </a-select-option>
@@ -85,7 +77,6 @@
       </a-form-item>
       <a-form-item :label="$t('Alert.Policy.Script')">
         <a-select
-          id="tid_alert-policy-script"
           v-model:value="alertPolicyForm.script"
           :get-popup-container="trigger => trigger.parentNode"
           allow-clear
@@ -95,13 +86,8 @@
           </a-select-option>
         </a-select>
       </a-form-item>
-      <!-- <a-form-item :label="$t('Alert.Policy.Notice')">
-        <a-checkbox id="tid_alert-policy-notice-wechat" v-model:checked="alertPolicyForm.wechat">
-          {{ $t('Alert.Policy.Notice.Wechat') }}
-        </a-checkbox>
-      </a-form-item> -->
       <a-form-item :label="$t('Alert.Policy.Status')">
-        <a-checkbox id="tid_alert-policy-status" v-model:checked="alertPolicyForm.status">
+        <a-checkbox v-model:checked="alertPolicyForm.status">
           {{ $t('Alert.Policy.Notice.Open') }}
         </a-checkbox>
       </a-form-item>

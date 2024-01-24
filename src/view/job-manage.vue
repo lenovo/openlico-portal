@@ -290,7 +290,7 @@
 import Format from '@/common/format'
 import JobService from '@/service/job'
 import AccessService from '@/service/access'
-import Mixins from '@/mixins/set-keep-alive-pages'
+import { useKeepAlive, clearKeepAliveByRoute } from '@/keep-alive/set-keep-alive'
 import CompositeTable from '@/component/composite-table.vue'
 import UserDataTooltip from '@/component/user-data-tooltip.vue'
 import FileManagerDialog from '@/component/file-manager-dialog.vue'
@@ -320,7 +320,14 @@ export default {
     JobTagDisplay,
     JobPriorityDialog,
   },
-  mixins: [Mixins(name, 'jobTable')],
+  beforeRouteEnter(to, from, next) {
+    clearKeepAliveByRoute(to, from, to.name).then(res => {
+      next()
+    })
+  },
+  setup() {
+    useKeepAlive('jobTable')
+  },
   data() {
     const statusTypes = [
       {

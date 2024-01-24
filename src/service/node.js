@@ -69,6 +69,7 @@ class Node {
     this.groups = []
     this.cpuUsed = null
     this.cpuTotal = null
+    this.usedCores = 0
     this.ramUsed = null
     this.ramTotal = null
     this.diskUsed = null
@@ -76,7 +77,7 @@ class Node {
     this.alertPolicyLevel = ''
     this.location = new NodeLocation()
     this.gpus = []
-    this.onCloud = false
+    this.nodeType = null
     this.gpuTotal = 0
   }
 
@@ -89,7 +90,7 @@ class Node {
     node.bmcIP = jsonObj.bmc_address
     node.machineType = jsonObj.machinetype
     node.frontImageUrl = jsonObj.frontimage
-    node.onCloud = jsonObj.on_cloud
+    node.nodeType = jsonObj.node_type
     node.groups = jsonObj.groups.map(i => i.name).join()
     node.location = jsonObj.location ? NodeLocation.parseFromRestApi(jsonObj.location) : ''
     node.alertPolicyLevel =
@@ -103,6 +104,7 @@ class Node {
     node.health = jsonObj.health && Constants.NodeHealthState.includes(jsonObj.health) ? jsonObj.health : ''
     node.powerStatus = jsonObj.power_status
     node.cpuUsed = 0.0
+    node.usedCores = jsonObj.used_core
     node.cpuTotal = !isNaN(jsonObj.cpu_total) ? jsonObj.cpu_total : null
     node.ramUsed = jsonObj.memory_used ? jsonObj.memory_used * 1024 : null
     node.ramTotal = !isNaN(jsonObj.memory_total) ? jsonObj.memory_total * 1024 : null
@@ -134,6 +136,11 @@ class Node {
         }
       }
     }
+  }
+
+  get disabled() {
+    // 0: physical server, 1: cloud server, 2: vGPU VM
+    return [1, 2].includes(this.nodeType)
   }
 }
 
@@ -267,13 +274,7 @@ function getAllNodes(type) {
   return new Promise((resolve, reject) => {
     Request.get('/api/cluster/node/', { params: req }).then(
       res => {
-        const data = []
-        res.body.data.forEach(node => {
-          data.push({
-            hostname: node.hostname,
-            id: node.id,
-          })
-        })
+        const data = res.body.data.map(node => Node.parseFromRestApi(node))
         resolve(data)
       },
       res => {

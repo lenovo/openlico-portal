@@ -183,11 +183,19 @@ export default {
   },
   watch: {
     '$route.params.id'(val, oldVal) {
-      this.jobId = parseInt(val)
-      if (this.jobId) this.refreshJob()
+      if (this.$route.name === 'job') {
+        this.jobId = parseInt(val)
+        if (this.jobId) this.refreshJob()
+      }
     },
     defaultDisplay(val, oldVal) {
       this.$nextTick(() => {
+        if (val === 'gpu' && this.$refs.monitorGpus) {
+          this.$refs.monitorGpus.autoResize()
+        }
+        if (val === 'cpu' && this.$refs.monitorCpu) {
+          this.$refs.monitorCpu.autoResize()
+        }
         if (val === 'log') {
           this.$refs.jobLogViewer.initJobLog()
         }

@@ -11,11 +11,9 @@
         :search-enable="true"
         :search-props="['name']">
         <template #controller>
-          <ul class="composite-table-controller">
-            <a-button id="tid_notify-group-create" type="primary" @click="onCreateClick">
-              {{ $t('UserGroup.Action.Create') }}
-            </a-button>
-          </ul>
+          <a-button id="tid_notify-group-create" type="primary" @click="onCreateClick">
+            {{ $t('UserGroup.Action.Create') }}
+          </a-button>
         </template>
         <template #action="{ row }">
           <a-dropdown placement="bottomLeft" :trigger="['click']">

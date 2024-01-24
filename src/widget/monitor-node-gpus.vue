@@ -4,7 +4,9 @@
       <a-row v-if="nodes.length == 0" class="m-b-20">
         <a-col :span="24" class="ant-table-placeholder">
           <div class="ant-empty ant-empty-normal">
-            <div class="ant-empty-image" />
+            <div class="ant-empty-image">
+              <img src="/static/img/system/main/nodata.png" style="height: 60px; width: 80px" :alt="$t('No.Data')" />
+            </div>
             <p class="ant-empty-description">
               {{ $t('No.Data') }}
             </p>
@@ -32,7 +34,7 @@
       </a-row>
       <div class="gpusPagination">
         <a-pagination
-          v-model:value="currentPage"
+          v-model:current="currentPage"
           :hide-on-single-page="true"
           :page-size="pageSize"
           :total="total"
@@ -55,7 +57,7 @@ export default {
       nodes: [],
       type: this.valueType || 'util',
       total: 0,
-      pageSize: 18,
+      pageSize: 24,
       currentPage: 1,
     }
   },

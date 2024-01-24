@@ -1,5 +1,5 @@
 define("ace/snippets/drools",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "\n\
 snippet rule\n\
@@ -20,14 +20,14 @@ snippet declare\n\
 		${2:// attributes} \n\
 	end\n\
 \n\
-";
-exports.scope = "drools";
+"
+exports.scope = "drools"
 
 });                (function() {
                     window.require(["ace/snippets/drools"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

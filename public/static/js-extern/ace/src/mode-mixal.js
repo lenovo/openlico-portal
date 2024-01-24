@@ -1,13 +1,13 @@
 define("ace/mode/mixal_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var MixalHighlightRules = function() {
     var isValidSymbol = function(string) {
-        return string && string.search(/^[A-Z\u0394\u03a0\u03a30-9]{1,10}$/) > -1 && string.search(/[A-Z\u0394\u03a0\u03a3]/) > -1;
-    };
+        return string && string.search(/^[A-Z\u0394\u03a0\u03a30-9]{1,10}$/) > -1 && string.search(/[A-Z\u0394\u03a0\u03a3]/) > -1
+    }
 
     var isValidOp = function(op) {
         return op && [
@@ -24,18 +24,18 @@ var MixalHighlightRules = function() {
             'INC2', 'DEC2', 'ENT2', 'ENN2', 'INC3', 'DEC3', 'ENT3', 'ENN3', 'INC4', 'DEC4', 'ENT4',
             'ENN4', 'INC5', 'DEC5', 'ENT5', 'ENN5', 'INC6', 'DEC6', 'ENT6', 'ENN6', 'INCX', 'DECX',
             'ENTX', 'ENNX', 'CMPA', 'FCMP', 'CMP1', 'CMP2', 'CMP3', 'CMP4', 'CMP5', 'CMP6', 'CMPX',
-            'EQU', 'ORIG', 'CON', 'ALF', 'END'
-        ].indexOf(op) > -1;
-    };
+            'EQU', 'ORIG', 'CON', 'ALF', 'END',
+        ].indexOf(op) > -1
+    }
 
     var containsOnlySupportedCharacters = function(string) {
-        return string && string.search(/[^ A-Z\u0394\u03a0\u03a30-9.,()+*/=$<>@;:'-]/) == -1;
-    };
+        return string && string.search(/[^ A-Z\u0394\u03a0\u03a30-9.,()+*/=$<>@;:'-]/) == -1
+    }
 
     this.$rules = {
         "start" : [{
             token: "comment.line.character",
-            regex: /^ *\*.*$/
+            regex: /^ *\*.*$/,
         }, {
             token: function(label, space0, keyword, space1, literal, comment) {
                 return [
@@ -44,10 +44,10 @@ var MixalHighlightRules = function() {
                     "keyword.control",
                     "text",
                     containsOnlySupportedCharacters(literal) ? "text" : "invalid.illegal",
-                    "comment.line.character"
-                ];
+                    "comment.line.character",
+                ]
             },
-            regex: /^(\S+)?( +)(ALF)(  )(.{5})(\s+.*)?$/
+            regex: /^(\S+)?( +)(ALF)( {2})(.{5})(\s+.*)?$/,
         }, {
             token: function(label, space0, keyword, space1, literal, comment) {
                 return [
@@ -56,20 +56,20 @@ var MixalHighlightRules = function() {
                     "keyword.control",
                     "text",
                     containsOnlySupportedCharacters(literal) ? "text" : "invalid.illegal",
-                    "comment.line.character"
-                ];
+                    "comment.line.character",
+                ]
             },
-            regex: /^(\S+)?( +)(ALF)( )(\S.{4})(\s+.*)?$/
+            regex: /^(\S+)?( +)(ALF)( )(\S.{4})(\s+.*)?$/,
         }, {
             token: function(label, space0, op, comment) {
                 return [
                     isValidSymbol(label) ? "variable.other" : "invalid.illegal",
                     "text",
                     isValidOp(op) ? "keyword.control" : "invalid.illegal",
-                    "comment.line.character"
-                ];
+                    "comment.line.character",
+                ]
             },
-            regex: /^(\S+)?( +)(\S+)(?:\s*)$/
+            regex: /^(\S+)?( +)(\S+)(?:\s*)$/,
         }, {
             token: function(label, space0, op, space1, address, comment) {
                 return [
@@ -78,45 +78,45 @@ var MixalHighlightRules = function() {
                     isValidOp(op) ? "keyword.control" : "invalid.illegal",
                     "text",
                     containsOnlySupportedCharacters(address) ? "text" : "invalid.illegal",
-                    "comment.line.character"
-                ];
+                    "comment.line.character",
+                ]
             },
-            regex: /^(\S+)?( +)(\S+)( +)(\S+)(\s+.*)?$/
+            regex: /^(\S+)?( +)(\S+)( +)(\S+)(\s+.*)?$/,
         }, {
-            defaultToken: "text"
-        }]
-    };
-};
+            defaultToken: "text",
+        }],
+    }
+}
 
-oop.inherits(MixalHighlightRules, TextHighlightRules);
+oop.inherits(MixalHighlightRules, TextHighlightRules)
 
-exports.MixalHighlightRules = MixalHighlightRules;
+exports.MixalHighlightRules = MixalHighlightRules
 
-});
+})
 
 define("ace/mode/mixal",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/mixal_highlight_rules"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var MixalHighlightRules = require("./mixal_highlight_rules").MixalHighlightRules;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var MixalHighlightRules = require("./mixal_highlight_rules").MixalHighlightRules
 
 var Mode = function() {
-    this.HighlightRules = MixalHighlightRules;
-};
+    this.HighlightRules = MixalHighlightRules
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
-    this.$id = "ace/mode/mixal";
-    this.lineCommentStart = "*";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/mixal"
+    this.lineCommentStart = "*"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     window.require(["ace/mode/mixal"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

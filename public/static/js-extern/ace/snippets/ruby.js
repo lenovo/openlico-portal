@@ -1,5 +1,5 @@
 ace.define("ace/snippets/ruby",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "########################################\n\
 # Ruby snippets - for Rails, see below #\n\
@@ -929,14 +929,14 @@ snippet aft\n\
 	after :${1:each} do\n\
 		${2}\n\
 	end\n\
-";
-exports.scope = "ruby";
+"
+exports.scope = "ruby"
 
 });                (function() {
                     ace.require(["ace/snippets/ruby"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

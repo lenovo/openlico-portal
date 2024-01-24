@@ -8,14 +8,10 @@
     :success-message-formatter="successMessageFormatter"
     :external-validate="externalValidate">
     <a-form-item v-if="mode != 'Unfreezed'" :label="$t('User.Username')" :name="mode == 'Delete' ? '' : 'username'">
-      <a-input
-        id="tid_user-username"
-        v-model:value="userForm.username"
-        :disabled="mode == 'Edit' || mode == 'Delete' || mode == 'Freezed'" />
+      <a-input v-model:value="userForm.username" :disabled="mode == 'Edit' || mode == 'Delete' || mode == 'Freezed'" />
     </a-form-item>
     <a-form-item v-if="freezed() && mode != 'Delete'" :label="$t('User.Role')" name="role">
       <a-select
-        id="tid_user-role"
         v-model:value="userForm.role"
         :disabled="mode == 'Delete' || (userForm.username == $store.state.auth.username && mode == 'Edit')">
         <a-select-option v-for="item in roleOptions" :key="item.value" :value="item.value">
@@ -24,17 +20,16 @@
       </a-select>
     </a-form-item>
     <a-form-item v-if="freezed() && mode != 'Delete'" :label="$t('User.FirstName')" name="firstName">
-      <a-input id="tid_user-firstname" v-model:value="userForm.firstName" :disabled="mode == 'Delete'" />
+      <a-input v-model:value="userForm.firstName" :disabled="mode == 'Delete'" />
     </a-form-item>
     <a-form-item v-if="freezed() && mode != 'Delete'" :label="$t('User.LastName')" name="lastName">
-      <a-input id="tid_user-lastname" v-model:value="userForm.lastName" :disabled="mode == 'Delete'" />
+      <a-input v-model:value="userForm.lastName" :disabled="mode == 'Delete'" />
     </a-form-item>
     <a-form-item
       v-if="freezed() && arch == 'host' && mode != 'Delete' && isScheduler"
       :label="$t('BillGroup')"
       name="billGroupId">
       <a-select
-        id="tid_user-billgroup"
         v-model:value.number="userForm.billGroupId"
         show-search
         :filter-option="filterOption"
@@ -45,15 +40,8 @@
       </a-select>
     </a-form-item>
     <a-form-item v-if="freezed() && mode != 'Delete'" :label="$t('User.Email')" name="email">
-      <a-input
-        id="tid_user-email"
-        v-model:value="userForm.email"
-        :disabled="mode == 'Delete'"
-        autocomplete="new-email" />
+      <a-input v-model:value="userForm.email" :disabled="mode == 'Delete'" autocomplete="new-email" />
     </a-form-item>
-    <!-- <a-form-item :label="$t('User.HomeDirectory')" name="homeDirectory" v-if="mode == 'Import'">
-    <a-input id="tid_user-home-directory" v-model:value="userForm.homeDirectory" :disabled="mode == 'Delete'"></a-input>
-  </a-form-item> -->
     <a-form-item
       v-if="ldapManaged && freezed() && arch == 'host' && mode != 'Delete'"
       :label="$t('UserGroup')"
@@ -62,27 +50,24 @@
       <a-checkbox v-if="mode === 'Create'" :checked="autoUserGroup" @change="autoUserGroup = !autoUserGroup">
         {{ $t('User.AutoUserGroup') }}
       </a-checkbox>
-      <a-select
-        v-if="!autoUserGroup"
-        id="tid_user-usergroup"
-        v-model:value="userForm.userGroupName"
-        show-search
-        option-filter-prop="children"
-        :disabled="mode == 'Delete'">
-        <a-select-option v-for="item in userGroupOptions" :key="item.value" :value="item.value">
-          {{ item.label }}
-        </a-select-option>
-      </a-select>
+      <a-form-item-rest>
+        <a-select
+          v-if="!autoUserGroup"
+          v-model:value="userForm.userGroupName"
+          show-search
+          option-filter-prop="title"
+          :disabled="mode == 'Delete'">
+          <a-select-option v-for="item in userGroupOptions" :key="item.value" :value="item.value" :title="item.label">
+            {{ item.label }}
+          </a-select-option>
+        </a-select>
+      </a-form-item-rest>
     </a-form-item>
     <a-form-item v-if="mode == 'Create'" :label="$t('User.Password')" name="password">
-      <a-input id="tid_user-password" v-model:value="userForm.password" type="password" autocomplete="new-password" />
+      <a-input v-model:value="userForm.password" type="password" autocomplete="new-password" />
     </a-form-item>
     <a-form-item v-if="mode == 'Create'" :label="$t('User.Password.Check')" name="passwordCheck">
-      <a-input
-        id="tid_user-password-check"
-        v-model:value="userForm.passwordCheck"
-        type="password"
-        autocomplete="new-password" />
+      <a-input v-model:value="userForm.passwordCheck" type="password" autocomplete="new-password" />
     </a-form-item>
 
     <a-form-item v-if="mode === 'Freezed' && ldapManaged" :label="$t('User.Freezed.Mode')" name="suspensionType">
@@ -98,12 +83,10 @@
       name="freezedTimeDay">
       <a-input-group compact>
         <a-input
-          id="tid_user-freezed-day"
           v-model:value="userForm.freezedTimeDay"
           style="width: 25%"
           :addon-after="$t('User.Freezed.Time.Days')" />
         <a-input
-          id="tid_user-freezed-hour"
           v-model:value="userForm.freezedTimeHour"
           style="width: 25%; margin-left: 10px"
           :addon-after="$t('User.Freezed.Time.Hours')" />

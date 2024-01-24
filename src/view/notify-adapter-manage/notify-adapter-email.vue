@@ -31,13 +31,17 @@
 
           <a-form-item :label="$t('AlertSetting.Label.Mail.SMTPAddress')" name="address" class="notify-email-ssl">
             <a-input
-              id="tid_notify-adapter-email-smtp-address"
               v-model:value="mail.address"
+              :title="$t('AlertSetting.Mail.Address')"
               :placeholder="$t('AlertSetting.Mail.Address')"
               :disabled="disabled || !mail.status" />
           </a-form-item>
           <a-form-item :label="$t('AlertSetting.Mail.SSL.Protocol')">
-            <a-select v-model:value="mail.ssl" :disabled="disabled || !mail.status" @change="changeProtocol">
+            <a-select
+              v-model:value="mail.ssl"
+              :disabled="disabled || !mail.status"
+              :title="$t('AlertSetting.Mail.SSL.Protocol')"
+              @change="changeProtocol">
               <a-select-option id="tid_notify-adapter-email-mode-null" value="NULL">
                 {{ $t('AlertSetting.Mail.SSL.Null') }}
               </a-select-option>
@@ -51,30 +55,30 @@
           </a-form-item>
           <a-form-item :label="$t('AlertSetting.Label.Mail.SMTPPort')" name="port">
             <a-input
-              id="tid_notify-adapter-email-smtp-port"
               v-model:value="mail.port"
+              :title="$t('AlertSetting.Mail.Port')"
               :placeholder="$t('AlertSetting.Mail.Port')"
               :disabled="disabled || !mail.status" />
           </a-form-item>
           <a-form-item :label="$t('AlertSetting.Label.Mail.Name')" name="id">
             <a-input
-              id="tid_notify-adapter-email-smtp-name"
               v-model:value="mail.id"
+              :title="$t('AlertSetting.Mail.ID')"
               :placeholder="$t('AlertSetting.Mail.ID')"
               :disabled="disabled || !mail.status" />
           </a-form-item>
           <a-form-item :label="$t('AlertSetting.Label.Mail.Password')" name="password">
             <a-input
-              id="tid_notify-adapter-email-smtp-password"
               v-model:value="mail.password"
               type="password"
+              :title="$t('AlertSetting.Mail.Password')"
               :placeholder="$t('AlertSetting.Mail.Password')"
               :disabled="disabled || !mail.status" />
           </a-form-item>
           <a-form-item :label="$t('AlertSetting.Mail.Sender')" name="mailbox">
             <a-input
-              id="tid_notify-adapter-email-sender"
               v-model:value="mail.mailbox"
+              :title="$t('AlertSetting.Mail.Mailbox')"
               :placeholder="$t('AlertSetting.Mail.Mailbox')"
               :disabled="disabled || !mail.status" />
           </a-form-item>
@@ -164,7 +168,8 @@ export default {
     changeStatus(e) {
       this.$refs.innerform.clearValidate()
       if (!e.target.value && this.resMail.status) {
-        this.subMail()
+        this.mail.status = true
+        this.subMail('off')
       }
     },
     changeProtocol() {
@@ -188,8 +193,9 @@ export default {
         _ => {},
       )
     },
-    subMail() {
-      this.$refs.TestEmailDialog.confirmSetting(this.mail).then(
+    subMail(status) {
+      const mail = { ...this.mail, status: status === 'off' ? false : this.mail.status }
+      this.$refs.TestEmailDialog.confirmSetting(mail).then(
         _ => {
           this.init()
         },

@@ -8,11 +8,11 @@
  */
 (function(root, factory) {
 	if (typeof define === 'function' && define.amd) {
-		define(['elfinder'], factory);
+		define(['elfinder'], factory)
 	} else if (typeof exports !== 'undefined') {
-		module.exports = factory(require('elfinder'));
+		module.exports = factory(require('elfinder'))
 	} else {
-		factory(root.elFinder);
+		factory(root.elFinder)
 	}
 }(this, function(elFinder) {
 	elFinder.prototype.i18.ko = {
@@ -575,8 +575,8 @@
 			'kindVideoWM'     : '윈도우 미디어 플레이어 동영상',
 			'kindVideoFlash'  : '플래쉬 동영상',
 			'kindVideoMKV'    : 'Matroska 동영상',
-			'kindVideoOGG'    : 'Ogg 동영상'
-		}
-	};
-}));
+			'kindVideoOGG'    : 'Ogg 동영상',
+		},
+	}
+}))
 

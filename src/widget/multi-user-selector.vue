@@ -7,6 +7,7 @@
         :addon-before="addonBeforeText"
         style="width: 70%"
         readOnly
+        :title="$t('Multi.User.All')"
         :placeholder="$t(allable ? 'Multi.User.All' : 'Multi.User.PleaseSelect')"
         :value="result"
         @change="inputValueChange" />

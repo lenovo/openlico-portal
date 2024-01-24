@@ -1,3 +1,4 @@
+<template><div></div></template>
 <script>
 import NodeService from '@/service/node'
 

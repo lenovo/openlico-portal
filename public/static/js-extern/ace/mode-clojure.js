@@ -1,8 +1,8 @@
 ace.define("ace/mode/clojure_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 
 
@@ -77,99 +77,99 @@ var ClojureHighlightRules = function() {
         'while with-bindings with-bindings* with-in-str with-loading-context ' +
         'with-local-vars with-meta with-open with-out-str with-precision xml-seq ' +
         'zero? zipmap'
-    );
+    )
 
     var keywords = ('throw try var ' +
         'def do fn if let loop monitor-enter monitor-exit new quote recur set!'
-    );
+    )
 
-    var buildinConstants = ("true false nil");
+    var buildinConstants = ("true false nil")
 
     var keywordMapper = this.createKeywordMapper({
         "keyword": keywords,
         "constant.language": buildinConstants,
-        "support.function": builtinFunctions
-    }, "identifier", false, " ");
+        "support.function": builtinFunctions,
+    }, "identifier", false, " ")
 
     this.$rules = {
         "start" : [
             {
                 token : "comment",
-                regex : ";.*$"
+                regex : ";.*$",
             }, {
                 token : "keyword", //parens
-                regex : "[\\(|\\)]"
+                regex : "[\\(|\\)]",
             }, {
                 token : "keyword", //lists
-                regex : "[\\'\\(]"
+                regex : "[\\'\\(]",
             }, {
                 token : "keyword", //vectors
-                regex : "[\\[|\\]]"
+                regex : "[\\[|\\]]",
             }, {
                 token : "keyword", //sets and maps
-                regex : "[\\{|\\}|\\#\\{|\\#\\}]"
+                regex : "[\\{|\\}|\\#\\{|\\#\\}]",
             }, {
                     token : "keyword", // ampersands
-                    regex : '[\\&]'
+                    regex : '[\\&]',
             }, {
                     token : "keyword", // metadata
-                    regex : '[\\#\\^\\{]'
+                    regex : '[\\#\\^\\{]',
             }, {
                     token : "keyword", // anonymous fn syntactic sugar
-                    regex : '[\\%]'
+                    regex : '[\\%]',
             }, {
                     token : "keyword", // deref reader macro
-                    regex : '[@]'
+                    regex : '[@]',
             }, {
                 token : "constant.numeric", // hex
-                regex : "0[xX][0-9a-fA-F]+\\b"
+                regex : "0[xX][0-9a-fA-F]+\\b",
             }, {
                 token : "constant.numeric", // float
-                regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b"
+                regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?\\b",
             }, {
                 token : "constant.language",
-                regex : '[!|\\$|%|&|\\*|\\-\\-|\\-|\\+\\+|\\+||=|!=|<=|>=|<>|<|>|!|&&]'
+                regex : '[!|\\$|%|&|\\*|\\-\\-|\\-|\\+\\+|\\+||=|!=|<=|>=|<>|<|>|!|&&]',
             }, {
                 token : keywordMapper,
-                regex : "[a-zA-Z_$][a-zA-Z0-9_$\\-]*\\b"
+                regex : "[a-zA-Z_$][a-zA-Z0-9_$\\-]*\\b",
             }, {
                 token : "string", // single line
                 regex : '"',
-                next: "string"
+                next: "string",
             }, {
                 token : "constant", // symbol
-                regex : /:[^()\[\]{}'"\^%`,;\s]+/
+                regex : /:[^()\[\]{}'"\^%`,;\s]+/,
             }, {
                 token : "string.regexp", //Regular Expressions
-                regex : '/#"(?:\\.|(?:\\")|[^""\n])*"/g'
-            }
+                regex : '/#"(?:\\.|(?:\\")|[^""\n])*"/g',
+            },
 
         ],
         "string" : [
             {
                 token : "constant.language.escape",
-                regex : "\\\\.|\\\\$"
+                regex : "\\\\.|\\\\$",
             }, {
                 token : "string",
-                regex : '[^"\\\\]+'
+                regex : '[^"\\\\]+',
             }, {
                 token : "string",
                 regex : '"',
-                next : "start"
-            }
-        ]
-    };
-};
+                next : "start",
+            },
+        ],
+    }
+}
 
-oop.inherits(ClojureHighlightRules, TextHighlightRules);
+oop.inherits(ClojureHighlightRules, TextHighlightRules)
 
-exports.ClojureHighlightRules = ClojureHighlightRules;
-});
+exports.ClojureHighlightRules = ClojureHighlightRules
+})
 
 ace.define("ace/mode/matching_parens_outdent",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var Range = require("../range").Range;
+var Range = require("../range").Range
 
 var MatchingParensOutdent = function() {};
 
@@ -177,139 +177,139 @@ var MatchingParensOutdent = function() {};
 
     this.checkOutdent = function(line, input) {
         if (! /^\s+$/.test(line))
-            return false;
+            return false
 
-        return /^\s*\)/.test(input);
-    };
+        return /^\s*\)/.test(input)
+    }
 
     this.autoOutdent = function(doc, row) {
-        var line = doc.getLine(row);
-        var match = line.match(/^(\s*\))/);
+        var line = doc.getLine(row)
+        var match = line.match(/^(\s*\))/)
 
-        if (!match) return 0;
+        if (!match) return 0
 
-        var column = match[1].length;
-        var openBracePos = doc.findMatchingBracket({row: row, column: column});
+        var column = match[1].length
+        var openBracePos = doc.findMatchingBracket({row: row, column: column})
 
-        if (!openBracePos || openBracePos.row == row) return 0;
+        if (!openBracePos || openBracePos.row == row) return 0
 
-        var indent = this.$getIndent(doc.getLine(openBracePos.row));
-        doc.replace(new Range(row, 0, row, column-1), indent);
-    };
+        var indent = this.$getIndent(doc.getLine(openBracePos.row))
+        doc.replace(new Range(row, 0, row, column-1), indent)
+    }
 
     this.$getIndent = function(line) {
-        var match = line.match(/^(\s+)/);
+        var match = line.match(/^(\s+)/)
         if (match) {
-            return match[1];
+            return match[1]
         }
 
-        return "";
-    };
+        return ""
+    }
 
-}).call(MatchingParensOutdent.prototype);
+}).call(MatchingParensOutdent.prototype)
 
-exports.MatchingParensOutdent = MatchingParensOutdent;
-});
+exports.MatchingParensOutdent = MatchingParensOutdent
+})
 
 ace.define("ace/mode/clojure",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var ClojureHighlightRules = require("./clojure_highlight_rules").ClojureHighlightRules;
-var MatchingParensOutdent = require("./matching_parens_outdent").MatchingParensOutdent;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var ClojureHighlightRules = require("./clojure_highlight_rules").ClojureHighlightRules
+var MatchingParensOutdent = require("./matching_parens_outdent").MatchingParensOutdent
 
 var Mode = function() {
-    this.HighlightRules = ClojureHighlightRules;
-    this.$outdent = new MatchingParensOutdent();
-    this.$behaviour = this.$defaultBehaviour;
-};
+    this.HighlightRules = ClojureHighlightRules
+    this.$outdent = new MatchingParensOutdent()
+    this.$behaviour = this.$defaultBehaviour
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
 
-    this.lineCommentStart = ";";
-    this.minorIndentFunctions = ["defn", "defn-", "defmacro", "def", "deftest", "testing"];
+    this.lineCommentStart = ";"
+    this.minorIndentFunctions = ["defn", "defn-", "defmacro", "def", "deftest", "testing"]
 
     this.$toIndent = function(str) {
         return str.split('').map(function(ch) {
             if (/\s/.exec(ch)) {
-                return ch;
+                return ch
             } else {
-                return ' ';
+                return ' '
             }
-        }).join('');
-    };
+        }).join('')
+    }
 
     this.$calculateIndent = function(line, tab) {
-        var baseIndent = this.$getIndent(line);
-        var delta = 0;
-        var isParen, ch;
+        var baseIndent = this.$getIndent(line)
+        var delta = 0
+        var isParen, ch
         for (var i = line.length - 1; i >= 0; i--) {
-            ch = line[i];
+            ch = line[i]
             if (ch === '(') {
-                delta--;
-                isParen = true;
+                delta--
+                isParen = true
             } else if (ch === '(' || ch === '[' || ch === '{') {
-                delta--;
-                isParen = false;
+                delta--
+                isParen = false
             } else if (ch === ')' || ch === ']' || ch === '}') {
-                delta++;
+                delta++
             }
             if (delta < 0) {
-                break;
+                break
             }
         }
         if (delta < 0 && isParen) {
-            i += 1;
-            var iBefore = i;
-            var fn = '';
+            i += 1
+            var iBefore = i
+            var fn = ''
             while (true) {
-                ch = line[i];
+                ch = line[i]
                 if (ch === ' ' || ch === '\t') {
                     if(this.minorIndentFunctions.indexOf(fn) !== -1) {
-                        return this.$toIndent(line.substring(0, iBefore - 1) + tab);
+                        return this.$toIndent(line.substring(0, iBefore - 1) + tab)
                     } else {
-                        return this.$toIndent(line.substring(0, i + 1));
+                        return this.$toIndent(line.substring(0, i + 1))
                     }
                 } else if (ch === undefined) {
-                    return this.$toIndent(line.substring(0, iBefore - 1) + tab);
+                    return this.$toIndent(line.substring(0, iBefore - 1) + tab)
                 }
-                fn += line[i];
-                i++;
+                fn += line[i]
+                i++
             }
         } else if(delta < 0 && !isParen) {
-            return this.$toIndent(line.substring(0, i+1));
+            return this.$toIndent(line.substring(0, i+1))
         } else if(delta > 0) {
-            baseIndent = baseIndent.substring(0, baseIndent.length - tab.length);
-            return baseIndent;
+            baseIndent = baseIndent.substring(0, baseIndent.length - tab.length)
+            return baseIndent
         } else {
-            return baseIndent;
+            return baseIndent
         }
-    };
+    }
 
     this.getNextLineIndent = function(state, line, tab) {
-        return this.$calculateIndent(line, tab);
-    };
+        return this.$calculateIndent(line, tab)
+    }
 
     this.checkOutdent = function(state, line, input) {
-        return this.$outdent.checkOutdent(line, input);
-    };
+        return this.$outdent.checkOutdent(line, input)
+    }
 
     this.autoOutdent = function(state, doc, row) {
-        this.$outdent.autoOutdent(doc, row);
-    };
+        this.$outdent.autoOutdent(doc, row)
+    }
 
-    this.$id = "ace/mode/clojure";
-    this.snippetFileId = "ace/snippets/clojure";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/clojure"
+    this.snippetFileId = "ace/snippets/clojure"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     ace.require(["ace/mode/clojure"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

@@ -8,7 +8,7 @@
     :external-validate="externalValidate"
     :success-message-formatter="successMessageFormatter">
     <a-form-item :label="$t('NotifyGroup.Name')" name="name">
-      <a-input id="tid_notify-group-name" v-model:value="notifyGroupForm.name" :disabled="mode == 'Delete'" />
+      <a-input v-model:value="notifyGroupForm.name" :disabled="mode == 'Delete'" />
     </a-form-item>
     <a-form-item ref="emailsFormItem" :label="$t('NotifyGroup.Emails')" name="emails">
       <multi-tags-input

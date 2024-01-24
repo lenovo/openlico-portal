@@ -1,105 +1,105 @@
 define("ace/mode/latex_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var LatexHighlightRules = function() {  
 
     this.$rules = {
         "start" : [{
             token : "comment",
-            regex : "%.*$"
+            regex : "%.*$",
         }, {
             token : ["keyword", "lparen", "variable.parameter", "rparen", "lparen", "storage.type", "rparen"],
-            regex : "(\\\\(?:documentclass|usepackage|input))(?:(\\[)([^\\]]*)(\\]))?({)([^}]*)(})"
+            regex : "(\\\\(?:documentclass|usepackage|input))(?:(\\[)([^\\]]*)(\\]))?({)([^}]*)(})",
         }, {
             token : ["keyword","lparen", "variable.parameter", "rparen"],
-            regex : "(\\\\(?:label|v?ref|cite(?:[^{]*)))(?:({)([^}]*)(}))?"
+            regex : "(\\\\(?:label|v?ref|cite(?:[^{]*)))(?:({)([^}]*)(}))?",
         }, {
             token : ["storage.type", "lparen", "variable.parameter", "rparen"],
             regex : "(\\\\begin)({)(verbatim)(})",
-            next : "verbatim"
+            next : "verbatim",
         },  {
             token : ["storage.type", "lparen", "variable.parameter", "rparen"],
             regex : "(\\\\begin)({)(lstlisting)(})",
-            next : "lstlisting"
+            next : "lstlisting",
         },  {
             token : ["storage.type", "lparen", "variable.parameter", "rparen"],
-            regex : "(\\\\(?:begin|end))({)([\\w*]*)(})"
+            regex : "(\\\\(?:begin|end))({)([\\w*]*)(})",
         }, {
             token : "storage.type",
             regex : /\\verb\b\*?/,
             next : [{
                 token : ["keyword.operator", "string", "keyword.operator"],
                 regex : "(.)(.*?)(\\1|$)|",
-                next : "start"
-            }]
+                next : "start",
+            }],
         }, {
             token : "storage.type",
-            regex : "\\\\[a-zA-Z]+"
+            regex : "\\\\[a-zA-Z]+",
         }, {
             token : "lparen",
-            regex : "[[({]"
+            regex : "[[({]",
         }, {
             token : "rparen",
-            regex : "[\\])}]"
+            regex : "[\\])}]",
         }, {
             token : "constant.character.escape",
-            regex : "\\\\[^a-zA-Z]?"
+            regex : "\\\\[^a-zA-Z]?",
         }, {
             token : "string",
             regex : "\\${1,2}",
-            next  : "equation"
+            next  : "equation",
         }],
         "equation" : [{
             token : "comment",
-            regex : "%.*$"
+            regex : "%.*$",
         }, {
             token : "string",
             regex : "\\${1,2}",
-            next  : "start"
+            next  : "start",
         }, {
             token : "constant.character.escape",
-            regex : "\\\\(?:[^a-zA-Z]|[a-zA-Z]+)"
+            regex : "\\\\(?:[^a-zA-Z]|[a-zA-Z]+)",
         }, {
             token : "error", 
             regex : "^\\s*$", 
-            next : "start" 
+            next : "start", 
         }, {
-            defaultToken : "string"
+            defaultToken : "string",
         }],
         "verbatim": [{
             token : ["storage.type", "lparen", "variable.parameter", "rparen"],
             regex : "(\\\\end)({)(verbatim)(})",
-            next : "start"
+            next : "start",
         }, {
-            defaultToken : "text"
+            defaultToken : "text",
         }],
         "lstlisting": [{
             token : ["storage.type", "lparen", "variable.parameter", "rparen"],
             regex : "(\\\\end)({)(lstlisting)(})",
-            next : "start"
+            next : "start",
         }, {
-            defaultToken : "text"
-        }]
-    };
+            defaultToken : "text",
+        }],
+    }
     
-    this.normalizeRules();
-};
-oop.inherits(LatexHighlightRules, TextHighlightRules);
+    this.normalizeRules()
+}
+oop.inherits(LatexHighlightRules, TextHighlightRules)
 
-exports.LatexHighlightRules = LatexHighlightRules;
+exports.LatexHighlightRules = LatexHighlightRules
 
-});
+})
 
 define("ace/mode/folding/latex",["require","exports","module","ace/lib/oop","ace/mode/folding/fold_mode","ace/range","ace/token_iterator"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../../lib/oop");
-var BaseFoldMode = require("./fold_mode").FoldMode;
-var Range = require("../../range").Range;
-var TokenIterator = require("../../token_iterator").TokenIterator;
+var oop = require("../../lib/oop")
+var BaseFoldMode = require("./fold_mode").FoldMode
+var Range = require("../../range").Range
+var TokenIterator = require("../../token_iterator").TokenIterator
 var keywordLevels = {
     "\\subparagraph": 1,
     "\\paragraph": 2,
@@ -110,187 +110,187 @@ var keywordLevels = {
     "\\chapter": 7,
     "\\part": 8,
     "\\begin": 9,
-    "\\end": 10
-};
+    "\\end": 10,
+}
 
-var FoldMode = exports.FoldMode = function() {};
+var FoldMode = exports.FoldMode = function() {}
 
 oop.inherits(FoldMode, BaseFoldMode);
 
 (function() {
 
-    this.foldingStartMarker = /^\s*\\(begin)|\s*\\(part|chapter|(?:sub)*(?:section|paragraph))\b|{\s*$/;
-    this.foldingStopMarker = /^\s*\\(end)\b|^\s*}/;
+    this.foldingStartMarker = /^\s*\\(begin)|\s*\\(part|chapter|(?:sub)*(?:section|paragraph))\b|{\s*$/
+    this.foldingStopMarker = /^\s*\\(end)\b|^\s*}/
 
     this.getFoldWidgetRange = function(session, foldStyle, row) {
-        var line = session.doc.getLine(row);
-        var match = this.foldingStartMarker.exec(line);
+        var line = session.doc.getLine(row)
+        var match = this.foldingStartMarker.exec(line)
         if (match) {
             if (match[1])
-                return this.latexBlock(session, row, match[0].length - 1);
+                return this.latexBlock(session, row, match[0].length - 1)
             if (match[2])
-                return this.latexSection(session, row, match[0].length - 1);
+                return this.latexSection(session, row, match[0].length - 1)
 
-            return this.openingBracketBlock(session, "{", row, match.index);
+            return this.openingBracketBlock(session, "{", row, match.index)
         }
 
-        var match = this.foldingStopMarker.exec(line);
+        var match = this.foldingStopMarker.exec(line)
         if (match) {
             if (match[1])
-                return this.latexBlock(session, row, match[0].length - 1);
+                return this.latexBlock(session, row, match[0].length - 1)
 
-            return this.closingBracketBlock(session, "}", row, match.index + match[0].length);
+            return this.closingBracketBlock(session, "}", row, match.index + match[0].length)
         }
-    };
+    }
 
     this.latexBlock = function(session, row, column, returnRange) {
         var keywords = {
             "\\begin": 1,
-            "\\end": -1
-        };
+            "\\end": -1,
+        }
 
-        var stream = new TokenIterator(session, row, column);
-        var token = stream.getCurrentToken();
+        var stream = new TokenIterator(session, row, column)
+        var token = stream.getCurrentToken()
         if (!token || !(token.type == "storage.type" || token.type == "constant.character.escape"))
-            return;
+            return
 
-        var val = token.value;
-        var dir = keywords[val];
+        var val = token.value
+        var dir = keywords[val]
 
         var getType = function() {
-            var token = stream.stepForward();
-            var type = token.type == "lparen" ?stream.stepForward().value : "";
+            var token = stream.stepForward()
+            var type = token.type == "lparen" ?stream.stepForward().value : ""
             if (dir === -1) {
-                stream.stepBackward();
+                stream.stepBackward()
                 if (type)
-                    stream.stepBackward();
+                    stream.stepBackward()
             }
-            return type;
-        };
-        var stack = [getType()];
-        var startColumn = dir === -1 ? stream.getCurrentTokenColumn() : session.getLine(row).length;
-        var startRow = row;
+            return type
+        }
+        var stack = [getType()]
+        var startColumn = dir === -1 ? stream.getCurrentTokenColumn() : session.getLine(row).length
+        var startRow = row
 
-        stream.step = dir === -1 ? stream.stepBackward : stream.stepForward;
+        stream.step = dir === -1 ? stream.stepBackward : stream.stepForward
         while(token = stream.step()) {
             if (!token || !(token.type == "storage.type" || token.type == "constant.character.escape"))
-                continue;
-            var level = keywords[token.value];
+                continue
+            var level = keywords[token.value]
             if (!level)
-                continue;
-            var type = getType();
+                continue
+            var type = getType()
             if (level === dir)
-                stack.unshift(type);
+                stack.unshift(type)
             else if (stack.shift() !== type || !stack.length)
-                break;
+                break
         }
 
         if (stack.length)
-            return;
+            return
         
         if (dir == 1) {
-            stream.stepBackward();
-            stream.stepBackward();
+            stream.stepBackward()
+            stream.stepBackward()
         }
         
         if (returnRange)
-            return stream.getCurrentTokenRange();
+            return stream.getCurrentTokenRange()
 
-        var row = stream.getCurrentTokenRow();
+        var row = stream.getCurrentTokenRow()
         if (dir === -1)
-            return new Range(row, session.getLine(row).length, startRow, startColumn);
+            return new Range(row, session.getLine(row).length, startRow, startColumn)
         else
-            return new Range(startRow, startColumn, row, stream.getCurrentTokenColumn());
-    };
+            return new Range(startRow, startColumn, row, stream.getCurrentTokenColumn())
+    }
 
     this.latexSection = function(session, row, column) {
-        var stream = new TokenIterator(session, row, column);
-        var token = stream.getCurrentToken();
+        var stream = new TokenIterator(session, row, column)
+        var token = stream.getCurrentToken()
         if (!token || token.type != "storage.type")
-            return;
+            return
 
-        var startLevel = keywordLevels[token.value] || 0;
-        var stackDepth = 0;
-        var endRow = row;
+        var startLevel = keywordLevels[token.value] || 0
+        var stackDepth = 0
+        var endRow = row
 
         while(token = stream.stepForward()) {
             if (token.type !== "storage.type")
-                continue;
-            var level = keywordLevels[token.value] || 0;
+                continue
+            var level = keywordLevels[token.value] || 0
 
             if (level >= 9) {
                 if (!stackDepth)
-                    endRow = stream.getCurrentTokenRow() - 1;
-                stackDepth += level == 9 ? 1 : - 1;
+                    endRow = stream.getCurrentTokenRow() - 1
+                stackDepth += level == 9 ? 1 : - 1
                 if (stackDepth < 0)
-                    break;
+                    break
             } else if (level >= startLevel)
-                break;
+                break
         }
 
         if (!stackDepth)
-            endRow = stream.getCurrentTokenRow() - 1;
+            endRow = stream.getCurrentTokenRow() - 1
 
         while (endRow > row && !/\S/.test(session.getLine(endRow)))
-            endRow--;
+            endRow--
 
         return new Range(
             row, session.getLine(row).length,
-            endRow, session.getLine(endRow).length
-        );
-    };
+            endRow, session.getLine(endRow).length,
+        )
+    }
 
-}).call(FoldMode.prototype);
+}).call(FoldMode.prototype)
 
-});
+})
 
 define("ace/mode/latex",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/latex_highlight_rules","ace/mode/behaviour/cstyle","ace/mode/folding/latex"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var LatexHighlightRules = require("./latex_highlight_rules").LatexHighlightRules;
-var CstyleBehaviour = require("./behaviour/cstyle").CstyleBehaviour;
-var LatexFoldMode = require("./folding/latex").FoldMode;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var LatexHighlightRules = require("./latex_highlight_rules").LatexHighlightRules
+var CstyleBehaviour = require("./behaviour/cstyle").CstyleBehaviour
+var LatexFoldMode = require("./folding/latex").FoldMode
 
 var Mode = function() {
-    this.HighlightRules = LatexHighlightRules;
-    this.foldingRules = new LatexFoldMode();
-    this.$behaviour = new CstyleBehaviour({ braces: true });
-};
+    this.HighlightRules = LatexHighlightRules
+    this.foldingRules = new LatexFoldMode()
+    this.$behaviour = new CstyleBehaviour({ braces: true })
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
-    this.type = "text";
+    this.type = "text"
     
-    this.lineCommentStart = "%";
+    this.lineCommentStart = "%"
 
-    this.$id = "ace/mode/latex";
+    this.$id = "ace/mode/latex"
     
     this.getMatching = function(session, row, column) {
         if (row == undefined)
-            row = session.selection.lead;
+            row = session.selection.lead
         if (typeof row == "object") {
-            column = row.column;
-            row = row.row;
+            column = row.column
+            row = row.row
         }
 
-        var startToken = session.getTokenAt(row, column);
+        var startToken = session.getTokenAt(row, column)
         if (!startToken)
-            return;
+            return
         if (startToken.value == "\\begin" || startToken.value == "\\end") {
-            return this.foldingRules.latexBlock(session, row, column, true);
+            return this.foldingRules.latexBlock(session, row, column, true)
         }
-    };
-}).call(Mode.prototype);
+    }
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 
 });                (function() {
                     window.require(["ace/mode/latex"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

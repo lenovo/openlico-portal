@@ -31,7 +31,7 @@ PR['registerLangHandler'](
             // whitespace
             [PR['PR_PLAIN'],   /^[\t\n\r \xA0]+/, null, '\t\n\r \xA0'],
             // all comments begin with '%'
-            [PR['PR_COMMENT'], /^%[^\r\n]*/, null, '%']
+            [PR['PR_COMMENT'], /^%[^\r\n]*/, null, '%'],
         ],
         [// special macros with no args
             [PR['PR_LITERAL'], /^\\(?:cr|l?dots|R|tab)\b/],
@@ -42,6 +42,6 @@ PR['registerLangHandler'](
 	    // catch escaped brackets
 	    [PR['PR_PLAIN'], /^\\[{}]/],
             // punctuation
-            [PR['PR_PUNCTUATION'], /^[{}()\[\]]+/]
+            [PR['PR_PUNCTUATION'], /^[{}()\[\]]+/],
         ]),
-    ['Rd', 'rd']);
+    ['Rd', 'rd'])

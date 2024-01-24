@@ -231,6 +231,7 @@ export default {
             nodes.splice(max, nodes.length - max)
             this.$warning({
               centered: true,
+              zIndex: 1004,
               title: this.$t('MainTools.MaxConnected.Msg'),
               okText: this.$t('Action.Ok'),
             })
@@ -241,8 +242,14 @@ export default {
           }
         }
 
-        this.filePath = e.workspace || ''
-        this.$refs.mainFilemanager && this.$refs.mainFilemanager.reloadPath(this.filePath)
+        if (e.workspace) {
+          this.filePath = e.workspace || ''
+          this.$refs.mainFilemanager && this.$refs.mainFilemanager.reloadPath(this.filePath)
+
+          let event = new Event('elEditorAction')
+          event.data = { type: 'clear' }
+          window.dispatchEvent(event)
+        }
       } else {
         document.getElementById('main-tools-sitting').remove()
       }

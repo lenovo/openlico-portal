@@ -46,6 +46,7 @@ class BillGroup {
     const billGroup = new BillGroup()
     billGroup.id = jsonObj.id
     billGroup.name = jsonObj.name
+    billGroup.balanceAlert = jsonObj.balance_alert
     billGroup.chargeRate = jsonObj.charge_rate
     billGroup.chargeRateMinute = jsonObj.cr_minute
     billGroup.chargeRateDisplayType = jsonObj.cr_display_type
@@ -287,6 +288,52 @@ function createBillGroup(data) {
     Request.post('/api/accounting/billgroup/', req).then(
       res => {
         resolve(BillGroup.parseFromRestApi(res.body))
+      },
+      res => {
+        ErrorHandler.restApiErrorHandler(res, reject)
+      },
+    )
+  })
+}
+
+function getBillGroupSettings(data) {
+  return new Promise((resolve, reject) => {
+    Request.get('/api/accounting/balance/').then(
+      res => {
+        resolve(res.body)
+      },
+      res => {
+        ErrorHandler.restApiErrorHandler(res, reject)
+      },
+    )
+  })
+}
+
+function settingBalanceAlert(data) {
+  return new Promise((resolve, reject) => {
+    const req = {
+      balance_threshold: Number(data.balanceAlert),
+      targets: data.notificationGroup,
+    }
+    Request.put('/api/accounting/balance/', req).then(
+      res => {
+        resolve()
+      },
+      res => {
+        ErrorHandler.restApiErrorHandler(res, reject)
+      },
+    )
+  })
+}
+
+function switchBalanceAlert(id, balanceAlert) {
+  return new Promise((resolve, reject) => {
+    const req = {
+      balance_alert: balanceAlert,
+    }
+    Request.put(`/api/accounting/billgroup/${id}/balance/`, req).then(
+      res => {
+        resolve()
       },
       res => {
         ErrorHandler.restApiErrorHandler(res, reject)
@@ -566,6 +613,9 @@ export default {
   deleteRelationshipByUsers,
   getBillGroupById,
   createBillGroup,
+  settingBalanceAlert,
+  switchBalanceAlert,
+  getBillGroupSettings,
   updateBillGroup,
   deleteBillGroup,
   copyBillGroup,

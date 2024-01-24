@@ -1,7 +1,7 @@
 define("ace/theme/nord_dark",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
 
-exports.isDark = true;
-exports.cssClass = "ace-nord-dark";
+exports.isDark = true
+exports.cssClass = "ace-nord-dark"
 exports.cssText = ".ace-nord-dark .ace_gutter {\
 color: #616e88;\
 }\
@@ -87,16 +87,16 @@ color: #616e88;\
 .ace-nord-dark .ace_indent-guide {\
 box-shadow: inset -1px 0 0 0 #434c5eb3;\
 }\
-";
-exports.$selectionColorConflict = true;
+"
+exports.$selectionColorConflict = true
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+var dom = require("../lib/dom")
+dom.importCssString(exports.cssText, exports.cssClass)
 });                (function() {
                     window.require(["ace/theme/nord_dark"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

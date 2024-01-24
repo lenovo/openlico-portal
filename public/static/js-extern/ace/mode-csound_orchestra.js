@@ -1,18 +1,18 @@
 ace.define("ace/mode/csound_preprocessor_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
+var oop = require("../lib/oop")
 
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var CsoundPreprocessorHighlightRules = function(embeddedRulePrefix) {
 
-    this.embeddedRulePrefix = embeddedRulePrefix === undefined ? "" : embeddedRulePrefix;
+    this.embeddedRulePrefix = embeddedRulePrefix === undefined ? "" : embeddedRulePrefix
 
     this.semicolonComments = {
         token : "comment.line.semicolon.csound",
-        regex : ";.*$"
-    };
+        regex : ";.*$",
+    }
 
     this.comments = [
         {
@@ -22,67 +22,67 @@ var CsoundPreprocessorHighlightRules = function(embeddedRulePrefix) {
                 {
                     token : "punctuation.definition.comment.end.csound",
                     regex : "\\*/",
-                    next  : "pop"
+                    next  : "pop",
                 }, {
-                    defaultToken: "comment.block.csound"
-                }
-            ]
+                    defaultToken: "comment.block.csound",
+                },
+            ],
         }, {
             token : "comment.line.double-slash.csound",
-            regex : "//.*$"
+            regex : "//.*$",
         },
-        this.semicolonComments
-    ];
+        this.semicolonComments,
+    ]
 
     this.macroUses = [
         {
             token : ["entity.name.function.preprocessor.csound", "punctuation.definition.macro-parameter-value-list.begin.csound"],
             regex : /(\$[A-Z_a-z]\w*\.?)(\()/,
-            next  : "macro parameter value list"
+            next  : "macro parameter value list",
         }, {
             token : "entity.name.function.preprocessor.csound",
-            regex : /\$[A-Z_a-z]\w*(?:\.|\b)/
-        }
-    ];
+            regex : /\$[A-Z_a-z]\w*(?:\.|\b)/,
+        },
+    ]
 
     this.numbers = [
         {
             token : "constant.numeric.float.csound",
-            regex : /(?:\d+[Ee][+-]?\d+)|(?:\d+\.\d*|\d*\.\d+)(?:[Ee][+-]?\d+)?/
+            regex : /(?:\d+[Ee][+-]?\d+)|(?:\d+\.\d*|\d*\.\d+)(?:[Ee][+-]?\d+)?/,
         }, {
             token : ["storage.type.number.csound", "constant.numeric.integer.hexadecimal.csound"],
-            regex : /(0[Xx])([0-9A-Fa-f]+)/
+            regex : /(0[Xx])([0-9A-Fa-f]+)/,
         }, {
             token : "constant.numeric.integer.decimal.csound",
-            regex : /\d+/
-        }
-    ];
+            regex : /\d+/,
+        },
+    ]
 
     this.bracedStringContents = [
         {
             token : "constant.character.escape.csound",
-            regex : /\\(?:[\\abnrt"]|[0-7]{1,3})/
+            regex : /\\(?:[\\abnrt"]|[0-7]{1,3})/,
         },
         {
             token : "constant.character.placeholder.csound",
-            regex : /%[#0\- +]*\d*(?:\.\d+)?[diuoxXfFeEgGaAcs]/
+            regex : /%[#0\- +]*\d*(?:\.\d+)?[diuoxXfFeEgGaAcs]/,
         }, {
             token : "constant.character.escape.csound",
-            regex : /%%/
-        }
-    ];
+            regex : /%%/,
+        },
+    ]
 
     this.quotedStringContents = [
         this.macroUses,
-        this.bracedStringContents
-    ];
+        this.bracedStringContents,
+    ]
 
     var start = [
         this.comments,
 
         {
             token : "keyword.preprocessor.csound",
-            regex : /#(?:e(?:nd(?:if)?|lse)\b|##)|@@?[ \t]*\d+/
+            regex : /#(?:e(?:nd(?:if)?|lse)\b|##)|@@?[ \t]*\d+/,
         }, {
             token : "keyword.preprocessor.csound",
             regex : /#include/,
@@ -91,9 +91,9 @@ var CsoundPreprocessorHighlightRules = function(embeddedRulePrefix) {
                 {
                     token : "string.csound",
                     regex : /([^ \t])(?:.*?\1)/,
-                    next  : "pop"
-                }
-            ]
+                    next  : "pop",
+                },
+            ],
         }, {
             token : "keyword.preprocessor.csound",
             regex : /#includestr/,
@@ -102,21 +102,21 @@ var CsoundPreprocessorHighlightRules = function(embeddedRulePrefix) {
                 {
                     token : "string.csound",
                     regex : /([^ \t])(?:.*?\1)/,
-                    next  : "pop"
-                }
-            ]
+                    next  : "pop",
+                },
+            ],
         }, {
             token : "keyword.preprocessor.csound",
             regex : /#[ \t]*define/,
-            next  : "define directive"
+            next  : "define directive",
         }, {
             token : "keyword.preprocessor.csound",
             regex : /#(?:ifn?def|undef)\b/,
-            next  : "macro directive"
+            next  : "macro directive",
         },
 
-        this.macroUses
-    ];
+        this.macroUses,
+    ]
 
     this.$rules = {
         "start": start,
@@ -125,37 +125,37 @@ var CsoundPreprocessorHighlightRules = function(embeddedRulePrefix) {
             this.comments,
             {
                 token : "entity.name.function.preprocessor.csound",
-                regex : /[A-Z_a-z]\w*/
+                regex : /[A-Z_a-z]\w*/,
             }, {
                 token : "punctuation.definition.macro-parameter-name-list.begin.csound",
                 regex : /\(/,
-                next  : "macro parameter name list"
+                next  : "macro parameter name list",
             }, {
                 token : "punctuation.definition.macro.begin.csound",
                 regex : /#/,
-                next  : "macro body"
-            }
+                next  : "macro body",
+            },
         ],
         "macro parameter name list": [
             {
                 token : "variable.parameter.preprocessor.csound",
-                regex : /[A-Z_a-z]\w*/
+                regex : /[A-Z_a-z]\w*/,
             }, {
                 token : "punctuation.definition.macro-parameter-name-list.end.csound",
                 regex : /\)/,
-                next  : "define directive"
-            }
+                next  : "define directive",
+            },
         ],
         "macro body": [
             {
                 token : "constant.character.escape.csound",
-                regex : /\\#/
+                regex : /\\#/,
             }, {
                 token : "punctuation.definition.macro.end.csound",
                 regex : /#/,
-                next  : "start"
+                next  : "start",
             },
-            start
+            start,
         ],
 
         "macro directive": [
@@ -163,61 +163,61 @@ var CsoundPreprocessorHighlightRules = function(embeddedRulePrefix) {
             {
                 token : "entity.name.function.preprocessor.csound",
                 regex : /[A-Z_a-z]\w*/,
-                next  : "start"
-            }
+                next  : "start",
+            },
         ],
 
         "macro parameter value list": [
             {
                 token : "punctuation.definition.macro-parameter-value-list.end.csound",
                 regex : /\)/,
-                next  : "start"
+                next  : "start",
             }, {
                 token : "punctuation.definition.string.begin.csound",
                 regex : /"/,
-                next  : "macro parameter value quoted string"
+                next  : "macro parameter value quoted string",
             }, this.pushRule({
                 token : "punctuation.macro-parameter-value-parenthetical.begin.csound",
                 regex : /\(/,
-                next  : "macro parameter value parenthetical"
+                next  : "macro parameter value parenthetical",
             }), {
                 token : "punctuation.macro-parameter-value-separator.csound",
-                regex : "[#']"
-            }
+                regex : "[#']",
+            },
         ],
         "macro parameter value quoted string": [
             {
                 token : "constant.character.escape.csound",
-                regex : /\\[#'()]/
+                regex : /\\[#'()]/,
             }, {
                 token : "invalid.illegal.csound",
-                regex : /[#'()]/
+                regex : /[#'()]/,
             }, {
                 token : "punctuation.definition.string.end.csound",
                 regex : /"/,
-                next  : "macro parameter value list"
+                next  : "macro parameter value list",
             },
             this.quotedStringContents,
             {
-                defaultToken: "string.quoted.csound"
-            }
+                defaultToken: "string.quoted.csound",
+            },
         ],
         "macro parameter value parenthetical": [
             {
                 token : "constant.character.escape.csound",
-                regex : /\\\)/
+                regex : /\\\)/,
             }, this.popRule({
                 token : "punctuation.macro-parameter-value-parenthetical.end.csound",
-                regex : /\)/
+                regex : /\)/,
             }), this.pushRule({
                 token : "punctuation.macro-parameter-value-parenthetical.begin.csound",
                 regex : /\(/,
-                next  : "macro parameter value parenthetical"
+                next  : "macro parameter value parenthetical",
             }),
-            start
-        ]
-    };
-};
+            start,
+        ],
+    }
+}
 
 oop.inherits(CsoundPreprocessorHighlightRules, TextHighlightRules);
 
@@ -226,90 +226,90 @@ oop.inherits(CsoundPreprocessorHighlightRules, TextHighlightRules);
     this.pushRule = function(params) {
         if (Array.isArray(params.next)) {
             for (var i = 0; i < params.next.length; i++) {
-                params.next[i] = this.embeddedRulePrefix + params.next[i];
+                params.next[i] = this.embeddedRulePrefix + params.next[i]
             }
         }
 
         return {
             regex : params.regex, onMatch: function(value, currentState, stack, line) {
                 if (stack.length === 0)
-                    stack.push(currentState);
+                    stack.push(currentState)
                 if (Array.isArray(params.next)) {
                     for (var i = 0; i < params.next.length; i++) {
-                        stack.push(params.next[i]);
+                        stack.push(params.next[i])
                     }
                 } else {
-                    stack.push(params.next);
+                    stack.push(params.next)
                 }
-                this.next = stack[stack.length - 1];
-                return params.token;
+                this.next = stack[stack.length - 1]
+                return params.token
             },
 
-            get next() { return Array.isArray(params.next) ? params.next[params.next.length - 1] : params.next; },
+            get next() { return Array.isArray(params.next) ? params.next[params.next.length - 1] : params.next },
             set next(next) {
                 if (!Array.isArray(params.next)) {
-                    params.next = next;
+                    params.next = next
                 }
             },
 
-            get token() { return params.token; }
-        };
-    };
+            get token() { return params.token },
+        }
+    }
 
     this.popRule = function(params) {
         if (params.next) {
-            params.next = this.embeddedRulePrefix + params.next;
+            params.next = this.embeddedRulePrefix + params.next
         }
 
         return {
             regex : params.regex, onMatch: function(value, currentState, stack, line) {
-                stack.pop();
+                stack.pop()
                 if (params.next) {
-                    stack.push(params.next);
-                    this.next = stack[stack.length - 1];
+                    stack.push(params.next)
+                    this.next = stack[stack.length - 1]
                 } else {
-                    this.next = stack.length > 1 ? stack[stack.length - 1] : stack.pop();
+                    this.next = stack.length > 1 ? stack[stack.length - 1] : stack.pop()
                 }
-                return params.token;
-            }
-        };
-    };
+                return params.token
+            },
+        }
+    }
 
-}).call(CsoundPreprocessorHighlightRules.prototype);
+}).call(CsoundPreprocessorHighlightRules.prototype)
 
-exports.CsoundPreprocessorHighlightRules = CsoundPreprocessorHighlightRules;
-});
+exports.CsoundPreprocessorHighlightRules = CsoundPreprocessorHighlightRules
+})
 
 ace.define("ace/mode/csound_score_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
+var oop = require("../lib/oop")
 
-var CsoundPreprocessorHighlightRules = require("./csound_preprocessor_highlight_rules").CsoundPreprocessorHighlightRules;
+var CsoundPreprocessorHighlightRules = require("./csound_preprocessor_highlight_rules").CsoundPreprocessorHighlightRules
 
 var CsoundScoreHighlightRules = function(embeddedRulePrefix) {
 
-    CsoundPreprocessorHighlightRules.call(this, embeddedRulePrefix);
+    CsoundPreprocessorHighlightRules.call(this, embeddedRulePrefix)
 
     this.quotedStringContents.push({
         token : "invalid.illegal.csound-score",
-        regex : /[^"]*$/
-    });
+        regex : /[^"]*$/,
+    })
 
-    var start = this.$rules.start;
+    var start = this.$rules.start
     start.push(
         {
             token : "keyword.control.csound-score",
-            regex : /[abCdefiqstvxy]/
+            regex : /[abCdefiqstvxy]/,
         }, {
             token : "invalid.illegal.csound-score",
-            regex : /w/
+            regex : /w/,
         }, {
             token : "constant.numeric.language.csound-score",
-            regex : /z/
+            regex : /z/,
         }, {
             token : ["keyword.control.csound-score", "constant.numeric.integer.decimal.csound-score"],
-            regex : /([nNpP][pP])(\d+)/
+            regex : /([nNpP][pP])(\d+)/,
         }, {
             token : "keyword.other.csound-score",
             regex : /[mn]/,
@@ -317,134 +317,134 @@ var CsoundScoreHighlightRules = function(embeddedRulePrefix) {
                 {
                     token : "empty",
                     regex : /$/,
-                    next  : "pop"
+                    next  : "pop",
                 },
                 this.comments,
                 {
                     token : "entity.name.label.csound-score",
-                    regex : /[A-Z_a-z]\w*/
-                }
-            ]
+                    regex : /[A-Z_a-z]\w*/,
+                },
+            ],
         }, {
             token : "keyword.preprocessor.csound-score",
             regex : /r\b/,
-            next  : "repeat section"
+            next  : "repeat section",
         },
 
         this.numbers,
 
         {
             token : "keyword.operator.csound-score",
-            regex : "[!+\\-*/^%&|<>#~.]"
+            regex : "[!+\\-*/^%&|<>#~.]",
         },
 
         this.pushRule({
             token : "punctuation.definition.string.begin.csound-score",
             regex : /"/,
-            next  : "quoted string"
+            next  : "quoted string",
         }),
 
         this.pushRule({
             token : "punctuation.braced-loop.begin.csound-score",
             regex : /{/,
-            next  : "loop after left brace"
-        })
-    );
+            next  : "loop after left brace",
+        }),
+    )
 
     this.addRules({
         "repeat section": [
             {
                 token : "empty",
                 regex : /$/,
-                next  : "start"
+                next  : "start",
             },
             this.comments,
             {
                 token : "constant.numeric.integer.decimal.csound-score",
                 regex : /\d+/,
-                next  : "repeat section before label"
-            }
+                next  : "repeat section before label",
+            },
         ],
         "repeat section before label": [
             {
                 token : "empty",
                 regex : /$/,
-                next  : "start"
+                next  : "start",
             },
             this.comments,
             {
                 token : "entity.name.label.csound-score",
                 regex : /[A-Z_a-z]\w*/,
-                next  : "start"
-            }
+                next  : "start",
+            },
         ],
 
         "quoted string": [
             this.popRule({
                 token : "punctuation.definition.string.end.csound-score",
-                regex : /"/
+                regex : /"/,
             }),
             this.quotedStringContents,
             {
-                defaultToken: "string.quoted.csound-score"
-            }
+                defaultToken: "string.quoted.csound-score",
+            },
         ],
 
         "loop after left brace": [
             this.popRule({
                 token : "constant.numeric.integer.decimal.csound-score",
                 regex : /\d+/,
-                next  : "loop after repeat count"
+                next  : "loop after repeat count",
             }),
             this.comments,
             {
                 token : "invalid.illegal.csound",
-                regex : /\S.*/
-            }
+                regex : /\S.*/,
+            },
         ],
         "loop after repeat count": [
             this.popRule({
                 token : "entity.name.function.preprocessor.csound-score",
                 regex : /[A-Z_a-z]\w*\b/,
-                next  : "loop after macro name"
+                next  : "loop after macro name",
             }),
             this.comments,
             {
                 token : "invalid.illegal.csound",
-                regex : /\S.*/
-            }
+                regex : /\S.*/,
+            },
         ],
         "loop after macro name": [
             start,
             this.popRule({
                 token : "punctuation.braced-loop.end.csound-score",
-                regex : /}/
-            })
-        ]
-    });
+                regex : /}/,
+            }),
+        ],
+    })
 
-    this.normalizeRules();
-};
+    this.normalizeRules()
+}
 
-oop.inherits(CsoundScoreHighlightRules, CsoundPreprocessorHighlightRules);
+oop.inherits(CsoundScoreHighlightRules, CsoundPreprocessorHighlightRules)
 
-exports.CsoundScoreHighlightRules = CsoundScoreHighlightRules;
-});
+exports.CsoundScoreHighlightRules = CsoundScoreHighlightRules
+})
 
 ace.define("ace/mode/lua_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var LuaHighlightRules = function() {
 
     var keywords = (
         "break|do|else|elseif|end|for|function|if|in|local|repeat|"+
          "return|then|until|while|or|and|not"
-    );
+    )
 
-    var builtinConstants = ("true|false|nil|_G|_VERSION");
+    var builtinConstants = ("true|false|nil|_G|_VERSION")
 
     var functions = (
         "string|xpcall|package|tostring|print|os|unpack|require|"+
@@ -469,11 +469,11 @@ var LuaHighlightRules = function() {
         "status|wrap|create|running|"+
         "__add|__sub|__mod|__unm|__concat|__lt|__index|__call|__gc|__metatable|"+
          "__mul|__div|__pow|__len|__eq|__le|__newindex|__tostring|__mode|__tonumber"
-    );
+    )
 
-    var stdLibaries = ("string|package|os|io|math|debug|table|coroutine");
+    var stdLibaries = ("string|package|os|io|math|debug|table|coroutine")
 
-    var deprecatedIn5152 = ("setn|foreach|foreachi|gcinfo|log10|maxn");
+    var deprecatedIn5152 = ("setn|foreach|foreachi|gcinfo|log10|maxn")
 
     var keywordMapper = this.createKeywordMapper({
         "keyword": keywords,
@@ -481,120 +481,120 @@ var LuaHighlightRules = function() {
         "keyword.deprecated": deprecatedIn5152,
         "constant.library": stdLibaries,
         "constant.language": builtinConstants,
-        "variable.language": "self"
-    }, "identifier");
+        "variable.language": "self",
+    }, "identifier")
 
-    var decimalInteger = "(?:(?:[1-9]\\d*)|(?:0))";
-    var hexInteger = "(?:0[xX][\\dA-Fa-f]+)";
-    var integer = "(?:" + decimalInteger + "|" + hexInteger + ")";
+    var decimalInteger = "(?:(?:[1-9]\\d*)|(?:0))"
+    var hexInteger = "(?:0[xX][\\dA-Fa-f]+)"
+    var integer = "(?:" + decimalInteger + "|" + hexInteger + ")"
 
-    var fraction = "(?:\\.\\d+)";
-    var intPart = "(?:\\d+)";
-    var pointFloat = "(?:(?:" + intPart + "?" + fraction + ")|(?:" + intPart + "\\.))";
-    var floatNumber = "(?:" + pointFloat + ")";
+    var fraction = "(?:\\.\\d+)"
+    var intPart = "(?:\\d+)"
+    var pointFloat = "(?:(?:" + intPart + "?" + fraction + ")|(?:" + intPart + "\\.))"
+    var floatNumber = "(?:" + pointFloat + ")"
 
     this.$rules = {
         "start" : [{
             stateName: "bracketedComment",
             onMatch : function(value, currentState, stack){
-                stack.unshift(this.next, value.length - 2, currentState);
-                return "comment";
+                stack.unshift(this.next, value.length - 2, currentState)
+                return "comment"
             },
             regex : /\-\-\[=*\[/,
             next  : [
                 {
                     onMatch : function(value, currentState, stack) {
                         if (value.length == stack[1]) {
-                            stack.shift();
-                            stack.shift();
-                            this.next = stack.shift();
+                            stack.shift()
+                            stack.shift()
+                            this.next = stack.shift()
                         } else {
-                            this.next = "";
+                            this.next = ""
                         }
-                        return "comment";
+                        return "comment"
                     },
                     regex : /\]=*\]/,
-                    next  : "start"
+                    next  : "start",
                 }, {
-                    defaultToken : "comment"
-                }
-            ]
+                    defaultToken : "comment",
+                },
+            ],
         },
 
         {
             token : "comment",
-            regex : "\\-\\-.*$"
+            regex : "\\-\\-.*$",
         },
         {
             stateName: "bracketedString",
             onMatch : function(value, currentState, stack){
-                stack.unshift(this.next, value.length, currentState);
-                return "string.start";
+                stack.unshift(this.next, value.length, currentState)
+                return "string.start"
             },
             regex : /\[=*\[/,
             next  : [
                 {
                     onMatch : function(value, currentState, stack) {
                         if (value.length == stack[1]) {
-                            stack.shift();
-                            stack.shift();
-                            this.next = stack.shift();
+                            stack.shift()
+                            stack.shift()
+                            this.next = stack.shift()
                         } else {
-                            this.next = "";
+                            this.next = ""
                         }
-                        return "string.end";
+                        return "string.end"
                     },
                     
                     regex : /\]=*\]/,
-                    next  : "start"
+                    next  : "start",
                 }, {
-                    defaultToken : "string"
-                }
-            ]
+                    defaultToken : "string",
+                },
+            ],
         },
         {
             token : "string",           // " string
-            regex : '"(?:[^\\\\]|\\\\.)*?"'
+            regex : '"(?:[^\\\\]|\\\\.)*?"',
         }, {
             token : "string",           // ' string
-            regex : "'(?:[^\\\\]|\\\\.)*?'"
+            regex : "'(?:[^\\\\]|\\\\.)*?'",
         }, {
             token : "constant.numeric", // float
-            regex : floatNumber
+            regex : floatNumber,
         }, {
             token : "constant.numeric", // integer
-            regex : integer + "\\b"
+            regex : integer + "\\b",
         }, {
             token : keywordMapper,
-            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b",
         }, {
             token : "keyword.operator",
-            regex : "\\+|\\-|\\*|\\/|%|\\#|\\^|~|<|>|<=|=>|==|~=|=|\\:|\\.\\.\\.|\\.\\."
+            regex : "\\+|\\-|\\*|\\/|%|\\#|\\^|~|<|>|<=|=>|==|~=|=|\\:|\\.\\.\\.|\\.\\.",
         }, {
             token : "paren.lparen",
-            regex : "[\\[\\(\\{]"
+            regex : "[\\[\\(\\{]",
         }, {
             token : "paren.rparen",
-            regex : "[\\]\\)\\}]"
+            regex : "[\\]\\)\\}]",
         }, {
             token : "text",
-            regex : "\\s+|\\w+"
-        } ]
-    };
+            regex : "\\s+|\\w+",
+        } ],
+    }
     
-    this.normalizeRules();
-};
+    this.normalizeRules()
+}
 
-oop.inherits(LuaHighlightRules, TextHighlightRules);
+oop.inherits(LuaHighlightRules, TextHighlightRules)
 
-exports.LuaHighlightRules = LuaHighlightRules;
-});
+exports.LuaHighlightRules = LuaHighlightRules
+})
 
 ace.define("ace/mode/python_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var PythonHighlightRules = function() {
 
@@ -602,11 +602,11 @@ var PythonHighlightRules = function() {
         "and|as|assert|break|class|continue|def|del|elif|else|except|exec|" +
         "finally|for|from|global|if|import|in|is|lambda|not|or|pass|print|" +
         "raise|return|try|while|with|yield|async|await|nonlocal"
-    );
+    )
 
     var builtinConstants = (
         "True|False|None|NotImplemented|Ellipsis|__debug__"
-    );
+    )
 
     var builtinFunctions = (
         "abs|divmod|input|open|staticmethod|all|enumerate|int|ord|str|any|" +
@@ -618,383 +618,383 @@ var PythonHighlightRules = function() {
         "__import__|complex|hash|min|apply|delattr|help|next|setattr|set|" +
         "buffer|dict|hex|object|slice|coerce|dir|id|oct|sorted|intern|" +
         "ascii|breakpoint|bytes"
-    );
+    )
     var keywordMapper = this.createKeywordMapper({
         "invalid.deprecated": "debugger",
         "support.function": builtinFunctions,
         "variable.language": "self|cls",
         "constant.language": builtinConstants,
-        "keyword": keywords
-    }, "identifier");
+        "keyword": keywords,
+    }, "identifier")
 
-    var strPre = "[uU]?";
-    var strRawPre = "[rR]";
-    var strFormatPre = "[fF]";
-    var strRawFormatPre = "(?:[rR][fF]|[fF][rR])";
-    var decimalInteger = "(?:(?:[1-9]\\d*)|(?:0))";
-    var octInteger = "(?:0[oO]?[0-7]+)";
-    var hexInteger = "(?:0[xX][\\dA-Fa-f]+)";
-    var binInteger = "(?:0[bB][01]+)";
-    var integer = "(?:" + decimalInteger + "|" + octInteger + "|" + hexInteger + "|" + binInteger + ")";
+    var strPre = "[uU]?"
+    var strRawPre = "[rR]"
+    var strFormatPre = "[fF]"
+    var strRawFormatPre = "(?:[rR][fF]|[fF][rR])"
+    var decimalInteger = "(?:(?:[1-9]\\d*)|(?:0))"
+    var octInteger = "(?:0[oO]?[0-7]+)"
+    var hexInteger = "(?:0[xX][\\dA-Fa-f]+)"
+    var binInteger = "(?:0[bB][01]+)"
+    var integer = "(?:" + decimalInteger + "|" + octInteger + "|" + hexInteger + "|" + binInteger + ")"
 
-    var exponent = "(?:[eE][+-]?\\d+)";
-    var fraction = "(?:\\.\\d+)";
-    var intPart = "(?:\\d+)";
-    var pointFloat = "(?:(?:" + intPart + "?" + fraction + ")|(?:" + intPart + "\\.))";
-    var exponentFloat = "(?:(?:" + pointFloat + "|" + intPart + ")" + exponent + ")";
-    var floatNumber = "(?:" + exponentFloat + "|" + pointFloat + ")";
+    var exponent = "(?:[eE][+-]?\\d+)"
+    var fraction = "(?:\\.\\d+)"
+    var intPart = "(?:\\d+)"
+    var pointFloat = "(?:(?:" + intPart + "?" + fraction + ")|(?:" + intPart + "\\.))"
+    var exponentFloat = "(?:(?:" + pointFloat + "|" + intPart + ")" + exponent + ")"
+    var floatNumber = "(?:" + exponentFloat + "|" + pointFloat + ")"
 
-    var stringEscape = "\\\\(x[0-9A-Fa-f]{2}|[0-7]{3}|[\\\\abfnrtv'\"]|U[0-9A-Fa-f]{8}|u[0-9A-Fa-f]{4})";
+    var stringEscape = "\\\\(x[0-9A-Fa-f]{2}|[0-7]{3}|[\\\\abfnrtv'\"]|U[0-9A-Fa-f]{8}|u[0-9A-Fa-f]{4})"
 
     this.$rules = {
         "start" : [ {
             token : "comment",
-            regex : "#.*$"
+            regex : "#.*$",
         }, {
             token : "string",           // multi line """ string start
             regex : strPre + '"{3}',
-            next : "qqstring3"
+            next : "qqstring3",
         }, {
             token : "string",           // " string
             regex : strPre + '"(?=.)',
-            next : "qqstring"
+            next : "qqstring",
         }, {
             token : "string",           // multi line ''' string start
             regex : strPre + "'{3}",
-            next : "qstring3"
+            next : "qstring3",
         }, {
             token : "string",           // ' string
             regex : strPre + "'(?=.)",
-            next : "qstring"
+            next : "qstring",
         }, {
             token: "string",
             regex: strRawPre + '"{3}',
-            next: "rawqqstring3"
+            next: "rawqqstring3",
         }, {
             token: "string", 
             regex: strRawPre + '"(?=.)',
-            next: "rawqqstring"
+            next: "rawqqstring",
         }, {
             token: "string",
             regex: strRawPre + "'{3}",
-            next: "rawqstring3"
+            next: "rawqstring3",
         }, {
             token: "string",
             regex: strRawPre + "'(?=.)",
-            next: "rawqstring"
+            next: "rawqstring",
         }, {
             token: "string",
             regex: strFormatPre + '"{3}',
-            next: "fqqstring3"
+            next: "fqqstring3",
         }, {
             token: "string",
             regex: strFormatPre + '"(?=.)',
-            next: "fqqstring"
+            next: "fqqstring",
         }, {
             token: "string",
             regex: strFormatPre + "'{3}",
-            next: "fqstring3"
+            next: "fqstring3",
         }, {
             token: "string",
             regex: strFormatPre + "'(?=.)",
-            next: "fqstring"
+            next: "fqstring",
         },{
             token: "string",
             regex: strRawFormatPre + '"{3}',
-            next: "rfqqstring3"
+            next: "rfqqstring3",
         }, {
             token: "string",
             regex: strRawFormatPre + '"(?=.)',
-            next: "rfqqstring"
+            next: "rfqqstring",
         }, {
             token: "string",
             regex: strRawFormatPre + "'{3}",
-            next: "rfqstring3"
+            next: "rfqstring3",
         }, {
             token: "string",
             regex: strRawFormatPre + "'(?=.)",
-            next: "rfqstring"
+            next: "rfqstring",
         }, {
             token: "keyword.operator",
-            regex: "\\+|\\-|\\*|\\*\\*|\\/|\\/\\/|%|@|<<|>>|&|\\||\\^|~|<|>|<=|=>|==|!=|<>|="
+            regex: "\\+|\\-|\\*|\\*\\*|\\/|\\/\\/|%|@|<<|>>|&|\\||\\^|~|<|>|<=|=>|==|!=|<>|=",
         }, {
             token: "punctuation",
-            regex: ",|:|;|\\->|\\+=|\\-=|\\*=|\\/=|\\/\\/=|%=|@=|&=|\\|=|^=|>>=|<<=|\\*\\*="
+            regex: ",|:|;|\\->|\\+=|\\-=|\\*=|\\/=|\\/\\/=|%=|@=|&=|\\|=|^=|>>=|<<=|\\*\\*=",
         }, {
             token: "paren.lparen",
-            regex: "[\\[\\(\\{]"
+            regex: "[\\[\\(\\{]",
         }, {
             token: "paren.rparen",
-            regex: "[\\]\\)\\}]"
+            regex: "[\\]\\)\\}]",
         }, {
             token: "text",
-            regex: "\\s+"
+            regex: "\\s+",
         }, {
-            include: "constants"
+            include: "constants",
         }],
         "qqstring3": [{
             token: "constant.language.escape",
-            regex: stringEscape
+            regex: stringEscape,
         }, {
             token: "string", // multi line """ string end
             regex: '"{3}',
-            next: "start"
+            next: "start",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "qstring3": [{
             token: "constant.language.escape",
-            regex: stringEscape
+            regex: stringEscape,
         }, {
             token: "string",  // multi line ''' string end
             regex: "'{3}",
-            next: "start"
+            next: "start",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "qqstring": [{
             token: "constant.language.escape",
-            regex: stringEscape
+            regex: stringEscape,
         }, {
             token: "string",
             regex: "\\\\$",
-            next: "qqstring"
+            next: "qqstring",
         }, {
             token: "string",
             regex: '"|$',
-            next: "start"
+            next: "start",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "qstring": [{
             token: "constant.language.escape",
-            regex: stringEscape
+            regex: stringEscape,
         }, {
             token: "string",
             regex: "\\\\$",
-            next: "qstring"
+            next: "qstring",
         }, {
             token: "string",
             regex: "'|$",
-            next: "start"
+            next: "start",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "rawqqstring3": [{
             token: "string", // multi line """ string end
             regex: '"{3}',
-            next: "start"
+            next: "start",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "rawqstring3": [{
             token: "string",  // multi line ''' string end
             regex: "'{3}",
-            next: "start"
+            next: "start",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "rawqqstring": [{
             token: "string",
             regex: "\\\\$",
-            next: "rawqqstring"
+            next: "rawqqstring",
         }, {
             token: "string",
             regex: '"|$',
-            next: "start"
+            next: "start",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "rawqstring": [{
             token: "string",
             regex: "\\\\$",
-            next: "rawqstring"
+            next: "rawqstring",
         }, {
             token: "string",
             regex: "'|$",
-            next: "start"
+            next: "start",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "fqqstring3": [{
             token: "constant.language.escape",
-            regex: stringEscape
+            regex: stringEscape,
         }, {
             token: "string", // multi line """ string end
             regex: '"{3}',
-            next: "start"
+            next: "start",
         }, {
             token: "paren.lparen",
             regex: "{",
-            push: "fqstringParRules"
+            push: "fqstringParRules",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "fqstring3": [{
             token: "constant.language.escape",
-            regex: stringEscape
+            regex: stringEscape,
         }, {
             token: "string",  // multi line ''' string end
             regex: "'{3}",
-            next: "start"
+            next: "start",
         }, {
             token: "paren.lparen",
             regex: "{",
-            push: "fqstringParRules"
+            push: "fqstringParRules",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "fqqstring": [{
             token: "constant.language.escape",
-            regex: stringEscape
+            regex: stringEscape,
         }, {
             token: "string",
             regex: "\\\\$",
-            next: "fqqstring"
+            next: "fqqstring",
         }, {
             token: "string",
             regex: '"|$',
-            next: "start"
+            next: "start",
         }, {
             token: "paren.lparen",
             regex: "{",
-            push: "fqstringParRules"
+            push: "fqstringParRules",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "fqstring": [{
             token: "constant.language.escape",
-            regex: stringEscape
+            regex: stringEscape,
         }, {
             token: "string",
             regex: "'|$",
-            next: "start"
+            next: "start",
         }, {
             token: "paren.lparen",
             regex: "{",
-            push: "fqstringParRules"
+            push: "fqstringParRules",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "rfqqstring3": [{
             token: "string", // multi line """ string end
             regex: '"{3}',
-            next: "start"
+            next: "start",
         }, {
             token: "paren.lparen",
             regex: "{",
-            push: "fqstringParRules"
+            push: "fqstringParRules",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "rfqstring3": [{
             token: "string",  // multi line ''' string end
             regex: "'{3}",
-            next: "start"
+            next: "start",
         }, {
             token: "paren.lparen",
             regex: "{",
-            push: "fqstringParRules"
+            push: "fqstringParRules",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "rfqqstring": [{
             token: "string",
             regex: "\\\\$",
-            next: "rfqqstring"
+            next: "rfqqstring",
         }, {
             token: "string",
             regex: '"|$',
-            next: "start"
+            next: "start",
         }, {
             token: "paren.lparen",
             regex: "{",
-            push: "fqstringParRules"
+            push: "fqstringParRules",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "rfqstring": [{
             token: "string",
             regex: "'|$",
-            next: "start"
+            next: "start",
         }, {
             token: "paren.lparen",
             regex: "{",
-            push: "fqstringParRules"
+            push: "fqstringParRules",
         }, {
-            defaultToken: "string"
+            defaultToken: "string",
         }],
         "fqstringParRules": [{//TODO: nested {}
             token: "paren.lparen",
-            regex: "[\\[\\(]"
+            regex: "[\\[\\(]",
         }, {
             token: "paren.rparen",
-            regex: "[\\]\\)]"
+            regex: "[\\]\\)]",
         }, {
             token: "string",
-            regex: "\\s+"
+            regex: "\\s+",
         }, {
             token: "string",
-            regex: "'[^']*'"
+            regex: "'[^']*'",
         }, {
             token: "string",
-            regex: '"[^"]*"'
+            regex: '"[^"]*"',
         }, {
             token: "function.support",
-            regex: "(!s|!r|!a)"
+            regex: "(!s|!r|!a)",
         }, {
-            include: "constants"
+            include: "constants",
         },{
             token: 'paren.rparen',
             regex: "}",
-            next: 'pop'
+            next: 'pop',
         },{
             token: 'paren.lparen',
             regex: "{",
-            push: "fqstringParRules"
+            push: "fqstringParRules",
         }],
         "constants": [{
             token: "constant.numeric", // imaginary
-            regex: "(?:" + floatNumber + "|\\d+)[jJ]\\b"
+            regex: "(?:" + floatNumber + "|\\d+)[jJ]\\b",
         }, {
             token: "constant.numeric", // float
-            regex: floatNumber
+            regex: floatNumber,
         }, {
             token: "constant.numeric", // long integer
-            regex: integer + "[lL]\\b"
+            regex: integer + "[lL]\\b",
         }, {
             token: "constant.numeric", // integer
-            regex: integer + "\\b"
+            regex: integer + "\\b",
         }, {
             token: ["punctuation", "function.support"],// method
-            regex: "(\\.)([a-zA-Z_]+)\\b"
+            regex: "(\\.)([a-zA-Z_]+)\\b",
         }, {
             token: keywordMapper,
-            regex: "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
-        }]
-    };
-    this.normalizeRules();
-};
+            regex: "[a-zA-Z_$][a-zA-Z0-9_$]*\\b",
+        }],
+    }
+    this.normalizeRules()
+}
 
-oop.inherits(PythonHighlightRules, TextHighlightRules);
+oop.inherits(PythonHighlightRules, TextHighlightRules)
 
-exports.PythonHighlightRules = PythonHighlightRules;
-});
+exports.PythonHighlightRules = PythonHighlightRules
+})
 
 ace.define("ace/mode/csound_orchestra_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var lang = require("../lib/lang");
-var oop = require("../lib/oop");
+var lang = require("../lib/lang")
+var oop = require("../lib/oop")
 
-var CsoundPreprocessorHighlightRules = require("./csound_preprocessor_highlight_rules").CsoundPreprocessorHighlightRules;
-var CsoundScoreHighlightRules = require("./csound_score_highlight_rules").CsoundScoreHighlightRules;
-var LuaHighlightRules = require("./lua_highlight_rules").LuaHighlightRules;
-var PythonHighlightRules = require("./python_highlight_rules").PythonHighlightRules;
+var CsoundPreprocessorHighlightRules = require("./csound_preprocessor_highlight_rules").CsoundPreprocessorHighlightRules
+var CsoundScoreHighlightRules = require("./csound_score_highlight_rules").CsoundScoreHighlightRules
+var LuaHighlightRules = require("./lua_highlight_rules").LuaHighlightRules
+var PythonHighlightRules = require("./python_highlight_rules").PythonHighlightRules
 
 var CsoundOrchestraHighlightRules = function(embeddedRulePrefix) {
 
-    CsoundPreprocessorHighlightRules.call(this, embeddedRulePrefix);
+    CsoundPreprocessorHighlightRules.call(this, embeddedRulePrefix)
     var opcodes = [
         "ATSadd",
         "ATSaddnz",
@@ -2554,8 +2554,8 @@ var CsoundOrchestraHighlightRules = function(embeddedRulePrefix) {
         "zkmod",
         "zkr",
         "zkw",
-        "zkwm"
-    ];
+        "zkwm",
+    ]
     var deprecatedOpcodes = [
         "array",
         "bformdec",
@@ -2630,241 +2630,241 @@ var CsoundOrchestraHighlightRules = function(embeddedRulePrefix) {
         "vbap4move",
         "vbap8",
         "vbap8move",
-        "xyin"
-    ];
+        "xyin",
+    ]
 
-    opcodes = lang.arrayToMap(opcodes);
-    deprecatedOpcodes = lang.arrayToMap(deprecatedOpcodes);
+    opcodes = lang.arrayToMap(opcodes)
+    deprecatedOpcodes = lang.arrayToMap(deprecatedOpcodes)
 
     this.lineContinuations = [
         {
             token : "constant.character.escape.line-continuation.csound",
-            regex : /\\$/
+            regex : /\\$/,
         }, this.pushRule({
             token : "constant.character.escape.line-continuation.csound",
             regex : /\\/,
-            next  : "line continuation"
-        })
-    ];
+            next  : "line continuation",
+        }),
+    ]
 
-    this.comments.push(this.lineContinuations);
+    this.comments.push(this.lineContinuations)
 
     this.quotedStringContents.push(
         this.lineContinuations,
         {
             token : "invalid.illegal",
-            regex : /[^"\\]*$/
-        }
-    );
+            regex : /[^"\\]*$/,
+        },
+    )
 
-    var start = this.$rules.start;
+    var start = this.$rules.start
     start.splice(1, 0, {
         token : ["text.csound", "entity.name.label.csound", "entity.punctuation.label.csound", "text.csound"],
-        regex : /^([ \t]*)(\w+)(:)([ \t]+|$)/
-    });
+        regex : /^([ \t]*)(\w+)(:)([ \t]+|$)/,
+    })
     start.push(
         this.pushRule({
             token : "keyword.function.csound",
             regex : /\binstr\b/,
-            next  : "instrument numbers and identifiers"
+            next  : "instrument numbers and identifiers",
         }), this.pushRule({
             token : "keyword.function.csound",
             regex : /\bopcode\b/,
-            next  : "after opcode keyword"
+            next  : "after opcode keyword",
         }), {
             token : "keyword.other.csound",
-            regex : /\bend(?:in|op)\b/
+            regex : /\bend(?:in|op)\b/,
         },
 
         {
             token : "variable.language.csound",
-            regex : /\b(?:0dbfs|A4|k(?:r|smps)|nchnls(?:_i)?|sr)\b/
+            regex : /\b(?:0dbfs|A4|k(?:r|smps)|nchnls(?:_i)?|sr)\b/,
         },
 
         this.numbers,
 
         {
             token : "keyword.operator.csound",
-            regex : "\\+=|-=|\\*=|/=|<<|>>|<=|>=|==|!=|&&|\\|\\||[~¬]|[=!+\\-*/^%&|<>#?:]"
+            regex : "\\+=|-=|\\*=|/=|<<|>>|<=|>=|==|!=|&&|\\|\\||[~¬]|[=!+\\-*/^%&|<>#?:]",
         },
 
         this.pushRule({
             token : "punctuation.definition.string.begin.csound",
             regex : /"/,
-            next  : "quoted string"
+            next  : "quoted string",
         }), this.pushRule({
             token : "punctuation.definition.string.begin.csound",
             regex : /{{/,
-            next  : "braced string"
+            next  : "braced string",
         }),
 
         {
             token : "keyword.control.csound",
-            regex : /\b(?:do|else(?:if)?|end(?:if|until)|fi|i(?:f|then)|kthen|od|r(?:ir)?eturn|then|until|while)\b/
+            regex : /\b(?:do|else(?:if)?|end(?:if|until)|fi|i(?:f|then)|kthen|od|r(?:ir)?eturn|then|until|while)\b/,
         },
 
         this.pushRule({
             token : "keyword.control.csound",
             regex : /\b[ik]?goto\b/,
-            next  : "goto before label"
+            next  : "goto before label",
         }), this.pushRule({
             token : "keyword.control.csound",
             regex : /\b(?:r(?:einit|igoto)|tigoto)\b/,
-            next  : "goto before label"
+            next  : "goto before label",
         }), this.pushRule({
             token : "keyword.control.csound",
             regex : /\bc(?:g|in?|k|nk?)goto\b/,
-            next  : ["goto before label", "goto before argument"]
+            next  : ["goto before label", "goto before argument"],
         }), this.pushRule({
             token : "keyword.control.csound",
             regex : /\btimout\b/,
-            next  : ["goto before label", "goto before argument", "goto before argument"]
+            next  : ["goto before label", "goto before argument", "goto before argument"],
         }), this.pushRule({
             token : "keyword.control.csound",
             regex : /\bloop_[gl][et]\b/,
-            next  : ["goto before label", "goto before argument", "goto before argument", "goto before argument"]
+            next  : ["goto before label", "goto before argument", "goto before argument", "goto before argument"],
         }),
 
         this.pushRule({
             token : "support.function.csound",
             regex : /\b(?:readscore|scoreline(?:_i)?)\b/,
-            next  : "Csound score opcode"
+            next  : "Csound score opcode",
         }), this.pushRule({
             token : "support.function.csound",
             regex : /\bpyl?run[it]?\b(?!$)/,
-            next  : "Python opcode"
+            next  : "Python opcode",
         }), this.pushRule({
             token : "support.function.csound",
             regex : /\blua_(?:exec|opdef)\b(?!$)/,
-            next  : "Lua opcode"
+            next  : "Lua opcode",
         }),
 
         {
             token : "support.variable.csound",
-            regex : /\bp\d+\b/
+            regex : /\bp\d+\b/,
         }, {
             regex : /\b([A-Z_a-z]\w*)(?:(:)([A-Za-z]))?\b/, onMatch: function(value, currentState, stack, line) {
-                var tokens = value.split(this.splitRegex);
-                var name = tokens[1];
-                var type;
+                var tokens = value.split(this.splitRegex)
+                var name = tokens[1]
+                var type
                 if (opcodes.hasOwnProperty(name))
-                    type = "support.function.csound";
+                    type = "support.function.csound"
                 else if (deprecatedOpcodes.hasOwnProperty(name))
-                    type = "invalid.deprecated.csound";
+                    type = "invalid.deprecated.csound"
                 if (type) {
                     if (tokens[2]) {
                         return [
                             {type: type, value: name},
                             {type: "punctuation.type-annotation.csound", value: tokens[2]},
-                            {type: "type-annotation.storage.type.csound", value: tokens[3]}
-                        ];
+                            {type: "type-annotation.storage.type.csound", value: tokens[3]},
+                        ]
                     }
-                    return type;
+                    return type
                 }
-                return "text.csound";
-            }
-        }
-    );
+                return "text.csound"
+            },
+        },
+    )
 
     this.$rules["macro parameter value list"].splice(2, 0, {
         token : "punctuation.definition.string.begin.csound",
         regex : /{{/,
-        next  : "macro parameter value braced string"
-    });
+        next  : "macro parameter value braced string",
+    })
 
-    var scoreHighlightRules = new CsoundScoreHighlightRules("csound-score-");
+    var scoreHighlightRules = new CsoundScoreHighlightRules("csound-score-")
 
     this.addRules({
         "macro parameter value braced string": [
             {
                 token : "constant.character.escape.csound",
-                regex : /\\[#'()]/
+                regex : /\\[#'()]/,
             }, {
                 token : "invalid.illegal.csound.csound",
-                regex : /[#'()]/
+                regex : /[#'()]/,
             }, {
                 token : "punctuation.definition.string.end.csound",
                 regex : /}}/,
-                next  : "macro parameter value list"
+                next  : "macro parameter value list",
             }, {
-                defaultToken: "string.braced.csound"
-            }
+                defaultToken: "string.braced.csound",
+            },
         ],
 
         "instrument numbers and identifiers": [
             this.comments,
             {
                 token : "entity.name.function.csound",
-                regex : /\d+|[A-Z_a-z]\w*/
+                regex : /\d+|[A-Z_a-z]\w*/,
             }, this.popRule({
                 token : "empty",
-                regex : /$/
-            })
+                regex : /$/,
+            }),
         ],
 
         "after opcode keyword": [
             this.comments,
             this.popRule({
                 token : "empty",
-                regex : /$/
+                regex : /$/,
             }), this.popRule({
                 token : "entity.name.function.opcode.csound",
                 regex : /[A-Z_a-z]\w*/,
-                next  : "opcode type signatures"
-            })
+                next  : "opcode type signatures",
+            }),
         ],
         "opcode type signatures": [
             this.comments,
             this.popRule({
                 token : "empty",
-                regex : /$/
+                regex : /$/,
             }), {
                 token : "storage.type.csound",
-                regex : /\b(?:0|[afijkKoOpPStV\[\]]+)/
-            }
+                regex : /\b(?:0|[afijkKoOpPStV\[\]]+)/,
+            },
         ],
 
         "quoted string": [
             this.popRule({
                 token : "punctuation.definition.string.end.csound",
-                regex : /"/
+                regex : /"/,
             }),
             this.quotedStringContents,
             {
-                defaultToken: "string.quoted.csound"
-            }
+                defaultToken: "string.quoted.csound",
+            },
         ],
         "braced string": [
             this.popRule({
                 token : "punctuation.definition.string.end.csound",
-                regex : /}}/
+                regex : /}}/,
             }),
             this.bracedStringContents,
             {
-                defaultToken: "string.braced.csound"
-            }
+                defaultToken: "string.braced.csound",
+            },
         ],
 
         "goto before argument": [
             this.popRule({
                 token : "text.csound",
-                regex : /,/
+                regex : /,/,
             }),
-            start
+            start,
         ],
         "goto before label": [
             {
                 token : "text.csound",
-                regex : /\s+/
+                regex : /\s+/,
             },
             this.comments,
             this.popRule({
                 token : "entity.name.label.csound",
-                regex : /\w+/
+                regex : /\w+/,
             }), this.popRule({
                 token : "empty",
-                regex : /(?!\w)/
-            })
+                regex : /(?!\w)/,
+            }),
         ],
 
         "Csound score opcode": [
@@ -2872,11 +2872,11 @@ var CsoundOrchestraHighlightRules = function(embeddedRulePrefix) {
             {
                 token : "punctuation.definition.string.begin.csound",
                 regex : /{{/,
-                next  : scoreHighlightRules.embeddedRulePrefix + "start"
+                next  : scoreHighlightRules.embeddedRulePrefix + "start",
             }, this.popRule({
                 token : "empty",
-                regex : /$/
-            })
+                regex : /$/,
+            }),
         ],
 
         "Python opcode": [
@@ -2884,11 +2884,11 @@ var CsoundOrchestraHighlightRules = function(embeddedRulePrefix) {
             {
                 token : "punctuation.definition.string.begin.csound",
                 regex : /{{/,
-                next  : "python-start"
+                next  : "python-start",
             }, this.popRule({
                 token : "empty",
-                regex : /$/
-            })
+                regex : /$/,
+            }),
         ],
 
         "Lua opcode": [
@@ -2896,71 +2896,71 @@ var CsoundOrchestraHighlightRules = function(embeddedRulePrefix) {
             {
                 token : "punctuation.definition.string.begin.csound",
                 regex : /{{/,
-                next  : "lua-start"
+                next  : "lua-start",
             }, this.popRule({
                 token : "empty",
-                regex : /$/
-            })
+                regex : /$/,
+            }),
         ],
 
         "line continuation": [
             this.popRule({
                 token : "empty",
-                regex : /$/
+                regex : /$/,
             }),
             this.semicolonComments,
             {
                 token : "invalid.illegal.csound",
-                regex : /\S.*/
-            }
-        ]
-    });
+                regex : /\S.*/,
+            },
+        ],
+    })
 
     var rules = [
         this.popRule({
             token : "punctuation.definition.string.end.csound",
-            regex : /}}/
-        })
-    ];
-    this.embedRules(scoreHighlightRules.getRules(), scoreHighlightRules.embeddedRulePrefix, rules);
-    this.embedRules(PythonHighlightRules, "python-", rules);
-    this.embedRules(LuaHighlightRules, "lua-", rules);
+            regex : /}}/,
+        }),
+    ]
+    this.embedRules(scoreHighlightRules.getRules(), scoreHighlightRules.embeddedRulePrefix, rules)
+    this.embedRules(PythonHighlightRules, "python-", rules)
+    this.embedRules(LuaHighlightRules, "lua-", rules)
 
-    this.normalizeRules();
-};
+    this.normalizeRules()
+}
 
-oop.inherits(CsoundOrchestraHighlightRules, CsoundPreprocessorHighlightRules);
+oop.inherits(CsoundOrchestraHighlightRules, CsoundPreprocessorHighlightRules)
 
-exports.CsoundOrchestraHighlightRules = CsoundOrchestraHighlightRules;
-});
+exports.CsoundOrchestraHighlightRules = CsoundOrchestraHighlightRules
+})
 
 ace.define("ace/mode/csound_orchestra",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var CsoundOrchestraHighlightRules = require("./csound_orchestra_highlight_rules").CsoundOrchestraHighlightRules;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var CsoundOrchestraHighlightRules = require("./csound_orchestra_highlight_rules").CsoundOrchestraHighlightRules
 
 var Mode = function() {
-    this.HighlightRules = CsoundOrchestraHighlightRules;
-};
+    this.HighlightRules = CsoundOrchestraHighlightRules
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
 
-    this.lineCommentStart = ";";
-    this.blockComment = {start: "/*", end: "*/"};
+    this.lineCommentStart = ";"
+    this.blockComment = {start: "/*", end: "*/"}
 
-    this.$id = "ace/mode/csound_orchestra";
-    this.snippetFileId = "ace/snippets/csound_orchestra";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/csound_orchestra"
+    this.snippetFileId = "ace/snippets/csound_orchestra"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     ace.require(["ace/mode/csound_orchestra"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

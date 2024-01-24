@@ -1,79 +1,68 @@
 /*
- * Copyright 2015-present Lenovo
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright 2018-present Lenovo
+ * Confidential and Proprietary
  */
 
 (function ($) {
 
-    const elFinder = window.elFinder;
+    const elFinder = window.elFinder
 
   elFinder.prototype._options.cdns.prettify = "/static/js-extern/google-code-prettify/src/run_prettify.js";
 
     (elFinder.prototype.commands.open = function () {
         var fm = this.fm,
-            self = this;
-        this.alwaysEnabled = true;
-        this.noChangeDirOnRemovedCwd = true;
+            self = this
+        this.alwaysEnabled = true
+        this.noChangeDirOnRemovedCwd = true
 
         this._handlers = {
             dblclick: function (e) {
-                var arg = e.data && e.data.file ? [e.data.file] : void (0);
+                var arg = e.data && e.data.file ? [e.data.file] : void (0)
                 if (self.getstate(arg) === 0) {
-                    e.preventDefault();
-                    fm.exec('open', arg);
+                    e.preventDefault()
+                    fm.exec('open', arg)
                 }
             },
-            'select enable disable reload': function (e) { this.update(e.type == 'disable' ? -1 : void (0)); }
-        };
+            'select enable disable reload': function (e) { this.update(e.type == 'disable' ? -1 : void (0)) },
+        }
 
         this.shortcuts = [{
-            pattern: 'ctrl+down numpad_enter' + (fm.OS != 'mac' && ' enter')
-        }];
+            pattern: 'ctrl+down numpad_enter' + (fm.OS != 'mac' && ' enter'),
+        }]
 
         this.getstate = function (select) {
             var sel = this.files(select),
-                cnt = sel.length;
+                cnt = sel.length
 
             return cnt == 1
                 ? (sel[0].read ? 0 : -1)
-                : (cnt && !fm.UA.Mobile) ? ($.grep(sel, function (file) { return file.mime == 'directory' || !file.read ? false : true; }).length == cnt ? 0 : -1) : -1;
-        };
+                : (cnt && !fm.UA.Mobile) ? ($.grep(sel, function (file) { return file.mime == 'directory' || !file.read ? false : true }).length == cnt ? 0 : -1) : -1
+        }
 
         this.exec = function (hashes, cOpts) {
-            var dfrd = $.Deferred().fail(function (error) { error && fm.error(error); }),
+            var dfrd = $.Deferred().fail(function (error) { error && fm.error(error) }),
                 files = this.files(hashes),
                 cnt = files.length,
                 thash = (typeof cOpts == 'object') ? cOpts.thash : false,
                 opts = this.options,
                 into = opts.into || 'window',
                 file, url, s, w, imgW, imgH, winW, winH, reg, link, html5dl, inline,
-                selAct, cmd;
+                selAct, cmd
 
             if (!cnt && !thash) {
                 {
-                    return dfrd.reject();
+                    return dfrd.reject()
                 }
             }
 
             // open folder
             if (thash || (cnt == 1 && (file = files[0]) && file.mime == 'directory')) {
                 if (!thash && file && !file.read) {
-                    return dfrd.reject(['errOpen', file.name, 'errPerm']);
+                    return dfrd.reject(['errOpen', file.name, 'errPerm'])
                 } else {
                     if (fm.keyState.ctrlKey && (fm.keyState.shiftKey || typeof fm.options.getFileCallback !== 'function')) {
                         if (fm.getCommand('opennew')) {
-                            return fm.exec('opennew', [thash ? thash : file.hash]);
+                            return fm.exec('opennew', [thash ? thash : file.hash])
                         }
                     }
 
@@ -81,37 +70,37 @@
                         data: { cmd: 'open', target: thash || file.hash },
                         notify: { type: 'open', cnt: 1, hideCnt: true },
                         syncOnFail: true,
-                        lazy: false
-                    });
+                        lazy: false,
+                    })
                 }
             }
 
-            files = $.grep(files, function (file) { return file.mime != 'directory' ? true : false; });
+            files = $.grep(files, function (file) { return file.mime != 'directory' ? true : false })
 
             // nothing to open or files and folders selected - do nothing
             if (cnt != files.length) {
-                return dfrd.reject();
+                return dfrd.reject()
             }
 
             var doOpen = function () {
                 var openCB = function (url) {
-                    var link = $('<a>').hide().appendTo($('body'));
+                    var link = $('<a>').hide().appendTo($('body'))
                     if (fm.UA.Mobile || !inline) {
                         if (html5dl) {
                             if (!inline) {
-                                link.attr('download', file.name);
+                                link.attr('download', file.name)
                             } else {
-                                link.attr('target', '_blank');
+                                link.attr('target', '_blank')
                             }
-                            link.attr('href', url).get(0).click();
+                            link.attr('href', url).get(0).click()
                         } else {
-                            wnd = window.open(url);
+                            wnd = window.open(url)
                             if (!wnd) {
-                                return dfrd.reject('errPopup');
+                                return dfrd.reject('errPopup')
                             }
                         }
                     } else {
-                        getOnly = (typeof opts.method === 'string' && opts.method.toLowerCase() === 'get');
+                        getOnly = (typeof opts.method === 'string' && opts.method.toLowerCase() === 'get')
                         if (!getOnly
                             && url.indexOf(fm.options.url) === 0
                             && fm.customData
@@ -120,76 +109,76 @@
                             && !file.mime.match(/^(?:video|audio)/)
                         ) {
                             // Send request as 'POST' method to hide custom data at location bar
-                            url = '';
+                            url = ''
                         }
                         if (into === 'window') {
                             // set window size for image if set
-                            imgW = winW = Math.round(2 * screen.availWidth / 3);
-                            imgH = winH = Math.round(2 * screen.availHeight / 3);
+                            imgW = winW = Math.round(2 * screen.availWidth / 3)
+                            imgH = winH = Math.round(2 * screen.availHeight / 3)
                             if (parseInt(file.width) && parseInt(file.height)) {
-                                imgW = parseInt(file.width);
-                                imgH = parseInt(file.height);
+                                imgW = parseInt(file.width)
+                                imgH = parseInt(file.height)
                             } else if (file.dim) {
-                                s = file.dim.split('x');
-                                imgW = parseInt(s[0]);
-                                imgH = parseInt(s[1]);
+                                s = file.dim.split('x')
+                                imgW = parseInt(s[0])
+                                imgH = parseInt(s[1])
                             }
                             if (winW >= imgW && winH >= imgH) {
-                                winW = imgW;
-                                winH = imgH;
+                                winW = imgW
+                                winH = imgH
                             } else {
                                 if ((imgW - winW) > (imgH - winH)) {
-                                    winH = Math.round(imgH * (winW / imgW));
+                                    winH = Math.round(imgH * (winW / imgW))
                                 } else {
-                                    winW = Math.round(imgW * (winH / imgH));
+                                    winW = Math.round(imgW * (winH / imgH))
                                 }
                             }
-                            w = 'width=' + winW + ',height=' + winH;
-                            wnd = window.open(url, target, w + ',top=50,left=50,scrollbars=yes,resizable=yes,titlebar=no');
+                            w = 'width=' + winW + ',height=' + winH
+                            wnd = window.open(url, target, w + ',top=50,left=50,scrollbars=yes,resizable=yes,titlebar=no')
                         } else {
                             if (into === 'tabs') {
-                                target = file.hash;
+                                target = file.hash
                             }
-                            wnd = window.open('about:blank', target);
+                            wnd = window.open('about:blank', target)
                         }
 
                         if (!wnd) {
-                            return dfrd.reject('errPopup');
+                            return dfrd.reject('errPopup')
                         }
 
                         if (url === '') {
-                            var form = document.createElement("form");
-                            form.action = fm.options.url;
-                            form.method = 'POST';
-                            form.target = target;
-                            form.style.display = 'none';
+                            var form = document.createElement("form")
+                            form.action = fm.options.url
+                            form.method = 'POST'
+                            form.target = target
+                            form.style.display = 'none'
                             var params = Object.assign({}, fm.customData, {
                                 cmd: 'file',
                                 target: file.hash,
-                                _t: file.ts || parseInt(+new Date() / 1000)
-                            });
+                                _t: file.ts || parseInt(+new Date() / 1000),
+                            })
                             $.each(params, function (key, val) {
-                                var input = document.createElement("input");
-                                input.name = key;
-                                input.value = val;
-                                form.appendChild(input);
-                            });
+                                var input = document.createElement("input")
+                                input.name = key
+                                input.value = val
+                                form.appendChild(input)
+                            })
 
-                            document.body.appendChild(form);
-                            form.submit();
+                            document.body.appendChild(form)
+                            form.submit()
                         } else if (into !== 'window') {
-                            wnd.location = url;
+                            wnd.location = url
                         }
-                        $(wnd).trigger('focus');
+                        $(wnd).trigger('focus')
                     }
-                    link.remove();
+                    link.remove()
                 },
-                    wnd, target, getOnly;
+                    wnd, target, getOnly
 
                 try {
-                    reg = new RegExp(fm.option('dispInlineRegex'), 'i');
+                    reg = new RegExp(fm.option('dispInlineRegex'), 'i')
                 } catch (e) {
-                    reg = false;
+                    reg = false
                 }
 
                 // open files
@@ -206,8 +195,8 @@
                 //     inline = (reg && file.mime.match(reg));
                 //     fm.openUrl(file.hash, !inline, openCB);
                 // }
-                return dfrd.resolve(hashes);
-            };
+                return dfrd.resolve(hashes)
+            }
 
             if (cnt > 1) {
                 fm.confirm({
@@ -215,45 +204,45 @@
                     text: ['openMultiConfirm', cnt + ''],
                     accept: {
                         label: 'cmdopen',
-                        callback: function () { doOpen(); }
+                        callback: function () { doOpen() },
                     },
                     cancel: {
                         label: 'btnCancel',
                         callback: function () {
-                            dfrd.reject();
-                        }
+                            dfrd.reject()
+                        },
                     },
                     buttons: (fm.getCommand('zipdl') && fm.isCommandEnabled('zipdl', fm.cwd().hash)) ? [
                         {
                             label: 'cmddownload',
                             callback: function () {
-                                fm.exec('download', hashes);
-                                dfrd.reject();
-                            }
-                        }
-                    ] : []
-                });
+                                fm.exec('download', hashes)
+                                dfrd.reject()
+                            },
+                        },
+                    ] : [],
+                })
             } else {
-                selAct = fm.storage('selectAction') || opts.selectAction;
+                selAct = fm.storage('selectAction') || opts.selectAction
                 if (selAct) {
                     $.each(selAct.split('/'), function () {
-                        var cmdName = this.valueOf();
+                        var cmdName = this.valueOf()
                         if (cmdName !== 'open' && (cmd = fm.getCommand(cmdName)) && cmd.enabled()) {
-                            return false;
+                            return false
                         }
-                        cmd = null;
-                    });
+                        cmd = null
+                    })
                     if (cmd) {
-                        return fm.exec(cmd.name);
+                        return fm.exec(cmd.name)
                     }
                 }
-                doOpen();
+                doOpen()
             }
 
-            return dfrd;
-        };
+            return dfrd
+        }
 
-    }).prototype = { forceLoad: true }; // this is required command
+    }).prototype = { forceLoad: true } // this is required command
 
 
     elFinder.prototype.commands.download = function () {
@@ -265,71 +254,71 @@
             dlntf = false,
             cpath = window.location.pathname || '/',
             filter = function (hashes, inExec) {
-                var volumeid, mixedCmd;
+                var volumeid, mixedCmd
 
                 if (czipdl !== null) {
                     if (fm.searchStatus.state > 1) {
-                        mixed = fm.searchStatus.mixed;
+                        mixed = fm.searchStatus.mixed
                     } else if (fm.leafRoots[fm.cwd().hash]) {
-                        volumeid = fm.cwd().volumeid;
+                        volumeid = fm.cwd().volumeid
                         $.each(hashes, function (i, h) {
                             if (h.indexOf(volumeid) !== 0) {
-                                mixed = true;
-                                return false;
+                                mixed = true
+                                return false
                             }
-                        });
+                        })
                     }
-                    zipOn = (fm.isCommandEnabled('zipdl', hashes[0]));
+                    zipOn = (fm.isCommandEnabled('zipdl', hashes[0]))
                 }
 
                 if (mixed) {
-                    mixedCmd = czipdl ? 'zipdl' : 'download';
+                    mixedCmd = czipdl ? 'zipdl' : 'download'
                     hashes = $.grep(hashes, function (h) {
                         var f = fm.file(h),
-                            res = (!f || (!czipdl && f.mime === 'directory') || !fm.isCommandEnabled(mixedCmd, h)) ? false : true;
+                            res = (!f || (!czipdl && f.mime === 'directory') || !fm.isCommandEnabled(mixedCmd, h)) ? false : true
                         if (f && inExec && !res) {
-                            fm.cwdHash2Elm(f.hash).trigger('unselect');
+                            fm.cwdHash2Elm(f.hash).trigger('unselect')
                         }
-                        return res;
-                    });
+                        return res
+                    })
                     if (!hashes.length) {
-                        return [];
+                        return []
                     }
                 } else {
                     if (!fm.isCommandEnabled('download', hashes[0])) {
-                        return [];
+                        return []
                     }
                 }
 
                 return $.grep(self.files(hashes), function (f) {
-                    var res = (!f.read || (!zipOn && f.mime == 'directory')) ? false : true;
+                    var res = (!f.read || (!zipOn && f.mime == 'directory')) ? false : true
                     if (inExec && !res) {
-                        fm.cwdHash2Elm(f.hash).trigger('unselect');
+                        fm.cwdHash2Elm(f.hash).trigger('unselect')
                     }
-                    return res;
-                });
-            };
+                    return res
+                })
+            }
 
-        this.linkedCmds = ['zipdl'];
+        this.linkedCmds = ['zipdl']
 
         this.shortcuts = [{
-            pattern: 'shift+enter'
-        }];
+            pattern: 'shift+enter',
+        }]
 
         this.getstate = function (select) {
             var sel = this.hashes(select),
                 cnt = sel.length,
                 maxReq = this.options.maxRequests || 10,
                 mixed = false,
-                croot = '';
+                croot = ''
 
             if (cnt < 1) {
-                return -1;
+                return -1
             }
-            cnt = filter(sel).length;
+            cnt = filter(sel).length
 
-            return (cnt && (zipOn || (cnt <= maxReq && ((!fm.UA.IE && !fm.UA.Mobile) || cnt == 1))) ? 0 : -1);
-        };
+            return (cnt && (zipOn || (cnt <= maxReq && ((!fm.UA.IE && !fm.UA.Mobile) || cnt == 1))) ? 0 : -1)
+        }
 
         // fm.bind('contextmenu', function (e) {
         //     var fm = self.fm,
@@ -445,35 +434,35 @@
                             root = fm.file(fm.root(hashes[0])),
                             single = (hashes.length === 1),
                             volName = root ? (root.i18 || root.name) : null,
-                            dir, dlName, phash;
+                            dir, dlName, phash
                         if (single) {
                             if (dir = fm.file(hashes[0])) {
-                                dlName = (dir.i18 || dir.name);
+                                dlName = (dir.i18 || dir.name)
                             }
                         } else {
                             $.each(hashes, function () {
-                                var d = fm.file(this);
+                                var d = fm.file(this)
                                 if (d && (!phash || phash === d.phash)) {
-                                    phash = d.phash;
+                                    phash = d.phash
                                 } else {
-                                    phash = null;
-                                    return false;
+                                    phash = null
+                                    return false
                                 }
-                            });
+                            })
                             if (phash && (dir = fm.file(phash))) {
-                                dlName = (dir.i18 || dir.name) + '-' + hashes.length;
+                                dlName = (dir.i18 || dir.name) + '-' + hashes.length
                             }
                         }
                         if (dlName) {
-                            volName = dlName;
+                            volName = dlName
                         }
-                        volName && (volName = ' (' + volName + ')');
+                        volName && (volName = ' (' + volName + ')')
                         fm.request({
                             data: { cmd: 'zipdl', targets: hashes },
                             notify: { type: 'zipdl', cnt: 1, hideCnt: true, msg: fm.i18n('ntfzipdl') + volName },
                             cancel: true,
                             eachCancel: true,
-                            preventDefault: true
+                            preventDefault: true,
                         }).done(function (e) {
                             var zipdl, dialog, btn = {}, dllink, form, iframe, m,
                                 uniq = 'dlw' + (+new Date()),
@@ -482,174 +471,174 @@
                                         .attr('href', url)
                                         .attr('download', fm.escape(dlName))
                                         .on('click', function () {
-                                            dfd.resolve();
-                                            dialog && dialog.elfinderdialog('destroy');
-                                        });
+                                            dfd.resolve()
+                                            dialog && dialog.elfinderdialog('destroy')
+                                        })
                                     if (linkdl) {
                                         dllink.attr('target', '_blank')
-                                            .append('<span class="elfinder-button-icon elfinder-button-icon-download"></span>' + fm.escape(dlName));
+                                            .append('<span class="elfinder-button-icon elfinder-button-icon-download"></span>' + fm.escape(dlName))
                                         btn[fm.i18n('btnCancel')] = function () {
-                                            dialog.elfinderdialog('destroy');
-                                        };
+                                            dialog.elfinderdialog('destroy')
+                                        }
                                         dialog = self.fmDialog(dllink, {
                                             title: fm.i18n('link'),
                                             buttons: btn,
                                             width: '200px',
                                             destroyOnClose: true,
                                             close: function () {
-                                                (dfd.state() !== 'resolved') && dfd.resolve();
-                                            }
-                                        });
+                                                (dfd.state() !== 'resolved') && dfd.resolve()
+                                            },
+                                        })
                                     } else {
-                                        click(dllink.hide().appendTo('body').get(0));
-                                        dllink.remove();
+                                        click(dllink.hide().appendTo('body').get(0))
+                                        dllink.remove()
                                     }
-                                };
+                                }
                             if (e.error) {
-                                fm.error(e.error);
-                                dfd.resolve();
+                                fm.error(e.error)
+                                dfd.resolve()
                             } else if (e.zipdl) {
-                                zipdl = e.zipdl;
+                                zipdl = e.zipdl
                                 if (dlName) {
-                                    m = fm.splitFileExtention(zipdl.name || '');
-                                    dlName += m[1] ? ('.' + m[1]) : '.zip';
+                                    m = fm.splitFileExtention(zipdl.name || '')
+                                    dlName += m[1] ? ('.' + m[1]) : '.zip'
                                 } else {
-                                    dlName = zipdl.name;
+                                    dlName = zipdl.name
                                 }
                                 if (html5dl || linkdl) {
                                     url = fm.options.url + (fm.options.url.indexOf('?') === -1 ? '?' : '&')
-                                        + 'cmd=zipdl&download=1';
+                                        + 'cmd=zipdl&download=1'
                                     $.each([hashes[0], zipdl.file, dlName, zipdl.mime], function (key, val) {
-                                        url += '&targets%5B%5D=' + encodeURIComponent(val);
-                                    });
+                                        url += '&targets%5B%5D=' + encodeURIComponent(val)
+                                    })
                                     $.each(fm.customData, function (key, val) {
-                                        url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val);
-                                    });
-                                    url += '&' + encodeURIComponent(dlName);
+                                        url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val)
+                                    })
+                                    url += '&' + encodeURIComponent(dlName)
                                     if (fm.hasParrotHeaders()) {
                                         fm.getBinaryByUrl({ url: url }, function (blob) {
                                             if (blob instanceof Blob) {
-                                                url = (window.URL || window.webkitURL).createObjectURL(blob);
-                                                zipdlFn(url);
+                                                url = (window.URL || window.webkitURL).createObjectURL(blob)
+                                                zipdlFn(url)
                                             } else {
-                                                fm.error(['errUploadTransfer', fm.i18n('kindZIP')]);
+                                                fm.error(['errUploadTransfer', fm.i18n('kindZIP')])
                                             }
-                                        });
+                                        })
                                     } else {
-                                        zipdlFn(url);
+                                        zipdlFn(url)
                                     }
                                 } else {
                                     form = $('<form action="' + fm.options.url + '" method="post" target="' + uniq + '" style="display:none"></form>')
                                         .append('<input type="hidden" name="cmd" value="zipdl"/>')
-                                        .append('<input type="hidden" name="download" value="1"/>');
+                                        .append('<input type="hidden" name="download" value="1"/>')
                                     $.each([hashes[0], zipdl.file, dlName, zipdl.mime], function (key, val) {
-                                        form.append('<input type="hidden" name="targets[]" value="' + fm.escape(val) + '"/>');
-                                    });
+                                        form.append('<input type="hidden" name="targets[]" value="' + fm.escape(val) + '"/>')
+                                    })
                                     $.each(fm.customData, function (key, val) {
-                                        form.append('<input type="hidden" name="' + key + '" value="' + fm.escape(val) + '"/>');
-                                    });
-                                    form.attr('target', uniq).appendTo('body');
+                                        form.append('<input type="hidden" name="' + key + '" value="' + fm.escape(val) + '"/>')
+                                    })
+                                    form.attr('target', uniq).appendTo('body')
                                     iframe = $('<iframe style="display:none" name="' + uniq + '">')
                                         .appendTo('body')
                                         .ready(function () {
-                                            form.submit().remove();
-                                            dfd.resolve();
+                                            form.submit().remove()
+                                            dfd.resolve()
                                             setTimeout(function () {
-                                                iframe.remove();
-                                            }, 20000); // give 20 sec file to be saved
-                                        });
+                                                iframe.remove()
+                                            }, 20000) // give 20 sec file to be saved
+                                        })
                                 }
                             }
                         }).fail(function (error) {
-                            error && fm.error(error);
-                            dfd.resolve();
-                        });
-                        return dfd.promise();
-                    };
+                            error && fm.error(error)
+                            dfd.resolve()
+                        })
+                        return dfd.promise()
+                    }
                 },
                 // use MouseEvent to click element for Safari etc
                 click = function (a) {
-                    var clickEv;
+                    var clickEv
                     if (typeof MouseEvent === 'function') {
-                        clickEv = new MouseEvent('click');
+                        clickEv = new MouseEvent('click')
                     } else {
-                        clickEv = document.createEvent('MouseEvents');
-                        clickEv.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                        clickEv = document.createEvent('MouseEvents')
+                        clickEv.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
                     }
-                    fm.pauseUnloadCheck(true);
-                    a.dispatchEvent(clickEv);
+                    fm.pauseUnloadCheck(true)
+                    a.dispatchEvent(clickEv)
                 },
                 checkCookie = function (id) {
                     var name = 'elfdl' + id,
-                        parts;
-                    parts = document.cookie.split(name + "=");
+                        parts
+                    parts = document.cookie.split(name + "=")
                     if (parts.length === 2) {
-                        ntftm && clearTimeout(ntftm);
-                        document.cookie = name + '=; path=' + cpath + '; max-age=0';
-                        closeNotify();
+                        ntftm && clearTimeout(ntftm)
+                        document.cookie = name + '=; path=' + cpath + '; max-age=0'
+                        closeNotify()
                     } else {
-                        setTimeout(function () { checkCookie(id); }, 200);
+                        setTimeout(function () { checkCookie(id) }, 200)
                     }
                 },
                 closeNotify = function () {
                     if (fm.ui.notify.children('.elfinder-notify-download').length) {
                         fm.notify({
                             type: 'download',
-                            cnt: -1
-                        });
+                            cnt: -1,
+                        })
                     }
                 },
                 reqids = [],
-                link, html5dl, fileCnt, clickEv, cid, ntftm, reqid, getUrlDfrd, urls;
+                link, html5dl, fileCnt, clickEv, cid, ntftm, reqid, getUrlDfrd, urls
 
             if (!files.length) {
-                return dfrd.reject();
+                return dfrd.reject()
             }
 
-            fileCnt = $.grep(files, function (f) { return f.mime === 'directory' ? false : true; }).length;
-            link = $('<a>').hide().appendTo('body');
-            html5dl = (typeof link.get(0).download === 'string');
+            fileCnt = $.grep(files, function (f) { return f.mime === 'directory' ? false : true }).length
+            link = $('<a>').hide().appendTo('body')
+            html5dl = (typeof link.get(0).download === 'string')
 
             if (zipOn && (fileCnt !== files.length || fileCnt >= (this.options.minFilesZipdl || 1))) {
-                link.remove();
-                linkdl = (!html5dl && fm.UA.Mobile);
+                link.remove()
+                linkdl = (!html5dl && fm.UA.Mobile)
                 if (mixed) {
-                    targets = {};
+                    targets = {}
                     $.each(files, function (i, f) {
-                        var p = f.hash.split('_', 2);
+                        var p = f.hash.split('_', 2)
                         if (!targets[p[0]]) {
-                            targets[p[0]] = [f.hash];
+                            targets[p[0]] = [f.hash]
                         } else {
-                            targets[p[0]].push(f.hash);
+                            targets[p[0]].push(f.hash)
                         }
-                    });
+                    })
                     if (!linkdl && fm.UA.Mobile && Object.keys(targets).length > 1) {
-                        linkdl = true;
+                        linkdl = true
                     }
                 } else {
-                    targets = [$.map(files, function (f) { return f.hash; })];
+                    targets = [$.map(files, function (f) { return f.hash })]
                 }
-                dfrd = fm.sequence($.map(targets, function (t) { return getTask(t); })).always(
+                dfrd = fm.sequence($.map(targets, function (t) { return getTask(t) })).always(
                     function () {
-                        fm.trigger('download', { files: files });
-                    }
-                );
-                return dfrd;
+                        fm.trigger('download', { files: files })
+                    },
+                )
+                return dfrd
             } else {
-                reqids = [];
+                reqids = []
                 getUrlDfrd = $.Deferred().done(function (urls) {
                     for (i = 0; i < urls.length; i++) {
-                        url = urls[i] + "&token=" + window.gApp.$store.state.auth.token;
-                        url = url.replace(/\/\?/, "/download/?");
+                        url = urls[i] + "&token=" + window.gApp.$store.state.auth.token
+                        url = url.replace(/\/\?/, "/download/?")
                         if (fm.options.customParams.enabled) {
                             for (const key in fm.options.customParams.params) {
-                                url += `&${key}=${fm.options.customParams.params[key]}`;
+                                url += `&${key}=${fm.options.customParams.params[key]}`
                             }
                         }
                         if (dlntf && url.substr(0, fm.options.url.length) === fm.options.url) {
-                            reqid = fm.getRequestId();
-                            reqids.push(reqid);
-                            url += '&cpath=' + cpath + '&reqid=' + reqid;
+                            reqid = fm.getRequestId()
+                            reqids.push(reqid)
+                            url += '&cpath=' + cpath + '&reqid=' + reqid
                             ntftm = setTimeout(function () {
                                 fm.notify({
                                     type: 'download',
@@ -660,65 +649,65 @@
                                                 fm.request({
                                                     data: {
                                                         cmd: 'abort',
-                                                        id: this
+                                                        id: this,
                                                     },
-                                                    preventDefault: true
-                                                });
-                                            });
+                                                    preventDefault: true,
+                                                })
+                                            })
                                         }
-                                        reqids = [];
-                                    }
-                                });
-                            }, fm.notifyDelay);
-                            checkCookie(reqid);
+                                        reqids = []
+                                    },
+                                })
+                            }, fm.notifyDelay)
+                            checkCookie(reqid)
                         }
                         if (html5dl) {
                             click(link.attr('href', url)
                                 .attr('download', fm.escape(files[i].name))
-                                .get(0)
-                            );
+                                .get(0),
+                            )
                         } else {
                             if (fm.UA.Mobile) {
                                 setTimeout(function () {
                                     if (!window.open(url)) {
-                                        fm.error('errPopup');
-                                        ntftm && cleaerTimeout(ntftm);
-                                        closeNotify();
+                                        fm.error('errPopup')
+                                        ntftm && cleaerTimeout(ntftm)
+                                        closeNotify()
                                     }
-                                }, 100);
+                                }, 100)
                             } else {
-                                iframes += '<iframe class="downloader" id="downloader-' + files[i].hash + '" style="display:none" src="' + url + '"></iframe>';
+                                iframes += '<iframe class="downloader" id="downloader-' + files[i].hash + '" style="display:none" src="' + url + '"></iframe>'
                             }
                         }
                     }
-                    link.remove();
+                    link.remove()
                     $(iframes)
                         .appendTo('body')
                         .ready(function () {
                             setTimeout(function () {
                                 $(iframes).each(function () {
-                                    $('#' + $(this).attr('id')).remove();
-                                });
-                            }, 20000 + (10000 * i)); // give 20 sec + 10 sec for each file to be saved
-                        });
-                    fm.trigger('download', { files: files });
-                    dfrd.resolve();
-                });
-                fileCnt = files.length;
-                urls = [];
+                                    $('#' + $(this).attr('id')).remove()
+                                })
+                            }, 20000 + (10000 * i)) // give 20 sec + 10 sec for each file to be saved
+                        })
+                    fm.trigger('download', { files: files })
+                    dfrd.resolve()
+                })
+                fileCnt = files.length
+                urls = []
                 for (i = 0; i < files.length; i++) {
                     fm.openUrl(files[i].hash, true, function (v) {
-                        v && urls.push(v);
+                        v && urls.push(v)
                         if (--fileCnt < 1) {
-                            getUrlDfrd.resolve(urls);
+                            getUrlDfrd.resolve(urls)
                         }
-                    });
+                    })
                 }
-                return dfrd;
+                return dfrd
             }
-        };
+        }
 
-    };
+    }
 
     /**
      * @class  elFinder command "extract"
@@ -732,30 +721,30 @@
             mimes = [],
             filter = function (files) {
                 return $.grep(files, function (file) {
-                    return file.read && $.inArray(file.mime, mimes) !== -1 ? true : false;
-                });
-            };
+                    return file.read && $.inArray(file.mime, mimes) !== -1 ? true : false
+                })
+            }
 
-        this.variants = [];
-        this.disableOnSearch = true;
+        this.variants = []
+        this.disableOnSearch = true
 
         // Update mimes list on open/reload
         fm.bind('open reload', function () {
-            mimes = fm.option('archivers')['extract'] || [];
+            mimes = fm.option('archivers')['extract'] || []
             if (fm.api > 2) {
-                self.variants = [[{ makedir: true }, fm.i18n('cmdmkdir')], [{}, fm.i18n('btnCwd')]];
+                self.variants = [[{ makedir: true }, fm.i18n('cmdmkdir')], [{}, fm.i18n('btnCwd')]]
             } else {
-                self.variants = [[{}, fm.i18n('btnCwd')]];
+                self.variants = [[{}, fm.i18n('btnCwd')]]
             }
-            self.change();
-        });
+            self.change()
+        })
 
         this.getstate = function (select) {
             var sel = this.files(select),
-                cnt = sel.length;
+                cnt = sel.length
 
-            return cnt && this.fm.cwd().write && filter(sel).length == cnt ? 0 : -1;
-        };
+            return cnt && this.fm.cwd().write && filter(sel).length == cnt ? 0 : -1
+        }
 
         this.exec = function (hashes, opts) {
             var files = this.files(hashes),
@@ -763,39 +752,39 @@
                 cnt = files.length,
                 makedir = opts && opts.makedir ? 1 : 0,
                 i, error,
-                decision;
+                decision
 
-            var overwriteAll = false;
-            var omitAll = false;
-            var mkdirAll = 0;
+            var overwriteAll = false
+            var omitAll = false
+            var mkdirAll = 0
 
-            var names = $.map(fm.files(files[0].phash), function (file) { return file.name; });
-            var map = {};
+            var names = $.map(fm.files(files[0].phash), function (file) { return file.name })
+            var map = {}
             $.map(fm.files(files[0].phash), function (file) {
-                map[file.name] = file;
-                return false;
-            });
+                map[file.name] = file
+                return false
+            })
 
             var decide = function (decision) {
                 switch (decision) {
                     case 'overwrite_all':
-                        overwriteAll = true;
-                        break;
+                        overwriteAll = true
+                        break
                     case 'omit_all':
-                        omitAll = true;
-                        break;
+                        omitAll = true
+                        break
                 }
-            };
+            }
 
             var unpack = function (file) {
                 if (!(file.read && fm.file(file.phash).write)) {
-                    error = ['errExtract', file.name, 'errPerm'];
-                    fm.error(error);
-                    dfrd.reject(error);
+                    error = ['errExtract', file.name, 'errPerm']
+                    fm.error(error)
+                    dfrd.reject(error)
                 } else if ($.inArray(file.mime, mimes) === -1) {
-                    error = ['errExtract', file.name, 'errNoArchive'];
-                    fm.error(error);
-                    dfrd.reject(error);
+                    error = ['errExtract', file.name, 'errNoArchive']
+                    fm.error(error)
+                    dfrd.reject(error)
                 } else {
                     fm.request({
                         data: { cmd: 'extract', target: file.hash, makedir: makedir },
@@ -804,21 +793,21 @@
                         navigate: {
                             toast: makedir ? {
                                 incwd: { msg: fm.i18n(['complete', fm.i18n('cmdextract')]), action: { cmd: 'open', msg: 'cmdopen' } },
-                                inbuffer: { msg: fm.i18n(['complete', fm.i18n('cmdextract')]), action: { cmd: 'open', msg: 'cmdopen' } }
+                                inbuffer: { msg: fm.i18n(['complete', fm.i18n('cmdextract')]), action: { cmd: 'open', msg: 'cmdopen' } },
                             } : {
-                                    inbuffer: { msg: fm.i18n(['complete', fm.i18n('cmdextract')]) }
-                                }
-                        }
+                                    inbuffer: { msg: fm.i18n(['complete', fm.i18n('cmdextract')]) },
+                                },
+                        },
                     })
                         .fail(function (error) {
                             if (dfrd.state() != 'rejected') {
-                                dfrd.reject(error);
+                                dfrd.reject(error)
                             }
                         })
                         .done(function () {
-                        });
+                        })
                 }
-            };
+            }
 
             var confirm = function (files, index) {
                 var file = files[index],
@@ -826,11 +815,11 @@
                     existed = ($.inArray(name, names) >= 0),
                     next = function () {
                         if ((index + 1) < cnt) {
-                            confirm(files, index + 1);
+                            confirm(files, index + 1)
                         } else {
-                            dfrd.resolve();
+                            dfrd.resolve()
                         }
-                    };
+                    }
                 if (!makedir && existed && map[name].mime != 'directory') {
                     fm.confirm(
                         {
@@ -839,46 +828,46 @@
                             accept: {
                                 label: 'btnYes',
                                 callback: function (all) {
-                                    decision = all ? 'overwrite_all' : 'overwrite';
-                                    decide(decision);
+                                    decision = all ? 'overwrite_all' : 'overwrite'
+                                    decide(decision)
                                     if (!overwriteAll && !omitAll) {
                                         if ('overwrite' == decision) {
-                                            unpack(file);
+                                            unpack(file)
                                         }
                                         if ((index + 1) < cnt) {
-                                            confirm(files, index + 1);
+                                            confirm(files, index + 1)
                                         } else {
-                                            dfrd.resolve();
+                                            dfrd.resolve()
                                         }
                                     } else if (overwriteAll) {
                                         for (i = index; i < cnt; i++) {
-                                            unpack(files[i]);
+                                            unpack(files[i])
                                         }
-                                        dfrd.resolve();
+                                        dfrd.resolve()
                                     }
-                                }
+                                },
                             },
                             reject: {
                                 label: 'btnNo',
                                 callback: function (all) {
-                                    decision = all ? 'omit_all' : 'omit';
-                                    decide(decision);
+                                    decision = all ? 'omit_all' : 'omit'
+                                    decide(decision)
                                     if (!overwriteAll && !omitAll && (index + 1) < cnt) {
-                                        confirm(files, index + 1);
+                                        confirm(files, index + 1)
                                     } else if (omitAll) {
-                                        dfrd.resolve();
+                                        dfrd.resolve()
                                     }
-                                }
+                                },
                             },
                             cancel: {
                                 label: 'btnCancel',
                                 callback: function () {
-                                    dfrd.resolve();
-                                }
+                                    dfrd.resolve()
+                                },
                             },
-                            all: ((index + 1) < cnt)
-                        }
-                    );
+                            all: ((index + 1) < cnt),
+                        },
+                    )
                 } else if (!makedir && existed) {
                     if (mkdirAll == 0) {
                         fm.confirm({
@@ -887,48 +876,48 @@
                             accept: {
                                 label: 'btnYes',
                                 callback: function (all) {
-                                    all && (mkdirAll = 1);
-                                    unpack(file);
-                                    next();
-                                }
+                                    all && (mkdirAll = 1)
+                                    unpack(file)
+                                    next()
+                                },
                             },
                             reject: {
                                 label: 'btnNo',
                                 callback: function (all) {
-                                    all && (mkdirAll = -1);
-                                    next();
-                                }
+                                    all && (mkdirAll = -1)
+                                    next()
+                                },
                             },
                             cancel: {
                                 label: 'btnCancel',
                                 callback: function () {
-                                    dfrd.resolve();
-                                }
+                                    dfrd.resolve()
+                                },
                             },
-                            all: ((index + 1) < cnt)
-                        });
+                            all: ((index + 1) < cnt),
+                        })
                     } else {
-                        (mkdirAll > 0) && unpack(file);
-                        next();
+                        (mkdirAll > 0) && unpack(file)
+                        next()
                     }
                 } else {
-                    unpack(file);
-                    next();
+                    unpack(file)
+                    next()
                 }
-            };
+            }
 
             if (!(this.enabled() && cnt && mimes.length)) {
-                return dfrd.reject();
+                return dfrd.reject()
             }
 
             if (cnt > 0) {
-                confirm(files, 0);
+                confirm(files, 0)
             }
 
-            return dfrd;
-        };
+            return dfrd
+        }
 
-    };
+    }
 
 
     /**
@@ -944,25 +933,25 @@
             var mimes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'image/x-ms-bmp'],
                 getDimSize = ql.fm.returnBytes((ql.options.getDimThreshold || 0)),
                 preview = ql.preview,
-                WebP, flipMime;
+                WebP, flipMime
 
             // webp support
-            WebP = new Image();
+            WebP = new Image()
             WebP.onload = WebP.onerror = function () {
                 if (WebP.height == 2) {
-                    mimes.push('image/webp');
+                    mimes.push('image/webp')
                 }
-            };
-            WebP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+            }
+            WebP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA'
 
             // what kind of images we can display
             $.each(navigator.mimeTypes, function (i, o) {
-                var mime = o.type;
+                var mime = o.type
 
                 if (mime.indexOf('image/') === 0 && $.inArray(mime, mimes)) {
-                    mimes.push(mime);
+                    mimes.push(mime)
                 }
-            });
+            })
 
             preview.on(ql.evUpdate, function (e) {
                 var fm = ql.fm,
@@ -970,80 +959,80 @@
                     showed = false,
                     dimreq = null,
                     setdim = function (dim) {
-                        var rfile = fm.file(file.hash);
-                        rfile.width = dim[0];
-                        rfile.height = dim[1];
+                        var rfile = fm.file(file.hash)
+                        rfile.width = dim[0]
+                        rfile.height = dim[1]
                     },
                     show = function () {
-                        var elm, varelm, memSize, width, height, prop;
+                        var elm, varelm, memSize, width, height, prop
 
-                        dimreq && dimreq.state && dimreq.state() === 'pending' && dimreq.reject();
+                        dimreq && dimreq.state && dimreq.state() === 'pending' && dimreq.reject()
                         if (showed) {
-                            return;
+                            return
                         }
-                        showed = true;
+                        showed = true
 
-                        elm = img.get(0);
-                        memSize = file.width && file.height ? { w: file.width, h: file.height } : (elm.naturalWidth ? null : { w: img.width(), h: img.height() });
+                        elm = img.get(0)
+                        memSize = file.width && file.height ? { w: file.width, h: file.height } : (elm.naturalWidth ? null : { w: img.width(), h: img.height() })
 
-                        memSize && img.removeAttr('width').removeAttr('height');
+                        memSize && img.removeAttr('width').removeAttr('height')
 
-                        width = file.width || elm.naturalWidth || elm.width || img.width();
-                        height = file.height || elm.naturalHeight || elm.height || img.height();
+                        width = file.width || elm.naturalWidth || elm.width || img.width()
+                        height = file.height || elm.naturalHeight || elm.height || img.height()
                         if (!file.width || !file.height) {
-                            setdim([width, height]);
+                            setdim([width, height])
                         }
 
-                        memSize && img.width(memSize.w).height(memSize.h);
+                        memSize && img.width(memSize.w).height(memSize.h)
 
-                        prop = (width / height).toFixed(2);
+                        prop = (width / height).toFixed(2)
                         preview.on('changesize', function () {
                             var pw = parseInt(preview.width()),
                                 ph = parseInt(preview.height()),
-                                w, h;
+                                w, h
 
                             if (prop < (pw / ph).toFixed(2)) {
-                                h = ph;
-                                w = Math.floor(h * prop);
+                                h = ph
+                                w = Math.floor(h * prop)
                             } else {
-                                w = pw;
-                                h = Math.floor(w / prop);
+                                w = pw
+                                h = Math.floor(w / prop)
                             }
-                            img.width(w).height(h).css('margin-top', h < ph ? Math.floor((ph - h) / 2) : 0);
+                            img.width(w).height(h).css('margin-top', h < ph ? Math.floor((ph - h) / 2) : 0)
 
                         })
-                            .trigger('changesize');
+                            .trigger('changesize')
 
                         //show image
-                        img.fadeIn(100);
+                        img.fadeIn(100)
                     },
                     hideInfo = function () {
-                        loading.remove();
+                        loading.remove()
                         // hide info/icon
-                        ql.hideinfo();
+                        ql.hideinfo()
                     },
-                    url, img, loading, prog, m, opDfd;
+                    url, img, loading, prog, m, opDfd
 
                 if (!flipMime) {
-                    flipMime = fm.arrayFlip(mimes);
+                    flipMime = fm.arrayFlip(mimes)
                 }
                 if (flipMime[file.mime] && ql.dispInlineRegex.test(file.mime)) {
                     // this is our file - stop event propagation
-                    e.stopImmediatePropagation();
+                    e.stopImmediatePropagation()
 
-                    loading = $('<div class="elfinder-quicklook-info-data"><span class="elfinder-spinner-text">' + fm.i18n('nowLoading') + '</span><span class="elfinder-spinner"></span></div>').appendTo(ql.info.find('.elfinder-quicklook-info'));
-                    prog = $('<div class="elfinder-quicklook-info-progress"></div>').appendTo(loading);
+                    loading = $('<div class="elfinder-quicklook-info-data"><span class="elfinder-spinner-text">' + fm.i18n('nowLoading') + '</span><span class="elfinder-spinner"></span></div>').appendTo(ql.info.find('.elfinder-quicklook-info'))
+                    prog = $('<div class="elfinder-quicklook-info-progress"></div>').appendTo(loading)
 
                     img = $('<img/>')
                         .hide()
                         .appendTo(preview)
                         .on('load', function () {
-                            hideInfo();
-                            show();
+                            hideInfo()
+                            show()
                         })
                         .on('error', function () {
-                            loading.remove();
-                        });
+                            loading.remove()
+                        })
                     
                     opDfd = fm.openUrl(file.hash, false, function (url) {
                         // img.attr('src', url);
@@ -1052,40 +1041,40 @@
                             type: fm.options.requestType,
                             data: {
                                 cmd: "preview",
-                                target: file.hash
+                                target: file.hash,
                             },
-                            headers: fm.options.customHeaders
+                            headers: fm.options.customHeaders,
                         }).done((res) => {
-                            hideInfo();
+                            hideInfo()
                             var imgC = `data:image/${res.type.replace(/\./, '').toLowerCase()};base64,${res.data}`
-                            img.attr('src', imgC);
+                            img.attr('src', imgC)
                         })
-                    }, { progressBar: prog });
+                    }, { progressBar: prog })
                     // stop loading on change file if not loaded yet
                     preview.one('change', function () {
-                        opDfd && opDfd.state && opDfd.state() === 'pending' && opDfd.reject();
-                    });
+                        opDfd && opDfd.state && opDfd.state() === 'pending' && opDfd.reject()
+                    })
 
                     if (file.width && file.height) {
-                        show();
+                        show()
                     } else if (file.size > getDimSize) {
                         dimreq = fm.request({
                             data: { cmd: 'dim', target: file.hash },
-                            preventDefault: true
+                            preventDefault: true,
                         })
                             .done(function (data) {
                                 if (data.dim) {
-                                    var dim = data.dim.split('x');
-                                    file.width = dim[0];
-                                    file.height = dim[1];
-                                    setdim(dim);
-                                    show();
+                                    var dim = data.dim.split('x')
+                                    file.width = dim[0]
+                                    file.height = dim[1]
+                                    setdim(dim)
+                                    show()
                                 }
-                            });
+                            })
                     }
                 }
 
-            });
+            })
         },
 
         /**
@@ -1099,31 +1088,31 @@
                 preview = ql.preview,
                 active = false,
                 urlhash = '',
-                firefox, toolbar;
+                firefox, toolbar
 
             if ((fm.UA.Safari && fm.OS === 'mac' && !fm.UA.iOS) || fm.UA.IE || fm.UA.Firefox) {
-                active = true;
+                active = true
             } else {
                 $.each(navigator.plugins, function (i, plugins) {
                     $.each(plugins, function (i, plugin) {
                         if (plugin.type === mime) {
-                            return !(active = true);
+                            return !(active = true)
                         }
-                    });
-                });
+                    })
+                })
             }
 
-            ql.flags.pdfNative = active;
+            ql.flags.pdfNative = active
             if (active) {
                 if (typeof ql.options.pdfToolbar !== 'undefined' && !ql.options.pdfToolbar) {
-                    urlhash = '#toolbar=0';
+                    urlhash = '#toolbar=0'
                 }
                 preview.on(ql.evUpdate, function (e) {
                     var file = e.file,
-                        opDfd;
+                        opDfd
 
                     if (active && file.mime === mime && ql.dispInlineRegex.test(file.mime)) {
-                        e.stopImmediatePropagation();
+                        e.stopImmediatePropagation()
                         opDfd = fm.openUrl(file.hash, false, function (url) {
                             // if (url) {
                             //     ql.hideinfo();
@@ -1136,19 +1125,19 @@
                             //         })
                             //         .appendTo(preview);
                             // }
-                        });
+                        })
                         // stop loading on change file if not loaded yet
                         preview.one('change', function () {
-                            opDfd && opDfd.state && opDfd.state() === 'pending' && opDfd.reject();
-                        });
+                            opDfd && opDfd.state && opDfd.state() === 'pending' && opDfd.reject()
+                        })
                     }
 
-                });
+                })
             }
         },
 
-    ].concat(elFinder.prototype.commands.quicklook.plugins);
+    ].concat(elFinder.prototype.commands.quicklook.plugins)
 
-    elFinder.prototype.commands.quicklook.plugins = plugin;
+    elFinder.prototype.commands.quicklook.plugins = plugin
 
 })(jQuery)

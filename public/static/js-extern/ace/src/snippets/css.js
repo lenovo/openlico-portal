@@ -1,5 +1,5 @@
 define("ace/snippets/css",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "snippet .\n\
 	${1} {\n\
@@ -968,14 +968,14 @@ snippet z:a\n\
 	z-index: auto;\n\
 snippet zoo\n\
 	zoom: 1;\n\
-";
-exports.scope = "css";
+"
+exports.scope = "css"
 
 });                (function() {
                     window.require(["ace/snippets/css"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

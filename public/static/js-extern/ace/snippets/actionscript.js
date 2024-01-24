@@ -1,5 +1,5 @@
 ace.define("ace/snippets/actionscript",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "snippet main\n\
 	package {\n\
@@ -158,14 +158,14 @@ snippet FlxSprite\n\
 		}\n\
 	}\n\
 \n\
-";
-exports.scope = "actionscript";
+"
+exports.scope = "actionscript"
 
 });                (function() {
                     ace.require(["ace/snippets/actionscript"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

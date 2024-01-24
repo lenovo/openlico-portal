@@ -34,6 +34,11 @@ export default {
           align: 'left',
         },
         {
+          title: this.$t('Softwares.Build.Filename'),
+          dataIndex: 'filename',
+          align: 'left',
+        },
+        {
           title: this.$t('Action'),
           key: 'action',
           align: 'right',

@@ -1,24 +1,24 @@
 ace.define("ace/mode/prisma_highlight_rules",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var PrismaHighlightRules = function() {
 
     this.$rules = {
         start: [{
-            include: "#triple_comment"
+            include: "#triple_comment",
         }, {
-            include: "#double_comment"
+            include: "#double_comment",
         }, {
-            include: "#model_block_definition"
+            include: "#model_block_definition",
         }, {
-            include: "#config_block_definition"
+            include: "#config_block_definition",
         }, {
-            include: "#enum_block_definition"
+            include: "#enum_block_definition",
         }, {
-            include: "#type_definition"
+            include: "#type_definition",
         }],
         "#model_block_definition": [{
             token: [
@@ -27,22 +27,22 @@ var PrismaHighlightRules = function() {
                 "source.prisma.embedded.source",
                 "entity.name.type.model.prisma",
                 "source.prisma.embedded.source",
-                "punctuation.definition.tag.prisma"
+                "punctuation.definition.tag.prisma",
             ],
             regex: /^(\s*)(model|type)(\s+)([A-Za-z][\w]*)(\s+)({)/,
             push: [{
                 token: "punctuation.definition.tag.prisma",
                 regex: /\s*\}/,
-                next: "pop"
+                next: "pop",
             }, {
-                include: "#triple_comment"
+                include: "#triple_comment",
             }, {
-                include: "#double_comment"
+                include: "#double_comment",
             }, {
-                include: "#field_definition"
+                include: "#field_definition",
             }, {
-                defaultToken: "source.prisma.embedded.source"
-            }]
+                defaultToken: "source.prisma.embedded.source",
+            }],
         }],
         "#enum_block_definition": [{
             token: [
@@ -51,22 +51,22 @@ var PrismaHighlightRules = function() {
                 "source.prisma.embedded.source",
                 "entity.name.type.enum.prisma",
                 "source.prisma.embedded.source",
-                "punctuation.definition.tag.prisma"
+                "punctuation.definition.tag.prisma",
             ],
             regex: /^(\s*)(enum)(\s+)([A-Za-z][\w]*)(\s+)({)/,
             push: [{
                 token: "punctuation.definition.tag.prisma",
                 regex: /\s*\}/,
-                next: "pop"
+                next: "pop",
             }, {
-                include: "#triple_comment"
+                include: "#triple_comment",
             }, {
-                include: "#double_comment"
+                include: "#double_comment",
             }, {
-                include: "#enum_value_definition"
+                include: "#enum_value_definition",
             }, {
-                defaultToken: "source.prisma.embedded.source"
-            }]
+                defaultToken: "source.prisma.embedded.source",
+            }],
         }],
         "#config_block_definition": [{
             token: [
@@ -75,22 +75,22 @@ var PrismaHighlightRules = function() {
                 "source.prisma.embedded.source",
                 "entity.name.type.config.prisma",
                 "source.prisma.embedded.source",
-                "punctuation.definition.tag.prisma"
+                "punctuation.definition.tag.prisma",
             ],
             regex: /^(\s*)(generator|datasource)(\s+)([A-Za-z][\w]*)(\s+)({)/,
             push: [{
                 token: "source.prisma.embedded.source",
                 regex: /\s*\}/,
-                next: "pop"
+                next: "pop",
             }, {
-                include: "#triple_comment"
+                include: "#triple_comment",
             }, {
-                include: "#double_comment"
+                include: "#double_comment",
             }, {
-                include: "#assignment"
+                include: "#assignment",
             }, {
-                defaultToken: "source.prisma.embedded.source"
-            }]
+                defaultToken: "source.prisma.embedded.source",
+            }],
         }],
         "#assignment": [{
             token: [
@@ -98,18 +98,18 @@ var PrismaHighlightRules = function() {
                 "variable.other.assignment.prisma",
                 "text",
                 "keyword.operator.terraform",
-                "text"
+                "text",
             ],
             regex: /^(\s*)(\w+)(\s*)(=)(\s*)/,
             push: [{
                 token: "text",
                 regex: /$/,
-                next: "pop"
+                next: "pop",
             }, {
-                include: "#value"
+                include: "#value",
             }, {
-                include: "#double_comment_inline"
-            }]
+                include: "#double_comment_inline",
+            }],
         }],
         "#field_definition": [{
             token: [
@@ -120,13 +120,13 @@ var PrismaHighlightRules = function() {
                 "support.type.primitive.prisma",
                 "keyword.operator.list_type.prisma",
                 "keyword.operator.optional_type.prisma",
-                "invalid.illegal.required_type.prisma"
+                "invalid.illegal.required_type.prisma",
             ],
-            regex: /^(\s*)(\w+)((?:\s*:)?)(\s+)(\w+)((?:\[\])?)((?:\?)?)((?:\!)?)/
+            regex: /^(\s*)(\w+)((?:\s*:)?)(\s+)(\w+)((?:\[\])?)((?:\?)?)((?:\!)?)/,
         }, {
-            include: "#attribute_with_arguments"
+            include: "#attribute_with_arguments",
         }, {
-            include: "#attribute"
+            include: "#attribute",
         }],
         "#type_definition": [{
             token: [
@@ -135,47 +135,47 @@ var PrismaHighlightRules = function() {
                 "text",
                 "entity.name.type.type.prisma",
                 "text",
-                "support.type.primitive.prisma"
+                "support.type.primitive.prisma",
             ],
-            regex: /^(\s*)(type)(\s+)(\w+)(\s*=\s*)(\w+)/
+            regex: /^(\s*)(type)(\s+)(\w+)(\s*=\s*)(\w+)/,
         }, {
-            include: "#attribute_with_arguments"
+            include: "#attribute_with_arguments",
         }, {
-            include: "#attribute"
+            include: "#attribute",
         }],
         "#enum_value_definition": [{
             token: [
                 "text",
                 "variable.other.assignment.prisma",
-                "text"
+                "text",
             ],
-            regex: /^(\s*)(\w+)(\s*$)/
+            regex: /^(\s*)(\w+)(\s*$)/,
         }, {
-            include: "#attribute_with_arguments"
+            include: "#attribute_with_arguments",
         }, {
-            include: "#attribute"
+            include: "#attribute",
         }],
         "#attribute_with_arguments": [{
             token: [
                 "entity.name.function.attribute.prisma",
-                "punctuation.definition.tag.prisma"
+                "punctuation.definition.tag.prisma",
             ],
             regex: /(@@?[\w\.]+)(\()/,
             push: [{
                 token: "punctuation.definition.tag.prisma",
                 regex: /\)/,
-                next: "pop"
+                next: "pop",
             }, {
-                include: "#named_argument"
+                include: "#named_argument",
             }, {
-                include: "#value"
+                include: "#value",
             }, {
-                defaultToken: "source.prisma.attribute.with_arguments"
-            }]
+                defaultToken: "source.prisma.attribute.with_arguments",
+            }],
         }],
         "#attribute": [{
             token: "entity.name.function.attribute.prisma",
-            regex: /@@?[\w\.]+/
+            regex: /@@?[\w\.]+/,
         }],
         "#array": [{
             token: "source.prisma.array",
@@ -183,62 +183,62 @@ var PrismaHighlightRules = function() {
             push: [{
                 token: "source.prisma.array",
                 regex: /\]/,
-                next: "pop"
+                next: "pop",
             }, {
-                include: "#value"
+                include: "#value",
             }, {
-                defaultToken: "source.prisma.array"
-            }]
+                defaultToken: "source.prisma.array",
+            }],
         }],
         "#value": [{
-            include: "#array"
+            include: "#array",
         }, {
-            include: "#functional"
+            include: "#functional",
         }, {
-            include: "#literal"
+            include: "#literal",
         }],
         "#functional": [{
             token: [
                 "support.function.functional.prisma",
-                "punctuation.definition.tag.prisma"
+                "punctuation.definition.tag.prisma",
             ],
             regex: /(\w+)(\()/,
             push: [{
                 token: "punctuation.definition.tag.prisma",
                 regex: /\)/,
-                next: "pop"
+                next: "pop",
             }, {
-                include: "#value"
+                include: "#value",
             }, {
-                defaultToken: "source.prisma.functional"
-            }]
+                defaultToken: "source.prisma.functional",
+            }],
         }],
         "#literal": [{
-            include: "#boolean"
+            include: "#boolean",
         }, {
-            include: "#number"
+            include: "#number",
         }, {
-            include: "#double_quoted_string"
+            include: "#double_quoted_string",
         }, {
-            include: "#identifier"
+            include: "#identifier",
         }],
         "#identifier": [{
             token: "support.constant.constant.prisma",
-            regex: /\b(?:\w)+\b/
+            regex: /\b(?:\w)+\b/,
         }],
         "#map_key": [{
             token: [
                 "variable.parameter.key.prisma",
                 "text",
                 "punctuation.definition.separator.key-value.prisma",
-                "text"
+                "text",
             ],
-            regex: /(\w+)(\s*)(:)(\s*)/
+            regex: /(\w+)(\s*)(:)(\s*)/,
         }],
         "#named_argument": [{
-            include: "#map_key"
+            include: "#map_key",
         }, {
-            include: "#value"
+            include: "#value",
         }],
         "#triple_comment": [{
             token: "comment.prisma",
@@ -246,10 +246,10 @@ var PrismaHighlightRules = function() {
             push: [{
                 token: "comment.prisma",
                 regex: /$/,
-                next: "pop"
+                next: "pop",
             }, {
-                defaultToken: "comment.prisma"
-            }]
+                defaultToken: "comment.prisma",
+            }],
         }],
         "#double_comment": [{
             token: "comment.prisma",
@@ -257,22 +257,22 @@ var PrismaHighlightRules = function() {
             push: [{
                 token: "comment.prisma",
                 regex: /$/,
-                next: "pop"
+                next: "pop",
             }, {
-                defaultToken: "comment.prisma"
-            }]
+                defaultToken: "comment.prisma",
+            }],
         }],
         "#double_comment_inline": [{
             token: "comment.prisma",
-            regex: /\/\/[^$]*/
+            regex: /\/\/[^$]*/,
         }],
         "#boolean": [{
             token: "constant.language.boolean.prisma",
-            regex: /\b(?:true|false)\b/
+            regex: /\b(?:true|false)\b/,
         }],
         "#number": [{
             token: "constant.numeric.prisma",
-            regex: /(?:0(?:x|X)[0-9a-fA-F]*|(?:\+|-)?\b(?:[0-9]+\.?[0-9]*|\.[0-9]+)(?:(?:e|E)(?:\+|-)?[0-9]+)?)(?:[LlFfUuDdg]|UL|ul)?\b/
+            regex: /(?:0(?:x|X)[0-9a-fA-F]*|(?:\+|-)?\b(?:[0-9]+\.?[0-9]*|\.[0-9]+)(?:(?:e|E)(?:\+|-)?[0-9]+)?)(?:[LlFfUuDdg]|UL|ul)?\b/,
         }],
         "#double_quoted_string": [{
             token: "string.quoted.double.start.prisma",
@@ -280,15 +280,15 @@ var PrismaHighlightRules = function() {
             push: [{
                 token: "string.quoted.double.end.prisma",
                 regex: /"/,
-                next: "pop"
+                next: "pop",
             }, {
-                include: "#string_interpolation"
+                include: "#string_interpolation",
             }, {
                 token: "string.quoted.double.prisma",
-                regex: /[\w\-\/\._\\%@:\?=]+/
+                regex: /[\w\-\/\._\\%@:\?=]+/,
             }, {
-                defaultToken: "unnamed"
-            }]
+                defaultToken: "unnamed",
+            }],
         }],
         "#string_interpolation": [{
             token: "keyword.control.interpolation.start.prisma",
@@ -296,194 +296,194 @@ var PrismaHighlightRules = function() {
             push: [{
                 token: "keyword.control.interpolation.end.prisma",
                 regex: /\s*\}/,
-                next: "pop"
+                next: "pop",
             }, {
-                include: "#value"
+                include: "#value",
             }, {
-                defaultToken: "source.tag.embedded.source.prisma"
-            }]
-        }]
-    };
+                defaultToken: "source.tag.embedded.source.prisma",
+            }],
+        }],
+    }
     
-    this.normalizeRules();
-};
+    this.normalizeRules()
+}
 
 PrismaHighlightRules.metaData = {
     name: "Prisma",
-    scopeName: "source.prisma"
-};
+    scopeName: "source.prisma",
+}
 
 
-oop.inherits(PrismaHighlightRules, TextHighlightRules);
+oop.inherits(PrismaHighlightRules, TextHighlightRules)
 
-exports.PrismaHighlightRules = PrismaHighlightRules;
-});
+exports.PrismaHighlightRules = PrismaHighlightRules
+})
 
 ace.define("ace/mode/folding/cstyle",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../../lib/oop");
-var Range = require("../../range").Range;
-var BaseFoldMode = require("./fold_mode").FoldMode;
+var oop = require("../../lib/oop")
+var Range = require("../../range").Range
+var BaseFoldMode = require("./fold_mode").FoldMode
 
 var FoldMode = exports.FoldMode = function(commentRegex) {
     if (commentRegex) {
         this.foldingStartMarker = new RegExp(
-            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start)
-        );
+            this.foldingStartMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.start),
+        )
         this.foldingStopMarker = new RegExp(
-            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end)
-        );
+            this.foldingStopMarker.source.replace(/\|[^|]*?$/, "|" + commentRegex.end),
+        )
     }
-};
+}
 oop.inherits(FoldMode, BaseFoldMode);
 
 (function() {
     
-    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/;
-    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/;
-    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/;
-    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/;
-    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/;
-    this._getFoldWidgetBase = this.getFoldWidget;
+    this.foldingStartMarker = /([\{\[\(])[^\}\]\)]*$|^\s*(\/\*)/
+    this.foldingStopMarker = /^[^\[\{\(]*([\}\]\)])|^[\s\*]*(\*\/)/
+    this.singleLineBlockCommentRe= /^\s*(\/\*).*\*\/\s*$/
+    this.tripleStarBlockCommentRe = /^\s*(\/\*\*\*).*\*\/\s*$/
+    this.startRegionRe = /^\s*(\/\*|\/\/)#?region\b/
+    this._getFoldWidgetBase = this.getFoldWidget
     this.getFoldWidget = function(session, foldStyle, row) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
     
         if (this.singleLineBlockCommentRe.test(line)) {
             if (!this.startRegionRe.test(line) && !this.tripleStarBlockCommentRe.test(line))
-                return "";
+                return ""
         }
     
-        var fw = this._getFoldWidgetBase(session, foldStyle, row);
+        var fw = this._getFoldWidgetBase(session, foldStyle, row)
     
         if (!fw && this.startRegionRe.test(line))
-            return "start"; // lineCommentRegionStart
+            return "start" // lineCommentRegionStart
     
-        return fw;
-    };
+        return fw
+    }
 
     this.getFoldWidgetRange = function(session, foldStyle, row, forceMultiline) {
-        var line = session.getLine(row);
+        var line = session.getLine(row)
         
         if (this.startRegionRe.test(line))
-            return this.getCommentRegionBlock(session, line, row);
+            return this.getCommentRegionBlock(session, line, row)
         
-        var match = line.match(this.foldingStartMarker);
+        var match = line.match(this.foldingStartMarker)
         if (match) {
-            var i = match.index;
+            var i = match.index
 
             if (match[1])
-                return this.openingBracketBlock(session, match[1], row, i);
+                return this.openingBracketBlock(session, match[1], row, i)
                 
-            var range = session.getCommentFoldRange(row, i + match[0].length, 1);
+            var range = session.getCommentFoldRange(row, i + match[0].length, 1)
             
             if (range && !range.isMultiLine()) {
                 if (forceMultiline) {
-                    range = this.getSectionRange(session, row);
+                    range = this.getSectionRange(session, row)
                 } else if (foldStyle != "all")
-                    range = null;
+                    range = null
             }
             
-            return range;
+            return range
         }
 
         if (foldStyle === "markbegin")
-            return;
+            return
 
-        var match = line.match(this.foldingStopMarker);
+        var match = line.match(this.foldingStopMarker)
         if (match) {
-            var i = match.index + match[0].length;
+            var i = match.index + match[0].length
 
             if (match[1])
-                return this.closingBracketBlock(session, match[1], row, i);
+                return this.closingBracketBlock(session, match[1], row, i)
 
-            return session.getCommentFoldRange(row, i, -1);
+            return session.getCommentFoldRange(row, i, -1)
         }
-    };
+    }
     
     this.getSectionRange = function(session, row) {
-        var line = session.getLine(row);
-        var startIndent = line.search(/\S/);
-        var startRow = row;
-        var startColumn = line.length;
-        row = row + 1;
-        var endRow = row;
-        var maxRow = session.getLength();
+        var line = session.getLine(row)
+        var startIndent = line.search(/\S/)
+        var startRow = row
+        var startColumn = line.length
+        row = row + 1
+        var endRow = row
+        var maxRow = session.getLength()
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var indent = line.search(/\S/);
+            line = session.getLine(row)
+            var indent = line.search(/\S/)
             if (indent === -1)
-                continue;
+                continue
             if  (startIndent > indent)
-                break;
-            var subRange = this.getFoldWidgetRange(session, "all", row);
+                break
+            var subRange = this.getFoldWidgetRange(session, "all", row)
             
             if (subRange) {
                 if (subRange.start.row <= startRow) {
-                    break;
+                    break
                 } else if (subRange.isMultiLine()) {
-                    row = subRange.end.row;
+                    row = subRange.end.row
                 } else if (startIndent == indent) {
-                    break;
+                    break
                 }
             }
-            endRow = row;
+            endRow = row
         }
         
-        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length);
-    };
+        return new Range(startRow, startColumn, endRow, session.getLine(endRow).length)
+    }
     this.getCommentRegionBlock = function(session, line, row) {
-        var startColumn = line.search(/\s*$/);
-        var maxRow = session.getLength();
-        var startRow = row;
+        var startColumn = line.search(/\s*$/)
+        var maxRow = session.getLength()
+        var startRow = row
         
-        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/;
-        var depth = 1;
+        var re = /^\s*(?:\/\*|\/\/|--)#?(end)?region\b/
+        var depth = 1
         while (++row < maxRow) {
-            line = session.getLine(row);
-            var m = re.exec(line);
-            if (!m) continue;
-            if (m[1]) depth--;
-            else depth++;
+            line = session.getLine(row)
+            var m = re.exec(line)
+            if (!m) continue
+            if (m[1]) depth--
+            else depth++
 
-            if (!depth) break;
+            if (!depth) break
         }
 
-        var endRow = row;
+        var endRow = row
         if (endRow > startRow) {
-            return new Range(startRow, startColumn, endRow, line.length);
+            return new Range(startRow, startColumn, endRow, line.length)
         }
-    };
+    }
 
-}).call(FoldMode.prototype);
+}).call(FoldMode.prototype)
 
-});
+})
 
 ace.define("ace/mode/prisma",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var PrismaHighlightRules = require("./prisma_highlight_rules").PrismaHighlightRules;
-var FoldMode = require("./folding/cstyle").FoldMode;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var PrismaHighlightRules = require("./prisma_highlight_rules").PrismaHighlightRules
+var FoldMode = require("./folding/cstyle").FoldMode
 
 var Mode = function() {
-    this.HighlightRules = PrismaHighlightRules;
-    this.foldingRules = new FoldMode();
-};
+    this.HighlightRules = PrismaHighlightRules
+    this.foldingRules = new FoldMode()
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
-    this.lineCommentStart = "//";
-    this.$id = "ace/mode/prisma";
-}).call(Mode.prototype);
+    this.lineCommentStart = "//"
+    this.$id = "ace/mode/prisma"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     ace.require(["ace/mode/prisma"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

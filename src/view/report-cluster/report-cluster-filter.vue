@@ -36,6 +36,7 @@
       <a-input
         v-model:value="waitingTime"
         style="width: 200px"
+        :title="$t('Report.Filter.WaitingTime')"
         :addon-after="$t('Report.Filter.WaitingTime.Unit')"
         @blur="onWaitingTime" />
       <a-popover placement="right" trigger="hover" width="350" :content="$t('Report.Filter.WaitingTime.Help')">

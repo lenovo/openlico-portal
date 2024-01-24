@@ -58,7 +58,7 @@ PR['registerLangHandler'](
          // exponent     ->    (e | E) [+ | -] decimal
          [PR['PR_LITERAL'],
           /^(?:0o[0-7]+|0x[\da-f]+|\d+(?:\.\d+)?(?:e[+\-]?\d+)?)/i,
-          null, '0123456789']
+          null, '0123456789'],
         ],
         [
          // TODO: catch @declarations inside comments
@@ -87,6 +87,6 @@ PR['registerLangHandler'](
          [PR['PR_TYPE'], /^[A-Z_][a-zA-Z0-9_]*/],
 
          // matches the symbol production
-         [PR['PR_PUNCTUATION'], /^[.,;]/]
+         [PR['PR_PUNCTUATION'], /^[.,;]/],
         ]),
-    ['erlang', 'erl']);
+    ['erlang', 'erl'])

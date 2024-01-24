@@ -1,5 +1,5 @@
 define("ace/snippets/sqlserver",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "# ISNULL\n\
 snippet isnull\n\
@@ -70,14 +70,14 @@ snippet createfn\n\
 		${6:/*Add the T-SQL statements to compute the return value here*/}\n\
 		\n\
 	END\n\
-	GO";
-exports.scope = "sqlserver";
+	GO"
+exports.scope = "sqlserver"
 
 });                (function() {
                     window.require(["ace/snippets/sqlserver"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

@@ -80,7 +80,7 @@ class UsermoduleMonitorJob extends JobService.Job {
     um_obj.state = jsonObj.state.toLowerCase()
     um_obj.operateStatus = jsonObj.operate_state.toLowerCase()
     um_obj.schedulerStatus = jsonObj.scheduler_state
-    um_obj.logPath = jsonObj.log_path
+    um_obj.logPath = jsonObj.standard_output_file
     um_obj.isCleared = jsonObj.is_cleared
     return um_obj
   }
@@ -104,6 +104,7 @@ class FilterResult {
     this.description = ''
     this.path = ''
     this.toolchain = ''
+    this.filename = ''
   }
 
   static parseFromRestApi(jsonObj, index) {
@@ -115,6 +116,7 @@ class FilterResult {
     filterResult.description = jsonObj.description
     filterResult.path = jsonObj.easyconfig_path
     filterResult.toolchain = jsonObj.toolchain
+    filterResult.filename = jsonObj.filename
     return filterResult
   }
 }
@@ -221,6 +223,19 @@ function getJobMonitoringData() {
   })
 }
 
+function getSoftwareJobCount() {
+  return new Promise((resolve, reject) => {
+    Request.get('/api/usermodule/job_count/').then(
+      res => {
+        resolve(res.body)
+      },
+      err => {
+        ErrorHandler.restApiErrorHandler(err, reject)
+      },
+    )
+  })
+}
+
 function getViewLog(umId) {
   return new Promise((resolve, reject) => {
     Request.get(`/api/usermodule/job/${umId}/`).then(
@@ -268,6 +283,7 @@ export default {
   buildSoftware,
   getJobMonitoringData,
   getViewLog,
+  getSoftwareJobCount,
   doCancelJob,
   doClearJob,
 }

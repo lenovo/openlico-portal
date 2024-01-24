@@ -1,22 +1,22 @@
-"no use strict";
+"no use strict"
 !(function(window) {
 if (typeof window.window != "undefined" && window.document)
-    return;
+    return
 if (window.require && window.define)
-    return;
+    return
 
 if (!window.console) {
     window.console = function() {
-        var msgs = Array.prototype.slice.call(arguments, 0);
-        postMessage({type: "log", data: msgs});
-    };
+        var msgs = Array.prototype.slice.call(arguments, 0)
+        postMessage({type: "log", data: msgs})
+    }
     window.console.error =
     window.console.warn = 
     window.console.log =
-    window.console.trace = window.console;
+    window.console.trace = window.console
 }
-window.window = window;
-window.ace = window;
+window.window = window
+window.ace = window
 
 window.onerror = function(message, file, line, col, err) {
     postMessage({type: "error", data: {
@@ -25,240 +25,240 @@ window.onerror = function(message, file, line, col, err) {
         file: file,
         line: line, 
         col: col,
-        stack: err.stack
-    }});
-};
+        stack: err.stack,
+    }})
+}
 
 window.normalizeModule = function(parentId, moduleName) {
     // normalize plugin requires
     if (moduleName.indexOf("!") !== -1) {
-        var chunks = moduleName.split("!");
-        return window.normalizeModule(parentId, chunks[0]) + "!" + window.normalizeModule(parentId, chunks[1]);
+        var chunks = moduleName.split("!")
+        return window.normalizeModule(parentId, chunks[0]) + "!" + window.normalizeModule(parentId, chunks[1])
     }
     // normalize relative requires
     if (moduleName.charAt(0) == ".") {
-        var base = parentId.split("/").slice(0, -1).join("/");
-        moduleName = (base ? base + "/" : "") + moduleName;
+        var base = parentId.split("/").slice(0, -1).join("/")
+        moduleName = (base ? base + "/" : "") + moduleName
         
         while (moduleName.indexOf(".") !== -1 && previous != moduleName) {
-            var previous = moduleName;
-            moduleName = moduleName.replace(/^\.\//, "").replace(/\/\.\//, "/").replace(/[^\/]+\/\.\.\//, "");
+            var previous = moduleName
+            moduleName = moduleName.replace(/^\.\//, "").replace(/\/\.\//, "/").replace(/[^\/]+\/\.\.\//, "")
         }
     }
     
-    return moduleName;
-};
+    return moduleName
+}
 
 window.require = function require(parentId, id) {
     if (!id) {
-        id = parentId;
-        parentId = null;
+        id = parentId
+        parentId = null
     }
     if (!id.charAt)
-        throw new Error("worker.js require() accepts only (parentId, id) as arguments");
+        throw new Error("worker.js require() accepts only (parentId, id) as arguments")
 
-    id = window.normalizeModule(parentId, id);
+    id = window.normalizeModule(parentId, id)
 
-    var module = window.require.modules[id];
+    var module = window.require.modules[id]
     if (module) {
         if (!module.initialized) {
-            module.initialized = true;
-            module.exports = module.factory().exports;
+            module.initialized = true
+            module.exports = module.factory().exports
         }
-        return module.exports;
+        return module.exports
     }
    
     if (!window.require.tlns)
-        return console.log("unable to load " + id);
+        return console.log("unable to load " + id)
     
-    var path = resolveModuleId(id, window.require.tlns);
-    if (path.slice(-3) != ".js") path += ".js";
+    var path = resolveModuleId(id, window.require.tlns)
+    if (path.slice(-3) != ".js") path += ".js"
     
-    window.require.id = id;
-    window.require.modules[id] = {}; // prevent infinite loop on broken modules
-    importScripts(path);
-    return window.require(parentId, id);
-};
-function resolveModuleId(id, paths) {
-    var testPath = id, tail = "";
-    while (testPath) {
-        var alias = paths[testPath];
-        if (typeof alias == "string") {
-            return alias + tail;
-        } else if (alias) {
-            return  alias.location.replace(/\/*$/, "/") + (tail || alias.main || alias.name);
-        } else if (alias === false) {
-            return "";
-        }
-        var i = testPath.lastIndexOf("/");
-        if (i === -1) break;
-        tail = testPath.substr(i) + tail;
-        testPath = testPath.slice(0, i);
-    }
-    return id;
+    window.require.id = id
+    window.require.modules[id] = {} // prevent infinite loop on broken modules
+    importScripts(path)
+    return window.require(parentId, id)
 }
-window.require.modules = {};
-window.require.tlns = {};
+function resolveModuleId(id, paths) {
+    var testPath = id, tail = ""
+    while (testPath) {
+        var alias = paths[testPath]
+        if (typeof alias == "string") {
+            return alias + tail
+        } else if (alias) {
+            return  alias.location.replace(/\/*$/, "/") + (tail || alias.main || alias.name)
+        } else if (alias === false) {
+            return ""
+        }
+        var i = testPath.lastIndexOf("/")
+        if (i === -1) break
+        tail = testPath.substr(i) + tail
+        testPath = testPath.slice(0, i)
+    }
+    return id
+}
+window.require.modules = {}
+window.require.tlns = {}
 
 window.define = function(id, deps, factory) {
     if (arguments.length == 2) {
-        factory = deps;
+        factory = deps
         if (typeof id != "string") {
-            deps = id;
-            id = window.require.id;
+            deps = id
+            id = window.require.id
         }
     } else if (arguments.length == 1) {
-        factory = id;
-        deps = [];
-        id = window.require.id;
+        factory = id
+        deps = []
+        id = window.require.id
     }
     
     if (typeof factory != "function") {
         window.require.modules[id] = {
             exports: factory,
-            initialized: true
-        };
-        return;
+            initialized: true,
+        }
+        return
     }
 
     if (!deps.length)
         // If there is no dependencies, we inject "require", "exports" and
         // "module" as dependencies, to provide CommonJS compatibility.
-        deps = ["require", "exports", "module"];
+        deps = ["require", "exports", "module"]
 
     var req = function(childId) {
-        return window.require(id, childId);
-    };
+        return window.require(id, childId)
+    }
 
     window.require.modules[id] = {
         exports: {},
         factory: function() {
-            var module = this;
+            var module = this
             var returnExports = factory.apply(this, deps.slice(0, factory.length).map(function(dep) {
                 switch (dep) {
                     // Because "require", "exports" and "module" aren't actual
                     // dependencies, we must handle them seperately.
-                    case "require": return req;
-                    case "exports": return module.exports;
-                    case "module":  return module;
+                    case "require": return req
+                    case "exports": return module.exports
+                    case "module":  return module
                     // But for all other dependencies, we can just go ahead and
                     // require them.
-                    default:        return req(dep);
+                    default:        return req(dep)
                 }
-            }));
+            }))
             if (returnExports)
-                module.exports = returnExports;
-            return module;
-        }
-    };
-};
-window.define.amd = {};
-require.tlns = {};
+                module.exports = returnExports
+            return module
+        },
+    }
+}
+window.define.amd = {}
+require.tlns = {}
 window.initBaseUrls  = function initBaseUrls(topLevelNamespaces) {
     for (var i in topLevelNamespaces)
-        require.tlns[i] = topLevelNamespaces[i];
-};
+        require.tlns[i] = topLevelNamespaces[i]
+}
 
 window.initSender = function initSender() {
 
-    var EventEmitter = window.require("ace/lib/event_emitter").EventEmitter;
-    var oop = window.require("ace/lib/oop");
+    var EventEmitter = window.require("ace/lib/event_emitter").EventEmitter
+    var oop = window.require("ace/lib/oop")
     
     var Sender = function() {};
     
     (function() {
         
-        oop.implement(this, EventEmitter);
+        oop.implement(this, EventEmitter)
                 
         this.callback = function(data, callbackId) {
             postMessage({
                 type: "call",
                 id: callbackId,
-                data: data
-            });
-        };
+                data: data,
+            })
+        }
     
         this.emit = function(name, data) {
             postMessage({
                 type: "event",
                 name: name,
-                data: data
-            });
-        };
+                data: data,
+            })
+        }
         
-    }).call(Sender.prototype);
+    }).call(Sender.prototype)
     
-    return new Sender();
-};
+    return new Sender()
+}
 
-var main = window.main = null;
-var sender = window.sender = null;
+var main = window.main = null
+var sender = window.sender = null
 
 window.onmessage = function(e) {
-    var msg = e.data;
+    var msg = e.data
     if (msg.event && sender) {
-        sender._signal(msg.event, msg.data);
+        sender._signal(msg.event, msg.data)
     }
     else if (msg.command) {
         if (main[msg.command])
-            main[msg.command].apply(main, msg.args);
+            main[msg.command].apply(main, msg.args)
         else if (window[msg.command])
-            window[msg.command].apply(window, msg.args);
+            window[msg.command].apply(window, msg.args)
         else
-            throw new Error("Unknown command:" + msg.command);
+            throw new Error("Unknown command:" + msg.command)
     }
     else if (msg.init) {
-        window.initBaseUrls(msg.tlns);
-        sender = window.sender = window.initSender();
-        var clazz = require(msg.module)[msg.classname];
-        main = window.main = new clazz(sender);
+        window.initBaseUrls(msg.tlns)
+        sender = window.sender = window.initSender()
+        var clazz = require(msg.module)[msg.classname]
+        main = window.main = new clazz(sender)
     }
-};
-})(this);
+}
+})(this)
 
 define("ace/lib/oop",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.inherits = function(ctor, superCtor) {
-    ctor.super_ = superCtor;
+    ctor.super_ = superCtor
     ctor.prototype = Object.create(superCtor.prototype, {
         constructor: {
             value: ctor,
             enumerable: false,
             writable: true,
-            configurable: true
-        }
-    });
-};
+            configurable: true,
+        },
+    })
+}
 
 exports.mixin = function(obj, mixin) {
     for (var key in mixin) {
-        obj[key] = mixin[key];
+        obj[key] = mixin[key]
     }
-    return obj;
-};
+    return obj
+}
 
 exports.implement = function(proto, mixin) {
-    exports.mixin(proto, mixin);
-};
+    exports.mixin(proto, mixin)
+}
 
-});
+})
 
 define("ace/range",[], function(require, exports, module) {
-"use strict";
+"use strict"
 var comparePoints = function(p1, p2) {
-    return p1.row - p2.row || p1.column - p2.column;
-};
+    return p1.row - p2.row || p1.column - p2.column
+}
 var Range = function(startRow, startColumn, endRow, endColumn) {
     this.start = {
         row: startRow,
-        column: startColumn
-    };
+        column: startColumn,
+    }
 
     this.end = {
         row: endRow,
-        column: endColumn
-    };
+        column: endColumn,
+    }
 };
 
 (function() {
@@ -266,1163 +266,1163 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
         return this.start.row === range.start.row &&
             this.end.row === range.end.row &&
             this.start.column === range.start.column &&
-            this.end.column === range.end.column;
-    };
+            this.end.column === range.end.column
+    }
     this.toString = function() {
         return ("Range: [" + this.start.row + "/" + this.start.column +
-            "] -> [" + this.end.row + "/" + this.end.column + "]");
-    };
+            "] -> [" + this.end.row + "/" + this.end.column + "]")
+    }
 
     this.contains = function(row, column) {
-        return this.compare(row, column) == 0;
-    };
+        return this.compare(row, column) == 0
+    }
     this.compareRange = function(range) {
         var cmp,
             end = range.end,
-            start = range.start;
+            start = range.start
 
-        cmp = this.compare(end.row, end.column);
+        cmp = this.compare(end.row, end.column)
         if (cmp == 1) {
-            cmp = this.compare(start.row, start.column);
+            cmp = this.compare(start.row, start.column)
             if (cmp == 1) {
-                return 2;
+                return 2
             } else if (cmp == 0) {
-                return 1;
+                return 1
             } else {
-                return 0;
+                return 0
             }
         } else if (cmp == -1) {
-            return -2;
+            return -2
         } else {
-            cmp = this.compare(start.row, start.column);
+            cmp = this.compare(start.row, start.column)
             if (cmp == -1) {
-                return -1;
+                return -1
             } else if (cmp == 1) {
-                return 42;
+                return 42
             } else {
-                return 0;
+                return 0
             }
         }
-    };
+    }
     this.comparePoint = function(p) {
-        return this.compare(p.row, p.column);
-    };
+        return this.compare(p.row, p.column)
+    }
     this.containsRange = function(range) {
-        return this.comparePoint(range.start) == 0 && this.comparePoint(range.end) == 0;
-    };
+        return this.comparePoint(range.start) == 0 && this.comparePoint(range.end) == 0
+    }
     this.intersects = function(range) {
-        var cmp = this.compareRange(range);
-        return (cmp == -1 || cmp == 0 || cmp == 1);
-    };
+        var cmp = this.compareRange(range)
+        return (cmp == -1 || cmp == 0 || cmp == 1)
+    }
     this.isEnd = function(row, column) {
-        return this.end.row == row && this.end.column == column;
-    };
+        return this.end.row == row && this.end.column == column
+    }
     this.isStart = function(row, column) {
-        return this.start.row == row && this.start.column == column;
-    };
+        return this.start.row == row && this.start.column == column
+    }
     this.setStart = function(row, column) {
         if (typeof row == "object") {
-            this.start.column = row.column;
-            this.start.row = row.row;
+            this.start.column = row.column
+            this.start.row = row.row
         } else {
-            this.start.row = row;
-            this.start.column = column;
+            this.start.row = row
+            this.start.column = column
         }
-    };
+    }
     this.setEnd = function(row, column) {
         if (typeof row == "object") {
-            this.end.column = row.column;
-            this.end.row = row.row;
+            this.end.column = row.column
+            this.end.row = row.row
         } else {
-            this.end.row = row;
-            this.end.column = column;
+            this.end.row = row
+            this.end.column = column
         }
-    };
+    }
     this.inside = function(row, column) {
         if (this.compare(row, column) == 0) {
             if (this.isEnd(row, column) || this.isStart(row, column)) {
-                return false;
+                return false
             } else {
-                return true;
+                return true
             }
         }
-        return false;
-    };
+        return false
+    }
     this.insideStart = function(row, column) {
         if (this.compare(row, column) == 0) {
             if (this.isEnd(row, column)) {
-                return false;
+                return false
             } else {
-                return true;
+                return true
             }
         }
-        return false;
-    };
+        return false
+    }
     this.insideEnd = function(row, column) {
         if (this.compare(row, column) == 0) {
             if (this.isStart(row, column)) {
-                return false;
+                return false
             } else {
-                return true;
+                return true
             }
         }
-        return false;
-    };
+        return false
+    }
     this.compare = function(row, column) {
         if (!this.isMultiLine()) {
             if (row === this.start.row) {
-                return column < this.start.column ? -1 : (column > this.end.column ? 1 : 0);
+                return column < this.start.column ? -1 : (column > this.end.column ? 1 : 0)
             }
         }
 
         if (row < this.start.row)
-            return -1;
+            return -1
 
         if (row > this.end.row)
-            return 1;
+            return 1
 
         if (this.start.row === row)
-            return column >= this.start.column ? 0 : -1;
+            return column >= this.start.column ? 0 : -1
 
         if (this.end.row === row)
-            return column <= this.end.column ? 0 : 1;
+            return column <= this.end.column ? 0 : 1
 
-        return 0;
-    };
+        return 0
+    }
     this.compareStart = function(row, column) {
         if (this.start.row == row && this.start.column == column) {
-            return -1;
+            return -1
         } else {
-            return this.compare(row, column);
+            return this.compare(row, column)
         }
-    };
+    }
     this.compareEnd = function(row, column) {
         if (this.end.row == row && this.end.column == column) {
-            return 1;
+            return 1
         } else {
-            return this.compare(row, column);
+            return this.compare(row, column)
         }
-    };
+    }
     this.compareInside = function(row, column) {
         if (this.end.row == row && this.end.column == column) {
-            return 1;
+            return 1
         } else if (this.start.row == row && this.start.column == column) {
-            return -1;
+            return -1
         } else {
-            return this.compare(row, column);
+            return this.compare(row, column)
         }
-    };
+    }
     this.clipRows = function(firstRow, lastRow) {
         if (this.end.row > lastRow)
-            var end = {row: lastRow + 1, column: 0};
+            var end = {row: lastRow + 1, column: 0}
         else if (this.end.row < firstRow)
-            var end = {row: firstRow, column: 0};
+            var end = {row: firstRow, column: 0}
 
         if (this.start.row > lastRow)
-            var start = {row: lastRow + 1, column: 0};
+            var start = {row: lastRow + 1, column: 0}
         else if (this.start.row < firstRow)
-            var start = {row: firstRow, column: 0};
+            var start = {row: firstRow, column: 0}
 
-        return Range.fromPoints(start || this.start, end || this.end);
-    };
+        return Range.fromPoints(start || this.start, end || this.end)
+    }
     this.extend = function(row, column) {
-        var cmp = this.compare(row, column);
+        var cmp = this.compare(row, column)
 
         if (cmp == 0)
-            return this;
+            return this
         else if (cmp == -1)
-            var start = {row: row, column: column};
+            var start = {row: row, column: column}
         else
-            var end = {row: row, column: column};
+            var end = {row: row, column: column}
 
-        return Range.fromPoints(start || this.start, end || this.end);
-    };
+        return Range.fromPoints(start || this.start, end || this.end)
+    }
 
     this.isEmpty = function() {
-        return (this.start.row === this.end.row && this.start.column === this.end.column);
-    };
+        return (this.start.row === this.end.row && this.start.column === this.end.column)
+    }
     this.isMultiLine = function() {
-        return (this.start.row !== this.end.row);
-    };
+        return (this.start.row !== this.end.row)
+    }
     this.clone = function() {
-        return Range.fromPoints(this.start, this.end);
-    };
+        return Range.fromPoints(this.start, this.end)
+    }
     this.collapseRows = function() {
         if (this.end.column == 0)
-            return new Range(this.start.row, 0, Math.max(this.start.row, this.end.row-1), 0);
+            return new Range(this.start.row, 0, Math.max(this.start.row, this.end.row-1), 0)
         else
-            return new Range(this.start.row, 0, this.end.row, 0);
-    };
+            return new Range(this.start.row, 0, this.end.row, 0)
+    }
     this.toScreenRange = function(session) {
-        var screenPosStart = session.documentToScreenPosition(this.start);
-        var screenPosEnd = session.documentToScreenPosition(this.end);
+        var screenPosStart = session.documentToScreenPosition(this.start)
+        var screenPosEnd = session.documentToScreenPosition(this.end)
 
         return new Range(
             screenPosStart.row, screenPosStart.column,
-            screenPosEnd.row, screenPosEnd.column
-        );
-    };
+            screenPosEnd.row, screenPosEnd.column,
+        )
+    }
     this.moveBy = function(row, column) {
-        this.start.row += row;
-        this.start.column += column;
-        this.end.row += row;
-        this.end.column += column;
-    };
+        this.start.row += row
+        this.start.column += column
+        this.end.row += row
+        this.end.column += column
+    }
 
-}).call(Range.prototype);
+}).call(Range.prototype)
 Range.fromPoints = function(start, end) {
-    return new Range(start.row, start.column, end.row, end.column);
-};
-Range.comparePoints = comparePoints;
+    return new Range(start.row, start.column, end.row, end.column)
+}
+Range.comparePoints = comparePoints
 
 Range.comparePoints = function(p1, p2) {
-    return p1.row - p2.row || p1.column - p2.column;
-};
+    return p1.row - p2.row || p1.column - p2.column
+}
 
 
-exports.Range = Range;
-});
+exports.Range = Range
+})
 
 define("ace/apply_delta",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 function throwDeltaError(delta, errorText){
-    console.log("Invalid Delta:", delta);
-    throw "Invalid Delta: " + errorText;
+    console.log("Invalid Delta:", delta)
+    throw "Invalid Delta: " + errorText
 }
 
 function positionInDocument(docLines, position) {
     return position.row    >= 0 && position.row    <  docLines.length &&
-           position.column >= 0 && position.column <= docLines[position.row].length;
+           position.column >= 0 && position.column <= docLines[position.row].length
 }
 
 function validateDelta(docLines, delta) {
     if (delta.action != "insert" && delta.action != "remove")
-        throwDeltaError(delta, "delta.action must be 'insert' or 'remove'");
+        throwDeltaError(delta, "delta.action must be 'insert' or 'remove'")
     if (!(delta.lines instanceof Array))
-        throwDeltaError(delta, "delta.lines must be an Array");
+        throwDeltaError(delta, "delta.lines must be an Array")
     if (!delta.start || !delta.end)
-       throwDeltaError(delta, "delta.start/end must be an present");
-    var start = delta.start;
+       throwDeltaError(delta, "delta.start/end must be an present")
+    var start = delta.start
     if (!positionInDocument(docLines, delta.start))
-        throwDeltaError(delta, "delta.start must be contained in document");
-    var end = delta.end;
+        throwDeltaError(delta, "delta.start must be contained in document")
+    var end = delta.end
     if (delta.action == "remove" && !positionInDocument(docLines, end))
-        throwDeltaError(delta, "delta.end must contained in document for 'remove' actions");
-    var numRangeRows = end.row - start.row;
-    var numRangeLastLineChars = (end.column - (numRangeRows == 0 ? start.column : 0));
+        throwDeltaError(delta, "delta.end must contained in document for 'remove' actions")
+    var numRangeRows = end.row - start.row
+    var numRangeLastLineChars = (end.column - (numRangeRows == 0 ? start.column : 0))
     if (numRangeRows != delta.lines.length - 1 || delta.lines[numRangeRows].length != numRangeLastLineChars)
-        throwDeltaError(delta, "delta.range must match delta lines");
+        throwDeltaError(delta, "delta.range must match delta lines")
 }
 
 exports.applyDelta = function(docLines, delta, doNotValidate) {
     
-    var row = delta.start.row;
-    var startColumn = delta.start.column;
-    var line = docLines[row] || "";
+    var row = delta.start.row
+    var startColumn = delta.start.column
+    var line = docLines[row] || ""
     switch (delta.action) {
         case "insert":
-            var lines = delta.lines;
+            var lines = delta.lines
             if (lines.length === 1) {
-                docLines[row] = line.substring(0, startColumn) + delta.lines[0] + line.substring(startColumn);
+                docLines[row] = line.substring(0, startColumn) + delta.lines[0] + line.substring(startColumn)
             } else {
-                var args = [row, 1].concat(delta.lines);
-                docLines.splice.apply(docLines, args);
-                docLines[row] = line.substring(0, startColumn) + docLines[row];
-                docLines[row + delta.lines.length - 1] += line.substring(startColumn);
+                var args = [row, 1].concat(delta.lines)
+                docLines.splice.apply(docLines, args)
+                docLines[row] = line.substring(0, startColumn) + docLines[row]
+                docLines[row + delta.lines.length - 1] += line.substring(startColumn)
             }
-            break;
+            break
         case "remove":
-            var endColumn = delta.end.column;
-            var endRow = delta.end.row;
+            var endColumn = delta.end.column
+            var endRow = delta.end.row
             if (row === endRow) {
-                docLines[row] = line.substring(0, startColumn) + line.substring(endColumn);
+                docLines[row] = line.substring(0, startColumn) + line.substring(endColumn)
             } else {
                 docLines.splice(
                     row, endRow - row + 1,
-                    line.substring(0, startColumn) + docLines[endRow].substring(endColumn)
-                );
+                    line.substring(0, startColumn) + docLines[endRow].substring(endColumn),
+                )
             }
-            break;
+            break
     }
-};
-});
+}
+})
 
 define("ace/lib/event_emitter",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var EventEmitter = {};
-var stopPropagation = function() { this.propagationStopped = true; };
-var preventDefault = function() { this.defaultPrevented = true; };
+var EventEmitter = {}
+var stopPropagation = function() { this.propagationStopped = true }
+var preventDefault = function() { this.defaultPrevented = true }
 
 EventEmitter._emit =
 EventEmitter._dispatchEvent = function(eventName, e) {
-    this._eventRegistry || (this._eventRegistry = {});
-    this._defaultHandlers || (this._defaultHandlers = {});
+    this._eventRegistry || (this._eventRegistry = {})
+    this._defaultHandlers || (this._defaultHandlers = {})
 
-    var listeners = this._eventRegistry[eventName] || [];
-    var defaultHandler = this._defaultHandlers[eventName];
+    var listeners = this._eventRegistry[eventName] || []
+    var defaultHandler = this._defaultHandlers[eventName]
     if (!listeners.length && !defaultHandler)
-        return;
+        return
 
     if (typeof e != "object" || !e)
-        e = {};
+        e = {}
 
     if (!e.type)
-        e.type = eventName;
+        e.type = eventName
     if (!e.stopPropagation)
-        e.stopPropagation = stopPropagation;
+        e.stopPropagation = stopPropagation
     if (!e.preventDefault)
-        e.preventDefault = preventDefault;
+        e.preventDefault = preventDefault
 
-    listeners = listeners.slice();
+    listeners = listeners.slice()
     for (var i=0; i<listeners.length; i++) {
-        listeners[i](e, this);
+        listeners[i](e, this)
         if (e.propagationStopped)
-            break;
+            break
     }
     
     if (defaultHandler && !e.defaultPrevented)
-        return defaultHandler(e, this);
-};
+        return defaultHandler(e, this)
+}
 
 
 EventEmitter._signal = function(eventName, e) {
-    var listeners = (this._eventRegistry || {})[eventName];
+    var listeners = (this._eventRegistry || {})[eventName]
     if (!listeners)
-        return;
-    listeners = listeners.slice();
+        return
+    listeners = listeners.slice()
     for (var i=0; i<listeners.length; i++)
-        listeners[i](e, this);
-};
+        listeners[i](e, this)
+}
 
 EventEmitter.once = function(eventName, callback) {
-    var _self = this;
+    var _self = this
     this.on(eventName, function newCallback() {
-        _self.off(eventName, newCallback);
-        callback.apply(null, arguments);
-    });
+        _self.off(eventName, newCallback)
+        callback.apply(null, arguments)
+    })
     if (!callback) {
         return new Promise(function(resolve) {
-            callback = resolve;
-        });
+            callback = resolve
+        })
     }
-};
+}
 
 
 EventEmitter.setDefaultHandler = function(eventName, callback) {
-    var handlers = this._defaultHandlers;
+    var handlers = this._defaultHandlers
     if (!handlers)
-        handlers = this._defaultHandlers = {_disabled_: {}};
+        handlers = this._defaultHandlers = {_disabled_: {}}
     
     if (handlers[eventName]) {
-        var old = handlers[eventName];
-        var disabled = handlers._disabled_[eventName];
+        var old = handlers[eventName]
+        var disabled = handlers._disabled_[eventName]
         if (!disabled)
-            handlers._disabled_[eventName] = disabled = [];
-        disabled.push(old);
-        var i = disabled.indexOf(callback);
+            handlers._disabled_[eventName] = disabled = []
+        disabled.push(old)
+        var i = disabled.indexOf(callback)
         if (i != -1) 
-            disabled.splice(i, 1);
+            disabled.splice(i, 1)
     }
-    handlers[eventName] = callback;
-};
+    handlers[eventName] = callback
+}
 EventEmitter.removeDefaultHandler = function(eventName, callback) {
-    var handlers = this._defaultHandlers;
+    var handlers = this._defaultHandlers
     if (!handlers)
-        return;
-    var disabled = handlers._disabled_[eventName];
+        return
+    var disabled = handlers._disabled_[eventName]
     
     if (handlers[eventName] == callback) {
         if (disabled)
-            this.setDefaultHandler(eventName, disabled.pop());
+            this.setDefaultHandler(eventName, disabled.pop())
     } else if (disabled) {
-        var i = disabled.indexOf(callback);
+        var i = disabled.indexOf(callback)
         if (i != -1)
-            disabled.splice(i, 1);
+            disabled.splice(i, 1)
     }
-};
+}
 
 EventEmitter.on =
 EventEmitter.addEventListener = function(eventName, callback, capturing) {
-    this._eventRegistry = this._eventRegistry || {};
+    this._eventRegistry = this._eventRegistry || {}
 
-    var listeners = this._eventRegistry[eventName];
+    var listeners = this._eventRegistry[eventName]
     if (!listeners)
-        listeners = this._eventRegistry[eventName] = [];
+        listeners = this._eventRegistry[eventName] = []
 
     if (listeners.indexOf(callback) == -1)
-        listeners[capturing ? "unshift" : "push"](callback);
-    return callback;
-};
+        listeners[capturing ? "unshift" : "push"](callback)
+    return callback
+}
 
 EventEmitter.off =
 EventEmitter.removeListener =
 EventEmitter.removeEventListener = function(eventName, callback) {
-    this._eventRegistry = this._eventRegistry || {};
+    this._eventRegistry = this._eventRegistry || {}
 
-    var listeners = this._eventRegistry[eventName];
+    var listeners = this._eventRegistry[eventName]
     if (!listeners)
-        return;
+        return
 
-    var index = listeners.indexOf(callback);
+    var index = listeners.indexOf(callback)
     if (index !== -1)
-        listeners.splice(index, 1);
-};
+        listeners.splice(index, 1)
+}
 
 EventEmitter.removeAllListeners = function(eventName) {
-    if (!eventName) this._eventRegistry = this._defaultHandlers = undefined;
-    if (this._eventRegistry) this._eventRegistry[eventName] = undefined;
-    if (this._defaultHandlers) this._defaultHandlers[eventName] = undefined;
-};
+    if (!eventName) this._eventRegistry = this._defaultHandlers = undefined
+    if (this._eventRegistry) this._eventRegistry[eventName] = undefined
+    if (this._defaultHandlers) this._defaultHandlers[eventName] = undefined
+}
 
-exports.EventEmitter = EventEmitter;
+exports.EventEmitter = EventEmitter
 
-});
+})
 
 define("ace/anchor",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("./lib/oop");
-var EventEmitter = require("./lib/event_emitter").EventEmitter;
+var oop = require("./lib/oop")
+var EventEmitter = require("./lib/event_emitter").EventEmitter
 
 var Anchor = exports.Anchor = function(doc, row, column) {
-    this.$onChange = this.onChange.bind(this);
-    this.attach(doc);
+    this.$onChange = this.onChange.bind(this)
+    this.attach(doc)
     
     if (typeof column == "undefined")
-        this.setPosition(row.row, row.column);
+        this.setPosition(row.row, row.column)
     else
-        this.setPosition(row, column);
+        this.setPosition(row, column)
 };
 
 (function() {
 
-    oop.implement(this, EventEmitter);
+    oop.implement(this, EventEmitter)
     this.getPosition = function() {
-        return this.$clipPositionToDocument(this.row, this.column);
-    };
+        return this.$clipPositionToDocument(this.row, this.column)
+    }
     this.getDocument = function() {
-        return this.document;
-    };
-    this.$insertRight = false;
+        return this.document
+    }
+    this.$insertRight = false
     this.onChange = function(delta) {
         if (delta.start.row == delta.end.row && delta.start.row != this.row)
-            return;
+            return
 
         if (delta.start.row > this.row)
-            return;
+            return
             
-        var point = $getTransformedPoint(delta, {row: this.row, column: this.column}, this.$insertRight);
-        this.setPosition(point.row, point.column, true);
-    };
+        var point = $getTransformedPoint(delta, {row: this.row, column: this.column}, this.$insertRight)
+        this.setPosition(point.row, point.column, true)
+    }
     
     function $pointsInOrder(point1, point2, equalPointsInOrder) {
-        var bColIsAfter = equalPointsInOrder ? point1.column <= point2.column : point1.column < point2.column;
-        return (point1.row < point2.row) || (point1.row == point2.row && bColIsAfter);
+        var bColIsAfter = equalPointsInOrder ? point1.column <= point2.column : point1.column < point2.column
+        return (point1.row < point2.row) || (point1.row == point2.row && bColIsAfter)
     }
             
     function $getTransformedPoint(delta, point, moveIfEqual) {
-        var deltaIsInsert = delta.action == "insert";
-        var deltaRowShift = (deltaIsInsert ? 1 : -1) * (delta.end.row    - delta.start.row);
-        var deltaColShift = (deltaIsInsert ? 1 : -1) * (delta.end.column - delta.start.column);
-        var deltaStart = delta.start;
-        var deltaEnd = deltaIsInsert ? deltaStart : delta.end; // Collapse insert range.
+        var deltaIsInsert = delta.action == "insert"
+        var deltaRowShift = (deltaIsInsert ? 1 : -1) * (delta.end.row    - delta.start.row)
+        var deltaColShift = (deltaIsInsert ? 1 : -1) * (delta.end.column - delta.start.column)
+        var deltaStart = delta.start
+        var deltaEnd = deltaIsInsert ? deltaStart : delta.end // Collapse insert range.
         if ($pointsInOrder(point, deltaStart, moveIfEqual)) {
             return {
                 row: point.row,
-                column: point.column
-            };
+                column: point.column,
+            }
         }
         if ($pointsInOrder(deltaEnd, point, !moveIfEqual)) {
             return {
                 row: point.row + deltaRowShift,
-                column: point.column + (point.row == deltaEnd.row ? deltaColShift : 0)
-            };
+                column: point.column + (point.row == deltaEnd.row ? deltaColShift : 0),
+            }
         }
         
         return {
             row: deltaStart.row,
-            column: deltaStart.column
-        };
+            column: deltaStart.column,
+        }
     }
     this.setPosition = function(row, column, noClip) {
-        var pos;
+        var pos
         if (noClip) {
             pos = {
                 row: row,
-                column: column
-            };
+                column: column,
+            }
         } else {
-            pos = this.$clipPositionToDocument(row, column);
+            pos = this.$clipPositionToDocument(row, column)
         }
 
         if (this.row == pos.row && this.column == pos.column)
-            return;
+            return
 
         var old = {
             row: this.row,
-            column: this.column
-        };
+            column: this.column,
+        }
 
-        this.row = pos.row;
-        this.column = pos.column;
+        this.row = pos.row
+        this.column = pos.column
         this._signal("change", {
             old: old,
-            value: pos
-        });
-    };
+            value: pos,
+        })
+    }
     this.detach = function() {
-        this.document.off("change", this.$onChange);
-    };
+        this.document.off("change", this.$onChange)
+    }
     this.attach = function(doc) {
-        this.document = doc || this.document;
-        this.document.on("change", this.$onChange);
-    };
+        this.document = doc || this.document
+        this.document.on("change", this.$onChange)
+    }
     this.$clipPositionToDocument = function(row, column) {
-        var pos = {};
+        var pos = {}
 
         if (row >= this.document.getLength()) {
-            pos.row = Math.max(0, this.document.getLength() - 1);
-            pos.column = this.document.getLine(pos.row).length;
+            pos.row = Math.max(0, this.document.getLength() - 1)
+            pos.column = this.document.getLine(pos.row).length
         }
         else if (row < 0) {
-            pos.row = 0;
-            pos.column = 0;
+            pos.row = 0
+            pos.column = 0
         }
         else {
-            pos.row = row;
-            pos.column = Math.min(this.document.getLine(pos.row).length, Math.max(0, column));
+            pos.row = row
+            pos.column = Math.min(this.document.getLine(pos.row).length, Math.max(0, column))
         }
 
         if (column < 0)
-            pos.column = 0;
+            pos.column = 0
 
-        return pos;
-    };
+        return pos
+    }
 
-}).call(Anchor.prototype);
+}).call(Anchor.prototype)
 
-});
+})
 
 define("ace/document",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("./lib/oop");
-var applyDelta = require("./apply_delta").applyDelta;
-var EventEmitter = require("./lib/event_emitter").EventEmitter;
-var Range = require("./range").Range;
-var Anchor = require("./anchor").Anchor;
+var oop = require("./lib/oop")
+var applyDelta = require("./apply_delta").applyDelta
+var EventEmitter = require("./lib/event_emitter").EventEmitter
+var Range = require("./range").Range
+var Anchor = require("./anchor").Anchor
 
 var Document = function(textOrLines) {
-    this.$lines = [""];
+    this.$lines = [""]
     if (textOrLines.length === 0) {
-        this.$lines = [""];
+        this.$lines = [""]
     } else if (Array.isArray(textOrLines)) {
-        this.insertMergedLines({row: 0, column: 0}, textOrLines);
+        this.insertMergedLines({row: 0, column: 0}, textOrLines)
     } else {
-        this.insert({row: 0, column:0}, textOrLines);
+        this.insert({row: 0, column:0}, textOrLines)
     }
 };
 
 (function() {
 
-    oop.implement(this, EventEmitter);
+    oop.implement(this, EventEmitter)
     this.setValue = function(text) {
-        var len = this.getLength() - 1;
-        this.remove(new Range(0, 0, len, this.getLine(len).length));
-        this.insert({row: 0, column: 0}, text);
-    };
+        var len = this.getLength() - 1
+        this.remove(new Range(0, 0, len, this.getLine(len).length))
+        this.insert({row: 0, column: 0}, text)
+    }
     this.getValue = function() {
-        return this.getAllLines().join(this.getNewLineCharacter());
-    };
+        return this.getAllLines().join(this.getNewLineCharacter())
+    }
     this.createAnchor = function(row, column) {
-        return new Anchor(this, row, column);
-    };
+        return new Anchor(this, row, column)
+    }
     if ("aaa".split(/a/).length === 0) {
         this.$split = function(text) {
-            return text.replace(/\r\n|\r/g, "\n").split("\n");
-        };
+            return text.replace(/\r\n|\r/g, "\n").split("\n")
+        }
     } else {
         this.$split = function(text) {
-            return text.split(/\r\n|\r|\n/);
-        };
+            return text.split(/\r\n|\r|\n/)
+        }
     }
 
 
     this.$detectNewLine = function(text) {
-        var match = text.match(/^.*?(\r\n|\r|\n)/m);
-        this.$autoNewLine = match ? match[1] : "\n";
-        this._signal("changeNewLineMode");
-    };
+        var match = text.match(/^.*?(\r\n|\r|\n)/m)
+        this.$autoNewLine = match ? match[1] : "\n"
+        this._signal("changeNewLineMode")
+    }
     this.getNewLineCharacter = function() {
         switch (this.$newLineMode) {
           case "windows":
-            return "\r\n";
+            return "\r\n"
           case "unix":
-            return "\n";
+            return "\n"
           default:
-            return this.$autoNewLine || "\n";
+            return this.$autoNewLine || "\n"
         }
-    };
+    }
 
-    this.$autoNewLine = "";
-    this.$newLineMode = "auto";
+    this.$autoNewLine = ""
+    this.$newLineMode = "auto"
     this.setNewLineMode = function(newLineMode) {
         if (this.$newLineMode === newLineMode)
-            return;
+            return
 
-        this.$newLineMode = newLineMode;
-        this._signal("changeNewLineMode");
-    };
+        this.$newLineMode = newLineMode
+        this._signal("changeNewLineMode")
+    }
     this.getNewLineMode = function() {
-        return this.$newLineMode;
-    };
+        return this.$newLineMode
+    }
     this.isNewLine = function(text) {
-        return (text == "\r\n" || text == "\r" || text == "\n");
-    };
+        return (text == "\r\n" || text == "\r" || text == "\n")
+    }
     this.getLine = function(row) {
-        return this.$lines[row] || "";
-    };
+        return this.$lines[row] || ""
+    }
     this.getLines = function(firstRow, lastRow) {
-        return this.$lines.slice(firstRow, lastRow + 1);
-    };
+        return this.$lines.slice(firstRow, lastRow + 1)
+    }
     this.getAllLines = function() {
-        return this.getLines(0, this.getLength());
-    };
+        return this.getLines(0, this.getLength())
+    }
     this.getLength = function() {
-        return this.$lines.length;
-    };
+        return this.$lines.length
+    }
     this.getTextRange = function(range) {
-        return this.getLinesForRange(range).join(this.getNewLineCharacter());
-    };
+        return this.getLinesForRange(range).join(this.getNewLineCharacter())
+    }
     this.getLinesForRange = function(range) {
-        var lines;
+        var lines
         if (range.start.row === range.end.row) {
-            lines = [this.getLine(range.start.row).substring(range.start.column, range.end.column)];
+            lines = [this.getLine(range.start.row).substring(range.start.column, range.end.column)]
         } else {
-            lines = this.getLines(range.start.row, range.end.row);
-            lines[0] = (lines[0] || "").substring(range.start.column);
-            var l = lines.length - 1;
+            lines = this.getLines(range.start.row, range.end.row)
+            lines[0] = (lines[0] || "").substring(range.start.column)
+            var l = lines.length - 1
             if (range.end.row - range.start.row == l)
-                lines[l] = lines[l].substring(0, range.end.column);
+                lines[l] = lines[l].substring(0, range.end.column)
         }
-        return lines;
-    };
+        return lines
+    }
     this.insertLines = function(row, lines) {
-        console.warn("Use of document.insertLines is deprecated. Use the insertFullLines method instead.");
-        return this.insertFullLines(row, lines);
-    };
+        console.warn("Use of document.insertLines is deprecated. Use the insertFullLines method instead.")
+        return this.insertFullLines(row, lines)
+    }
     this.removeLines = function(firstRow, lastRow) {
-        console.warn("Use of document.removeLines is deprecated. Use the removeFullLines method instead.");
-        return this.removeFullLines(firstRow, lastRow);
-    };
+        console.warn("Use of document.removeLines is deprecated. Use the removeFullLines method instead.")
+        return this.removeFullLines(firstRow, lastRow)
+    }
     this.insertNewLine = function(position) {
-        console.warn("Use of document.insertNewLine is deprecated. Use insertMergedLines(position, ['', '']) instead.");
-        return this.insertMergedLines(position, ["", ""]);
-    };
+        console.warn("Use of document.insertNewLine is deprecated. Use insertMergedLines(position, ['', '']) instead.")
+        return this.insertMergedLines(position, ["", ""])
+    }
     this.insert = function(position, text) {
         if (this.getLength() <= 1)
-            this.$detectNewLine(text);
+            this.$detectNewLine(text)
         
-        return this.insertMergedLines(position, this.$split(text));
-    };
+        return this.insertMergedLines(position, this.$split(text))
+    }
     this.insertInLine = function(position, text) {
-        var start = this.clippedPos(position.row, position.column);
-        var end = this.pos(position.row, position.column + text.length);
+        var start = this.clippedPos(position.row, position.column)
+        var end = this.pos(position.row, position.column + text.length)
         
         this.applyDelta({
             start: start,
             end: end,
             action: "insert",
-            lines: [text]
-        }, true);
+            lines: [text],
+        }, true)
         
-        return this.clonePos(end);
-    };
+        return this.clonePos(end)
+    }
     
     this.clippedPos = function(row, column) {
-        var length = this.getLength();
+        var length = this.getLength()
         if (row === undefined) {
-            row = length;
+            row = length
         } else if (row < 0) {
-            row = 0;
+            row = 0
         } else if (row >= length) {
-            row = length - 1;
-            column = undefined;
+            row = length - 1
+            column = undefined
         }
-        var line = this.getLine(row);
+        var line = this.getLine(row)
         if (column == undefined)
-            column = line.length;
-        column = Math.min(Math.max(column, 0), line.length);
-        return {row: row, column: column};
-    };
+            column = line.length
+        column = Math.min(Math.max(column, 0), line.length)
+        return {row: row, column: column}
+    }
     
     this.clonePos = function(pos) {
-        return {row: pos.row, column: pos.column};
-    };
+        return {row: pos.row, column: pos.column}
+    }
     
     this.pos = function(row, column) {
-        return {row: row, column: column};
-    };
+        return {row: row, column: column}
+    }
     
     this.$clipPosition = function(position) {
-        var length = this.getLength();
+        var length = this.getLength()
         if (position.row >= length) {
-            position.row = Math.max(0, length - 1);
-            position.column = this.getLine(length - 1).length;
+            position.row = Math.max(0, length - 1)
+            position.column = this.getLine(length - 1).length
         } else {
-            position.row = Math.max(0, position.row);
-            position.column = Math.min(Math.max(position.column, 0), this.getLine(position.row).length);
+            position.row = Math.max(0, position.row)
+            position.column = Math.min(Math.max(position.column, 0), this.getLine(position.row).length)
         }
-        return position;
-    };
+        return position
+    }
     this.insertFullLines = function(row, lines) {
-        row = Math.min(Math.max(row, 0), this.getLength());
-        var column = 0;
+        row = Math.min(Math.max(row, 0), this.getLength())
+        var column = 0
         if (row < this.getLength()) {
-            lines = lines.concat([""]);
-            column = 0;
+            lines = lines.concat([""])
+            column = 0
         } else {
-            lines = [""].concat(lines);
-            row--;
-            column = this.$lines[row].length;
+            lines = [""].concat(lines)
+            row--
+            column = this.$lines[row].length
         }
-        this.insertMergedLines({row: row, column: column}, lines);
-    };    
+        this.insertMergedLines({row: row, column: column}, lines)
+    }    
     this.insertMergedLines = function(position, lines) {
-        var start = this.clippedPos(position.row, position.column);
+        var start = this.clippedPos(position.row, position.column)
         var end = {
             row: start.row + lines.length - 1,
-            column: (lines.length == 1 ? start.column : 0) + lines[lines.length - 1].length
-        };
+            column: (lines.length == 1 ? start.column : 0) + lines[lines.length - 1].length,
+        }
         
         this.applyDelta({
             start: start,
             end: end,
             action: "insert",
-            lines: lines
-        });
+            lines: lines,
+        })
         
-        return this.clonePos(end);
-    };
+        return this.clonePos(end)
+    }
     this.remove = function(range) {
-        var start = this.clippedPos(range.start.row, range.start.column);
-        var end = this.clippedPos(range.end.row, range.end.column);
+        var start = this.clippedPos(range.start.row, range.start.column)
+        var end = this.clippedPos(range.end.row, range.end.column)
         this.applyDelta({
             start: start,
             end: end,
             action: "remove",
-            lines: this.getLinesForRange({start: start, end: end})
-        });
-        return this.clonePos(start);
-    };
+            lines: this.getLinesForRange({start: start, end: end}),
+        })
+        return this.clonePos(start)
+    }
     this.removeInLine = function(row, startColumn, endColumn) {
-        var start = this.clippedPos(row, startColumn);
-        var end = this.clippedPos(row, endColumn);
+        var start = this.clippedPos(row, startColumn)
+        var end = this.clippedPos(row, endColumn)
         
         this.applyDelta({
             start: start,
             end: end,
             action: "remove",
-            lines: this.getLinesForRange({start: start, end: end})
-        }, true);
+            lines: this.getLinesForRange({start: start, end: end}),
+        }, true)
         
-        return this.clonePos(start);
-    };
+        return this.clonePos(start)
+    }
     this.removeFullLines = function(firstRow, lastRow) {
-        firstRow = Math.min(Math.max(0, firstRow), this.getLength() - 1);
-        lastRow  = Math.min(Math.max(0, lastRow ), this.getLength() - 1);
-        var deleteFirstNewLine = lastRow == this.getLength() - 1 && firstRow > 0;
-        var deleteLastNewLine  = lastRow  < this.getLength() - 1;
-        var startRow = ( deleteFirstNewLine ? firstRow - 1                  : firstRow                    );
-        var startCol = ( deleteFirstNewLine ? this.getLine(startRow).length : 0                           );
-        var endRow   = ( deleteLastNewLine  ? lastRow + 1                   : lastRow                     );
-        var endCol   = ( deleteLastNewLine  ? 0                             : this.getLine(endRow).length ); 
-        var range = new Range(startRow, startCol, endRow, endCol);
-        var deletedLines = this.$lines.slice(firstRow, lastRow + 1);
+        firstRow = Math.min(Math.max(0, firstRow), this.getLength() - 1)
+        lastRow  = Math.min(Math.max(0, lastRow ), this.getLength() - 1)
+        var deleteFirstNewLine = lastRow == this.getLength() - 1 && firstRow > 0
+        var deleteLastNewLine  = lastRow  < this.getLength() - 1
+        var startRow = ( deleteFirstNewLine ? firstRow - 1                  : firstRow                    )
+        var startCol = ( deleteFirstNewLine ? this.getLine(startRow).length : 0                           )
+        var endRow   = ( deleteLastNewLine  ? lastRow + 1                   : lastRow                     )
+        var endCol   = ( deleteLastNewLine  ? 0                             : this.getLine(endRow).length ) 
+        var range = new Range(startRow, startCol, endRow, endCol)
+        var deletedLines = this.$lines.slice(firstRow, lastRow + 1)
         
         this.applyDelta({
             start: range.start,
             end: range.end,
             action: "remove",
-            lines: this.getLinesForRange(range)
-        });
-        return deletedLines;
-    };
+            lines: this.getLinesForRange(range),
+        })
+        return deletedLines
+    }
     this.removeNewLine = function(row) {
         if (row < this.getLength() - 1 && row >= 0) {
             this.applyDelta({
                 start: this.pos(row, this.getLine(row).length),
                 end: this.pos(row + 1, 0),
                 action: "remove",
-                lines: ["", ""]
-            });
+                lines: ["", ""],
+            })
         }
-    };
+    }
     this.replace = function(range, text) {
         if (!(range instanceof Range))
-            range = Range.fromPoints(range.start, range.end);
+            range = Range.fromPoints(range.start, range.end)
         if (text.length === 0 && range.isEmpty())
-            return range.start;
+            return range.start
         if (text == this.getTextRange(range))
-            return range.end;
+            return range.end
 
-        this.remove(range);
-        var end;
+        this.remove(range)
+        var end
         if (text) {
-            end = this.insert(range.start, text);
+            end = this.insert(range.start, text)
         }
         else {
-            end = range.start;
+            end = range.start
         }
         
-        return end;
-    };
+        return end
+    }
     this.applyDeltas = function(deltas) {
         for (var i=0; i<deltas.length; i++) {
-            this.applyDelta(deltas[i]);
+            this.applyDelta(deltas[i])
         }
-    };
+    }
     this.revertDeltas = function(deltas) {
         for (var i=deltas.length-1; i>=0; i--) {
-            this.revertDelta(deltas[i]);
+            this.revertDelta(deltas[i])
         }
-    };
+    }
     this.applyDelta = function(delta, doNotValidate) {
-        var isInsert = delta.action == "insert";
+        var isInsert = delta.action == "insert"
         if (isInsert ? delta.lines.length <= 1 && !delta.lines[0]
             : !Range.comparePoints(delta.start, delta.end)) {
-            return;
+            return
         }
         
         if (isInsert && delta.lines.length > 20000) {
-            this.$splitAndapplyLargeDelta(delta, 20000);
+            this.$splitAndapplyLargeDelta(delta, 20000)
         }
         else {
-            applyDelta(this.$lines, delta, doNotValidate);
-            this._signal("change", delta);
+            applyDelta(this.$lines, delta, doNotValidate)
+            this._signal("change", delta)
         }
-    };
+    }
     
     this.$safeApplyDelta = function(delta) {
-        var docLength = this.$lines.length;
+        var docLength = this.$lines.length
         if (
             delta.action == "remove" && delta.start.row < docLength && delta.end.row < docLength
             || delta.action == "insert" && delta.start.row <= docLength
         ) {
-            this.applyDelta(delta);
+            this.applyDelta(delta)
         }
-    };
+    }
     
     this.$splitAndapplyLargeDelta = function(delta, MAX) {
-        var lines = delta.lines;
-        var l = lines.length - MAX + 1;
-        var row = delta.start.row; 
-        var column = delta.start.column;
+        var lines = delta.lines
+        var l = lines.length - MAX + 1
+        var row = delta.start.row 
+        var column = delta.start.column
         for (var from = 0, to = 0; from < l; from = to) {
-            to += MAX - 1;
-            var chunk = lines.slice(from, to);
-            chunk.push("");
+            to += MAX - 1
+            var chunk = lines.slice(from, to)
+            chunk.push("")
             this.applyDelta({
                 start: this.pos(row + from, column),
                 end: this.pos(row + to, column = 0),
                 action: delta.action,
-                lines: chunk
-            }, true);
+                lines: chunk,
+            }, true)
         }
-        delta.lines = lines.slice(from);
-        delta.start.row = row + from;
-        delta.start.column = column;
-        this.applyDelta(delta, true);
-    };
+        delta.lines = lines.slice(from)
+        delta.start.row = row + from
+        delta.start.column = column
+        this.applyDelta(delta, true)
+    }
     this.revertDelta = function(delta) {
         this.$safeApplyDelta({
             start: this.clonePos(delta.start),
             end: this.clonePos(delta.end),
             action: (delta.action == "insert" ? "remove" : "insert"),
-            lines: delta.lines.slice()
-        });
-    };
+            lines: delta.lines.slice(),
+        })
+    }
     this.indexToPosition = function(index, startRow) {
-        var lines = this.$lines || this.getAllLines();
-        var newlineLength = this.getNewLineCharacter().length;
+        var lines = this.$lines || this.getAllLines()
+        var newlineLength = this.getNewLineCharacter().length
         for (var i = startRow || 0, l = lines.length; i < l; i++) {
-            index -= lines[i].length + newlineLength;
+            index -= lines[i].length + newlineLength
             if (index < 0)
-                return {row: i, column: index + lines[i].length + newlineLength};
+                return {row: i, column: index + lines[i].length + newlineLength}
         }
-        return {row: l-1, column: index + lines[l-1].length + newlineLength};
-    };
+        return {row: l-1, column: index + lines[l-1].length + newlineLength}
+    }
     this.positionToIndex = function(pos, startRow) {
-        var lines = this.$lines || this.getAllLines();
-        var newlineLength = this.getNewLineCharacter().length;
-        var index = 0;
-        var row = Math.min(pos.row, lines.length);
+        var lines = this.$lines || this.getAllLines()
+        var newlineLength = this.getNewLineCharacter().length
+        var index = 0
+        var row = Math.min(pos.row, lines.length)
         for (var i = startRow || 0; i < row; ++i)
-            index += lines[i].length + newlineLength;
+            index += lines[i].length + newlineLength
 
-        return index + pos.column;
-    };
+        return index + pos.column
+    }
 
-}).call(Document.prototype);
+}).call(Document.prototype)
 
-exports.Document = Document;
-});
+exports.Document = Document
+})
 
 define("ace/lib/lang",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.last = function(a) {
-    return a[a.length - 1];
-};
+    return a[a.length - 1]
+}
 
 exports.stringReverse = function(string) {
-    return string.split("").reverse().join("");
-};
+    return string.split("").reverse().join("")
+}
 
 exports.stringRepeat = function (string, count) {
-    var result = '';
+    var result = ''
     while (count > 0) {
         if (count & 1)
-            result += string;
+            result += string
 
         if (count >>= 1)
-            string += string;
+            string += string
     }
-    return result;
-};
+    return result
+}
 
-var trimBeginRegexp = /^\s\s*/;
-var trimEndRegexp = /\s\s*$/;
+var trimBeginRegexp = /^\s\s*/
+var trimEndRegexp = /\s\s*$/
 
 exports.stringTrimLeft = function (string) {
-    return string.replace(trimBeginRegexp, '');
-};
+    return string.replace(trimBeginRegexp, '')
+}
 
 exports.stringTrimRight = function (string) {
-    return string.replace(trimEndRegexp, '');
-};
+    return string.replace(trimEndRegexp, '')
+}
 
 exports.copyObject = function(obj) {
-    var copy = {};
+    var copy = {}
     for (var key in obj) {
-        copy[key] = obj[key];
+        copy[key] = obj[key]
     }
-    return copy;
-};
+    return copy
+}
 
 exports.copyArray = function(array){
-    var copy = [];
+    var copy = []
     for (var i=0, l=array.length; i<l; i++) {
         if (array[i] && typeof array[i] == "object")
-            copy[i] = this.copyObject(array[i]);
+            copy[i] = this.copyObject(array[i])
         else 
-            copy[i] = array[i];
+            copy[i] = array[i]
     }
-    return copy;
-};
+    return copy
+}
 
 exports.deepCopy = function deepCopy(obj) {
     if (typeof obj !== "object" || !obj)
-        return obj;
-    var copy;
+        return obj
+    var copy
     if (Array.isArray(obj)) {
-        copy = [];
+        copy = []
         for (var key = 0; key < obj.length; key++) {
-            copy[key] = deepCopy(obj[key]);
+            copy[key] = deepCopy(obj[key])
         }
-        return copy;
+        return copy
     }
     if (Object.prototype.toString.call(obj) !== "[object Object]")
-        return obj;
+        return obj
     
-    copy = {};
+    copy = {}
     for (var key in obj)
-        copy[key] = deepCopy(obj[key]);
-    return copy;
-};
+        copy[key] = deepCopy(obj[key])
+    return copy
+}
 
 exports.arrayToMap = function(arr) {
-    var map = {};
+    var map = {}
     for (var i=0; i<arr.length; i++) {
-        map[arr[i]] = 1;
+        map[arr[i]] = 1
     }
-    return map;
+    return map
 
-};
+}
 
 exports.createMap = function(props) {
-    var map = Object.create(null);
+    var map = Object.create(null)
     for (var i in props) {
-        map[i] = props[i];
+        map[i] = props[i]
     }
-    return map;
-};
+    return map
+}
 exports.arrayRemove = function(array, value) {
   for (var i = 0; i <= array.length; i++) {
     if (value === array[i]) {
-      array.splice(i, 1);
+      array.splice(i, 1)
     }
   }
-};
+}
 
 exports.escapeRegExp = function(str) {
-    return str.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1');
-};
+    return str.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1')
+}
 
 exports.escapeHTML = function(str) {
-    return ("" + str).replace(/&/g, "&#38;").replace(/"/g, "&#34;").replace(/'/g, "&#39;").replace(/</g, "&#60;");
-};
+    return ("" + str).replace(/&/g, "&#38;").replace(/"/g, "&#34;").replace(/'/g, "&#39;").replace(/</g, "&#60;")
+}
 
 exports.getMatchOffsets = function(string, regExp) {
-    var matches = [];
+    var matches = []
 
     string.replace(regExp, function(str) {
         matches.push({
             offset: arguments[arguments.length-2],
-            length: str.length
-        });
-    });
+            length: str.length,
+        })
+    })
 
-    return matches;
-};
+    return matches
+}
 exports.deferredCall = function(fcn) {
-    var timer = null;
+    var timer = null
     var callback = function() {
-        timer = null;
-        fcn();
-    };
+        timer = null
+        fcn()
+    }
 
     var deferred = function(timeout) {
-        deferred.cancel();
-        timer = setTimeout(callback, timeout || 0);
-        return deferred;
-    };
+        deferred.cancel()
+        timer = setTimeout(callback, timeout || 0)
+        return deferred
+    }
 
-    deferred.schedule = deferred;
+    deferred.schedule = deferred
 
     deferred.call = function() {
-        this.cancel();
-        fcn();
-        return deferred;
-    };
+        this.cancel()
+        fcn()
+        return deferred
+    }
 
     deferred.cancel = function() {
-        clearTimeout(timer);
-        timer = null;
-        return deferred;
-    };
+        clearTimeout(timer)
+        timer = null
+        return deferred
+    }
     
     deferred.isPending = function() {
-        return timer;
-    };
+        return timer
+    }
 
-    return deferred;
-};
+    return deferred
+}
 
 
 exports.delayedCall = function(fcn, defaultTimeout) {
-    var timer = null;
+    var timer = null
     var callback = function() {
-        timer = null;
-        fcn();
-    };
+        timer = null
+        fcn()
+    }
 
     var _self = function(timeout) {
         if (timer == null)
-            timer = setTimeout(callback, timeout || defaultTimeout);
-    };
+            timer = setTimeout(callback, timeout || defaultTimeout)
+    }
 
     _self.delay = function(timeout) {
-        timer && clearTimeout(timer);
-        timer = setTimeout(callback, timeout || defaultTimeout);
-    };
-    _self.schedule = _self;
+        timer && clearTimeout(timer)
+        timer = setTimeout(callback, timeout || defaultTimeout)
+    }
+    _self.schedule = _self
 
     _self.call = function() {
-        this.cancel();
-        fcn();
-    };
+        this.cancel()
+        fcn()
+    }
 
     _self.cancel = function() {
-        timer && clearTimeout(timer);
-        timer = null;
-    };
+        timer && clearTimeout(timer)
+        timer = null
+    }
 
     _self.isPending = function() {
-        return timer;
-    };
+        return timer
+    }
 
-    return _self;
-};
-});
+    return _self
+}
+})
 
 define("ace/worker/mirror",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var Range = require("../range").Range;
-var Document = require("../document").Document;
-var lang = require("../lib/lang");
+var Range = require("../range").Range
+var Document = require("../document").Document
+var lang = require("../lib/lang")
     
 var Mirror = exports.Mirror = function(sender) {
-    this.sender = sender;
-    var doc = this.doc = new Document("");
+    this.sender = sender
+    var doc = this.doc = new Document("")
     
-    var deferredUpdate = this.deferredUpdate = lang.delayedCall(this.onUpdate.bind(this));
+    var deferredUpdate = this.deferredUpdate = lang.delayedCall(this.onUpdate.bind(this))
     
-    var _self = this;
+    var _self = this
     sender.on("change", function(e) {
-        var data = e.data;
+        var data = e.data
         if (data[0].start) {
-            doc.applyDeltas(data);
+            doc.applyDeltas(data)
         } else {
             for (var i = 0; i < data.length; i += 2) {
                 if (Array.isArray(data[i+1])) {
-                    var d = {action: "insert", start: data[i], lines: data[i+1]};
+                    var d = {action: "insert", start: data[i], lines: data[i+1]}
                 } else {
-                    var d = {action: "remove", start: data[i], end: data[i+1]};
+                    var d = {action: "remove", start: data[i], end: data[i+1]}
                 }
-                doc.applyDelta(d, true);
+                doc.applyDelta(d, true)
             }
         }
         if (_self.$timeout)
-            return deferredUpdate.schedule(_self.$timeout);
-        _self.onUpdate();
-    });
+            return deferredUpdate.schedule(_self.$timeout)
+        _self.onUpdate()
+    })
 };
 
 (function() {
     
-    this.$timeout = 500;
+    this.$timeout = 500
     
     this.setTimeout = function(timeout) {
-        this.$timeout = timeout;
-    };
+        this.$timeout = timeout
+    }
     
     this.setValue = function(value) {
-        this.doc.setValue(value);
-        this.deferredUpdate.schedule(this.$timeout);
-    };
+        this.doc.setValue(value)
+        this.deferredUpdate.schedule(this.$timeout)
+    }
     
     this.getValue = function(callbackId) {
-        this.sender.callback(this.doc.getValue(), callbackId);
-    };
+        this.sender.callback(this.doc.getValue(), callbackId)
+    }
     
     this.onUpdate = function() {
-    };
+    }
     
     this.isPending = function() {
-        return this.deferredUpdate.isPending();
-    };
+        return this.deferredUpdate.isPending()
+    }
     
-}).call(Mirror.prototype);
+}).call(Mirror.prototype)
 
-});
+})
 
 define("ace/mode/php/php",[], function(require, exports, module) {
 
-var PHP = {Constants:{}};
+var PHP = {Constants:{}}
 
 PHP.Constants.T_INCLUDE = 259
 PHP.Constants.T_INCLUDE_ONCE = 260
@@ -1567,13 +1567,13 @@ PHP.Lexer = function(src, ini) {
 
     stateStack = ['INITIAL'], stackPos = 0,
     swapState = function(state) {
-        stateStack[stackPos] = state;
+        stateStack[stackPos] = state
     },
     pushState = function(state) {
-        stateStack[++stackPos] = state;
+        stateStack[++stackPos] = state
     },
     popState = function() {
-        --stackPos;
+        --stackPos
     },
 
     shortOpenTag = ini === undefined || /^(on|true|1)$/i.test(ini.short_open_tag),
@@ -1585,7 +1585,7 @@ PHP.Lexer = function(src, ini) {
         : /[^<]*(?:<(?!\?=|\?php[ \t\r\n]|script language\=('|")?php('|")?\>)[^<]*)*/i,
     labelRegexPart = '[a-zA-Z_\\x7f-\\uffff][a-zA-Z0-9_\\x7f-\\uffff]*',
     stringRegexPart = function(quote) {
-        return '[^' + quote + '\\\\${]*(?:(?:\\\\[\\s\\S]|\\$(?!\\{|[a-zA-Z_\\x7f-\\uffff])|\\{(?!\\$))[^' + quote + '\\\\${]*)*';
+        return '[^' + quote + '\\\\${]*(?:(?:\\\\[\\s\\S]|\\$(?!\\{|[a-zA-Z_\\x7f-\\uffff])|\\{(?!\\$))[^' + quote + '\\\\${]*)*'
     },
 
     sharedStringTokens = [
@@ -1593,41 +1593,41 @@ PHP.Lexer = function(src, ini) {
             value: PHP.Constants.T_VARIABLE,
             re: new RegExp('^\\$' + labelRegexPart + '(?=\\[)'),
             func: function() {
-                pushState('VAR_OFFSET');
-            }
+                pushState('VAR_OFFSET')
+            },
         },
         {
             value: PHP.Constants.T_VARIABLE,
             re: new RegExp('^\\$' + labelRegexPart + '(?=->' + labelRegexPart + ')'),
             func: function() {
-                pushState('LOOKING_FOR_PROPERTY');
-            }
+                pushState('LOOKING_FOR_PROPERTY')
+            },
         },
         {
             value: PHP.Constants.T_DOLLAR_OPEN_CURLY_BRACES,
             re: new RegExp('^\\$\\{(?=' + labelRegexPart + '[\\[}])'),
             func: function() {
-                pushState('LOOKING_FOR_VARNAME');
-            }
+                pushState('LOOKING_FOR_VARNAME')
+            },
         },
         {
             value: PHP.Constants.T_VARIABLE,
-            re: new RegExp('^\\$' + labelRegexPart)
+            re: new RegExp('^\\$' + labelRegexPart),
         },
         {
             value: PHP.Constants.T_DOLLAR_OPEN_CURLY_BRACES,
             re: /^\$\{/,
             func: function() {
-                pushState('IN_SCRIPTING');
-            }
+                pushState('IN_SCRIPTING')
+            },
         },
         {
             value: PHP.Constants.T_CURLY_OPEN,
             re: /^\{(?=\$)/,
             func: function() {
-                pushState('IN_SCRIPTING');
-            }
-        }
+                pushState('IN_SCRIPTING')
+            },
+        },
     ],
     data = {
         'INITIAL': [
@@ -1635,57 +1635,57 @@ PHP.Lexer = function(src, ini) {
                 value: PHP.Constants.T_OPEN_TAG_WITH_ECHO,
                 re: /^<\?=/i,
                 func: function() {
-                    swapState('IN_SCRIPTING');
-                }
+                    swapState('IN_SCRIPTING')
+                },
             },
             {
                 value: PHP.Constants.T_OPEN_TAG,
                 re: openTag,
                 func: function() {
-                    swapState('IN_SCRIPTING');
-                }
+                    swapState('IN_SCRIPTING')
+                },
             },
             {
                 value: PHP.Constants.T_INLINE_HTML,
-                re: inlineHtml
+                re: inlineHtml,
             },
         ],
         'IN_SCRIPTING': [
             {
                 value: PHP.Constants.T_WHITESPACE,
-                re: /^[ \n\r\t]+/
+                re: /^[ \n\r\t]+/,
             },
             {
                 value: PHP.Constants.T_ABSTRACT,
-                re: /^abstract\b/i
+                re: /^abstract\b/i,
             },
             {
                 value: PHP.Constants.T_LOGICAL_AND,
-                re: /^and\b/i
+                re: /^and\b/i,
             },
             {
                 value: PHP.Constants.T_ARRAY,
-                re: /^array\b/i
+                re: /^array\b/i,
             },
             {
                 value: PHP.Constants.T_AS,
-                re: /^as\b/i
+                re: /^as\b/i,
             },
             {
                 value: PHP.Constants.T_BREAK,
-                re: /^break\b/i
+                re: /^break\b/i,
             },
             {
                 value: PHP.Constants.T_CALLABLE,
-                re: /^callable\b/i
+                re: /^callable\b/i,
             },
             {
                 value: PHP.Constants.T_CASE,
-                re: /^case\b/i
+                re: /^case\b/i,
             },
             {
                 value: PHP.Constants.T_CATCH,
-                re: /^catch\b/i
+                re: /^catch\b/i,
             },
             {
                 value: PHP.Constants.T_CLASS,
@@ -1693,195 +1693,195 @@ PHP.Lexer = function(src, ini) {
             },
             {
                 value: PHP.Constants.T_CLONE,
-                re: /^clone\b/i
+                re: /^clone\b/i,
             },
             {
                 value: PHP.Constants.T_CONST,
-                re: /^const\b/i
+                re: /^const\b/i,
             },
             {
                 value: PHP.Constants.T_CONTINUE,
-                re: /^continue\b/i
+                re: /^continue\b/i,
             },
             {
                 value: PHP.Constants.T_DECLARE,
-                re: /^declare\b/i
+                re: /^declare\b/i,
             },
             {
                 value: PHP.Constants.T_DEFAULT,
-                re: /^default\b/i
+                re: /^default\b/i,
             },
             {
                 value: PHP.Constants.T_DO,
-                re: /^do\b/i
+                re: /^do\b/i,
             },
             {
                 value: PHP.Constants.T_ECHO,
-                re: /^echo\b/i
+                re: /^echo\b/i,
             },
             {
                 value: PHP.Constants.T_ELSE,
-                re: /^else\b/i
+                re: /^else\b/i,
             },
             {
                 value: PHP.Constants.T_ELSEIF,
-                re: /^elseif\b/i
+                re: /^elseif\b/i,
             },
             {
                 value: PHP.Constants.T_ENDDECLARE,
-                re: /^enddeclare\b/i
+                re: /^enddeclare\b/i,
             },
             {
                 value: PHP.Constants.T_ENDFOR,
-                re: /^endfor\b/i
+                re: /^endfor\b/i,
             },
             {
                 value: PHP.Constants.T_ENDFOREACH,
-                re: /^endforeach\b/i
+                re: /^endforeach\b/i,
             },
             {
                 value: PHP.Constants.T_ENDIF,
-                re: /^endif\b/i
+                re: /^endif\b/i,
             },
             {
                 value: PHP.Constants.T_ENDSWITCH,
-                re: /^endswitch\b/i
+                re: /^endswitch\b/i,
             },
             {
                 value: PHP.Constants.T_ENDWHILE,
-                re: /^endwhile\b/i
+                re: /^endwhile\b/i,
             },
             {
                 value: PHP.Constants.T_EMPTY,
-                re: /^empty\b/i
+                re: /^empty\b/i,
             },
             {
                 value: PHP.Constants.T_EVAL,
-                re: /^eval\b/i
+                re: /^eval\b/i,
             },
             {
                 value: PHP.Constants.T_EXIT,
-                re: /^(?:exit|die)\b/i
+                re: /^(?:exit|die)\b/i,
             },
             {
                 value: PHP.Constants.T_EXTENDS,
-                re: /^extends\b/i
+                re: /^extends\b/i,
             },
             {
                 value: PHP.Constants.T_FINAL,
-                re: /^final\b/i
+                re: /^final\b/i,
             },
             {
                 value: PHP.Constants.T_FINALLY,
-                re: /^finally\b/i
+                re: /^finally\b/i,
             },
             {
                 value: PHP.Constants.T_FN,
-                re: /^fn\b/i
+                re: /^fn\b/i,
             },
             {
                 value: PHP.Constants.T_FOR,
-                re: /^for\b/i
+                re: /^for\b/i,
             },
             {
                 value: PHP.Constants.T_FOREACH,
-                re: /^foreach\b/i
+                re: /^foreach\b/i,
             },
             {
                 value: PHP.Constants.T_FUNCTION,
-                re: /^function\b/i
+                re: /^function\b/i,
             },
             {
                 value: PHP.Constants.T_GLOBAL,
-                re: /^global\b/i
+                re: /^global\b/i,
             },
             {
                 value: PHP.Constants.T_GOTO,
-                re: /^goto\b/i
+                re: /^goto\b/i,
             },
             {
                 value: PHP.Constants.T_IF,
-                re: /^if\b/i
+                re: /^if\b/i,
             },
             {
                 value: PHP.Constants.T_IMPLEMENTS,
-                re: /^implements\b/i
+                re: /^implements\b/i,
             },
             {
                 value: PHP.Constants.T_INCLUDE,
-                re: /^include\b/i
+                re: /^include\b/i,
             },
             {
                 value: PHP.Constants.T_INCLUDE_ONCE,
-                re: /^include_once\b/i
+                re: /^include_once\b/i,
             },
             {
                 value: PHP.Constants.T_INSTANCEOF,
-                re: /^instanceof\b/i
+                re: /^instanceof\b/i,
             },
             {
                 value: PHP.Constants.T_INSTEADOF,
-                re: /^insteadof\b/i
+                re: /^insteadof\b/i,
             },
             {
                 value: PHP.Constants.T_INTERFACE,
-                re: /^interface\b/i
+                re: /^interface\b/i,
             },
             {
                 value: PHP.Constants.T_ISSET,
-                re: /^isset\b/i
+                re: /^isset\b/i,
             },
             {
                 value: PHP.Constants.T_LIST,
-                re: /^list\b/i
+                re: /^list\b/i,
             },
             {
                 value: PHP.Constants.T_NAMESPACE,
-                re: /^namespace\b/i
+                re: /^namespace\b/i,
             },
             {
                 value: PHP.Constants.T_NEW,
-                re: /^new\b/i
+                re: /^new\b/i,
             },
             {
                 value: PHP.Constants.T_LOGICAL_OR,
-                re: /^or\b/i
+                re: /^or\b/i,
             },
             {
                 value: PHP.Constants.T_PRINT,
-                re: /^print\b/i
+                re: /^print\b/i,
             },
             {
                 value: PHP.Constants.T_PRIVATE,
-                re: /^private\b/i
+                re: /^private\b/i,
             },
             {
                 value: PHP.Constants.T_PROTECTED,
-                re: /^protected\b/i
+                re: /^protected\b/i,
             },
             {
                 value: PHP.Constants.T_PUBLIC,
-                re: /^public\b/i
+                re: /^public\b/i,
             },
             {
                 value: PHP.Constants.T_REQUIRE,
-                re: /^require\b/i
+                re: /^require\b/i,
             },
             {
                 value: PHP.Constants.T_REQUIRE_ONCE,
-                re: /^require_once\b/i
+                re: /^require_once\b/i,
             },
             {
                 value: PHP.Constants.T_STATIC,
-                re: /^static\b/i
+                re: /^static\b/i,
             },
             {
                 value: PHP.Constants.T_SWITCH,
-                re: /^switch\b/i
+                re: /^switch\b/i,
             },
             {
                 value: PHP.Constants.T_THROW,
-                re: /^throw\b/i
+                re: /^throw\b/i,
             },
             {
                 value: PHP.Constants.T_TRAIT,
@@ -1889,278 +1889,278 @@ PHP.Lexer = function(src, ini) {
             },
             {
                 value: PHP.Constants.T_TRY,
-                re: /^try\b/i
+                re: /^try\b/i,
             },
             {
                 value: PHP.Constants.T_UNSET,
-                re: /^unset\b/i
+                re: /^unset\b/i,
             },
             {
                 value: PHP.Constants.T_USE,
-                re: /^use\b/i
+                re: /^use\b/i,
             },
             {
                 value: PHP.Constants.T_VAR,
-                re: /^var\b/i
+                re: /^var\b/i,
             },
             {
                 value: PHP.Constants.T_WHILE,
-                re: /^while\b/i
+                re: /^while\b/i,
             },
             {
                 value: PHP.Constants.T_LOGICAL_XOR,
-                re: /^xor\b/i
+                re: /^xor\b/i,
             },
             {
                 value: PHP.Constants.T_YIELD_FROM,
-                re: /^yield\s+from\b/i
+                re: /^yield\s+from\b/i,
             },
             {
                 value: PHP.Constants.T_YIELD,
-                re: /^yield\b/i
+                re: /^yield\b/i,
             },
             {
                 value: PHP.Constants.T_RETURN,
-                re: /^return\b/i
+                re: /^return\b/i,
             },
             {
                 value: PHP.Constants.T_METHOD_C,
-                re: /^__METHOD__\b/i
+                re: /^__METHOD__\b/i,
             },
             {
                 value: PHP.Constants.T_LINE,
-                re: /^__LINE__\b/i
+                re: /^__LINE__\b/i,
             },
             {
                 value: PHP.Constants.T_FILE,
-                re: /^__FILE__\b/i
+                re: /^__FILE__\b/i,
             },
             {
                 value: PHP.Constants.T_FUNC_C,
-                re: /^__FUNCTION__\b/i
+                re: /^__FUNCTION__\b/i,
             },
             {
                 value: PHP.Constants.T_NS_C,
-                re: /^__NAMESPACE__\b/i
+                re: /^__NAMESPACE__\b/i,
             },
             {
                 value: PHP.Constants.T_TRAIT_C,
-                re: /^__TRAIT__\b/i
+                re: /^__TRAIT__\b/i,
             },
             {
                 value: PHP.Constants.T_DIR,
-                re: /^__DIR__\b/i
+                re: /^__DIR__\b/i,
             },
             {
                 value: PHP.Constants.T_CLASS_C,
-                re: /^__CLASS__\b/i
+                re: /^__CLASS__\b/i,
             },
             {
                 value: PHP.Constants.T_AND_EQUAL,
-                re: /^&=/
+                re: /^&=/,
             },
             {
                 value: PHP.Constants.T_ARRAY_CAST,
-                re: /^\([ \t]*array[ \t]*\)/i
+                re: /^\([ \t]*array[ \t]*\)/i,
             },
             {
                 value: PHP.Constants.T_BOOL_CAST,
-                re: /^\([ \t]*(?:bool|boolean)[ \t]*\)/i
+                re: /^\([ \t]*(?:bool|boolean)[ \t]*\)/i,
             },
             {
                 value: PHP.Constants.T_DOUBLE_CAST,
-                re: /^\([ \t]*(?:real|float|double)[ \t]*\)/i
+                re: /^\([ \t]*(?:real|float|double)[ \t]*\)/i,
             },
             {
                 value: PHP.Constants.T_INT_CAST,
-                re: /^\([ \t]*(?:int|integer)[ \t]*\)/i
+                re: /^\([ \t]*(?:int|integer)[ \t]*\)/i,
             },
             {
                 value: PHP.Constants.T_OBJECT_CAST,
-                re: /^\([ \t]*object[ \t]*\)/i
+                re: /^\([ \t]*object[ \t]*\)/i,
             },
             {
                 value: PHP.Constants.T_STRING_CAST,
-                re: /^\([ \t]*(?:binary|string)[ \t]*\)/i
+                re: /^\([ \t]*(?:binary|string)[ \t]*\)/i,
             },
             {
                 value: PHP.Constants.T_UNSET_CAST,
-                re: /^\([ \t]*unset[ \t]*\)/i
+                re: /^\([ \t]*unset[ \t]*\)/i,
             },
             {
                 value: PHP.Constants.T_BOOLEAN_AND,
-                re: /^&&/
+                re: /^&&/,
             },
             {
                 value: PHP.Constants.T_BOOLEAN_OR,
-                re: /^\|\|/
+                re: /^\|\|/,
             },
             {
                 value: PHP.Constants.T_CLOSE_TAG,
                 re: /^(?:\?>|<\/script>)(\r\n|\r|\n)?/i,
                 func: function() {
-                    swapState('INITIAL');
-                }
+                    swapState('INITIAL')
+                },
             },
             {
                 value: PHP.Constants.T_DOUBLE_ARROW,
-                re: /^=>/
+                re: /^=>/,
             },
             {
                 value: PHP.Constants.T_PAAMAYIM_NEKUDOTAYIM,
-                re: /^::/
+                re: /^::/,
             },
             {
                 value: PHP.Constants.T_INC,
-                re: /^\+\+/
+                re: /^\+\+/,
             },
             {
                 value: PHP.Constants.T_DEC,
-                re: /^--/
+                re: /^--/,
             },
             {
                 value: PHP.Constants.T_CONCAT_EQUAL,
-                re: /^\.=/
+                re: /^\.=/,
             },
             {
                 value: PHP.Constants.T_DIV_EQUAL,
-                re: /^\/=/
+                re: /^\/=/,
             },
             {
                 value: PHP.Constants.T_XOR_EQUAL,
-                re: /^\^=/
+                re: /^\^=/,
             },
             {
                 value: PHP.Constants.T_MUL_EQUAL,
-                re: /^\*=/
+                re: /^\*=/,
             },
             {
                 value: PHP.Constants.T_MOD_EQUAL,
-                re: /^%=/
+                re: /^%=/,
             },
             {
                 value: PHP.Constants.T_SL_EQUAL,
-                re: /^<<=/
+                re: /^<<=/,
             },
             {
                 value: PHP.Constants.T_START_HEREDOC,
                 re: new RegExp('^[bB]?<<<[ \\t]*\'(' + labelRegexPart + ')\'(?:\\r\\n|\\r|\\n)'),
                 func: function(result) {
-                    heredoc = result[1];
-                    swapState('NOWDOC');
-                }
+                    heredoc = result[1]
+                    swapState('NOWDOC')
+                },
             },
             {
                 value: PHP.Constants.T_START_HEREDOC,
                 re: new RegExp('^[bB]?<<<[ \\t]*("?)(' + labelRegexPart + ')\\1(?:\\r\\n|\\r|\\n)'),
                 func: function(result) {
-                    heredoc = result[2];
-                    heredocEndAllowed = true;
-                    swapState('HEREDOC');
-                }
+                    heredoc = result[2]
+                    heredocEndAllowed = true
+                    swapState('HEREDOC')
+                },
             },
             {
                 value: PHP.Constants.T_SL,
-                re: /^<</
+                re: /^<</,
             },
             {
                 value: PHP.Constants.T_SPACESHIP,
-                re: /^<=>/
+                re: /^<=>/,
             },
             {
                 value: PHP.Constants.T_IS_SMALLER_OR_EQUAL,
-                re: /^<=/
+                re: /^<=/,
             },
             {
                 value: PHP.Constants.T_SR_EQUAL,
-                re: /^>>=/
+                re: /^>>=/,
             },
             {
                 value: PHP.Constants.T_SR,
-                re: /^>>/
+                re: /^>>/,
             },
             {
                 value: PHP.Constants.T_IS_GREATER_OR_EQUAL,
-                re: /^>=/
+                re: /^>=/,
             },
             {
                 value: PHP.Constants.T_OR_EQUAL,
-                re: /^\|=/
+                re: /^\|=/,
             },
             {
                 value: PHP.Constants.T_PLUS_EQUAL,
-                re: /^\+=/
+                re: /^\+=/,
             },
             {
                 value: PHP.Constants.T_MINUS_EQUAL,
-                re: /^-=/
+                re: /^-=/,
             },
             {
                 value: PHP.Constants.T_OBJECT_OPERATOR,
                 re: new RegExp('^->(?=[ \n\r\t]*' + labelRegexPart + ')'),
                 func: function() {
-                    pushState('LOOKING_FOR_PROPERTY');
-                }
+                    pushState('LOOKING_FOR_PROPERTY')
+                },
             },
             {
                 value: PHP.Constants.T_OBJECT_OPERATOR,
-                re: /^->/i
+                re: /^->/i,
             },
             {
                 value: PHP.Constants.T_ELLIPSIS,
-                re: /^\.\.\./
+                re: /^\.\.\./,
             },
             {
                 value: PHP.Constants.T_POW_EQUAL,
-                re: /^\*\*=/
+                re: /^\*\*=/,
             },
             {
                 value: PHP.Constants.T_POW,
-                re: /^\*\*/
+                re: /^\*\*/,
             },
             {
                 value: PHP.Constants.T_COALESCE,
-                re: /^\?\?/
+                re: /^\?\?/,
             },
             {
                 value: PHP.Constants.T_COMMENT,
-                re: /^\/\*([\S\s]*?)(?:\*\/|$)/
+                re: /^\/\*([\S\s]*?)(?:\*\/|$)/,
             },
             {
                 value: PHP.Constants.T_COMMENT,
-                re: /^(?:\/\/|#)[^\r\n?]*(?:\?(?!>)[^\r\n?]*)*(?:\r\n|\r|\n)?/
+                re: /^(?:\/\/|#)[^\r\n?]*(?:\?(?!>)[^\r\n?]*)*(?:\r\n|\r|\n)?/,
             },
             {
                 value: PHP.Constants.T_IS_IDENTICAL,
-                re: /^===/
+                re: /^===/,
             },
             {
                 value: PHP.Constants.T_IS_EQUAL,
-                re: /^==/
+                re: /^==/,
             },
             {
                 value: PHP.Constants.T_IS_NOT_IDENTICAL,
-                re: /^!==/
+                re: /^!==/,
             },
             {
                 value: PHP.Constants.T_IS_NOT_EQUAL,
-                re: /^(!=|<>)/
+                re: /^(!=|<>)/,
             },
             {
                 value: PHP.Constants.T_DNUMBER,
-                re: /^(?:[0-9]+\.[0-9]*|\.[0-9]+)(?:[eE][+-]?[0-9]+)?/
+                re: /^(?:[0-9]+\.[0-9]*|\.[0-9]+)(?:[eE][+-]?[0-9]+)?/,
             },
             {
                 value: PHP.Constants.T_DNUMBER,
-                re: /^[0-9]+[eE][+-]?[0-9]+/
+                re: /^[0-9]+[eE][+-]?[0-9]+/,
             },
             {
                 value: PHP.Constants.T_LNUMBER,
-                re: /^(?:0x[0-9A-F]+|0b[01]+|[0-9]+)/i
+                re: /^(?:0x[0-9A-F]+|0b[01]+|[0-9]+)/i,
             },
             {
                 value: PHP.Constants.T_VARIABLE,
-                re: new RegExp('^\\$' + labelRegexPart)
+                re: new RegExp('^\\$' + labelRegexPart),
             },
             {
                 value: PHP.Constants.T_CONSTANT_ENCAPSED_STRING,
@@ -2168,247 +2168,247 @@ PHP.Lexer = function(src, ini) {
             },
             {
                 value: PHP.Constants.T_CONSTANT_ENCAPSED_STRING,
-                re: new RegExp('^[bB]?"' + stringRegexPart('"') + '"')
+                re: new RegExp('^[bB]?"' + stringRegexPart('"') + '"'),
             },
             {
                 value: -1,
                 re: /^[bB]?"/,
                 func: function() {
-                    swapState('DOUBLE_QUOTES');
-                }
+                    swapState('DOUBLE_QUOTES')
+                },
             },
             {
                 value: -1,
                 re: /^`/,
                 func: function() {
-                    swapState('BACKTICKS');
-                }
+                    swapState('BACKTICKS')
+                },
             },
             {
                 value: PHP.Constants.T_NS_SEPARATOR,
-                re: /^\\/
+                re: /^\\/,
             },
             {
                 value: PHP.Constants.T_STRING,
-                re: /^[a-zA-Z_\x7f-\uffff][a-zA-Z0-9_\x7f-\uffff]*/
+                re: /^[a-zA-Z_\x7f-\uffff][a-zA-Z0-9_\x7f-\uffff]*/,
             },
             {
                 value: -1,
                 re: /^\{/,
                 func: function() {
-                    pushState('IN_SCRIPTING');
-                }
+                    pushState('IN_SCRIPTING')
+                },
             },
             {
                 value: -1,
                 re: /^\}/,
                 func: function() {
                     if (stackPos > 0) {
-                        popState();
+                        popState()
                     }
-                }
+                },
             },
             {
                 value: -1,
-                re: /^[\[\];:?()!.,><=+-/*|&@^%"'$~]/
-            }
+                re: /^[\[\];:?()!.,><=+-/*|&@^%"'$~]/,
+            },
         ],
         'DOUBLE_QUOTES': sharedStringTokens.concat([
             {
                 value: -1,
                 re: /^"/,
                 func: function() {
-                    swapState('IN_SCRIPTING');
-                }
+                    swapState('IN_SCRIPTING')
+                },
             },
             {
                 value: PHP.Constants.T_ENCAPSED_AND_WHITESPACE,
-                re: new RegExp('^' + stringRegexPart('"'))
-            }
+                re: new RegExp('^' + stringRegexPart('"')),
+            },
         ]),
         'BACKTICKS': sharedStringTokens.concat([
             {
                 value: -1,
                 re: /^`/,
                 func: function() {
-                    swapState('IN_SCRIPTING');
-                }
+                    swapState('IN_SCRIPTING')
+                },
             },
             {
                 value: PHP.Constants.T_ENCAPSED_AND_WHITESPACE,
-                re: new RegExp('^' + stringRegexPart('`'))
-            }
+                re: new RegExp('^' + stringRegexPart('`')),
+            },
         ]),
         'VAR_OFFSET': [
             {
                 value: -1,
                 re: /^\]/,
                 func: function() {
-                    popState();
-                }
+                    popState()
+                },
             },
             {
                 value: PHP.Constants.T_NUM_STRING,
-                re: /^(?:0x[0-9A-F]+|0b[01]+|[0-9]+)/i
+                re: /^(?:0x[0-9A-F]+|0b[01]+|[0-9]+)/i,
             },
             {
                 value: PHP.Constants.T_VARIABLE,
-                re: new RegExp('^\\$' + labelRegexPart)
+                re: new RegExp('^\\$' + labelRegexPart),
             },
             {
                 value: PHP.Constants.T_STRING,
-                re: new RegExp('^' + labelRegexPart)
+                re: new RegExp('^' + labelRegexPart),
             },
             {
                 value: -1,
-                re: /^[;:,.\[()|^&+-/*=%!~$<>?@{}"`]/
-            }
+                re: /^[;:,.\[()|^&+-/*=%!~$<>?@{}"`]/,
+            },
         ],
         'LOOKING_FOR_PROPERTY': [
             {
                 value: PHP.Constants.T_OBJECT_OPERATOR,
-                re: /^->/
+                re: /^->/,
             },
             {
                 value: PHP.Constants.T_STRING,
                 re: new RegExp('^' + labelRegexPart),
                 func: function() {
-                    popState();
-                }
+                    popState()
+                },
             },
             {
                 value: PHP.Constants.T_WHITESPACE,
-                re: /^[ \n\r\t]+/
-            }
+                re: /^[ \n\r\t]+/,
+            },
         ],
         'LOOKING_FOR_VARNAME': [
             {
                 value: PHP.Constants.T_STRING_VARNAME,
                 re: new RegExp('^' + labelRegexPart + '(?=[\\[}])'),
                 func: function() {
-                    swapState('IN_SCRIPTING');
-                }
-            }
+                    swapState('IN_SCRIPTING')
+                },
+            },
         ],
         'NOWDOC': [
             {
                 value: PHP.Constants.T_END_HEREDOC,
                 matchFunc: function(src) {
-                    var re = new RegExp('^' + heredoc + '(?=;?[\\r\\n])');
+                    var re = new RegExp('^' + heredoc + '(?=;?[\\r\\n])')
                     if (src.match(re)) {
-                        return [src.substr(0, heredoc.length)];
+                        return [src.substr(0, heredoc.length)]
                     } else {
-                        return null;
+                        return null
                     }
                 },
                 func: function() {
-                    swapState('IN_SCRIPTING');
-                }
+                    swapState('IN_SCRIPTING')
+                },
             },
             {
                 value: PHP.Constants.T_ENCAPSED_AND_WHITESPACE,
                 matchFunc: function(src) {
-                    var re = new RegExp('[\\r\\n]' + heredoc + '(?=;?[\\r\\n])');
-                    var result = re.exec(src);
-                    var end = result ? result.index + 1 : src.length;
-                    return [src.substring(0, end)];
-                }
-            }
+                    var re = new RegExp('[\\r\\n]' + heredoc + '(?=;?[\\r\\n])')
+                    var result = re.exec(src)
+                    var end = result ? result.index + 1 : src.length
+                    return [src.substring(0, end)]
+                },
+            },
         ],
         'HEREDOC': sharedStringTokens.concat([
             {
                 value: PHP.Constants.T_END_HEREDOC,
                 matchFunc: function(src) {
                     if (!heredocEndAllowed) {
-                        return null;
+                        return null
                     }
-                    var re = new RegExp('^' + heredoc + '(?=;?[\\r\\n])');
+                    var re = new RegExp('^' + heredoc + '(?=;?[\\r\\n])')
                     if (src.match(re)) {
-                        return [src.substr(0, heredoc.length)];
+                        return [src.substr(0, heredoc.length)]
                     } else {
-                        return null;
+                        return null
                     }
                 },
                 func: function() {
-                    swapState('IN_SCRIPTING');
-                }
+                    swapState('IN_SCRIPTING')
+                },
             },
             {
                 value: PHP.Constants.T_ENCAPSED_AND_WHITESPACE,
                 matchFunc: function(src) {
-                    var end = src.length;
-                    var re = new RegExp('^' + stringRegexPart(''));
-                    var result = re.exec(src);
+                    var end = src.length
+                    var re = new RegExp('^' + stringRegexPart(''))
+                    var result = re.exec(src)
                     if (result) {
-                        end = result[0].length;
+                        end = result[0].length
                     }
-                    re = new RegExp('([\\r\\n])' + heredoc + '(?=;?[\\r\\n])');
-                    result = re.exec(src.substring(0, end));
+                    re = new RegExp('([\\r\\n])' + heredoc + '(?=;?[\\r\\n])')
+                    result = re.exec(src.substring(0, end))
                     if (result) {
-                        end = result.index + 1;
-                        heredocEndAllowed = true;
+                        end = result.index + 1
+                        heredocEndAllowed = true
                     } else {
-                        heredocEndAllowed = false;
+                        heredocEndAllowed = false
                     }
                     if (end == 0) {
-                        return null;
+                        return null
                     }
-                    return [src.substring(0, end)];
-                }
-            }
-        ])
-    };
+                    return [src.substring(0, end)]
+                },
+            },
+        ]),
+    }
 
     var results = [],
     line = 1,
-    cancel = true;
+    cancel = true
 
     if (src === null) {
-        return results;
+        return results
     }
 
     if (typeof src !== "string") {
-        src = src.toString();
+        src = src.toString()
     }
 
     while (src.length > 0 && cancel === true) {
-        var state = stateStack[stackPos];
-        var tokens = data[state];
+        var state = stateStack[stackPos]
+        var tokens = data[state]
         cancel = tokens.some(function(token){
             var result = token.matchFunc !== undefined
                 ? token.matchFunc(src)
-                : src.match(token.re);
+                : src.match(token.re)
             if (result !== null) {
                 if (result[0].length == 0) {
-                    throw new Error("empty match");
+                    throw new Error("empty match")
                 }
 
                 if (token.func !== undefined) {
-                    token.func(result);
+                    token.func(result)
                 }
 
                 if (token.value === -1) {
-                    results.push(result[0]);
+                    results.push(result[0])
                 } else {
-                    var resultString = result[0];
+                    var resultString = result[0]
                     results.push([
                         parseInt(token.value, 10),
                         resultString,
-                        line
-                        ]);
-                    line += resultString.split('\n').length - 1;
+                        line,
+                        ])
+                    line += resultString.split('\n').length - 1
                 }
 
-                src = src.substring(result[0].length);
+                src = src.substring(result[0].length)
 
-                return true;
+                return true
             }
-            return false;
-        });
+            return false
+        })
     }
 
-    return results;
-};
+    return results
+}
 
 
 PHP.Parser = function ( preprocessedTokens, evaluate ) {
@@ -2425,62 +2425,62 @@ PHP.Parser = function ( preprocessedTokens, evaluate ) {
     yylhs = this.yylhs,
     terminals = this.terminals,
     translate = this.translate,
-    yygdefault = this.yygdefault;
+    yygdefault = this.yygdefault
 
 
-    this.pos = -1;
-    this.line = 1;
+    this.pos = -1
+    this.line = 1
 
-    this.tokenMap = this.createTokenMap( );
+    this.tokenMap = this.createTokenMap( )
 
-    this.dropTokens = {};
-    this.dropTokens[ PHP.Constants.T_WHITESPACE ] = 1;
-    this.dropTokens[ PHP.Constants.T_OPEN_TAG ] = 1;
-    var tokens = [];
+    this.dropTokens = {}
+    this.dropTokens[ PHP.Constants.T_WHITESPACE ] = 1
+    this.dropTokens[ PHP.Constants.T_OPEN_TAG ] = 1
+    var tokens = []
     preprocessedTokens.forEach( function( token, index ) {
         if ( typeof token === "object" && token[ 0 ] === PHP.Constants.T_OPEN_TAG_WITH_ECHO) {
             tokens.push([
                 PHP.Constants.T_OPEN_TAG,
                 token[ 1 ],
-                token[ 2 ]
-                ]);
+                token[ 2 ],
+                ])
             tokens.push([
                 PHP.Constants.T_ECHO,
                 token[ 1 ],
-                token[ 2 ]
-                ]);
+                token[ 2 ],
+                ])
         } else {
-            tokens.push( token );
+            tokens.push( token )
         }
-    });
-    this.tokens = tokens;
-    var tokenId = this.TOKEN_NONE;
+    })
+    this.tokens = tokens
+    var tokenId = this.TOKEN_NONE
     this.startAttributes = {
-        'startLine': 1
-    };
+        'startLine': 1,
+    }
 
-    this.endAttributes = {};
-    var attributeStack = [ this.startAttributes ];
-    var state = 0;
-    var stateStack = [ state ];
-    this.yyastk = [];
-    this.stackPos  = 0;
+    this.endAttributes = {}
+    var attributeStack = [ this.startAttributes ]
+    var state = 0
+    var stateStack = [ state ]
+    this.yyastk = []
+    this.stackPos  = 0
 
-    var yyn;
+    var yyn
 
-    var origTokenId;
+    var origTokenId
 
 
     for (;;) {
 
         if ( yybase[ state ] === 0 ) {
-            yyn = yydefault[ state ];
+            yyn = yydefault[ state ]
         } else {
             if (tokenId === this.TOKEN_NONE ) {
-                origTokenId = this.getNextToken( );
-                tokenId = (origTokenId >= 0 && origTokenId < this.TOKEN_MAP_SIZE) ? translate[ origTokenId ] : this.TOKEN_INVALID;
+                origTokenId = this.getNextToken( )
+                tokenId = (origTokenId >= 0 && origTokenId < this.TOKEN_MAP_SIZE) ? translate[ origTokenId ] : this.TOKEN_INVALID
 
-                attributeStack[ this.stackPos ] = this.startAttributes;
+                attributeStack[ this.stackPos ] = this.startAttributes
             }
 
             if (((yyn = yybase[ state ] + tokenId) >= 0
@@ -2491,51 +2491,51 @@ PHP.Parser = function ( preprocessedTokens, evaluate ) {
                     && yycheck[ yyn ] === tokenId))
             && (yyn = yyaction[ yyn ]) !== this.YYDEFAULT ) {
                 if (yyn > 0) {
-                    ++this.stackPos;
+                    ++this.stackPos
 
-                    stateStack[ this.stackPos ] = state = yyn;
-                    this.yyastk[ this.stackPos ] = this.tokenValue;
-                    attributeStack[ this.stackPos ] = this.startAttributes;
-                    tokenId = this.TOKEN_NONE;
+                    stateStack[ this.stackPos ] = state = yyn
+                    this.yyastk[ this.stackPos ] = this.tokenValue
+                    attributeStack[ this.stackPos ] = this.startAttributes
+                    tokenId = this.TOKEN_NONE
 
                     if (yyn < this.YYNLSTATES)
-                        continue;
-                    yyn -= this.YYNLSTATES;
+                        continue
+                    yyn -= this.YYNLSTATES
                 } else {
-                    yyn = -yyn;
+                    yyn = -yyn
                 }
             } else {
-                yyn = yydefault[ state ];
+                yyn = yydefault[ state ]
             }
         }
 
         for (;;) {
 
             if ( yyn === 0 ) {
-                return this.yyval;
+                return this.yyval
             } else if (yyn !== this.YYUNEXPECTED ) {
                 for (var attr in this.endAttributes) {
-                    attributeStack[ this.stackPos - yylen[ yyn ] ][ attr ] = this.endAttributes[ attr ];
+                    attributeStack[ this.stackPos - yylen[ yyn ] ][ attr ] = this.endAttributes[ attr ]
                 }
-                this.stackPos -= yylen[ yyn ];
-                yyn = yylhs[ yyn ];
+                this.stackPos -= yylen[ yyn ]
+                yyn = yylhs[ yyn ]
                 if ((yyp = yygbase[ yyn ] + stateStack[ this.stackPos ]) >= 0
                     && yyp < this.YYGLAST
                     && yygcheck[ yyp ] === yyn) {
-                    state = yygoto[ yyp ];
+                    state = yygoto[ yyp ]
                 } else {
-                    state = yygdefault[ yyn ];
+                    state = yygdefault[ yyn ]
                 }
 
-                ++this.stackPos;
+                ++this.stackPos
 
-                stateStack[ this.stackPos ] = state;
-                this.yyastk[ this.stackPos ] = this.yyval;
-                attributeStack[ this.stackPos ] = this.startAttributes;
+                stateStack[ this.stackPos ] = state
+                this.yyastk[ this.stackPos ] = this.yyval
+                attributeStack[ this.stackPos ] = this.startAttributes
             } else {
                 if (evaluate !== true) {
 
-                    var expected = [];
+                    var expected = []
 
                     for (var i = 0; i < this.TOKEN_MAP_SIZE; ++i) {
                         if ((yyn = yybase[ state ] + i) >= 0 && yyn < this.YYLAST && yycheck[ yyn ] == i
@@ -2545,273 +2545,273 @@ PHP.Parser = function ( preprocessedTokens, evaluate ) {
                         ) {
                             if (yyaction[ yyn ] != this.YYUNEXPECTED) {
                                 if (expected.length == 4) {
-                                    expected = [];
-                                    break;
+                                    expected = []
+                                    break
                                 }
 
-                                expected.push( this.terminals[ i ] );
+                                expected.push( this.terminals[ i ] )
                             }
                         }
                     }
 
-                    var expectedString = '';
+                    var expectedString = ''
                     if (expected.length) {
-                        expectedString = ', expecting ' + expected.join(' or ');
+                        expectedString = ', expecting ' + expected.join(' or ')
                     }
-                    throw new PHP.ParseError('syntax error, unexpected ' + terminals[ tokenId ] + expectedString, this.startAttributes['startLine']);
+                    throw new PHP.ParseError('syntax error, unexpected ' + terminals[ tokenId ] + expectedString, this.startAttributes['startLine'])
                 } else {
-                    return this.startAttributes['startLine'];
+                    return this.startAttributes['startLine']
                 }
 
             }
 
             if (state < this.YYNLSTATES)
-                break;
-            yyn = state - this.YYNLSTATES;
+                break
+            yyn = state - this.YYNLSTATES
         }
     }
-};
+}
 
 PHP.ParseError = function( msg, line ) {
-    this.message = msg;
-    this.line = line;
-};
+    this.message = msg
+    this.line = line
+}
 
 PHP.Parser.prototype.getNextToken = function( ) {
 
-    this.startAttributes = {};
-    this.endAttributes = {};
+    this.startAttributes = {}
+    this.endAttributes = {}
 
     var token,
-    tmp;
+    tmp
 
     while (this.tokens[++this.pos] !== undefined) {
-        token = this.tokens[this.pos];
+        token = this.tokens[this.pos]
 
         if (typeof token === "string") {
-            this.startAttributes['startLine'] = this.line;
-            this.endAttributes['endLine'] = this.line;
+            this.startAttributes['startLine'] = this.line
+            this.endAttributes['endLine'] = this.line
             if ('b"' === token) {
-                this.tokenValue = 'b"';
-                return '"'.charCodeAt(0);
+                this.tokenValue = 'b"'
+                return '"'.charCodeAt(0)
             } else {
-                this.tokenValue = token;
-                return token.charCodeAt(0);
+                this.tokenValue = token
+                return token.charCodeAt(0)
             }
         } else {
 
 
 
-            this.line += ((tmp = token[ 1 ].match(/\n/g)) === null) ? 0 : tmp.length;
+            this.line += ((tmp = token[ 1 ].match(/\n/g)) === null) ? 0 : tmp.length
 
             if (PHP.Constants.T_COMMENT === token[0]) {
 
                 if (!Array.isArray(this.startAttributes['comments'])) {
-                    this.startAttributes['comments'] = [];
+                    this.startAttributes['comments'] = []
                 }
 
                 this.startAttributes['comments'].push( {
                     type: "comment",
                     comment: token[1],
-                    line: token[2]
-                });
+                    line: token[2],
+                })
 
             } else if (PHP.Constants.T_DOC_COMMENT === token[0]) {
-                this.startAttributes['comments'].push( new PHPParser_Comment_Doc(token[1], token[2]) );
+                this.startAttributes['comments'].push( new PHPParser_Comment_Doc(token[1], token[2]) )
             } else if (this.dropTokens[token[0]] === undefined) {
-                this.tokenValue = token[1];
-                this.startAttributes['startLine'] = token[2];
-                this.endAttributes['endLine'] = this.line;
+                this.tokenValue = token[1]
+                this.startAttributes['startLine'] = token[2]
+                this.endAttributes['endLine'] = this.line
 
-                return this.tokenMap[token[0]];
+                return this.tokenMap[token[0]]
             }
         }
     }
 
-    this.startAttributes['startLine'] = this.line;
-    return 0;
-};
+    this.startAttributes['startLine'] = this.line
+    return 0
+}
 
 PHP.Parser.prototype.tokenName = function( token ) {
-    var constants = ["T_INCLUDE","T_INCLUDE_ONCE","T_EVAL","T_REQUIRE","T_REQUIRE_ONCE","T_LOGICAL_OR","T_LOGICAL_XOR","T_LOGICAL_AND","T_PRINT","T_YIELD","T_DOUBLE_ARROW","T_YIELD_FROM","T_PLUS_EQUAL","T_MINUS_EQUAL","T_MUL_EQUAL","T_DIV_EQUAL","T_CONCAT_EQUAL","T_MOD_EQUAL","T_AND_EQUAL","T_OR_EQUAL","T_XOR_EQUAL","T_SL_EQUAL","T_SR_EQUAL","T_POW_EQUAL","T_COALESCE_EQUAL","T_COALESCE","T_BOOLEAN_OR","T_BOOLEAN_AND","T_IS_EQUAL","T_IS_NOT_EQUAL","T_IS_IDENTICAL","T_IS_NOT_IDENTICAL","T_SPACESHIP","T_IS_SMALLER_OR_EQUAL","T_IS_GREATER_OR_EQUAL","T_SL","T_SR","T_INSTANCEOF","T_INC","T_DEC","T_INT_CAST","T_DOUBLE_CAST","T_STRING_CAST","T_ARRAY_CAST","T_OBJECT_CAST","T_BOOL_CAST","T_UNSET_CAST","T_POW","T_NEW","T_CLONE","T_EXIT","T_IF","T_ELSEIF","T_ELSE","T_ENDIF","T_LNUMBER","T_DNUMBER","T_STRING","T_STRING_VARNAME","T_VARIABLE","T_NUM_STRING","T_INLINE_HTML","T_CHARACTER","T_BAD_CHARACTER","T_ENCAPSED_AND_WHITESPACE","T_CONSTANT_ENCAPSED_STRING","T_ECHO","T_DO","T_WHILE","T_ENDWHILE","T_FOR","T_ENDFOR","T_FOREACH","T_ENDFOREACH","T_DECLARE","T_ENDDECLARE","T_AS","T_SWITCH","T_ENDSWITCH","T_CASE","T_DEFAULT","T_BREAK","T_CONTINUE","T_GOTO","T_FUNCTION","T_FN","T_CONST","T_RETURN","T_TRY","T_CATCH","T_FINALLY","T_THROW","T_USE","T_INSTEADOF","T_GLOBAL","T_STATIC","T_ABSTRACT","T_FINAL","T_PRIVATE","T_PROTECTED","T_PUBLIC","T_VAR","T_UNSET","T_ISSET","T_EMPTY","T_HALT_COMPILER","T_CLASS","T_TRAIT","T_INTERFACE","T_EXTENDS","T_IMPLEMENTS","T_OBJECT_OPERATOR","T_DOUBLE_ARROW","T_LIST","T_ARRAY","T_CALLABLE","T_CLASS_C","T_TRAIT_C","T_METHOD_C","T_FUNC_C","T_LINE","T_FILE","T_COMMENT","T_DOC_COMMENT","T_OPEN_TAG","T_OPEN_TAG_WITH_ECHO","T_CLOSE_TAG","T_WHITESPACE","T_START_HEREDOC","T_END_HEREDOC","T_DOLLAR_OPEN_CURLY_BRACES","T_CURLY_OPEN","T_PAAMAYIM_NEKUDOTAYIM","T_NAMESPACE","T_NS_C","T_DIR","T_NS_SEPARATOR","T_ELLIPSIS"];
-    var current = "UNKNOWN";
+    var constants = ["T_INCLUDE","T_INCLUDE_ONCE","T_EVAL","T_REQUIRE","T_REQUIRE_ONCE","T_LOGICAL_OR","T_LOGICAL_XOR","T_LOGICAL_AND","T_PRINT","T_YIELD","T_DOUBLE_ARROW","T_YIELD_FROM","T_PLUS_EQUAL","T_MINUS_EQUAL","T_MUL_EQUAL","T_DIV_EQUAL","T_CONCAT_EQUAL","T_MOD_EQUAL","T_AND_EQUAL","T_OR_EQUAL","T_XOR_EQUAL","T_SL_EQUAL","T_SR_EQUAL","T_POW_EQUAL","T_COALESCE_EQUAL","T_COALESCE","T_BOOLEAN_OR","T_BOOLEAN_AND","T_IS_EQUAL","T_IS_NOT_EQUAL","T_IS_IDENTICAL","T_IS_NOT_IDENTICAL","T_SPACESHIP","T_IS_SMALLER_OR_EQUAL","T_IS_GREATER_OR_EQUAL","T_SL","T_SR","T_INSTANCEOF","T_INC","T_DEC","T_INT_CAST","T_DOUBLE_CAST","T_STRING_CAST","T_ARRAY_CAST","T_OBJECT_CAST","T_BOOL_CAST","T_UNSET_CAST","T_POW","T_NEW","T_CLONE","T_EXIT","T_IF","T_ELSEIF","T_ELSE","T_ENDIF","T_LNUMBER","T_DNUMBER","T_STRING","T_STRING_VARNAME","T_VARIABLE","T_NUM_STRING","T_INLINE_HTML","T_CHARACTER","T_BAD_CHARACTER","T_ENCAPSED_AND_WHITESPACE","T_CONSTANT_ENCAPSED_STRING","T_ECHO","T_DO","T_WHILE","T_ENDWHILE","T_FOR","T_ENDFOR","T_FOREACH","T_ENDFOREACH","T_DECLARE","T_ENDDECLARE","T_AS","T_SWITCH","T_ENDSWITCH","T_CASE","T_DEFAULT","T_BREAK","T_CONTINUE","T_GOTO","T_FUNCTION","T_FN","T_CONST","T_RETURN","T_TRY","T_CATCH","T_FINALLY","T_THROW","T_USE","T_INSTEADOF","T_GLOBAL","T_STATIC","T_ABSTRACT","T_FINAL","T_PRIVATE","T_PROTECTED","T_PUBLIC","T_VAR","T_UNSET","T_ISSET","T_EMPTY","T_HALT_COMPILER","T_CLASS","T_TRAIT","T_INTERFACE","T_EXTENDS","T_IMPLEMENTS","T_OBJECT_OPERATOR","T_DOUBLE_ARROW","T_LIST","T_ARRAY","T_CALLABLE","T_CLASS_C","T_TRAIT_C","T_METHOD_C","T_FUNC_C","T_LINE","T_FILE","T_COMMENT","T_DOC_COMMENT","T_OPEN_TAG","T_OPEN_TAG_WITH_ECHO","T_CLOSE_TAG","T_WHITESPACE","T_START_HEREDOC","T_END_HEREDOC","T_DOLLAR_OPEN_CURLY_BRACES","T_CURLY_OPEN","T_PAAMAYIM_NEKUDOTAYIM","T_NAMESPACE","T_NS_C","T_DIR","T_NS_SEPARATOR","T_ELLIPSIS"]
+    var current = "UNKNOWN"
     constants.some(function( constant ) {
         if (PHP.Constants[ constant ] === token) {
-            current = constant;
-            return true;
+            current = constant
+            return true
         } else {
-            return false;
+            return false
         }
-    });
+    })
 
-    return current;
-};
+    return current
+}
 
 PHP.Parser.prototype.createTokenMap = function() {
     var tokenMap = {},
     name,
-    i;
+    i
     for ( i = 256; i < 1000; ++i ) {
         if( PHP.Constants.T_OPEN_TAG_WITH_ECHO === i ) {
-            tokenMap[ i ] = PHP.Constants.T_ECHO;
+            tokenMap[ i ] = PHP.Constants.T_ECHO
         } else if( PHP.Constants.T_CLOSE_TAG === i ) {
-            tokenMap[ i ] = 59;
+            tokenMap[ i ] = 59
         } else if ( 'UNKNOWN' !== (name = this.tokenName( i ) ) ) { 
-            tokenMap[ i ] =  this[name];
+            tokenMap[ i ] =  this[name]
         }
     }
-    return tokenMap;
-};
+    return tokenMap
+}
 
-PHP.Parser.prototype.TOKEN_NONE    = -1;
-PHP.Parser.prototype.TOKEN_INVALID = 159;
+PHP.Parser.prototype.TOKEN_NONE    = -1
+PHP.Parser.prototype.TOKEN_INVALID = 159
 
-PHP.Parser.prototype.TOKEN_MAP_SIZE = 394;
+PHP.Parser.prototype.TOKEN_MAP_SIZE = 394
 
-PHP.Parser.prototype.YYLAST       = 964;
-PHP.Parser.prototype.YY2TBLSTATE  = 348;
-PHP.Parser.prototype.YYGLAST      = 508;
-PHP.Parser.prototype.YYNLSTATES   = 602;
-PHP.Parser.prototype.YYUNEXPECTED = 32767;
-PHP.Parser.prototype.YYDEFAULT    = -32766;
-PHP.Parser.prototype.YYERRTOK = 256;
-PHP.Parser.prototype.T_INCLUDE = 257;
-PHP.Parser.prototype.T_INCLUDE_ONCE = 258;
-PHP.Parser.prototype.T_EVAL = 259;
-PHP.Parser.prototype.T_REQUIRE = 260;
-PHP.Parser.prototype.T_REQUIRE_ONCE = 261;
-PHP.Parser.prototype.T_LOGICAL_OR = 262;
-PHP.Parser.prototype.T_LOGICAL_XOR = 263;
-PHP.Parser.prototype.T_LOGICAL_AND = 264;
-PHP.Parser.prototype.T_PRINT = 265;
-PHP.Parser.prototype.T_YIELD = 266;
-PHP.Parser.prototype.T_DOUBLE_ARROW = 267;
-PHP.Parser.prototype.T_YIELD_FROM = 268;
-PHP.Parser.prototype.T_PLUS_EQUAL = 269;
-PHP.Parser.prototype.T_MINUS_EQUAL = 270;
-PHP.Parser.prototype.T_MUL_EQUAL = 271;
-PHP.Parser.prototype.T_DIV_EQUAL = 272;
-PHP.Parser.prototype.T_CONCAT_EQUAL = 273;
-PHP.Parser.prototype.T_MOD_EQUAL = 274;
-PHP.Parser.prototype.T_AND_EQUAL = 275;
-PHP.Parser.prototype.T_OR_EQUAL = 276;
-PHP.Parser.prototype.T_XOR_EQUAL = 277;
-PHP.Parser.prototype.T_SL_EQUAL = 278;
-PHP.Parser.prototype.T_SR_EQUAL = 279;
-PHP.Parser.prototype.T_POW_EQUAL = 280;
-PHP.Parser.prototype.T_COALESCE_EQUAL = 281;
-PHP.Parser.prototype.T_COALESCE = 282;
-PHP.Parser.prototype.T_BOOLEAN_OR = 283;
-PHP.Parser.prototype.T_BOOLEAN_AND = 284;
-PHP.Parser.prototype.T_IS_EQUAL = 285;
-PHP.Parser.prototype.T_IS_NOT_EQUAL = 286;
-PHP.Parser.prototype.T_IS_IDENTICAL = 287;
-PHP.Parser.prototype.T_IS_NOT_IDENTICAL = 288;
-PHP.Parser.prototype.T_SPACESHIP = 289;
-PHP.Parser.prototype.T_IS_SMALLER_OR_EQUAL = 290;
-PHP.Parser.prototype.T_IS_GREATER_OR_EQUAL = 291;
-PHP.Parser.prototype.T_SL = 292;
-PHP.Parser.prototype.T_SR = 293;
-PHP.Parser.prototype.T_INSTANCEOF = 294;
-PHP.Parser.prototype.T_INC = 295;
-PHP.Parser.prototype.T_DEC = 296;
-PHP.Parser.prototype.T_INT_CAST = 297;
-PHP.Parser.prototype.T_DOUBLE_CAST = 298;
-PHP.Parser.prototype.T_STRING_CAST = 299;
-PHP.Parser.prototype.T_ARRAY_CAST = 300;
-PHP.Parser.prototype.T_OBJECT_CAST = 301;
-PHP.Parser.prototype.T_BOOL_CAST = 302;
-PHP.Parser.prototype.T_UNSET_CAST = 303;
-PHP.Parser.prototype.T_POW = 304;
-PHP.Parser.prototype.T_NEW = 305;
-PHP.Parser.prototype.T_CLONE = 306;
-PHP.Parser.prototype.T_EXIT = 307;
-PHP.Parser.prototype.T_IF = 308;
-PHP.Parser.prototype.T_ELSEIF = 309;
-PHP.Parser.prototype.T_ELSE = 310;
-PHP.Parser.prototype.T_ENDIF = 311;
-PHP.Parser.prototype.T_LNUMBER = 312;
-PHP.Parser.prototype.T_DNUMBER = 313;
-PHP.Parser.prototype.T_STRING = 314;
-PHP.Parser.prototype.T_STRING_VARNAME = 315;
-PHP.Parser.prototype.T_VARIABLE = 316;
-PHP.Parser.prototype.T_NUM_STRING = 317;
-PHP.Parser.prototype.T_INLINE_HTML = 318;
-PHP.Parser.prototype.T_CHARACTER = 319;
-PHP.Parser.prototype.T_BAD_CHARACTER = 320;
-PHP.Parser.prototype.T_ENCAPSED_AND_WHITESPACE = 321;
-PHP.Parser.prototype.T_CONSTANT_ENCAPSED_STRING = 322;
-PHP.Parser.prototype.T_ECHO = 323;
-PHP.Parser.prototype.T_DO = 324;
-PHP.Parser.prototype.T_WHILE = 325;
-PHP.Parser.prototype.T_ENDWHILE = 326;
-PHP.Parser.prototype.T_FOR = 327;
-PHP.Parser.prototype.T_ENDFOR = 328;
-PHP.Parser.prototype.T_FOREACH = 329;
-PHP.Parser.prototype.T_ENDFOREACH = 330;
-PHP.Parser.prototype.T_DECLARE = 331;
-PHP.Parser.prototype.T_ENDDECLARE = 332;
-PHP.Parser.prototype.T_AS = 333;
-PHP.Parser.prototype.T_SWITCH = 334;
-PHP.Parser.prototype.T_ENDSWITCH = 335;
-PHP.Parser.prototype.T_CASE = 336;
-PHP.Parser.prototype.T_DEFAULT = 337;
-PHP.Parser.prototype.T_BREAK = 338;
-PHP.Parser.prototype.T_CONTINUE = 339;
-PHP.Parser.prototype.T_GOTO = 340;
-PHP.Parser.prototype.T_FUNCTION = 341;
-PHP.Parser.prototype.T_FN = 342;
-PHP.Parser.prototype.T_CONST = 343;
-PHP.Parser.prototype.T_RETURN = 344;
-PHP.Parser.prototype.T_TRY = 345;
-PHP.Parser.prototype.T_CATCH = 346;
-PHP.Parser.prototype.T_FINALLY = 347;
-PHP.Parser.prototype.T_THROW = 348;
-PHP.Parser.prototype.T_USE = 349;
-PHP.Parser.prototype.T_INSTEADOF = 350;
-PHP.Parser.prototype.T_GLOBAL = 351;
-PHP.Parser.prototype.T_STATIC = 352;
-PHP.Parser.prototype.T_ABSTRACT = 353;
-PHP.Parser.prototype.T_FINAL = 354;
-PHP.Parser.prototype.T_PRIVATE = 355;
-PHP.Parser.prototype.T_PROTECTED = 356;
-PHP.Parser.prototype.T_PUBLIC = 357;
-PHP.Parser.prototype.T_VAR = 358;
-PHP.Parser.prototype.T_UNSET = 359;
-PHP.Parser.prototype.T_ISSET = 360;
-PHP.Parser.prototype.T_EMPTY = 361;
-PHP.Parser.prototype.T_HALT_COMPILER = 362;
-PHP.Parser.prototype.T_CLASS = 363;
-PHP.Parser.prototype.T_TRAIT = 364;
-PHP.Parser.prototype.T_INTERFACE = 365;
-PHP.Parser.prototype.T_EXTENDS = 366;
-PHP.Parser.prototype.T_IMPLEMENTS = 367;
-PHP.Parser.prototype.T_OBJECT_OPERATOR = 368;
-PHP.Parser.prototype.T_LIST = 369;
-PHP.Parser.prototype.T_ARRAY = 370;
-PHP.Parser.prototype.T_CALLABLE = 371;
-PHP.Parser.prototype.T_CLASS_C = 372;
-PHP.Parser.prototype.T_TRAIT_C = 373;
-PHP.Parser.prototype.T_METHOD_C = 374;
-PHP.Parser.prototype.T_FUNC_C = 375;
-PHP.Parser.prototype.T_LINE = 376;
-PHP.Parser.prototype.T_FILE = 377;
-PHP.Parser.prototype.T_COMMENT = 378;
-PHP.Parser.prototype.T_DOC_COMMENT = 379;
-PHP.Parser.prototype.T_OPEN_TAG = 380;
-PHP.Parser.prototype.T_OPEN_TAG_WITH_ECHO = 381;
-PHP.Parser.prototype.T_CLOSE_TAG = 382;
-PHP.Parser.prototype.T_WHITESPACE = 383;
-PHP.Parser.prototype.T_START_HEREDOC = 384;
-PHP.Parser.prototype.T_END_HEREDOC = 385;
-PHP.Parser.prototype.T_DOLLAR_OPEN_CURLY_BRACES = 386;
-PHP.Parser.prototype.T_CURLY_OPEN = 387;
-PHP.Parser.prototype.T_PAAMAYIM_NEKUDOTAYIM = 388;
-PHP.Parser.prototype.T_NAMESPACE = 389;
-PHP.Parser.prototype.T_NS_C = 390;
-PHP.Parser.prototype.T_DIR = 391;
-PHP.Parser.prototype.T_NS_SEPARATOR = 392;
-PHP.Parser.prototype.T_ELLIPSIS = 393;
+PHP.Parser.prototype.YYLAST       = 964
+PHP.Parser.prototype.YY2TBLSTATE  = 348
+PHP.Parser.prototype.YYGLAST      = 508
+PHP.Parser.prototype.YYNLSTATES   = 602
+PHP.Parser.prototype.YYUNEXPECTED = 32767
+PHP.Parser.prototype.YYDEFAULT    = -32766
+PHP.Parser.prototype.YYERRTOK = 256
+PHP.Parser.prototype.T_INCLUDE = 257
+PHP.Parser.prototype.T_INCLUDE_ONCE = 258
+PHP.Parser.prototype.T_EVAL = 259
+PHP.Parser.prototype.T_REQUIRE = 260
+PHP.Parser.prototype.T_REQUIRE_ONCE = 261
+PHP.Parser.prototype.T_LOGICAL_OR = 262
+PHP.Parser.prototype.T_LOGICAL_XOR = 263
+PHP.Parser.prototype.T_LOGICAL_AND = 264
+PHP.Parser.prototype.T_PRINT = 265
+PHP.Parser.prototype.T_YIELD = 266
+PHP.Parser.prototype.T_DOUBLE_ARROW = 267
+PHP.Parser.prototype.T_YIELD_FROM = 268
+PHP.Parser.prototype.T_PLUS_EQUAL = 269
+PHP.Parser.prototype.T_MINUS_EQUAL = 270
+PHP.Parser.prototype.T_MUL_EQUAL = 271
+PHP.Parser.prototype.T_DIV_EQUAL = 272
+PHP.Parser.prototype.T_CONCAT_EQUAL = 273
+PHP.Parser.prototype.T_MOD_EQUAL = 274
+PHP.Parser.prototype.T_AND_EQUAL = 275
+PHP.Parser.prototype.T_OR_EQUAL = 276
+PHP.Parser.prototype.T_XOR_EQUAL = 277
+PHP.Parser.prototype.T_SL_EQUAL = 278
+PHP.Parser.prototype.T_SR_EQUAL = 279
+PHP.Parser.prototype.T_POW_EQUAL = 280
+PHP.Parser.prototype.T_COALESCE_EQUAL = 281
+PHP.Parser.prototype.T_COALESCE = 282
+PHP.Parser.prototype.T_BOOLEAN_OR = 283
+PHP.Parser.prototype.T_BOOLEAN_AND = 284
+PHP.Parser.prototype.T_IS_EQUAL = 285
+PHP.Parser.prototype.T_IS_NOT_EQUAL = 286
+PHP.Parser.prototype.T_IS_IDENTICAL = 287
+PHP.Parser.prototype.T_IS_NOT_IDENTICAL = 288
+PHP.Parser.prototype.T_SPACESHIP = 289
+PHP.Parser.prototype.T_IS_SMALLER_OR_EQUAL = 290
+PHP.Parser.prototype.T_IS_GREATER_OR_EQUAL = 291
+PHP.Parser.prototype.T_SL = 292
+PHP.Parser.prototype.T_SR = 293
+PHP.Parser.prototype.T_INSTANCEOF = 294
+PHP.Parser.prototype.T_INC = 295
+PHP.Parser.prototype.T_DEC = 296
+PHP.Parser.prototype.T_INT_CAST = 297
+PHP.Parser.prototype.T_DOUBLE_CAST = 298
+PHP.Parser.prototype.T_STRING_CAST = 299
+PHP.Parser.prototype.T_ARRAY_CAST = 300
+PHP.Parser.prototype.T_OBJECT_CAST = 301
+PHP.Parser.prototype.T_BOOL_CAST = 302
+PHP.Parser.prototype.T_UNSET_CAST = 303
+PHP.Parser.prototype.T_POW = 304
+PHP.Parser.prototype.T_NEW = 305
+PHP.Parser.prototype.T_CLONE = 306
+PHP.Parser.prototype.T_EXIT = 307
+PHP.Parser.prototype.T_IF = 308
+PHP.Parser.prototype.T_ELSEIF = 309
+PHP.Parser.prototype.T_ELSE = 310
+PHP.Parser.prototype.T_ENDIF = 311
+PHP.Parser.prototype.T_LNUMBER = 312
+PHP.Parser.prototype.T_DNUMBER = 313
+PHP.Parser.prototype.T_STRING = 314
+PHP.Parser.prototype.T_STRING_VARNAME = 315
+PHP.Parser.prototype.T_VARIABLE = 316
+PHP.Parser.prototype.T_NUM_STRING = 317
+PHP.Parser.prototype.T_INLINE_HTML = 318
+PHP.Parser.prototype.T_CHARACTER = 319
+PHP.Parser.prototype.T_BAD_CHARACTER = 320
+PHP.Parser.prototype.T_ENCAPSED_AND_WHITESPACE = 321
+PHP.Parser.prototype.T_CONSTANT_ENCAPSED_STRING = 322
+PHP.Parser.prototype.T_ECHO = 323
+PHP.Parser.prototype.T_DO = 324
+PHP.Parser.prototype.T_WHILE = 325
+PHP.Parser.prototype.T_ENDWHILE = 326
+PHP.Parser.prototype.T_FOR = 327
+PHP.Parser.prototype.T_ENDFOR = 328
+PHP.Parser.prototype.T_FOREACH = 329
+PHP.Parser.prototype.T_ENDFOREACH = 330
+PHP.Parser.prototype.T_DECLARE = 331
+PHP.Parser.prototype.T_ENDDECLARE = 332
+PHP.Parser.prototype.T_AS = 333
+PHP.Parser.prototype.T_SWITCH = 334
+PHP.Parser.prototype.T_ENDSWITCH = 335
+PHP.Parser.prototype.T_CASE = 336
+PHP.Parser.prototype.T_DEFAULT = 337
+PHP.Parser.prototype.T_BREAK = 338
+PHP.Parser.prototype.T_CONTINUE = 339
+PHP.Parser.prototype.T_GOTO = 340
+PHP.Parser.prototype.T_FUNCTION = 341
+PHP.Parser.prototype.T_FN = 342
+PHP.Parser.prototype.T_CONST = 343
+PHP.Parser.prototype.T_RETURN = 344
+PHP.Parser.prototype.T_TRY = 345
+PHP.Parser.prototype.T_CATCH = 346
+PHP.Parser.prototype.T_FINALLY = 347
+PHP.Parser.prototype.T_THROW = 348
+PHP.Parser.prototype.T_USE = 349
+PHP.Parser.prototype.T_INSTEADOF = 350
+PHP.Parser.prototype.T_GLOBAL = 351
+PHP.Parser.prototype.T_STATIC = 352
+PHP.Parser.prototype.T_ABSTRACT = 353
+PHP.Parser.prototype.T_FINAL = 354
+PHP.Parser.prototype.T_PRIVATE = 355
+PHP.Parser.prototype.T_PROTECTED = 356
+PHP.Parser.prototype.T_PUBLIC = 357
+PHP.Parser.prototype.T_VAR = 358
+PHP.Parser.prototype.T_UNSET = 359
+PHP.Parser.prototype.T_ISSET = 360
+PHP.Parser.prototype.T_EMPTY = 361
+PHP.Parser.prototype.T_HALT_COMPILER = 362
+PHP.Parser.prototype.T_CLASS = 363
+PHP.Parser.prototype.T_TRAIT = 364
+PHP.Parser.prototype.T_INTERFACE = 365
+PHP.Parser.prototype.T_EXTENDS = 366
+PHP.Parser.prototype.T_IMPLEMENTS = 367
+PHP.Parser.prototype.T_OBJECT_OPERATOR = 368
+PHP.Parser.prototype.T_LIST = 369
+PHP.Parser.prototype.T_ARRAY = 370
+PHP.Parser.prototype.T_CALLABLE = 371
+PHP.Parser.prototype.T_CLASS_C = 372
+PHP.Parser.prototype.T_TRAIT_C = 373
+PHP.Parser.prototype.T_METHOD_C = 374
+PHP.Parser.prototype.T_FUNC_C = 375
+PHP.Parser.prototype.T_LINE = 376
+PHP.Parser.prototype.T_FILE = 377
+PHP.Parser.prototype.T_COMMENT = 378
+PHP.Parser.prototype.T_DOC_COMMENT = 379
+PHP.Parser.prototype.T_OPEN_TAG = 380
+PHP.Parser.prototype.T_OPEN_TAG_WITH_ECHO = 381
+PHP.Parser.prototype.T_CLOSE_TAG = 382
+PHP.Parser.prototype.T_WHITESPACE = 383
+PHP.Parser.prototype.T_START_HEREDOC = 384
+PHP.Parser.prototype.T_END_HEREDOC = 385
+PHP.Parser.prototype.T_DOLLAR_OPEN_CURLY_BRACES = 386
+PHP.Parser.prototype.T_CURLY_OPEN = 387
+PHP.Parser.prototype.T_PAAMAYIM_NEKUDOTAYIM = 388
+PHP.Parser.prototype.T_NAMESPACE = 389
+PHP.Parser.prototype.T_NS_C = 390
+PHP.Parser.prototype.T_DIR = 391
+PHP.Parser.prototype.T_NS_SEPARATOR = 392
+PHP.Parser.prototype.T_ELLIPSIS = 393
 PHP.Parser.prototype.terminals = [
     "EOF",
     "error",
@@ -2972,8 +2972,8 @@ PHP.Parser.prototype.terminals = [
     "']'",
     "'\"'",
     "'$'"
-    , "???"
-];
+    , "???",
+]
 PHP.Parser.prototype.translate = [
         0,  159,  159,  159,  159,  159,  159,  159,  159,  159,
       159,  159,  159,  159,  159,  159,  159,  159,  159,  159,
@@ -3014,8 +3014,8 @@ PHP.Parser.prototype.translate = [
       122,  123,  124,  125,  126,  127,  128,  129,  130,  131,
       132,  133,  134,  135,  136,  137,  138,  139,  159,  159,
       159,  159,  159,  159,  140,  141,  142,  143,  144,  145,
-      146,  147,  148,  149
-];
+      146,  147,  148,  149,
+]
 
 PHP.Parser.prototype.yyaction = [
       607,  608,  609,  610,  611,  685,  612,  613,  614,  650,
@@ -3114,8 +3114,8 @@ PHP.Parser.prototype.yyaction = [
        18,   22,  432,  263,  324,  501,  522,  569,  981,  978,
         0,  994,    0, 1036, 1065, 1066,-32766, 1080,-32766,-32766,
     -32766,-32766,-32766,-32766,-32767,-32767,-32767,-32767,-32767, 1120,
-      532,  770,  576, 1054
-];
+      532,  770,  576, 1054,
+]
 
 PHP.Parser.prototype.yycheck = [
         2,    3,    4,    5,    6,   78,    8,    9,   10,   11,
@@ -3214,8 +3214,8 @@ PHP.Parser.prototype.yycheck = [
       154,  154,  121,  154,  154,  154,  154,  154,  154,  154,
        -1,  155,   -1,  156,  156,  156,   29,  156,   31,   32,
        33,   34,   35,   36,   37,   38,   39,   40,   41,  156,
-      156,  150,  151,  157
-];
+      156,  150,  151,  157,
+]
 
 PHP.Parser.prototype.yybase = [
         0,  223,  299,  371,  444,  303,  208,  618,   -2,   -2,
@@ -3312,8 +3312,8 @@ PHP.Parser.prototype.yybase = [
         0,    0,  551,    0,  690,    0,    0,    0,    0,  555,
         0,    0,    0,    0,    0,    0,    0,    0,  548,    0,
         0,    0,    0,  548,    0,    0,  531,    0,  564,    0,
-        0,  531,  531,  531,  564,  564,    0,    0,    0,  564
-];
+        0,  531,  531,  531,  564,  564,    0,    0,    0,  564,
+]
 
 PHP.Parser.prototype.yydefault = [
         3,32767,32767,32767,32767,32767,32767,32767,32767,   92,
@@ -3376,8 +3376,8 @@ PHP.Parser.prototype.yydefault = [
     32767,32767,32767,32767,32767,32767,  136,  136,    3,  272,
         3,  272,  136,  136,  136,  272,  272,  136,  136,  136,
       136,  136,  136,  136,  169,  224,  227,  216,  216,  281,
-      136,  136
-];
+      136,  136,
+]
 
 PHP.Parser.prototype.yygoto = [
       171,  144,  144,  144,  171,  152,  153,  152,  155,  187,
@@ -3430,8 +3430,8 @@ PHP.Parser.prototype.yygoto = [
         0,    0,    0,    0,    0,    0,    0,    0,    0,  462,
         0,  478,    0,    0,  316,    0,    0,  466,  386,    0,
       388,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,  724,    0, 1121
-];
+        0,    0,    0,    0,    0,  724,    0, 1121,
+]
 
 PHP.Parser.prototype.yygcheck = [
        33,   33,   33,   33,   33,   33,   33,   33,   33,   33,
@@ -3484,8 +3484,8 @@ PHP.Parser.prototype.yygcheck = [
        -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,    8,
        -1,    8,   -1,   -1,    8,   -1,   -1,    8,    8,   -1,
         8,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-       -1,   -1,   -1,   -1,   -1,    8,   -1,    8
-];
+       -1,   -1,   -1,   -1,   -1,    8,   -1,    8,
+]
 
 PHP.Parser.prototype.yygbase = [
         0,    0, -358,    0,    0,  207,    0,  274,  114,    0,
@@ -3503,8 +3503,8 @@ PHP.Parser.prototype.yygbase = [
         0,    0,  -32,    0,   -9,    0,    0,   -5,    0,    0,
         0,    0,    0,    0, -119,  -69,  217,  -52,    0,   51,
         0, -102,    0,  226,    0,    0,  223,   77,  -67,    0,
-        0
-];
+        0,
+]
 
 PHP.Parser.prototype.yygdefault = [
     -32768,  420,  603,    2,  604,  676,  684,  548,  437,  573,
@@ -3522,8 +3522,8 @@ PHP.Parser.prototype.yygdefault = [
       993,  472,  408, 1006,  389,  555,  418, 1011, 1068,  377,
       441,  396,  282,  300,  257,  442,  458,  262,  443,  397,
      1071, 1078,  338, 1094,  279,   26, 1106, 1115,  292,  492,
-      509
-];
+      509,
+]
 
 PHP.Parser.prototype.yylhs = [
         0,    1,    3,    3,    2,    5,    5,    5,    5,    5,
@@ -3578,8 +3578,8 @@ PHP.Parser.prototype.yylhs = [
        85,  142,  142,  143,  143,  143,  143,  143,  143,  143,
       136,  145,  145,  144,  144,  146,  146,  146,  146,  146,
       146,  134,  134,  134,  134,  148,  149,  147,  147,  147,
-      147,  147,  147,  147,  150,  150,  150,  150
-];
+      147,  147,  147,  147,  150,  150,  150,  150,
+]
 
 PHP.Parser.prototype.yylen = [
         1,    1,    2,    0,    1,    1,    1,    1,    1,    1,
@@ -3634,54 +3634,54 @@ PHP.Parser.prototype.yylen = [
         4,    3,    1,    1,    2,    1,    3,    4,    3,    0,
         1,    1,    1,    3,    1,    3,    1,    4,    2,    2,
         0,    2,    2,    1,    2,    1,    1,    1,    4,    3,
-        3,    3,    6,    3,    1,    1,    2,    1
-];
+        3,    3,    6,    3,    1,    1,    2,    1,
+]
 
 
 
-exports.PHP = PHP;
-});
+exports.PHP = PHP
+})
 
 define("ace/mode/php_worker",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var Mirror = require("../worker/mirror").Mirror;
-var PHP = require("./php/php").PHP;
+var oop = require("../lib/oop")
+var Mirror = require("../worker/mirror").Mirror
+var PHP = require("./php/php").PHP
 
 var PhpWorker = exports.PhpWorker = function(sender) {
-    Mirror.call(this, sender);
-    this.setTimeout(500);
-};
+    Mirror.call(this, sender)
+    this.setTimeout(500)
+}
 
 oop.inherits(PhpWorker, Mirror);
 
 (function() {
     this.setOptions = function(opts) {
-        this.inlinePhp = opts && opts.inline;
-    };
+        this.inlinePhp = opts && opts.inline
+    }
     
     this.onUpdate = function() {
-        var value = this.doc.getValue();
-        var errors = [];
+        var value = this.doc.getValue()
+        var errors = []
         if (this.inlinePhp)
-            value = "<?" + value + "?>";
+            value = "<?" + value + "?>"
 
-        var tokens = PHP.Lexer(value, {short_open_tag: 1});
+        var tokens = PHP.Lexer(value, {short_open_tag: 1})
         try {
-            new PHP.Parser(tokens);
+            new PHP.Parser(tokens)
         } catch(e) {
             errors.push({
                 row: e.line - 1,
                 column: null,
                 text: e.message.charAt(0).toUpperCase() + e.message.substring(1),
-                type: "error"
-            });
+                type: "error",
+            })
         }
 
-        this.sender.emit("annotate", errors);
-    };
+        this.sender.emit("annotate", errors)
+    }
 
-}).call(PhpWorker.prototype);
+}).call(PhpWorker.prototype)
 
-});
+})

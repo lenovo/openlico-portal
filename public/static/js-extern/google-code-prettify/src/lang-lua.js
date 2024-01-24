@@ -38,7 +38,7 @@ PR['registerLangHandler'](
          // Whitespace
          [PR['PR_PLAIN'],       /^[\t\n\r \xA0]+/, null, '\t\n\r \xA0'],
          // A double or single quoted, possibly multi-line, string.
-         [PR['PR_STRING'],      /^(?:\"(?:[^\"\\]|\\[\s\S])*(?:\"|$)|\'(?:[^\'\\]|\\[\s\S])*(?:\'|$))/, null, '"\'']
+         [PR['PR_STRING'],      /^(?:\"(?:[^\"\\]|\\[\s\S])*(?:\"|$)|\'(?:[^\'\\]|\\[\s\S])*(?:\'|$))/, null, '"\''],
         ],
         [
          // A comment is either a line comment that starts with two dashes, or
@@ -54,6 +54,6 @@ PR['registerLangHandler'](
          // An identifier
          [PR['PR_PLAIN'], /^[a-z_]\w*/i],
          // A run of punctuation
-         [PR['PR_PUNCTUATION'], /^[^\w\t\n\r \xA0][^\w\t\n\r \xA0\"\'\-\+=]*/]
+         [PR['PR_PUNCTUATION'], /^[^\w\t\n\r \xA0][^\w\t\n\r \xA0\"\'\-\+=]*/],
         ]),
-    ['lua']);
+    ['lua'])

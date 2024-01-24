@@ -1,112 +1,112 @@
 define("ace/mode/lisp_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var LispHighlightRules = function() {
-    var keywordControl = "case|do|let|loop|if|else|when";
-    var keywordOperator = "eq|neq|and|or";
-    var constantLanguage = "null|nil";
-    var supportFunctions = "cons|car|cdr|cond|lambda|format|setq|setf|quote|eval|append|list|listp|memberp|t|load|progn";
+    var keywordControl = "case|do|let|loop|if|else|when"
+    var keywordOperator = "eq|neq|and|or"
+    var constantLanguage = "null|nil"
+    var supportFunctions = "cons|car|cdr|cond|lambda|format|setq|setf|quote|eval|append|list|listp|memberp|t|load|progn"
 
     var keywordMapper = this.createKeywordMapper({
         "keyword.control": keywordControl,
         "keyword.operator": keywordOperator,
         "constant.language": constantLanguage,
-        "support.function": supportFunctions
-    }, "identifier", true);
+        "support.function": supportFunctions,
+    }, "identifier", true)
 
     this.$rules = 
         {
     "start": [
         {
             token : "comment",
-            regex : ";.*$"
+            regex : ";.*$",
         },
         {
             token: ["storage.type.function-type.lisp", "text", "entity.name.function.lisp"],
-            regex: "(?:\\b(?:(defun|defmethod|defmacro))\\b)(\\s+)((?:\\w|\\-|\\!|\\?)*)"
+            regex: "(?:\\b(?:(defun|defmethod|defmacro))\\b)(\\s+)((?:\\w|\\-|\\!|\\?)*)",
         },
         {
             token: ["punctuation.definition.constant.character.lisp", "constant.character.lisp"],
-            regex: "(#)((?:\\w|[\\\\+-=<>'\"&#])+)"
+            regex: "(#)((?:\\w|[\\\\+-=<>'\"&#])+)",
         },
         {
             token: ["punctuation.definition.variable.lisp", "variable.other.global.lisp", "punctuation.definition.variable.lisp"],
-            regex: "(\\*)(\\S*)(\\*)"
+            regex: "(\\*)(\\S*)(\\*)",
         },
         {
             token : "constant.numeric", // hex
-            regex : "0[xX][0-9a-fA-F]+(?:L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
+            regex : "0[xX][0-9a-fA-F]+(?:L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b",
         }, 
         {
             token : "constant.numeric", // float
-            regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?(?:L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
+            regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?(?:L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b",
         },
         {
                 token : keywordMapper,
-                regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+                regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b",
         },
         {
             token : "string",
             regex : '"(?=.)',
-            next  : "qqstring"
-        }
+            next  : "qqstring",
+        },
     ],
     "qqstring": [
         {
             token: "constant.character.escape.lisp",
-            regex: "\\\\."
+            regex: "\\\\.",
         },
         {
             token : "string",
-            regex : '[^"\\\\]+'
+            regex : '[^"\\\\]+',
         }, {
             token : "string",
             regex : "\\\\$",
-            next  : "qqstring"
+            next  : "qqstring",
         }, {
             token : "string",
             regex : '"|$',
-            next  : "start"
-        }
-    ]
-};
+            next  : "start",
+        },
+    ],
+}
 
-};
+}
 
-oop.inherits(LispHighlightRules, TextHighlightRules);
+oop.inherits(LispHighlightRules, TextHighlightRules)
 
-exports.LispHighlightRules = LispHighlightRules;
-});
+exports.LispHighlightRules = LispHighlightRules
+})
 
 define("ace/mode/lisp",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/lisp_highlight_rules"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var LispHighlightRules = require("./lisp_highlight_rules").LispHighlightRules;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var LispHighlightRules = require("./lisp_highlight_rules").LispHighlightRules
 
 var Mode = function() {
-    this.HighlightRules = LispHighlightRules;
-    this.$behaviour = this.$defaultBehaviour;
-};
+    this.HighlightRules = LispHighlightRules
+    this.$behaviour = this.$defaultBehaviour
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
        
-    this.lineCommentStart = ";";
+    this.lineCommentStart = ";"
     
-    this.$id = "ace/mode/lisp";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/lisp"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     window.require(["ace/mode/lisp"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

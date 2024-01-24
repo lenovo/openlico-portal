@@ -10,7 +10,7 @@
           <a-select
             id="tid_alert-status"
             v-model:value="dataFilter.status.values"
-            style="width: 200px"
+            style="min-width: 200px"
             :options="statusOptions"
             mode="multiple"
             show-arrow />
@@ -21,7 +21,7 @@
           <a-select
             id="tid_alert-level"
             v-model:value="dataFilter.policyLevel.values"
-            style="width: 200px"
+            style="min-width: 200px"
             :options="policyLevelOptions"
             mode="multiple"
             show-arrow />

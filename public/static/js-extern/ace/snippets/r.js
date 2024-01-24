@@ -1,5 +1,5 @@
 ace.define("ace/snippets/r",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "snippet #!\n\
 	#!/usr/bin/env Rscript\n\
@@ -122,14 +122,14 @@ snippet fte\n\
 	var.test(${1:x}, ${2:y})\n\
 snippet kvt \n\
 	kv.test(${1:x}, ${2:y})\n\
-";
-exports.scope = "r";
+"
+exports.scope = "r"
 
 });                (function() {
                     ace.require(["ace/snippets/r"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

@@ -59,7 +59,7 @@ function getVersion() {
         resolve(versionInfo)
       },
       res => {
-        reject(new Error("Can't get version"))
+        reject("Can't get version")
       },
     )
   })

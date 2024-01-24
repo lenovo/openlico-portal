@@ -1,8 +1,8 @@
 define("ace/mode/mushcode_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var MushCodeRules = function() {
 
@@ -55,11 +55,11 @@ var MushCodeRules = function() {
  "desert|"+
  "dismiss|"+
  "@tel"
-    );
+    )
 
     var builtinConstants = (
         "=#0"
-    );
+    )
 
     var builtinFunctions = (
  "default|"+
@@ -487,195 +487,195 @@ var MushCodeRules = function() {
  "createmaze|"+
  "drawmaze|"+
  "drawwireframe"
-    );
+    )
     var keywordMapper = this.createKeywordMapper({
         "invalid.deprecated": "debugger",
         "support.function": builtinFunctions,
         "constant.language": builtinConstants,
-        "keyword": keywords
-    }, "identifier");
+        "keyword": keywords,
+    }, "identifier")
 
-    var strPre = "(?:r|u|ur|R|U|UR|Ur|uR)?";
+    var strPre = "(?:r|u|ur|R|U|UR|Ur|uR)?"
 
-    var decimalInteger = "(?:(?:[1-9]\\d*)|(?:0))";
-    var octInteger = "(?:0[oO]?[0-7]+)";
-    var hexInteger = "(?:0[xX][\\dA-Fa-f]+)";
-    var binInteger = "(?:0[bB][01]+)";
-    var integer = "(?:" + decimalInteger + "|" + octInteger + "|" + hexInteger + "|" + binInteger + ")";
+    var decimalInteger = "(?:(?:[1-9]\\d*)|(?:0))"
+    var octInteger = "(?:0[oO]?[0-7]+)"
+    var hexInteger = "(?:0[xX][\\dA-Fa-f]+)"
+    var binInteger = "(?:0[bB][01]+)"
+    var integer = "(?:" + decimalInteger + "|" + octInteger + "|" + hexInteger + "|" + binInteger + ")"
 
-    var exponent = "(?:[eE][+-]?\\d+)";
-    var fraction = "(?:\\.\\d+)";
-    var intPart = "(?:\\d+)";
-    var pointFloat = "(?:(?:" + intPart + "?" + fraction + ")|(?:" + intPart + "\\.))";
-    var exponentFloat = "(?:(?:" + pointFloat + "|" +  intPart + ")" + exponent + ")";
-    var floatNumber = "(?:" + exponentFloat + "|" + pointFloat + ")";
+    var exponent = "(?:[eE][+-]?\\d+)"
+    var fraction = "(?:\\.\\d+)"
+    var intPart = "(?:\\d+)"
+    var pointFloat = "(?:(?:" + intPart + "?" + fraction + ")|(?:" + intPart + "\\.))"
+    var exponentFloat = "(?:(?:" + pointFloat + "|" +  intPart + ")" + exponent + ")"
+    var floatNumber = "(?:" + exponentFloat + "|" + pointFloat + ")"
 
     this.$rules = {
         "start" : [
          {
                 token : "variable", // mush substitution register
-                regex : "%[0-9]{1}"
+                regex : "%[0-9]{1}",
          },
          {
                 token : "variable", // mush substitution register
-                regex : "%q[0-9A-Za-z]{1}"
+                regex : "%q[0-9A-Za-z]{1}",
          },
          {
                 token : "variable", // mush special character register
-                regex : "%[a-zA-Z]{1}"
+                regex : "%[a-zA-Z]{1}",
          },
          {
                 token: "variable.language",
-                regex: "%[a-z0-9-_]+"
+                regex: "%[a-z0-9-_]+",
          },
         {
             token : "constant.numeric", // imaginary
-            regex : "(?:" + floatNumber + "|\\d+)[jJ]\\b"
+            regex : "(?:" + floatNumber + "|\\d+)[jJ]\\b",
         }, {
             token : "constant.numeric", // float
-            regex : floatNumber
+            regex : floatNumber,
         }, {
             token : "constant.numeric", // long integer
-            regex : integer + "[lL]\\b"
+            regex : integer + "[lL]\\b",
         }, {
             token : "constant.numeric", // integer
-            regex : integer + "\\b"
+            regex : integer + "\\b",
         }, {
             token : keywordMapper,
-            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+            regex : "[a-zA-Z_$][a-zA-Z0-9_$]*\\b",
         }, {
             token : "keyword.operator",
-            regex : "\\+|\\-|\\*|\\*\\*|\\/|\\/\\/|#|%|<<|>>|\\||\\^|~|<|>|<=|=>|==|!=|<>|="
+            regex : "\\+|\\-|\\*|\\*\\*|\\/|\\/\\/|#|%|<<|>>|\\||\\^|~|<|>|<=|=>|==|!=|<>|=",
         }, {
             token : "paren.lparen",
-            regex : "[\\[\\(\\{]"
+            regex : "[\\[\\(\\{]",
         }, {
             token : "paren.rparen",
-            regex : "[\\]\\)\\}]"
+            regex : "[\\]\\)\\}]",
         }, {
             token : "text",
-            regex : "\\s+"
-        } ]
-    };
-};
+            regex : "\\s+",
+        } ],
+    }
+}
 
-oop.inherits(MushCodeRules, TextHighlightRules);
+oop.inherits(MushCodeRules, TextHighlightRules)
 
-exports.MushCodeRules = MushCodeRules;
-});
+exports.MushCodeRules = MushCodeRules
+})
 
 define("ace/mode/folding/pythonic",["require","exports","module","ace/lib/oop","ace/mode/folding/fold_mode"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../../lib/oop");
-var BaseFoldMode = require("./fold_mode").FoldMode;
+var oop = require("../../lib/oop")
+var BaseFoldMode = require("./fold_mode").FoldMode
 
 var FoldMode = exports.FoldMode = function(markers) {
-    this.foldingStartMarker = new RegExp("([\\[{])(?:\\s*)$|(" + markers + ")(?:\\s*)(?:#.*)?$");
-};
+    this.foldingStartMarker = new RegExp("([\\[{])(?:\\s*)$|(" + markers + ")(?:\\s*)(?:#.*)?$")
+}
 oop.inherits(FoldMode, BaseFoldMode);
 
 (function() {
 
     this.getFoldWidgetRange = function(session, foldStyle, row) {
-        var line = session.getLine(row);
-        var match = line.match(this.foldingStartMarker);
+        var line = session.getLine(row)
+        var match = line.match(this.foldingStartMarker)
         if (match) {
             if (match[1])
-                return this.openingBracketBlock(session, match[1], row, match.index);
+                return this.openingBracketBlock(session, match[1], row, match.index)
             if (match[2])
-                return this.indentationBlock(session, row, match.index + match[2].length);
-            return this.indentationBlock(session, row);
+                return this.indentationBlock(session, row, match.index + match[2].length)
+            return this.indentationBlock(session, row)
         }
-    };
+    }
 
-}).call(FoldMode.prototype);
+}).call(FoldMode.prototype)
 
-});
+})
 
 define("ace/mode/mushcode",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/mushcode_highlight_rules","ace/mode/folding/pythonic","ace/range"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var MushCodeRules = require("./mushcode_highlight_rules").MushCodeRules;
-var PythonFoldMode = require("./folding/pythonic").FoldMode;
-var Range = require("../range").Range;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var MushCodeRules = require("./mushcode_highlight_rules").MushCodeRules
+var PythonFoldMode = require("./folding/pythonic").FoldMode
+var Range = require("../range").Range
 
 var Mode = function() {
-    this.HighlightRules = MushCodeRules;
-    this.foldingRules = new PythonFoldMode("\\:");
-    this.$behaviour = this.$defaultBehaviour;
-};
+    this.HighlightRules = MushCodeRules
+    this.foldingRules = new PythonFoldMode("\\:")
+    this.$behaviour = this.$defaultBehaviour
+}
 oop.inherits(Mode, TextMode);
 
 (function() {
 
 
     this.getNextLineIndent = function(state, line, tab) {
-        var indent = this.$getIndent(line);
+        var indent = this.$getIndent(line)
 
-        var tokenizedLine = this.getTokenizer().getLineTokens(line, state);
-        var tokens = tokenizedLine.tokens;
+        var tokenizedLine = this.getTokenizer().getLineTokens(line, state)
+        var tokens = tokenizedLine.tokens
 
         if (tokens.length && tokens[tokens.length-1].type == "comment") {
-            return indent;
+            return indent
         }
 
         if (state == "start") {
-            var match = line.match(/^.*[\{\(\[:]\s*$/);
+            var match = line.match(/^.*[\{\(\[:]\s*$/)
             if (match) {
-                indent += tab;
+                indent += tab
             }
         }
 
-        return indent;
-    };
+        return indent
+    }
 
    var outdents = {
         "pass": 1,
         "return": 1,
         "raise": 1,
         "break": 1,
-        "continue": 1
-    };
+        "continue": 1,
+    }
 
     this.checkOutdent = function(state, line, input) {
         if (input !== "\r\n" && input !== "\r" && input !== "\n")
-            return false;
+            return false
 
-        var tokens = this.getTokenizer().getLineTokens(line.trim(), state).tokens;
+        var tokens = this.getTokenizer().getLineTokens(line.trim(), state).tokens
 
         if (!tokens)
-            return false;
+            return false
         do {
-            var last = tokens.pop();
-        } while (last && (last.type == "comment" || (last.type == "text" && last.value.match(/^\s+$/))));
+            var last = tokens.pop()
+        } while (last && (last.type == "comment" || (last.type == "text" && last.value.match(/^\s+$/))))
 
         if (!last)
-            return false;
+            return false
 
-        return (last.type == "keyword" && outdents[last.value]);
-    };
+        return (last.type == "keyword" && outdents[last.value])
+    }
 
     this.autoOutdent = function(state, doc, row) {
 
-        row += 1;
-        var indent = this.$getIndent(doc.getLine(row));
-        var tab = doc.getTabString();
+        row += 1
+        var indent = this.$getIndent(doc.getLine(row))
+        var tab = doc.getTabString()
         if (indent.slice(-tab.length) == tab)
-            doc.remove(new Range(row, indent.length-tab.length, row, indent.length));
-    };
+            doc.remove(new Range(row, indent.length-tab.length, row, indent.length))
+    }
 
-    this.$id = "ace/mode/mushcode";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/mushcode"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     window.require(["ace/mode/mushcode"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

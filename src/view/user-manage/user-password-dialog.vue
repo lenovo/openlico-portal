@@ -7,21 +7,13 @@
     :form-rules="userRules"
     :success-message-formatter="successMessageFormatter">
     <a-form-item :label="$t('User.Username')" name="username">
-      <a-input id="tid_user-change-password-username" v-model:value="userForm.username" :disabled="true" />
+      <a-input v-model:value="userForm.username" :disabled="true" />
     </a-form-item>
     <a-form-item :label="$t('User.Password')" name="password">
-      <a-input
-        id="tid_user-change-password-password"
-        v-model:value="userForm.password"
-        type="password"
-        autocomplete="new-password" />
+      <a-input v-model:value="userForm.password" type="password" autocomplete="new-password" />
     </a-form-item>
     <a-form-item :label="$t('User.Password.Check')" name="passwordCheck">
-      <a-input
-        id="tid_user-change-password-password-check"
-        v-model:value="userForm.passwordCheck"
-        type="password"
-        autocomplete="new-password" />
+      <a-input v-model:value="userForm.passwordCheck" type="password" autocomplete="new-password" />
     </a-form-item>
   </composite-form-dialog>
 </template>

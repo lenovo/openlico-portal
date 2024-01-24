@@ -1,154 +1,154 @@
 define("ace/mode/lucene_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var oop = require("../lib/oop");
-var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+var oop = require("../lib/oop")
+var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules
 
 var LuceneHighlightRules = function() {
     this.$rules = {
         "start" : [
             {
                 token: "constant.language.escape",
-                regex: /\\[\-+&|!(){}\[\]^"~*?:\\]/
+                regex: /\\[\-+&|!(){}\[\]^"~*?:\\]/,
             }, {
                 token: "constant.character.negation",
-                regex: "\\-"
+                regex: "\\-",
             }, {
                 token: "constant.character.interro",
-                regex: "\\?"
+                regex: "\\?",
             }, {
                 token: "constant.character.required",
-                regex: "\\+"
+                regex: "\\+",
             }, {
                 token: "constant.character.asterisk",
-                regex: "\\*"
+                regex: "\\*",
             }, {
                 token: 'constant.character.proximity',
-                regex: '~(?:0\\.[0-9]+|[0-9]+)?'
+                regex: '~(?:0\\.[0-9]+|[0-9]+)?',
             }, {
                 token: 'keyword.operator',
-                regex: '(AND|OR|NOT|TO)\\b'
+                regex: '(AND|OR|NOT|TO)\\b',
             }, {
                 token: "paren.lparen",
-                regex: "[\\(\\{\\[]"
+                regex: "[\\(\\{\\[]",
             }, {
                 token: "paren.rparen",
-                regex: "[\\)\\}\\]]"
+                regex: "[\\)\\}\\]]",
             }, {
                 token: "keyword.operator",
-                regex: /[><=^]/
+                regex: /[><=^]/,
             }, {
                 token: "constant.numeric",
-                regex: /\d[\d.-]*/
+                regex: /\d[\d.-]*/,
             }, {
                 token: "string",
-                regex: /"(?:\\"|[^"])*"/
+                regex: /"(?:\\"|[^"])*"/,
             }, {
                 token: "keyword",
                 regex: /(?:\\.|[^\s\-+&|!(){}\[\]^"~*?:\\])+:/,
-                next: "maybeRegex"
+                next: "maybeRegex",
             }, {
                 token: "term",
-                regex: /\w+/
+                regex: /\w+/,
             }, {
                 token: "text",
-                regex: /\s+/
-            }
+                regex: /\s+/,
+            },
         ],
         "maybeRegex": [{
             token: "text",
-            regex: /\s+/
+            regex: /\s+/,
         }, {
             token: "string.regexp.start",
             regex: "/",
-            next: "regex"
+            next: "regex",
         }, {
             regex: "",
-            next: "start"
+            next: "start",
         }],
         "regex": [
             {
                 token: "regexp.keyword.operator",
-                regex: "\\\\(?:u[\\da-fA-F]{4}|x[\\da-fA-F]{2}|.)"
+                regex: "\\\\(?:u[\\da-fA-F]{4}|x[\\da-fA-F]{2}|.)",
             }, {
                 token: "string.regexp.end",
                 regex: "/[sxngimy]*",
-                next: "no_regex"
+                next: "no_regex",
             }, {
                 token : "invalid",
-                regex: /\{\d+\b,?\d*\}[+*]|[+*$^?][+*]|[$^][?]|\?{3,}/
+                regex: /\{\d+\b,?\d*\}[+*]|[+*$^?][+*]|[$^][?]|\?{3,}/,
             }, {
                 token : "constant.language.escape",
-                regex: /\(\?[:=!]|\)|\{\d+\b,?\d*\}|[+*]\?|[()$^+*?.]/
+                regex: /\(\?[:=!]|\)|\{\d+\b,?\d*\}|[+*]\?|[()$^+*?.]/,
             }, {
                 token: "constant.language.escape",
-                regex: "<\d+-\d+>|[~&@]"
+                regex: "<\d+-\d+>|[~&@]",
             }, {
                 token : "constant.language.delimiter",
-                regex: /\|/
+                regex: /\|/,
             }, {
                 token: "constant.language.escape",
                 regex: /\[\^?/,
-                next: "regex_character_class"
+                next: "regex_character_class",
             }, {
                 token: "empty",
                 regex: "$",
-                next: "no_regex"
+                next: "no_regex",
             }, {
-                defaultToken: "string.regexp"
-            }
+                defaultToken: "string.regexp",
+            },
         ],
         "regex_character_class": [
             {
                 token: "regexp.charclass.keyword.operator",
-                regex: "\\\\(?:u[\\da-fA-F]{4}|x[\\da-fA-F]{2}|.)"
+                regex: "\\\\(?:u[\\da-fA-F]{4}|x[\\da-fA-F]{2}|.)",
             }, {
                 token: "constant.language.escape",
                 regex: "]",
-                next: "regex"
+                next: "regex",
             }, {
                 token: "constant.language.escape",
-                regex: "-"
+                regex: "-",
             }, {
                 token: "empty",
                 regex: "$",
-                next: "no_regex"
+                next: "no_regex",
             }, {
-                defaultToken: "string.regexp.charachterclass"
-            }
-        ]
-    };
-};
+                defaultToken: "string.regexp.charachterclass",
+            },
+        ],
+    }
+}
 
-oop.inherits(LuceneHighlightRules, TextHighlightRules);
+oop.inherits(LuceneHighlightRules, TextHighlightRules)
 
-exports.LuceneHighlightRules = LuceneHighlightRules;
-});
+exports.LuceneHighlightRules = LuceneHighlightRules
+})
 
 define("ace/mode/lucene",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/lucene_highlight_rules"], function(require, exports, module) {
-'use strict';
+'use strict'
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var LuceneHighlightRules = require("./lucene_highlight_rules").LuceneHighlightRules;
+var oop = require("../lib/oop")
+var TextMode = require("./text").Mode
+var LuceneHighlightRules = require("./lucene_highlight_rules").LuceneHighlightRules
 
 var Mode = function() {
-    this.HighlightRules = LuceneHighlightRules;
-    this.$behaviour = this.$defaultBehaviour;
-};
+    this.HighlightRules = LuceneHighlightRules
+    this.$behaviour = this.$defaultBehaviour
+}
 
 oop.inherits(Mode, TextMode);
 
 (function() {
-    this.$id = "ace/mode/lucene";
-}).call(Mode.prototype);
+    this.$id = "ace/mode/lucene"
+}).call(Mode.prototype)
 
-exports.Mode = Mode;
+exports.Mode = Mode
 });                (function() {
                     window.require(["ace/mode/lucene"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

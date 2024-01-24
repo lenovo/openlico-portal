@@ -26,14 +26,14 @@
          + 'null|out|override|params|partial|private|protected|public|ref|sealed|static|struct|'
          + 'syntax|this|throw|true|try|type|typeof|using|variant|virtual|volatile|when|where|with|'
          + 'assert|assert2|async|break|checked|continue|do|else|ensures|for|foreach|if|late|lock|new|nolate|'
-         + 'otherwise|regexp|repeat|requires|return|surroundwith|unchecked|unless|using|while|yield';
+         + 'otherwise|regexp|repeat|requires|return|surroundwith|unchecked|unless|using|while|yield'
 
   PR['registerLangHandler'](PR['createSimpleLexer'](
       // shortcutStylePatterns
       [
         [PR['PR_STRING'], /^(?:\'(?:[^\\\'\r\n]|\\.)*\'|\"(?:[^\\\"\r\n]|\\.)*(?:\"|$))/, null, '"'],
         [PR['PR_COMMENT'], /^#(?:(?:define|elif|else|endif|error|ifdef|include|ifndef|line|pragma|undef|warning)\b|[^\r\n]*)/, null, '#'],
-        [PR['PR_PLAIN'], /^\s+/, null, ' \r\n\t\xA0']
+        [PR['PR_PLAIN'], /^\s+/, null, ' \r\n\t\xA0'],
       ],
       // fallthroughStylePatterns
       [
@@ -59,7 +59,7 @@
   // with an optional modifier like UL for unsigned long
              + '[a-z]*', 'i'), null, '0123456789'],
 
-        [PR['PR_PUNCTUATION'], /^.[^\s\w\.$@\'\"\`\/\#]*/, null]
+        [PR['PR_PUNCTUATION'], /^.[^\s\w\.$@\'\"\`\/\#]*/, null],
       ]),
-      ['n', 'nemerle']);
-})();
+      ['n', 'nemerle'])
+})()

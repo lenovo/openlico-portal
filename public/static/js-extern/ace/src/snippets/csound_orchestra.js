@@ -1,5 +1,5 @@
 define("ace/snippets/csound_orchestra",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "# else\n\
 snippet else\n\
@@ -48,14 +48,14 @@ snippet while\n\
 	while ${1:/* condition */} do\n\
 		${2:/* statements */}\n\
 	od\n\
-";
-exports.scope = "csound_orchestra";
+"
+exports.scope = "csound_orchestra"
 
 });                (function() {
                     window.require(["ace/snippets/csound_orchestra"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

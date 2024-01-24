@@ -5068,7 +5068,8 @@ embed.elfinder-quicklook-preview-audio {
 }
 
 .elfinder-button-icon-mkdirin {
-    background-position: 0 -912px;
+    /* background-position: 0 -912px; */
+    background-position: 0 -192px !important;
 }
 
 .elfinder-button-icon-selectall {

@@ -104,7 +104,7 @@ export default {
       )
     },
     editUser() {
-      this.$refs.editUserDialog.open().cetch(res => {})
+      this.$refs.editUserDialog.open().catch(res => {})
     },
     showAbout() {
       this.$refs.aboutDialog.open()
@@ -114,6 +114,7 @@ export default {
         title: this.$t('Logout'),
         content: this.$t('Logout.Tip.Text'),
         centered: true,
+        zIndex: 1005,
         okText: this.$t('Action.Confirm'),
         cancelText: this.$t('Action.Cancel'),
         onOk() {

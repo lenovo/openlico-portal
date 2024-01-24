@@ -140,12 +140,15 @@ function listModules() {
         const modulesList = res.body
         const access = window.gApp.$store.state.auth.access
         if (access === 'staff') {
-          const resp = await Request.get('/api/usermodule/?type=private')
-          if (resp.status === 200) {
-            modulesList.push(...resp.data)
-          } else {
-            const message = resp.data.errid ? window.gApp.$t(`Error.${resp.data.errid}`) : resp.data.msg
-            window.gApp.$message.error(message)
+          const featureCodes = window.gApp.$store.state.auth.featureCodes
+          if (featureCodes.includes('easybuild')) {
+            const resp = await Request.get('/api/usermodule/?type=private')
+            if (resp.status === 200) {
+              modulesList.push(...resp.data)
+            } else {
+              const message = resp.data.errid ? window.gApp.$t(`Error.${resp.data.errid}`) : resp.data.msg
+              window.gApp.$message.error(message)
+            }
           }
         }
         getIntelModuleName().then(response => {

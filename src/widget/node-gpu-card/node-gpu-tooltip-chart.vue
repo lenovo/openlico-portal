@@ -72,6 +72,9 @@ export default {
     container(val, oldVal) {
       this.renderChart()
     },
+    gpuId(val, oldVal) {
+      this.renderChart()
+    },
     resize(val) {
       this.onResize()
     },
@@ -97,6 +100,7 @@ export default {
   },
   methods: {
     renderChart() {
+      if (this.gpuId === null) return
       const _this = this
       const chartHeight = this.chartHeight
       const titleHeight = this.titleHeight

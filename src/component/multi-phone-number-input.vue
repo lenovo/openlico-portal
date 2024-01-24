@@ -20,7 +20,6 @@
         </a-select>
       </a-form-item-rest>
       <a-input
-        id="tid_multi-phone-input"
         ref="newTagInput"
         v-model:value="inputValue"
         style="width: 50%"

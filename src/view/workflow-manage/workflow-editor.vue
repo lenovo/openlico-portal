@@ -105,7 +105,7 @@
               </template>
             </div>
           </li>
-          <li class="workflow-step-container">
+          <li class="workflow-step-container" style="padding-top: 15px">
             <a-button type="link" @click="addStep">
               {{ $t('Workflow.CreateNewStep') }}
             </a-button>
@@ -358,6 +358,7 @@ export default {
   display: inline-block;
   width: 280px;
   vertical-align: top;
+  box-sizing: border-box;
 }
 .step-container {
   border: 1px solid #ddd;

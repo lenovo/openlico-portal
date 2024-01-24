@@ -361,8 +361,8 @@ if (elFinder && elFinder.prototype && typeof(elFinder.prototype.i18) == 'object'
 			'kindVideoWM'     : 'Windows Media ムービー',
 			'kindVideoFlash'  : 'Flash ムービー',
 			'kindVideoMKV'    : 'Matroska ムービー',
-			'kindVideoOGG'    : 'Ogg ムービー'
-		}
-	};
+			'kindVideoOGG'    : 'Ogg ムービー',
+		},
+	}
 }
 

@@ -1,5 +1,5 @@
 define("ace/snippets/tex",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "#PREAMBLE\n\
 #newcommand\n\
@@ -191,14 +191,14 @@ snippet stackrel\n\
 snippet frac\n\
 	\\frac{${1:num}}{${2:denom}}\n\
 snippet sum\n\
-	\\sum^{${1:n}}_{${2:i=1}}{${3}}";
-exports.scope = "tex";
+	\\sum^{${1:n}}_{${2:i=1}}{${3}}"
+exports.scope = "tex"
 
 });                (function() {
                     window.require(["ace/snippets/tex"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

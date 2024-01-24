@@ -1,39 +1,39 @@
 define("ace/ext/modelist",["require","exports","module"], function(require, exports, module) {
-"use strict";
+"use strict"
 
-var modes = [];
+var modes = []
 function getModeForPath(path) {
-    var mode = modesByName.text;
-    var fileName = path.split(/[\/\\]/).pop();
+    var mode = modesByName.text
+    var fileName = path.split(/[\/\\]/).pop()
     for (var i = 0; i < modes.length; i++) {
         if (modes[i].supportsFile(fileName)) {
-            mode = modes[i];
-            break;
+            mode = modes[i]
+            break
         }
     }
-    return mode;
+    return mode
 }
 
 var Mode = function(name, caption, extensions) {
-    this.name = name;
-    this.caption = caption;
-    this.mode = "ace/mode/" + name;
-    this.extensions = extensions;
-    var re;
+    this.name = name
+    this.caption = caption
+    this.mode = "ace/mode/" + name
+    this.extensions = extensions
+    var re
     if (/\^/.test(extensions)) {
         re = extensions.replace(/\|(\^)?/g, function(a, b){
-            return "$|" + (b ? "^" : "^.*\\.");
-        }) + "$";
+            return "$|" + (b ? "^" : "^.*\\.")
+        }) + "$"
     } else {
-        re = "^.*\\.(" + extensions + ")$";
+        re = "^.*\\.(" + extensions + ")$"
     }
 
-    this.extRe = new RegExp(re, "gi");
-};
+    this.extRe = new RegExp(re, "gi")
+}
 
 Mode.prototype.supportsFile = function(filename) {
-    return filename.match(this.extRe);
-};
+    return filename.match(this.extRe)
+}
 var supportedModes = {
     ABAP:        ["abap"],
     ABC:         ["abc"],
@@ -198,8 +198,8 @@ var supportedModes = {
     XQuery:      ["xq"],
     YAML:        ["yaml|yml"],
     Zeek:        ["zeek|bro"],
-    Django:      ["html"]
-};
+    Django:      ["html"],
+}
 
 var nameOverrides = {
     ObjectiveC: "Objective-C",
@@ -215,29 +215,29 @@ var nameOverrides = {
     FTL: "FreeMarker",
     PHP_Laravel_blade: "PHP (Blade Template)",
     Perl6: "Perl 6",
-    AutoHotKey: "AutoHotkey / AutoIt"
-};
-var modesByName = {};
+    AutoHotKey: "AutoHotkey / AutoIt",
+}
+var modesByName = {}
 for (var name in supportedModes) {
-    var data = supportedModes[name];
-    var displayName = (nameOverrides[name] || name).replace(/_/g, " ");
-    var filename = name.toLowerCase();
-    var mode = new Mode(filename, displayName, data[0]);
-    modesByName[filename] = mode;
-    modes.push(mode);
+    var data = supportedModes[name]
+    var displayName = (nameOverrides[name] || name).replace(/_/g, " ")
+    var filename = name.toLowerCase()
+    var mode = new Mode(filename, displayName, data[0])
+    modesByName[filename] = mode
+    modes.push(mode)
 }
 
 module.exports = {
     getModeForPath: getModeForPath,
     modes: modes,
-    modesByName: modesByName
-};
+    modesByName: modesByName,
+}
 
 });                (function() {
                     window.require(["ace/ext/modelist"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

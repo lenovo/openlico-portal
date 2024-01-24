@@ -1,7 +1,7 @@
 define("ace/theme/chrome",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
 
-exports.isDark = false;
-exports.cssClass = "ace-chrome";
+exports.isDark = false
+exports.cssClass = "ace-chrome"
 exports.cssText = ".ace-chrome .ace_gutter {\
 background: #ebebeb;\
 color: #333;\
@@ -121,15 +121,15 @@ color: #994409;\
 .ace-chrome .ace_indent-guide {\
 background: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==\") right repeat-y;\
 }\
-";
+"
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+var dom = require("../lib/dom")
+dom.importCssString(exports.cssText, exports.cssClass)
 });                (function() {
                     window.require(["ace/theme/chrome"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

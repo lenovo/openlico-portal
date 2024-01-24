@@ -1,5 +1,5 @@
 ace.define("ace/snippets/haml",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "snippet t\n\
 	%table\n\
@@ -21,14 +21,14 @@ snippet =rpl\n\
 snippet =rpc\n\
 	= render :partial => '${1:partial}', :collection => @$1\n\
 \n\
-";
-exports.scope = "haml";
+"
+exports.scope = "haml"
 
 });                (function() {
                     ace.require(["ace/snippets/haml"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

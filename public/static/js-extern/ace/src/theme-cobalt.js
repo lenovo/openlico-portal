@@ -1,7 +1,7 @@
 define("ace/theme/cobalt",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
 
-exports.isDark = true;
-exports.cssClass = "ace-cobalt";
+exports.isDark = true
+exports.cssClass = "ace-cobalt"
 exports.cssText = ".ace-cobalt .ace_gutter {\
 background: #011e3a;\
 color: rgb(128,145,160)\
@@ -106,15 +106,15 @@ color: #9EFFFF\
 .ace-cobalt .ace_indent-guide {\
 background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNgYGBgYHCLSvkPAAP3AgSDTRd4AAAAAElFTkSuQmCC) right repeat-y\
 }\
-";
+"
 
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
+var dom = require("../lib/dom")
+dom.importCssString(exports.cssText, exports.cssClass)
 });                (function() {
                     window.require(["ace/theme/cobalt"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

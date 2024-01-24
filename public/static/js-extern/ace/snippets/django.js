@@ -1,5 +1,5 @@
 ace.define("ace/snippets/django",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "# Model Fields\n\
 \n\
@@ -109,14 +109,14 @@ snippet r2r\n\
 			${2}\n\
 		}${3:, context_instance=RequestContext(request)}\n\
 	)\n\
-";
-exports.scope = "django";
+"
+exports.scope = "django"
 
 });                (function() {
                     ace.require(["ace/snippets/django"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             

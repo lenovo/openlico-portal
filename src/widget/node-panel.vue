@@ -17,7 +17,7 @@
           style="margin-right: 10px"
           placement="bottomRight"
           :trigger="['click']">
-          <a-button :disabled="innerNode.onCloud">
+          <a-button :disabled="innerNode.disabled">
             {{ $t('Action') }}
             <down-outlined />
           </a-button>

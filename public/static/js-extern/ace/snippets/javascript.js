@@ -1,5 +1,5 @@
 ace.define("ace/snippets/javascript",[], function(require, exports, module) {
-"use strict";
+"use strict"
 
 exports.snippetText = "# Prototype\n\
 snippet proto\n\
@@ -196,14 +196,14 @@ snippet requ\n\
 guard ^\\s*\n\
 	var ${1/.*\\/(.)/\\u$1/} = require(\"${1}\").${1/.*\\/(.)/\\u$1/};\n\
 	$0\n\
-";
-exports.scope = "javascript";
+"
+exports.scope = "javascript"
 
 });                (function() {
                     ace.require(["ace/snippets/javascript"], function(m) {
                         if (typeof module == "object" && typeof exports == "object" && module) {
-                            module.exports = m;
+                            module.exports = m
                         }
-                    });
-                })();
+                    })
+                })()
             
