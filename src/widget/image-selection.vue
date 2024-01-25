@@ -34,7 +34,20 @@ export default {
   components: {
     'image-version-tag': imageVersionTag,
   },
-  props: ['value', 'arch', 'images', 'disabled', 'dispalayImageType'],
+  props: {
+    value: String,
+    images: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
+    disabled: Boolean,
+    dispalayImageType: {
+      type: Boolean,
+      default: true,
+    },
+  },
   emits: ['input', 'update:value'],
   data() {
     return {
