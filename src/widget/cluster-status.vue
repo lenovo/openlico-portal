@@ -29,34 +29,40 @@
           <li class="clusterstatus-item">
             <div class="cluster-popover-tips">
               <span class="cluster-text">{{ $t('Cluster.Sheduler') }}</span>
-              <LoadingOutlined v-if="clusterStatusLoading[0]" class="cluster-refresh-icon" />
+              <loading-outlined v-if="clusterStatusLoading[0]" class="cluster-refresh-icon" />
               <i
-                v-if="sheduler == 'active' && !clusterStatusLoading[0]"
+                v-else-if="sheduler == 'active' && !clusterStatusLoading[0]"
                 class="cluster-status-icon cluster-refresh-icon status-normal" />
-              <a-popover v-else placement="right" overlay-class-name="cluster-popover" trigger="hover">
+              <a-popover
+                v-else-if="sheduler == 'inactive'"
+                placement="right"
+                overlay-class-name="cluster-popover"
+                trigger="hover">
                 <template #content>
                   <p class="cluster-text cluster-tips">
                     {{ getDisplayErrorMessage(shedulerMessage) }}
                   </p>
                 </template>
-                <i v-if="!clusterStatusLoading[0]" class="cluster-status-icon cluster-refresh-icon status-error" />
+                <i class="cluster-status-icon cluster-refresh-icon status-error" />
               </a-popover>
             </div>
           </li>
           <li class="clusterstatus-item">
             <div class="cluster-popover-tips">
               <span class="cluster-text">{{ $t('Cluster.ParallelFileSystem') }}</span>
-              <reload-outlined v-if="clusterStatusLoading[1]" spin class="cluster-refresh-icon" />
-              <i
-                v-if="parallel == 'active' && !clusterStatusLoading[1]"
-                class="cluster-status-icon cluster-refresh-icon status-normal" />
-              <a-popover v-else placement="right" overlay-class-name="cluster-popover" trigger="hover">
+              <loading-outlined v-if="clusterStatusLoading[1]" class="cluster-refresh-icon" />
+              <i v-else-if="parallel == 'active'" class="cluster-status-icon cluster-refresh-icon status-normal" />
+              <a-popover
+                v-else-if="parallel == 'inactive'"
+                placement="right"
+                overlay-class-name="cluster-popover"
+                trigger="hover">
                 <template #content>
                   <p class="cluster-text cluster-tips">
                     {{ getDisplayErrorMessage(parallelMessage) }}
                   </p>
                 </template>
-                <i v-if="clusterStatusLoading[1]" class="cluster-status-icon cluster-refresh-icon status-error" />
+                <i class="cluster-status-icon cluster-refresh-icon status-error" />
               </a-popover>
               <a-tooltip>
                 <template #title>
