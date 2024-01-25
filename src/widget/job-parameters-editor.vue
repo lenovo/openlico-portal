@@ -92,7 +92,7 @@
             v-if="param.type == 'image'"
             v-model:value="formModel[param.id]"
             :arch="arch"
-            :images="imageOptions" />
+            :images="imageOptions[param.id]" />
           <queue-selector
             v-if="param.type == 'queue'"
             ref="queueSelector"
@@ -195,7 +195,7 @@ export default {
       innerParams: [],
       displayParams: [],
       queueOptions: [],
-      imageOptions: [],
+      imageOptions: {},
       scheduler: '',
       arch: 'host',
       paramVisible: {},
@@ -555,11 +555,11 @@ export default {
       })
     },
     initImage(res, param) {
-      this.imageOptions = []
+      const options = []
       res.forEach(image => {
         if (image.username === this.$store.state.auth.username || !image.username) {
           if (image.status === 'success' || !image.status) {
-            this.imageOptions.push({
+            options.push({
               username: image.username,
               tag: image.tags,
               version: image.version,
@@ -569,8 +569,9 @@ export default {
           }
         }
       })
-      if (this.imageOptions.length > 0 && this.formModel[param.id] === '' && param.require) {
-        this.formModel[param.id] = this.imageOptions[0].value
+      this.imageOptions[param.id] = options
+      if (options.length > 0 && this.formModel[param.id] === '' && param.require) {
+        this.formModel[param.id] = options[0].value
       }
     },
     initMIG(res, param) {
